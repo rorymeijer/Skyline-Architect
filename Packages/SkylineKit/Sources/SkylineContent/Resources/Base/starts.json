@@ -1,0 +1,18 @@
+[
+  {
+    "id": "sandbox-quay",
+    "name": "Sandbox — Quay Street",
+    "mode": "sandbox",
+    "cityID": "port-calder",
+    "plotID": "calder-quay-lot",
+    "propertyName": "Quay Street Lot",
+    "startingFoundation": {
+      "buildingName": "Quay Street Tower",
+      "footprintOffsetModules": 8,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 20,
+      "pileSpacingModules": 4
+    }
+  }
+]

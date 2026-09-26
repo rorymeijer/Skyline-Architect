@@ -3,5 +3,9 @@
   "name": "Skyline Architect — Base Content",
   "version": "0.1.0",
   "formatVersion": 1,
-  "files": {}
+  "files": {
+    "cities": "cities.json",
+    "plots": "plots.json",
+    "starts": "starts.json"
+  }
 }

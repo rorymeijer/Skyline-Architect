@@ -1,0 +1,10 @@
+[
+  {
+    "id": "calder-quay-lot",
+    "name": "Quay Street Lot",
+    "cityID": "port-calder",
+    "frontageModules": 48,
+    "maxBasementFloors": 3,
+    "siteMarginModules": 40
+  }
+]

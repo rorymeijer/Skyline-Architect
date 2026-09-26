@@ -1,0 +1,16 @@
+[
+  {
+    "id": "port-calder",
+    "name": "Port Calder",
+    "description": "A mid-sized harbour city on reclaimed estuary land: deep soft clay and sand over sandstone bedrock.",
+    "seed": 7301,
+    "geology": [
+      { "material": "paving", "thickness": 0.3 },
+      { "material": "topsoil", "thickness": 1.2 },
+      { "material": "clay", "thickness": 6.5 },
+      { "material": "sand", "thickness": 4.0 },
+      { "material": "gravel", "thickness": 5.0 },
+      { "material": "bedrock", "thickness": 1.0 }
+    ]
+  }
+]
