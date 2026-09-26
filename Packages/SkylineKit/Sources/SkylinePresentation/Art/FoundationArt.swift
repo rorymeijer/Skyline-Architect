@@ -137,8 +137,9 @@ enum FoundationArt {
         // Rounded toe.
         d.ellipse(Rect(minX: body.minX, minY: bottom - r * 0.5, maxX: body.maxX, maxY: bottom + r * 0.5), c.shaded(0.8))
         // Longitudinal bars visible at close range.
-        for bx in [centerX - r + 0.12, centerX + r - 0.12] {
-            d.fill(Rect(minX: bx - 0.012, minY: bottom + 0.3, maxX: bx + 0.012, maxY: top), p.rebar.withAlpha(0.55), minDetail: 56)
+        // Longitudinal bars of the reinforcement cage, faintly visible in the cut.
+        for bx in [centerX - r + 0.1, centerX + r - 0.1] {
+            d.fill(Rect(minX: bx - 0.008, minY: bottom + 0.3, maxX: bx + 0.008, maxY: top), p.rebar.withAlpha(0.28), minDetail: 56)
         }
         d.outline(body, p.concreteEdge.withAlpha(0.7), width: 0.03, minDetail: 8)
         _ = rng.next()
