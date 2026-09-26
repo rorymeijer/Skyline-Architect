@@ -68,6 +68,11 @@ public struct TilePlan: Sendable, Equatable {
     public var level: Int
     /// Tiles that intersect content and the (slightly expanded) view, nearest-first.
     public var wanted: [TileKey]
+
+    public init(level: Int, wanted: [TileKey]) {
+        self.level = level
+        self.wanted = wanted
+    }
 }
 
 /// Plans tiles for a view and keeps LRU bookkeeping for the renderer's texture cache.
