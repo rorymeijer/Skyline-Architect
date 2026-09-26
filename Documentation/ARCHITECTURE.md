@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Phase 1. This document describes what exists and the intended evolution.
+Status: Phase 1 complete (2026-09-26). This document describes what exists and the intended evolution.
 Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomplete) or
 **PLANNED** (design only).
 

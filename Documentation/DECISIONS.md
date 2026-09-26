@@ -83,3 +83,11 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Date:** 2026-09-26
 - **Decision:** Use the Swift Testing framework (`import Testing`) for package tests.
 - **Reason:** Ships with Swift 6 toolchains on macOS and Linux; parameterized tests suit simulation cases.
+
+## D-012 — SwiftUI-drawn chrome controls
+- **Date:** 2026-09-26
+- **Decision:** Floating game controls use custom `ButtonStyle`s and plain SwiftUI shapes instead of platform-styled `Button`/`Menu`/materials.
+- **Context:** The first CI capture showed AppKit-backed controls as placeholders in `ImageRenderer` output.
+- **Alternatives:** Capture the window through ScreenCaptureKit (needs Screen Recording permission, unavailable on CI).
+- **Reason:** Captures must show what the player sees; a consistent game-styled HUD is also the desired look.
+- **Consequences:** Native macOS menus remain for app-level commands; in-world chrome is custom-drawn.

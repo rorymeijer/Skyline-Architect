@@ -28,6 +28,11 @@ camera center · cursor cell. Screenshot capture writes the same values into
 
 | Date | Build | Machine | Scenario | Result |
 |------|-------|---------|----------|--------|
-| (Phase 1 CI capture — see Development/Screenshots/Phase-01/README.md) | | | | |
+| 2026-09-26 | 0.1.0 (1) Debug | GitHub macos-15 runner, 1×, 60 Hz | site overview, 7.3 pt/m | 60 fps (display cap), scene update 0.10 ms, 9 tiles shown, 6.8 ms/tile raster (background), 95 nodes, 148 MB |
+| 2026-09-26 | 0.1.0 (1) Debug | same | detail, 64 pt/m, tile L5 | 60 fps, 0.09 ms update, 9.1 ms/tile, 116 nodes, 180 MB |
+| 2026-09-26 | 0.1.0 (1) Debug | same | skyline, 0.45 pt/m, tile L0 | 60 fps, 0.14 ms update, 24 tiles shown, 197 nodes, 205 MB |
+
+Observations: memory grows with the tile cache (budget 96 tiles × up to 1 MB); budget
+should become memory-aware on iPad (Phase 19 or earlier if profiling shows pressure).
 
 Profile before optimizing; record results here.
