@@ -18,6 +18,7 @@ Before starting work, read `Development/STATUS.md` (current state) and
 | `Packages/SkylineKit/Sources/SkylineCore` | Authoritative game model (world, property, plot, building, grid) |
 | `Packages/SkylineKit/Sources/SkylineContent` | Data-driven content definitions (JSON), loading, validation, new-game factory |
 | `Packages/SkylineKit/Sources/SkylinePresentation` | Camera, LOD, culling, drawing IR, procedural art, scene composition, tile planning |
+| `Packages/SkylineKit/Sources/SkylinePersistence` | Versioned saves, migrations, save store |
 | `Packages/SkylineKit/Sources/SkylineSnapshot` | `skyline-snapshot` CLI: renders compositions to SVG (headless design inspection) |
 | `Documentation/` | Architecture, design, decisions, formats |
 | `Development/` | STATUS.md journal, screenshots per phase |
@@ -32,7 +33,9 @@ Scripts/capture-screenshots.sh OUT # launch app in capture mode, writes PNGs to 
 ```
 
 CI: `.github/workflows/ci.yml` runs package tests on Linux + macOS, builds the app for
-macOS and iPad Simulator, launches it in screenshot-capture mode and uploads screenshots.
+macOS and iPad Simulator, launches it in screenshot-capture mode, uploads screenshots and —
+on `claude/**` branches — commits JPEG copies to `Development/Screenshots/_ci-latest/`
+(`git pull` after CI to inspect them; the bot commit uses `[skip ci]`).
 
 ## Non-negotiable rules
 
@@ -40,7 +43,7 @@ macOS and iPad Simulator, launches it in screenshot-capture mode and uploads scr
 2. Run the tests (`Scripts/test-package.sh`) before every commit; add tests for new simulation logic.
 3. Fix warnings where practical. Do not silence them with blanket flags.
 4. Preserve architectural boundaries:
-   - `SkylineCore` / `SkylineContent` / `SkylinePresentation` must not import SpriteKit, SwiftUI, AppKit, UIKit or CoreGraphics. They must build and test on Linux.
+   - `SkylineCore` / `SkylineContent` / `SkylinePresentation` / `SkylinePersistence` must not import SpriteKit, SwiftUI, AppKit, UIKit or CoreGraphics. They must build and test on Linux.
    - The renderer never contains game rules. SpriteKit nodes are never authoritative state.
    - SwiftUI views never run the simulation.
    - Content (room types, cities, balance) lives in data files, not in engine switch statements.
@@ -63,6 +66,10 @@ macOS and iPad Simulator, launches it in screenshot-capture mode and uploads scr
 14. Debug/developer tooling must be isolated from release gameplay (`#if DEBUG` or the
     developer-mode setting), never mixed into gameplay rules.
 15. Mods are declarative data only (JSON). Never execute native code from mods.
+16. Construction changes the world only through `BuildCommand`s + `ConstructionEngine`;
+    every command needs an exact inverse (undo) and tests.
+17. Save format changes require a version bump, a migration and a kept golden fixture
+    (Documentation/SAVE_FORMAT.md).
 
 ## Environment notes
 

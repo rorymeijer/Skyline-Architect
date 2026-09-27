@@ -1,57 +1,59 @@
 # Development Status
 
-_Last updated: 2026-09-26_
+_Last updated: 2026-09-27_
 
 ## Current phase
-**Phase 1 — Renderer, camera, architectural grid: COMPLETE** (awaiting approval to start Phase 2).
+**Phase 2 — Construction + saves: COMPLETE** (awaiting approval to start Phase 3).
 
 ## Current milestone
-M1 “First Playable” (end of Phase 9) — not started.
+M1 “First Playable” (end of Phase 9) — Phases 1–2 of 9 done.
 
-## Quality gates (Phase 1)
+## Quality gates (Phase 2)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run #5 (`6981841`), no warnings except Xcode's AppIntents notice |
-| Automated tests pass | ✅ | 55 tests, Linux + macOS (`Scripts/test-package.sh`) |
-| Game launches | ✅ macOS (CI) · ⚠️ iPad built but not launched | capture run on macos-15 |
-| Feature demonstrable | ✅ | 5 screenshots, `Development/Screenshots/Phase-01/` |
-| Obvious runtime errors fixed | ✅ | capture settles in ~1 s per preset, exit 0 |
-| Documentation updated | ✅ | ARCHITECTURE, GRAPHICS, DECISIONS, CHANGELOG, PERFORMANCE |
-| Screenshots produced & inspected | ✅ | two issues found and fixed (see screenshot README) |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36306205755 (`74289b0`), no warnings except Xcode's AppIntents notice |
+| Automated tests pass | ✅ | 92 tests (Linux + macOS): construction rules, undo round trips, integrity, saves, migrations, golden fixture, placement, composition |
+| Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
+| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-02/` incl. save→load round trip (`worldIdentical=true`) and undo |
+| Obvious runtime errors fixed | ✅ | all captures settle ≈1 s, exit 0 |
+| Documentation updated | ✅ | ARCHITECTURE, SAVE_FORMAT, MODDING, DECISIONS D-013…D-016, CHANGELOG |
+| Screenshots produced & inspected | ✅ | 5 issues found and fixed (see screenshot README) |
 | Known issues recorded | ✅ | below |
 
 ## Completed
-- Phase 0: docs, Xcode project, `SkylineKit` package, CI (Linux + macOS + iPad build + capture).
-- Phase 1 (FUNCTIONAL): world model (world/city/property/plot/building/foundation), content
-  pack loading, camera (zoom-to-anchor, inertia, trackpad/mouse/keyboard, iPad gestures,
-  limits, presets), LOD bands, drawing IR, tiled background rasterization, procedural art
-  (terrain, foundation, neighbours, skyline), architectural grid overlay with hover cell,
-  developer HUD, View menu shortcuts, screenshot director, `skyline-snapshot` previews.
+- Phase 0 + Phase 1 (merged in rorymeijer/Skyline-Architect#1).
+- Phase 2 (FUNCTIONAL): floor plates, rooms/shafts, data-driven construction rules and costs,
+  demolition, inverse-command undo/redo, content rooms/rules/blueprints, persistence module
+  (versioned saves, migrations, integrity checks, atomic store, quicksave, load sheet,
+  autosave), layered composition with dirty-rect tile invalidation, building/room art,
+  placement planner with live preview, build palette, room labels, iPad placement gestures.
 
 ## In progress
-- Nothing. Waiting for Phase 2 approval.
+- Nothing. Waiting for Phase 3 approval.
 
 ## Known bugs / unverified
-- Interactive input has not been exercised by a human: scroll/pan direction under natural
-  scrolling, inertia feel, pinch sensitivity may need tuning (logic is unit-tested).
-- iPad build compiles but has never been launched in a simulator/device.
-- Retina (2×) rendering not captured; CI display is 1×.
-- Developer HUD can cover floor labels at the left edge (Debug only).
+- Interactive input (mouse/trackpad placement feel, natural-scroll direction, pinch) not yet
+  exercised by a human; logic is unit-tested and captures drive the same APIs.
+- iPad build compiles but has never been launched.
+- Session construction cost is informational; money is not charged until Phase 9.
+- Undo history is cleared by New Game / Load (by design) and not persisted in saves.
 
 ## Technical debt
-- Distant skyline has no parallax (reads a bit close at mid zoom).
-- Tile cache invalidation for changing content does not exist yet (static site only) — needed
-  in Phase 2 (dirty-rect invalidation when construction changes the composition).
-- `WorldScene` recomposes nothing at runtime; `AppModel` builds the composition once.
-- CI screenshot window is 1024 × 681 (runner display size).
+- `ConstructionEngine` overlap checks scan all rooms of a building (O(rooms)); fine for
+  hundreds, add an occupancy index before thousands (Phase 19 or when profiling says so).
+- `SiteComposer.recompose` rebuilds every building on the property after each command;
+  per-building caching when properties hold several towers.
+- Distant skyline has no parallax.
+- CI commits JPEG captures to `Development/Screenshots/_ci-latest/` on every push to a
+  `claude/**` branch (~1 MB each; chosen with the user because artifact storage is blocked
+  from restricted sessions). Consider pruning history before a 1.0 release.
 
-## Next tasks (Phase 2 — Construction + saves)
-1. Command-based construction model (floors/slabs, walls, room shells, stairs/elevator shafts)
-   with data-driven build rules and validation; demolition; session undo.
-2. Construction tools in the UI (macOS: click-drag placement with hover preview; iPad: contextual).
-3. Composition invalidation → tile dirty regions.
-4. Versioned local save/load + autosave skeleton + migration tests (SAVE_FORMAT.md).
-5. Screenshot presets for construction; Phase-02 screenshots.
+## Next tasks (Phase 3 — First furnished rooms)
+1. Furniture recipes per room appearance (office desks/chairs/computers/meeting tables,
+   apartment bed/sofa/kitchen/bath, lobby reception) as data-driven layouts.
+2. Exterior façade treatment + LOD: façade when zoomed out, cutaway interiors when zoomed in.
+3. `ASSET_REQUIREMENTS.md` for art procedural generation cannot reach.
+4. Screenshot presets for furnished interiors; Phase-03 screenshots.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,
@@ -61,6 +63,11 @@ M1 “First Playable” (end of Phase 9) — not started.
   libcurl4-openssl-dev libedit2 libgcc-13-dev libpython3-dev libsqlite3-0 libstdc++-13-dev
   libxml2-dev libncurses-dev libz3-dev pkg-config tzdata zlib1g-dev) and use
   `PATH=/opt/swift/usr/bin:$PATH`. `apt-get install librsvg2-bin` for SVG previews.
+- If package tests crash with a segfault after model layout changes, it is a stale
+  incremental build on Linux: `rm -rf Packages/SkylineKit/.build` and rebuild.
+- GitHub artifact/log blob storage (`productionresultssa*.blob.core.windows.net`) is blocked
+  by this environment's network policy. CI therefore commits the latest captures to
+  `Development/Screenshots/_ci-latest/` — `git pull` after a CI run to inspect them.
 - The app target is verified by macOS CI (`.github/workflows/ci.yml`, runs on every push to
   `claude/**`); screenshots are uploaded as the `phase-screenshots` artifact.
 
