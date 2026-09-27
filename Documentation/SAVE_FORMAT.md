@@ -2,12 +2,21 @@
 
 Status: **FUNCTIONAL** (Phase 2). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
 
-## Envelope (format version 1)
+## Versions
+
+| Format | Game | Change | Migration |
+|--------|------|--------|-----------|
+| 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
+| 2 | 0.4 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+
+Golden fixtures: `save-v1.skylinesave` (frozen), `save-v2.skylinesave` (people mid-trip).
+
+## Envelope (format version 2)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 1,
+  "formatVersion": 2,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
     "contentPacks": [{ "id": "base", "version": "0.1.0" }],
@@ -17,7 +26,11 @@ Status: **FUNCTIONAL** (Phase 2). Implemented in `Packages/SkylineKit/Sources/Sk
       "ids": { "next": 57 },
       "cities": [ … ], "properties": [ … ],
       "buildings": [ { "id": 3, "footprint": …, "foundation": …, "floors": [ { "level": 0, "span": … } ] } ],
-      "rooms": [ { "id": 4, "buildingID": 3, "definitionID": "office-small", "columns": …, "floors": … } ]
+      "rooms": [ { "id": 4, "buildingID": 3, "definitionID": "office-small", "columns": …, "floors": … } ],
+      "clock": { "tick": 8400 },
+      "people": [ { "id": 41, "name": "…", "role": "worker", "scheduleID": "office-worker",
+                    "place": { "travelling": { "legs": [ … ], "destination": … } },
+                    "nextEventTick": 8455, "nextGoal": null, "traits": 123456, … } ]
     }
   }
 }

@@ -23,6 +23,7 @@ Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomp
 │ SkylineContent: JSON definitions, validation, new-game factory      │
 │   (depends on Presentation for visual definition types, D-017)      │
 │ SkylinePersistence: versioned saves, migrations, save store          │
+│ SkylineSimulation: clock, schedules, population, routes, engine      │
 ├─────────────────────────────────────────────────────────────────────┤
 │ SkylineCore: authoritative model (world→city→property→building),    │
 │ grid, geometry, IDs, deterministic RNG                              │

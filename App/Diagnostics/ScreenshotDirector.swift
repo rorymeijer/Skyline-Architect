@@ -58,33 +58,23 @@ final class ScreenshotDirector {
         Step(name: "01-morning-arrivals", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.applyBlueprint("demo-tower")
-            model.advanceSimulation(toTimeOfDay: 8, minute: 5)
-            // First minute with several people on the move.
-            for _ in 0..<60 where model.population.travelling < 3 {
-                model.advanceSimulation(ticks: 60)
-                model.refreshSimulationSummary()
-            }
+            model.advanceSimulation(toTimeOfDay: 7, minute: 40)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 100 * 60, step: 15) { ScreenshotDirector.travelling(in: $0) })
+            model.refreshSimulationSummary()
             scene.apply(preset: .building)
-            return "Morning arrivals at \(model.clockText): \(model.population.travelling) moving, \(model.population.inRooms) in rooms, \(model.population.outside) away."
+            return "Morning rush at \(model.clockText) (busiest moment 07:40–09:20): \(model.population.travelling) moving, \(model.population.inRooms) in rooms, \(model.population.outside) away."
         },
         Step(name: "02-stairs-closeup", grid: false) { model, scene in
             model.showDeveloperHUD = false
-            // Find someone on the stairs and centre on them.
-            var found: Vec2?
-            for _ in 0..<400 where found == nil {
-                model.advanceSimulation(ticks: 5)
-                guard let world = model.world else { break }
-                for p in world.people {
-                    if case let .travelling(legs, _) = p.place,
-                       let s = PersonMotion.sample(legs, at: Double(world.clock.tick), grid: world.grid), s.onStairs {
-                        found = s.position
-                        break
-                    }
-                }
+            // Next moment someone is on the stairs between the ground floor and floor 3.
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3 * 3600, step: 3) { world in
+                ScreenshotDirector.climbers(in: world, lowFloorsOnly: true).isEmpty ? 0 : 1
+            })
+            if let p = model.world.flatMap({ ScreenshotDirector.climbers(in: $0, lowFloorsOnly: true).first }) {
+                scene.withController { $0.jump(center: p + Vec2(0, 0.8), zoom: 48) }
             }
-            if let p = found { scene.withController { $0.jump(center: p + Vec2(0, 1), zoom: 48) } }
             model.refreshSimulationSummary()
-            return "Close-up of a person climbing the stairwell (found=\(found != nil)) at \(model.clockText)."
+            return "Close-up of a person on the stairwell at \(model.clockText)."
         },
         Step(name: "03-offices-occupied", grid: false) { model, scene in
             model.advanceSimulation(toTimeOfDay: 10)
@@ -94,11 +84,9 @@ final class ScreenshotDirector {
         },
         Step(name: "04-lunch-exodus", grid: false) { model, scene in
             model.showDeveloperHUD = true
-            model.advanceSimulation(toTimeOfDay: 12, minute: 10)
-            for _ in 0..<40 where model.population.travelling < 4 {
-                model.advanceSimulation(ticks: 30)
-                model.refreshSimulationSummary()
-            }
+            model.advanceSimulation(toTimeOfDay: 11, minute: 50)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 50 * 60, step: 10) { ScreenshotDirector.travelling(in: $0) })
+            model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(20, 12), zoom: 14) }
             return "Lunch at \(model.clockText): \(model.population.travelling) moving, \(model.population.outside) away."
         },
@@ -235,6 +223,20 @@ final class ScreenshotDirector {
     }
 
     private struct UncheckedBox<T>: @unchecked Sendable { let value: T }
+
+    static func travelling(in world: GameWorld) -> Int {
+        world.people.values.filter { if case .travelling = $0.place { true } else { false } }.count
+    }
+
+    /// Positions of people currently on stairs (optionally only between G and floor 3).
+    static func climbers(in world: GameWorld, lowFloorsOnly: Bool) -> [Vec2] {
+        world.people.values.compactMap { p in
+            guard case let .travelling(legs, _) = p.place,
+                  let s = PersonMotion.sample(legs, at: Double(world.clock.tick), grid: world.grid), s.onStairs else { return nil }
+            if lowFloorsOnly && !(0...14).contains(s.position.y) { return nil }
+            return s.position
+        }
+    }
 
     private func log(_ message: String) {
         FileHandle.standardError.write(Data("[capture] \(message)\n".utf8))

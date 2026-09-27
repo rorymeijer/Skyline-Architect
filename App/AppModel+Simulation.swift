@@ -29,6 +29,22 @@ extension AppModel {
         advanceSimulation(ticks: target - tick)
     }
 
+    /// Looks ahead on a copy of the world (the real world is untouched) and returns how many
+    /// ticks from now the `score` is highest within `window`, sampling every `step` ticks.
+    /// Used by automated captures to find moments with activity.
+    func ticksToBestMoment(within window: Tick, step: Tick, score: (GameWorld) -> Int) -> Tick {
+        guard var copy = world, let simulation else { return 0 }
+        var best: (ticks: Tick, score: Int) = (0, score(copy))
+        var elapsed: Tick = 0
+        while elapsed + step <= window {
+            simulation.advance(&copy, by: step)
+            elapsed += step
+            let s = score(copy)
+            if s > best.score { best = (elapsed, s) }
+        }
+        return best.ticks
+    }
+
     func setSpeed(_ s: GameSpeed) {
         host.speed = s
         speed = s
