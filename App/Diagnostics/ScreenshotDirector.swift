@@ -55,51 +55,51 @@ final class ScreenshotDirector {
     private var started = false
 
     let steps: [Step] = [
-        Step(name: "01-empty-foundation", grid: true) { _, scene in
-            scene.apply(preset: .building)
-            return "New sandbox game: prepared foundation, no floors."
-        },
-        Step(name: "02-demo-tower", grid: true) { model, scene in
+        Step(name: "01-tower-facade", grid: false) { model, scene in
             model.applyBlueprint("demo-tower")
+            scene.withController { $0.jump(center: Vec2(24, 22), zoom: 3.2) }
+            return "Demo tower at massing zoom: exterior curtain-wall façade stands in for the cutaway."
+        },
+        Step(name: "02-cutaway-lod", grid: false) { _, scene in
             scene.apply(preset: .building)
-            return "Demo tower built through the construction engine (\(model.world?.rooms.count ?? 0) rooms), cost \(Money.format(model.sessionBuildCost))."
+            return "Same tower zoomed in past the LOD threshold: furnished cutaway."
         },
-        Step(name: "03-interiors", grid: false) { _, scene in
-            scene.withController { $0.jump(center: Vec2(20, 5.5), zoom: 30) }
-            return "Room shells with finishes, stairwell, hoistway, labels (grid off)."
+        Step(name: "03-offices", grid: false) { model, scene in
+            model.showDeveloperHUD = false
+            scene.withController { $0.jump(center: Vec2(28, 10), zoom: 36) }
+            return "Offices: workstations with monitors and chairs, filing cabinets, meeting set, whiteboard, printer, plants."
         },
-        Step(name: "04-core-detail", grid: true) { _, scene in
-            scene.withController { $0.jump(center: Vec2(22, 6), zoom: 64) }
-            return "Close-up of stairs and elevator shaft with landing doors."
+        Step(name: "04-apartments", grid: false) { model, scene in
+            model.showDeveloperHUD = false
+            scene.withController { $0.jump(center: Vec2(28, 26), zoom: 36) }
+            return "Studio apartments: kitchen or kitchenette, fridge, bed, nightstand, bathroom pod (wide units), art."
         },
-        Step(name: "05-place-floor-valid", grid: true) { model, scene in
-            scene.apply(preset: .building)
-            model.select(tool: .floor)
-            scene.setPlacementCells(anchor: GridCell(column: 12, floor: 9), current: GridCell(column: 35, floor: 9))
-            return "Floor tool dragging a new storey on the roof: valid (green) with cost."
+        Step(name: "05-lobby-parking", grid: false) { model, scene in
+            model.showDeveloperHUD = false
+            scene.withController { $0.jump(center: Vec2(16, 0.5), zoom: 36) }
+            return "Lobby (reception, sofa, directory, plants) above the parking level with parked cars."
         },
-        Step(name: "06-place-room-invalid", grid: true) { model, scene in
-            model.select(tool: .room("office-small"))
-            scene.setPlacementCells(anchor: GridCell(column: 9, floor: -1), current: GridCell(column: 17, floor: -1))
-            return "Office tool in the basement: refused (red) with the reason."
+        Step(name: "06-mechanical-roof", grid: false) { model, scene in
+            model.showDeveloperHUD = false
+            scene.withController { $0.jump(center: Vec2(20, 33), zoom: 36) }
+            return "Top floor: mechanical plant (AHU, electrical panel), corridor, apartment, roof parapets."
         },
-        Step(name: "07-save-load-roundtrip", grid: true) { model, scene in
-            model.select(tool: nil)
+        Step(name: "07-new-office-furnished", grid: true) { model, scene in
+            model.showDeveloperHUD = true
+            guard let building = model.world?.buildings.values.first?.id else { return "no building" }
+            let floor = model.perform(.buildFloor(building: building, level: 9, span: ColumnSpan(start: 12, count: 24)))
+            let office = model.perform(.placeRoom(building: building, definition: "office-small",
+                                                  columns: ColumnSpan(start: 21, count: 15), floors: FloorSpan(lowest: 9, highest: 9)))
+            scene.withController { $0.jump(center: Vec2(26, 38), zoom: 30) }
+            return "Built floor 9 and a 15 m office through the engine (floor=\(floor), office=\(office)): furnished immediately."
+        },
+        Step(name: "08-save-load-roundtrip", grid: false) { model, scene in
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")
             let identical = before != nil && before == model.world
             model.scene?.apply(preset: .building)
             return "Saved and reloaded: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical)"
-        },
-        Step(name: "08-after-undo", grid: true) { model, scene in
-            // Build two storeys, then undo one: the renderer invalidates only the changed tiles.
-            _ = model.perform(.buildFloor(building: model.world!.buildings.values[0].id, level: 9, span: ColumnSpan(start: 12, count: 24)))
-            _ = model.perform(.buildFloor(building: model.world!.buildings.values[0].id, level: 10, span: ColumnSpan(start: 12, count: 24)))
-            model.undo()
-            scene.apply(preset: .building)
-            let levels = model.world?.buildings.values.first?.builtLevels.map { "\($0)" } ?? "-"
-            return "Built floors 9 and 10 after reload, undid floor 10: built levels \(levels)."
         },
     ]
 
