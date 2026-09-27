@@ -3,6 +3,8 @@ import SwiftUI
 /// Developer diagnostics overlay (Debug builds by default; ⌥⌘D). Updated at 4 Hz.
 struct DevHUDView: View {
     let diagnostics: RenderDiagnostics
+    var population = PopulationSummary()
+    var simulationMs = 0.0
 
     var body: some View {
         let d = diagnostics
@@ -16,6 +18,8 @@ struct DevHUDView: View {
             row("Tiles", "L\(d.tileLevel) · \(d.tilesVisible) shown · \(d.tilesCached) cached · \(d.tilesPending) pending")
             row("Rasterized", String(format: "%d tiles · %.1f ms avg", d.tilesRasterized, d.tileRasterMs))
             row("Memory", String(format: "%.0f MB", d.memoryMB))
+            row("People", "\(d.agentsRendered) drawn · \(population.total) simulated")
+            row("Simulation", String(format: "%.2f ms/frame", simulationMs))
             Divider()
             row("Zoom", String(format: "%.2f pt/m", d.zoom) + " · " + d.detailLevel)
             row("Center", String(format: "%.1f m, %.1f m", d.centerX, d.centerY))

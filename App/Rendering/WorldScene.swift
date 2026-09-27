@@ -29,6 +29,11 @@ final class WorldScene: SKScene {
     var onDiagnostics: ((RenderDiagnostics) -> Void)?
     /// Called once when the scene is first presented with a real size.
     var onReady: (() -> Void)?
+    /// Called at the start of every frame with the real time step (drives the simulation).
+    var onFrame: ((Double) -> Void)?
+    /// Visible people for the current view (from the model; the scene only draws them).
+    var peopleProvider: ((Rect, Double) -> [PersonSprite])?
+    private let agentLayer = AgentLayer()
 
     // Construction interaction. The scene only tracks pointer state; rules and previews
     // come from the model through these closures (no game logic in the renderer).
@@ -96,6 +101,8 @@ final class WorldScene: SKScene {
         worldRoot.addChild(deep)
 
         worldRoot.addChild(tileLayer.node)
+        agentLayer.node.zPosition = 5
+        worldRoot.addChild(agentLayer.node)
         gridOverlay.zPosition = 10
         addChild(gridOverlay)
         roomLabelLayer.zPosition = 13
@@ -201,6 +208,7 @@ final class WorldScene: SKScene {
         let dt = lastUpdateTime.map { min(max(currentTime - $0, 0), 0.1) } ?? 0
         lastUpdateTime = currentTime
 
+        onFrame?(dt)
         if controller.update(dt: dt) { cameraDirty = true }
         let camera = controller.camera
         if cameraDirty {
@@ -211,6 +219,7 @@ final class WorldScene: SKScene {
             overlayDirty = true
         }
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
+        agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
 
         if overlayDirty {
             if showGrid {
@@ -266,6 +275,7 @@ final class WorldScene: SKScene {
         d.tilesCached = tileLayer.cachedCount
         d.tilesPending = tileLayer.pendingCount
         d.tilesRasterized = tileLayer.rasterizedCount
+        d.agentsRendered = agentLayer.renderedCount
         d.tileRasterMs = tileLayer.averageRasterMs
         d.memoryMB = residentMemoryMB()
         d.zoom = camera.zoom

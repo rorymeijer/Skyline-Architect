@@ -44,13 +44,16 @@ struct ChromeOverlay: View {
             VStack(alignment: .leading, spacing: 10) {
                 TitleBadge(model: model)
                 if model.showDeveloperHUD {
-                    DevHUDView(diagnostics: model.diagnostics)
+                    DevHUDView(diagnostics: model.diagnostics, population: model.population, simulationMs: model.lastSimulationMs)
                 }
             }
             .padding(12)
             ViewControls(model: model)
                 .padding(12)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            SimulationControls(model: model)
+                .padding(.top, 12)
+                .frame(maxWidth: .infinity, alignment: .top)
             VStack(spacing: 8) {
                 StatusPill(model: model)
                 BuildPalette(model: model)
@@ -67,9 +70,9 @@ struct TitleBadge: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(model.activeProperty?.name ?? "—")
+            Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.activeCity?.name ?? "—") · Sandbox · Phase 3 preview")
+            Text("\(model.cityName) · Sandbox · Phase 4 preview")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
