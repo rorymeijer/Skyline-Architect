@@ -6,13 +6,13 @@
       "centerX" : 24,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 59.999981250028505,
-      "frameTimeMs" : 16.66667187499371,
-      "memoryMB" : 141.390625,
+      "fps" : 59.99438052636473,
+      "frameTimeMs" : 16.66822777777573,
+      "memoryMB" : 144.796875,
       "nodeCount" : 104,
-      "sceneUpdateMs" : 0.15514843749997453,
+      "sceneUpdateMs" : 0.20531944444428518,
       "tileLevel" : 3,
-      "tileRasterMs" : 7.4177105263073075,
+      "tileRasterMs" : 12.079004385970833,
       "tilesCached" : 19,
       "tilesPending" : 0,
       "tilesRasterized" : 19,
@@ -27,7 +27,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0794700384140015
+    "waitSeconds" : 1.0904719829559326
   },
   {
     "diagnostics" : {
@@ -36,13 +36,13 @@
       "centerX" : 24,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 60.00093751463692,
-      "frameTimeMs" : 16.666406250003263,
-      "memoryMB" : 158.25,
+      "fps" : 60.26444793056623,
+      "frameTimeMs" : 16.593531250002513,
+      "memoryMB" : 159.03125,
       "nodeCount" : 46,
-      "sceneUpdateMs" : 0.15609114583270411,
+      "sceneUpdateMs" : 0.20503124999748934,
       "tileLevel" : 3,
-      "tileRasterMs" : 7.198819444442961,
+      "tileRasterMs" : 12.61056666666794,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -57,7 +57,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0866479873657227
+    "waitSeconds" : 1.0798410177230835
   },
   {
     "diagnostics" : {
@@ -66,13 +66,13 @@
       "centerX" : 22,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.99859003314801,
-      "frameTimeMs" : 16.6670583333295,
-      "memoryMB" : 169.28125,
+      "fps" : 60.0021094491616,
+      "frameTimeMs" : 16.66608072916631,
+      "memoryMB" : 165.5,
       "nodeCount" : 118,
-      "sceneUpdateMs" : 0.21786388889116398,
+      "sceneUpdateMs" : 0.3414999999975521,
       "tileLevel" : 3,
-      "tileRasterMs" : 8.323256172835263,
+      "tileRasterMs" : 14.189969135800226,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 27,
@@ -87,7 +87,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0927799940109253
+    "waitSeconds" : 1.0681650638580322
   },
   {
     "diagnostics" : {
@@ -96,13 +96,13 @@
       "centerX" : 22,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.999050015019954,
-      "frameTimeMs" : 16.66693055556152,
-      "memoryMB" : 153.859375,
+      "fps" : 59.99364067409096,
+      "frameTimeMs" : 16.668433333332665,
+      "memoryMB" : 149.9375,
       "nodeCount" : 138,
-      "sceneUpdateMs" : 0.2496666666653861,
+      "sceneUpdateMs" : 0.4170472222123559,
       "tileLevel" : 3,
-      "tileRasterMs" : 8.323256172835263,
+      "tileRasterMs" : 14.189969135800226,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 27,
@@ -117,7 +117,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0009599924087524
+    "waitSeconds" : 1.0775959491729736
   },
   {
     "diagnostics" : {
@@ -126,13 +126,13 @@
       "centerX" : 22,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.99793757089183,
-      "frameTimeMs" : 16.667239583334492,
-      "memoryMB" : 143.609375,
+      "fps" : 59.9998800002403,
+      "frameTimeMs" : 16.666699999999917,
+      "memoryMB" : 142.71875,
       "nodeCount" : 156,
-      "sceneUpdateMs" : 0.29683333332286566,
+      "sceneUpdateMs" : 0.40399166666702513,
       "tileLevel" : 3,
-      "tileRasterMs" : 8.323256172835263,
+      "tileRasterMs" : 14.189969135800226,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 27,
@@ -147,7 +147,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0500340461730957
+    "waitSeconds" : 1.090095043182373
   },
   {
     "diagnostics" : {
@@ -156,13 +156,13 @@
       "centerX" : 22,
       "centerY" : 30,
       "detailLevel" : "Floors",
-      "fps" : 59.99564031680101,
-      "frameTimeMs" : 16.66787777777851,
-      "memoryMB" : 154.6875,
+      "fps" : 60.01357807203351,
+      "frameTimeMs" : 16.6628958333348,
+      "memoryMB" : 151.4375,
       "nodeCount" : 160,
-      "sceneUpdateMs" : 0.31637499998851126,
+      "sceneUpdateMs" : 0.4197526041771482,
       "tileLevel" : 3,
-      "tileRasterMs" : 7.940935352757005,
+      "tileRasterMs" : 13.611096659956182,
       "tilesCached" : 19,
       "tilesPending" : 0,
       "tilesRasterized" : 35,
@@ -177,7 +177,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0716630220413208
+    "waitSeconds" : 1.0896470546722412
   },
   {
     "diagnostics" : {
@@ -186,13 +186,13 @@
       "centerX" : 22,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 60.08447501658228,
-      "frameTimeMs" : 16.643234375003146,
-      "memoryMB" : 160.765625,
+      "fps" : 60.43769165162849,
+      "frameTimeMs" : 16.545966145830704,
+      "memoryMB" : 157.515625,
       "nodeCount" : 122,
-      "sceneUpdateMs" : 0.1604713541709657,
+      "sceneUpdateMs" : 0.3405442708306339,
       "tileLevel" : 3,
-      "tileRasterMs" : 8.293887090743938,
+      "tileRasterMs" : 13.679166619655822,
       "tilesCached" : 19,
       "tilesPending" : 0,
       "tilesRasterized" : 37,
@@ -207,7 +207,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.072969913482666
+    "waitSeconds" : 1.085103988647461
   },
   {
     "diagnostics" : {
@@ -216,13 +216,13 @@
       "centerX" : 22,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 56.24897169847694,
-      "frameTimeMs" : 17.778102777780685,
-      "memoryMB" : 166.0625,
+      "fps" : 60.230078901416526,
+      "frameTimeMs" : 16.60299999999637,
+      "memoryMB" : 162.671875,
       "nodeCount" : 99,
-      "sceneUpdateMs" : 0.16352222220727222,
+      "sceneUpdateMs" : 0.24156770832917118,
       "tileLevel" : 3,
-      "tileRasterMs" : 9.245968749989213,
+      "tileRasterMs" : 15.539072916662159,
       "tilesCached" : 12,
       "tilesPending" : 0,
       "tilesRasterized" : 12,
@@ -237,6 +237,6 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0833079814910889
+    "waitSeconds" : 1.0020530223846436
   }
 ]
