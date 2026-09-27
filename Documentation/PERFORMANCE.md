@@ -43,6 +43,12 @@ camera center · cursor cell. Screenshot capture writes the same values into
 | 2026-09-27 | 0.5.0 package, release (`swift test -c release`) | Linux cloud container | 200 floors, 10 stair segments (every trip above floor 20 transfers), 1 194 workers, one game day at 10× (360 steps of 240 ticks) | 68 ms for the whole day (0.19 ms per step, incl. signature check); 4 364 path queries, 1 978 cache hits, 1 graph build (209 portals, 416 links) |
 | 2026-09-27 | same, debug | same | same | 0.60–0.69 s per day (1.7–1.9 ms per step) |
 
+| 2026-09-27 | 0.6.0 package, release | Linux cloud container | 60 floors, 2 elevators + stairs over full height, 354 workers, 06:00–11:00 in 240-tick steps | 14 ms for 5 game hours; peak 21 waiting, cars full (13) at peak; all at work by 11:00 |
+| 2026-09-27 | same | same | 200-floor stairs scale day (Phase 5 scenario, now with the elevator-aware engine) | 84 ms per day (was 68 ms) |
+
+Observations (Phase 6): car decisions scan the building's waiting people (O(people) per
+car event); fine at this scale, index queues per landing if profiling shows it (Phase 19).
+
 Observations (Phase 5): navigation cost is dominated by first-day misses; Dijkstra over a
 few hundred portals is microseconds. The per-step structure signature is O(rooms of the
 building) and included above. The in-app overlay is Debug-only and rebuilt per frame

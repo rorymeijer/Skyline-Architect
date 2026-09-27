@@ -1,58 +1,56 @@
 # Development Status
 
-_Last updated: 2026-09-27 (Phase 5)_
+_Last updated: 2026-09-27 (Phase 6)_
 
 ## Current phase
-**Phase 5 — Navigation / pathfinding: COMPLETE** (awaiting approval to start Phase 6).
+**Phase 6 — First functioning elevators: COMPLETE** (awaiting approval to start Phase 7).
 
 ## Current milestone
-M1 “First Playable” (end of Phase 9) — Phases 1–5 of 9 done.
+M1 “First Playable” (end of Phase 9) — Phases 1–6 of 9 done.
 
-## Quality gates (Phase 5)
+## Quality gates (Phase 6)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36332717554 |
-| Automated tests pass | ✅ | 136 tests (Linux + macOS) incl. transfers, unreachable, cache hits/invalidation, cache-independence of outcomes, re-planning (replaced / removed stairwell, automatic in `advance`), overlay, 200-floor scale day |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36337293798 |
+| Automated tests pass | ✅ | 150 tests (Linux + macOS) incl. motion profile, stairs-vs-elevator choice, morning rush (capacity, waits, arrivals), full day, shaft removal with riders, 60-floor and 21-floor runs, elevator view, save v2→v3 migration and v3 fixture |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 6 captures in `Development/Screenshots/Phase-05/` |
+| Feature demonstrable | ✅ | 7 captures in `Development/Screenshots/Phase-06/` |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | SIMULATION (Navigation), ARCHITECTURE, DECISIONS D-023/D-024, PERFORMANCE, CHANGELOG 0.5.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | framing/badge issues found and fixed, recaptured |
+| Documentation updated | ✅ | ELEVATORS (implemented section), SIMULATION, SAVE_FORMAT v3, MODDING, ARCHITECTURE, DECISIONS D-025/D-026, PERFORMANCE, CHANGELOG 0.6.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | queue placement and demo scale issues found, fixed, recaptured |
 | Known issues recorded | ✅ | below |
 
 ## Completed
-- Phases 0–4 (merged: rorymeijer/Skyline-Architect#1, #2, #3, #4).
-- Phase 5 (FUNCTIONAL): `NavigationGraph` (stair portals per served floor, walk links along
-  floors, transfers), deterministic Dijkstra, `NavigationService` with exact-key route cache
-  and structure-signature invalidation, metrics; re-planning of invalidated trips after
-  construction (app commit + automatic in `advance`); Debug navigation overlay (⌥⌘N) and
-  HUD metrics. Scale: 200 floors / 1 194 people, one day at 10× in 68 ms (release).
+- Phases 0–5 (merged: rorymeijer/Skyline-Architect#1 … #5).
+- Phase 6 (FUNCTIONAL): elevator cars (one per shaft) with analytic trapezoidal motion,
+  doors and boarding times from `elevators.json`; queues as waiting people; collective
+  control; elevator nodes/edges in navigation (stairs for short trips); re-planning when a
+  shaft is removed; cab/rope rendering, queues at landing doors, riders in cabs; HUD
+  elevator rows; save format 3 with migration and fixture; `demo-highrise` blueprint.
 
 ## In progress
-- Nothing. Waiting for Phase 6 approval.
+- Nothing. Waiting for Phase 7 approval.
 
 ## Known bugs / unverified
-- Interactive input (incl. ⌥⌘N) not yet exercised by a human; iPad never launched.
-- Walking ignores interior partitions and shaft walls on a floor (derived walls, D-014/D-023).
-- Stairs have unlimited capacity (no congestion) — queues arrive with elevators (Phase 6–7).
-- Stranded people go "outside" instantly when no route remains (no walking animation for it).
-- People stand in rooms; no sitting/lying animation.
+- Interactive input not yet exercised by a human; iPad never launched.
+- Calls placed while a car moves are only considered at its next stop (no re-targeting).
+- Route choice uses a constant expected wait; people never give up on a long queue.
+- Riders are drawn in front of the (semi-transparent) car doors; queues can overlap the
+  cab when it stops (cutaway convention).
+- Walking ignores interior partitions; stairs have unlimited capacity.
 
 ## Technical debt
-- Structure signature is recomputed every simulation step (O(rooms of the building));
-  replace with a construction revision counter if profiling shows cost (Phase 19).
-- Route cache is cleared wholesale at 4 096 entries per building (simple, deterministic).
-- `PopulationSync` is a stand-in for Phase 8 tenants.
-- Simulation runs on the main thread (fine at this scale; background host in Phase 19).
-- Earlier items: O(rooms) construction checks, no skyline parallax, CI JPEG commits.
+- Car decisions scan all waiting people of the world (O(people) per car event).
+- Structure signature and elevator sync check run every simulation step (O(rooms)).
+- Route cache cleared wholesale at 4 096 entries per building.
+- `PopulationSync` is a stand-in for Phase 8 tenants; simulation runs on the main thread.
 
-## Next tasks (Phase 6 — First functioning elevators)
-1. Elevator model: cars per shaft, served floors, capacity, speed/acceleration, doors and
-   boarding time; state saved (save format 3 + migration + fixture).
-2. Hall calls, floor queues, collective-control dispatch; waiting as events.
-3. Navigation: elevator edge kind with expected-wait cost; people choose stairs vs. elevator.
-4. Rendering: moving cars, doors, people waiting/boarding/riding/leaving; HUD wait metrics.
-5. Tests: dispatch correctness, capacity, determinism across speeds, save round trip.
+## Next tasks (Phase 7 — Advanced elevator queues & dispatch)
+1. Banks: several shafts sharing hall calls; a bank dispatcher assigning calls to cars.
+2. Strategy interface with collective, zoning/up-peak and destination dispatch.
+3. Express/local shafts and sky-lobby transfers; service cars.
+4. Statistics per bank (avg/max wait, passengers/hour, abandonment) and a traffic overlay.
+5. Patience: waiting people may switch to stairs (deterministic).
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,

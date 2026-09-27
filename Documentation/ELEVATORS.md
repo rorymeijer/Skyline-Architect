@@ -1,7 +1,47 @@
 # Elevators
 
-Status: **PLANNED** (Phases 6–7). Elevators are a core feature and the main
-optimization puzzle.
+Status: **FUNCTIONAL (Phase 6 subset)** — one car per shaft, analytic motion, doors and
+boarding times, hall calls as queues, collective control, elevator routes in navigation,
+rendering of cars / queues / riders. **PLANNED (Phase 7):** banks with several cars,
+express/local, sky lobbies, other dispatch strategies, statistics and traffic overlay.
+Elevators are a core feature and the main optimization puzzle.
+
+## Implemented (Phase 6)
+
+Code: `SkylineCore/Elevator.swift` (state, motion), `SkylineSimulation/ElevatorDispatch.swift`
+(sync, collective control), `NavigationGraph` (elevator edges), content `elevators.json`.
+
+* **Car** (`ElevatorCar`, saved): one per elevator shaft room, same id. Floor, direction,
+  motion (`idle` / `moving(from, to, start, end, speed, acceleration)` / `stopped(since,
+  until)`), passengers in boarding order, next event tick. Created for new shafts (parked
+  at G or the served floor nearest to it) and removed with their shaft.
+* **Parameters** from `elevators.json` per shaft type: capacity 13, 2.5 m/s, 1 m/s²,
+  doors 2 s (open, and again to close), 1 s per person boarding or alighting.
+* **Motion** is a trapezoidal velocity profile computed analytically (accelerate, cruise,
+  decelerate; triangular for short hops). Trip durations are rounded up to whole ticks.
+  Rendering evaluates the exact height at fractional ticks.
+* **Queues**: a person whose walking legs end at a landing becomes `waiting(ride, since)`;
+  the queue at a landing is everyone waiting there in (since, id) order. A hall call is
+  simply a non-empty queue. Riders are `riding(ride)` and listed in the car.
+* **Collective control** (at every car event — arrival, doors closed, or a call waking an
+  idle car): keep direction while passengers or calls lie ahead; at a floor let out
+  everyone for that floor and take waiting people travelling in the car's direction, in
+  queue order, up to capacity; dwell = 2 × door time + transfers; next stop = nearest
+  passenger floor, call in the travel direction, or the farthest call ahead (turning
+  point). An idle car goes to the nearest call. Calls made while a car moves are
+  considered at its next stop (no mid-trip re-targeting yet).
+* **Routing**: each shaft adds a landing and an in-car node per served floor. Boarding
+  costs `expectedWaitSeconds` + door and transfer time + v/a; riding costs storey height /
+  speed per floor; alighting the transfer time. With the base values the stairs win for
+  one or two storeys, the elevator from three. The expected wait is a constant so routes
+  stay cacheable and deterministic (DECISIONS D-026); the live queue does not influence
+  route choice yet (Phase 7).
+* **Construction**: removing a shaft moves its riders to the queue at the floor the car
+  was nearest to, then everyone waiting for or heading to it is re-planned (stairs or
+  another shaft) or leaves the building if there is no way.
+* **Rendering**: cab (lit interior, sliding car doors in 4 steps, crosshead) and hoist rope
+  drawn above the static shaft art and below people; people queue at the landing doors and
+  stand inside the cab. HUD: cars, riding, waiting, longest current wait.
 
 ## Model (planned)
 

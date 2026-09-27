@@ -1,22 +1,24 @@
 # Save Format
 
-Status: **FUNCTIONAL** (Phase 2). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
+Status: **FUNCTIONAL** (Phases 2–6). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
 
 ## Versions
 
 | Format | Game | Change | Migration |
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
-| 2 | 0.4 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1.skylinesave` (frozen), `save-v2.skylinesave` (people mid-trip).
+Golden fixtures: `save-v1.skylinesave` and `save-v2.skylinesave` (frozen), `save-v3.skylinesave`
+(people waiting at a landing and riding a car).
 
-## Envelope (format version 2)
+## Envelope (format version 3)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 2,
+  "formatVersion": 3,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
     "contentPacks": [{ "id": "base", "version": "0.1.0" }],
@@ -30,7 +32,11 @@ Golden fixtures: `save-v1.skylinesave` (frozen), `save-v2.skylinesave` (people m
       "clock": { "tick": 8400 },
       "people": [ { "id": 41, "name": "…", "role": "worker", "scheduleID": "office-worker",
                     "place": { "travelling": { "legs": [ … ], "destination": … } },
-                    "nextEventTick": 8455, "nextGoal": null, "traits": 123456, … } ]
+                    "nextEventTick": 8455, "nextGoal": null, "traits": 123456, "pendingRide": null, … } ],
+      "elevators": [ { "id": 9, "buildingID": 3, "floor": 0, "direction": 1,
+                       "motion": { "moving": { "fromFloor": 0, "toFloor": 8, "start": 8440, "end": 8458,
+                                               "speed": 2.5, "acceleration": 1 } },
+                       "passengers": [41, 44], "nextEventTick": 8458 } ]
     }
   }
 }
@@ -49,7 +55,8 @@ bytes. Files use the extension `.skylinesave`.
   untyped JSON tree before typed decoding. A missing step → refused.
 * Every content pack listed must be installed → otherwise refused.
 * The decoded world must pass `GameWorld.validateIntegrity()` (references, floor order,
-  rooms on built floors, no overlaps, ID allocator ahead of all IDs) → otherwise refused.
+  rooms on built floors, no overlaps, cars on their shafts, riders ⇔ car passengers, ID
+  allocator ahead of all IDs) → otherwise refused.
   **An inconsistent save is never partially loaded.**
 
 ## Storage (`SaveStore`)
