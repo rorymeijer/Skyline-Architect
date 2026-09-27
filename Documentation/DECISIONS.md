@@ -119,3 +119,18 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Date:** 2026-09-27
 - **Decision:** `SkylinePersistence` (Foundation only) owns the save envelope, versioning, migrations and file store; format-1 golden fixture is committed and must always load.
 - **Reason:** Keeps file formats out of the model, makes migrations testable on the untyped JSON tree, and guarantees old saves stay loadable or are refused explicitly.
+
+## D-017 — Visual content types live in SkylinePresentation; SkylineContent depends on it
+- **Date:** 2026-09-27
+- **Decision:** `FurnitureDefinition`, `InteriorLayout`, `ArtCatalog` are defined in `SkylinePresentation`; `SkylineContent` decodes and validates them from the pack.
+- **Context:** Furniture and layouts are content (moddable JSON) but purely visual; the model (`SkylineCore`) must not know about them.
+- **Alternatives:** Put them in Core (pollutes the model); a separate art-content module (overkill now); let Presentation load JSON itself (duplicate loader/validation).
+- **Reason:** One loader and one validation path for all content; the model stays free of visual data. No cycle: Presentation → Core, Content → Core + Presentation.
+- **Consequences:** When simulation needs furniture semantics (e.g. desks = workplaces, beds = residents), capacity belongs in `RoomSpec` (Core), not in the visual recipe.
+
+## D-018 — Level of detail through per-item detail bands
+- **Date:** 2026-09-27
+- **Decision:** `DrawItem` has `minDetail` and `maxDetail`; alternatives (exterior façade vs. cutaway) are drawn into the same composition with complementary bands; tiles pick items by their raster density.
+- **Alternatives:** Separate compositions per LOD; switching node trees in SpriteKit by zoom.
+- **Reason:** LOD becomes automatic per tile level, needs no renderer logic, and works identically in the SVG preview tool and tests.
+- **Consequences:** The switch point depends on pixel density (Retina switches at lower zoom). Items must not straddle both bands unintentionally.
