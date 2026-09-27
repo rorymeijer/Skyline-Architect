@@ -20,18 +20,18 @@ struct AppAlert: Identifiable, Equatable {
 final class AppModel {
     /// Authoritative state. Not observed: the simulation mutates it every tick; views read
     /// the 4 Hz summaries below instead.
-    @ObservationIgnored internal(set) var world: GameWorld?
+    @ObservationIgnored var world: GameWorld?
     private(set) var activePropertyID: PropertyID?
     private(set) var propertyName = "—"
     private(set) var cityName = "—"
 
     // Simulation summaries (refreshed at 4 Hz).
-    internal(set) var speed: GameSpeed = .normal
-    internal(set) var clockText = "Day 1 · 06:00"
-    internal(set) var population = PopulationSummary()
-    internal(set) var navigationMetrics = NavigationMetrics()
+    var speed: GameSpeed = .normal
+    var clockText = "Day 1 · 06:00"
+    var population = PopulationSummary()
+    var navigationMetrics = NavigationMetrics()
     /// Developer navigation overlay (Debug builds, ⌥⌘N).
-    internal(set) var showNavigationOverlay = false
+    var showNavigationOverlay = false
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 
@@ -62,7 +62,7 @@ final class AppModel {
     @ObservationIgnored var simulation: SimulationEngine?
     @ObservationIgnored var host = SimulationHost()
     @ObservationIgnored var speedBeforePause: GameSpeed = .normal
-    @ObservationIgnored internal(set) var lastSimulationMs = 0.0
+    @ObservationIgnored var lastSimulationMs = 0.0
 
     static let autosaveInterval: TimeInterval = 120
 

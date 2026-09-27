@@ -11,6 +11,8 @@ public struct NavigationMetrics: Equatable, Sendable {
     public var portals = 0
     public var edges = 0
 
+    public init() {}
+
     public var hitRate: Double { queries == 0 ? 0 : Double(cacheHits) / Double(queries) }
 }
 

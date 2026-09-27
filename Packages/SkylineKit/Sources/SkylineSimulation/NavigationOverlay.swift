@@ -18,6 +18,8 @@ public struct NavigationOverlay: Equatable, Sendable {
     /// Remaining route of each traveller (at most `maxRoutes`), as polylines.
     public var routes: [[Vec2]] = []
 
+    public init() {}
+
     /// Lines are drawn this far above the floor surface so they sit at walking height.
     public static let lift = 0.6
 
