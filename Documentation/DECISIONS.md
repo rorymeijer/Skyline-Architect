@@ -91,3 +91,31 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Alternatives:** Capture the window through ScreenCaptureKit (needs Screen Recording permission, unavailable on CI).
 - **Reason:** Captures must show what the player sees; a consistent game-styled HUD is also the desired look.
 - **Consequences:** Native macOS menus remain for app-level commands; in-world chrome is custom-drawn.
+
+## D-013 — Undo by inverse commands
+- **Date:** 2026-09-27
+- **Decision:** `ConstructionEngine.apply` returns an inverse `BuildCommand`; `ConstructionHistory` keeps inverse/redo stacks.
+- **Context:** Session undo/redo for construction.
+- **Alternatives:** World snapshots per step.
+- **Reason:** Snapshots would also roll back simulation state once people, elevators and money exist; inverse commands touch only what the command changed and cost little memory.
+- **Consequences:** Every new command kind needs an exact inverse and a round-trip test (see `HistoryTests`).
+
+## D-014 — Walls, partitions, doors and façades are derived, not placed
+- **Date:** 2026-09-27
+- **Decision:** The player places floor plates and rooms/shafts; the art derives end façades with glazing, partitions between rooms, doors, retaining walls and roofs.
+- **Context:** Brief §5 lists walls/doors/corridors as buildable. In a side cutaway, walls are fully determined by room boundaries and plate edges.
+- **Alternatives:** Separate wall/door entities placed by hand.
+- **Reason:** Removes tedious micro-placement and whole classes of invalid states (rooms without walls, doors to nowhere) without losing expressiveness; corridors are placeable room types.
+- **Consequences:** If gameplay later needs explicit doors (security, fire doors), they become room attributes or edge entities derived from adjacency — revisit in Phase 5 (navigation) and Phase 14 (fire).
+
+## D-015 — Layered composition with dirty-rect tile invalidation
+- **Date:** 2026-09-27
+- **Decision:** `SiteComposition` = static `site` layer + `buildings` layer recomposed after construction; tiles intersecting the command's dirty rect are marked stale and re-rendered in place.
+- **Context:** Construction changes small regions; recomposing terrain grain every edit is wasteful and re-rasterizing all tiles would flash.
+- **Reason:** Recomposing the buildings layer is cheap (thousands of items); only a handful of tiles re-render per edit.
+- **Consequences:** Art must stay inside the dirty margin of the cells it belongs to (1 module / 1 floor), or the dirty rect must grow.
+
+## D-016 — Persistence in its own module with a migration harness and golden fixtures
+- **Date:** 2026-09-27
+- **Decision:** `SkylinePersistence` (Foundation only) owns the save envelope, versioning, migrations and file store; format-1 golden fixture is committed and must always load.
+- **Reason:** Keeps file formats out of the model, makes migrations testable on the untyped JSON tree, and guarantees old saves stay loadable or are refused explicitly.

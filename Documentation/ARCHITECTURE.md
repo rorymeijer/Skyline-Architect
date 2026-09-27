@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Phase 1 complete (2026-09-26). This document describes what exists and the intended evolution.
+Status: Phase 2 (2026-09-27). This document describes what exists and the intended evolution.
 Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomplete) or
 **PLANNED** (design only).
 
@@ -21,6 +21,7 @@ Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomp
                 │                          │
 ┌───────────────┴──────────────────────────┴─────────────────────────┐
 │ SkylineContent: JSON definitions, validation, new-game factory      │
+│ SkylinePersistence: versioned saves, migrations, save store          │
 ├─────────────────────────────────────────────────────────────────────┤
 │ SkylineCore: authoritative model (world→city→property→building),    │
 │ grid, geometry, IDs, deterministic RNG                              │
@@ -29,7 +30,7 @@ Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomp
 
 Rules (enforced by module dependencies, not only by convention):
 
-* `SkylineCore`, `SkylineContent`, `SkylinePresentation` import only Foundation.
+* `SkylineCore`, `SkylineContent`, `SkylinePresentation`, `SkylinePersistence` import only Foundation.
   They build and are tested on Linux and macOS. No SpriteKit/SwiftUI/CoreGraphics.
 * The app target depends on the package; the package never depends on the app.
 * SpriteKit nodes are *views* of model state. They are disposable and never saved.
@@ -72,6 +73,29 @@ GameWorld
 Units: meters (`Double`). Placement grid: `GridSpec.standard` = 1 m modules, 4 m floors,
 8-module structural bays.
 
+### Construction (SkylineCore/Construction) — FUNCTIONAL (Phase 2)
+
+```
+player input ─▶ PlacementPlanner (Presentation) ─▶ BuildCommand
+                                                    │ validate (preview, cost, reason)
+                                                    ▼
+                         ConstructionEngine(BuildCatalog) ──apply──▶ GameWorld
+                                                    │ inverse command
+                                                    ▼
+                                         ConstructionHistory (undo/redo)
+```
+
+* `Building.floors`: one contiguous `FloorPlate` per level (setbacks = narrower plates).
+* `GameWorld.rooms`: rooms *and* shafts as one entity type (`Room`) occupying columns ×
+  floors; what they are comes from `RoomSpec` in content.
+* Rules: ground/basement plates inside the footprint (basements need excavation), upper
+  plates supported by the plate below within a cantilever allowance, rooms on built plates
+  without overlap, width/height/level limits from the spec. Demolition: rooms any time,
+  floors only when empty and carrying nothing.
+* Walls, partitions, doors and façades are **derived** from plates and rooms by the art —
+  not separately placed entities (DECISIONS D-014).
+* Undo is inverse commands, not snapshots (D-013).
+
 ## 3. Content (SkylineContent) — FUNCTIONAL (Phase 1 subset)
 
 A *content pack* is a folder with `pack.json` plus definition files (`cities.json`,
@@ -102,6 +126,9 @@ packs merged by id — the engine never executes mod code. See MODDING.md.
   A `worldRoot` node carries the camera transform (scale = points/meter, position from
   camera center). We do not use SKCameraNode: owning the transform keeps screen-space
   overlays and in-app screenshot capture trivial.
+* The composition has two layers: `site` (composed once) and `buildings` (recomposed after
+  each construction command). The command's plan yields a dirty rect; only tiles in it
+  are re-rendered, and stale tiles stay visible until replaced (D-015).
 * Static art is rasterized into textures by tile (quadtree levels, 512 px tiles, 1 px
   bleed against seams) on a background queue via `DrawingRasterizer` (CoreGraphics), then
   shown as `SKSpriteNode`s. Tile level follows zoom × backing scale, so detail increases
@@ -134,9 +161,11 @@ packs merged by id — the engine never executes mod code. See MODDING.md.
   hover = grid cell readout. Menu commands for zoom/reset/grid/HUD.
 * iPadOS: pan gesture (inertia), pinch at centroid, pointer hover.
 
-## 8. Persistence — PLANNED (Phase 2)
+## 8. Persistence — FUNCTIONAL (Phase 2)
 
-Model types are `Codable` already; a versioned save envelope arrives with construction.
+`SkylinePersistence`: `SaveCodec` (versioned envelope, migrations, integrity-checked
+decoding) and `SaveStore` (atomic files, quicksave, rotating autosaves). The app saves
+with ⌘S, loads via File ▸ Load Game…, autosaves every 2 minutes when changed.
 See SAVE_FORMAT.md.
 
 ## 9. Diagnostics & capture

@@ -18,9 +18,12 @@ merging and user mod folders are PLANNED for Phase 17.
 Base/
   pack.json      { "id": "base", "name": "…", "version": "0.1.0", "formatVersion": 1,
                    "files": { "cities": "cities.json", "plots": "plots.json", "starts": "starts.json" } }
-  cities.json    [CityDefinition]
-  plots.json     [PlotDefinition]
-  starts.json    [StartDefinition]
+  cities.json        [CityDefinition]
+  plots.json         [PlotDefinition]
+  starts.json        [StartDefinition]
+  rooms.json         [RoomSpec]        — placeable rooms and shafts
+  build-rules.json   BuildRules        — slab costs, cantilever, demolition refund
+  blueprints.json    [Blueprint]       — scripted construction (dev tools, tests, later scenarios)
 ```
 
 ### CityDefinition
@@ -34,6 +37,21 @@ Base/
 `id, name, mode ("sandbox"), cityID, plotID, propertyName, startingFoundation?
 { buildingName, footprintOffsetModules, footprintModules, basementFloors,
 pileDepthMeters, pileSpacingModules }`
+
+### RoomSpec (rooms.json)
+`id, name, category, kind ("room" | "shaft"), appearance, minWidth, maxWidth, minFloors,
+maxFloors, lowestLevel?, highestLevel?, costPerModule`. `appearance` selects the
+presentation style (`office`, `apartment`, `lobby`, `corridor`, `stairs`, `elevatorShaft`,
+`mechanical`, `parking`; unknown keys fall back to a neutral shell). Validation: unique
+ids, sane ranges, shafts span ≥ 2 floors, non-negative costs. The build palette shows
+every definition automatically — a mod adding a room type needs no code.
+
+### BuildRules (build-rules.json)
+`slabCostPerModule, basementSlabCostPerModule, maxCantileverModules, demolitionRefund (0…1)`.
+
+### Blueprint (blueprints.json)
+`id, name, description, steps: [{ "floor": {level, start, count} } | { "room": {definition,
+start, count, lowest, highest} }]`. Columns are relative to the target building's footprint.
 
 ## Planned (Phase 17)
 
