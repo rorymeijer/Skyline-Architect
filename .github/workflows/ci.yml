@@ -41,6 +41,10 @@ jobs:
       - name: Capture screenshots
         run: |
           if [ -x Scripts/capture-screenshots.sh ]; then Scripts/capture-screenshots.sh ci-output/screenshots; else echo "capture script not present yet"; fi
+      - name: Emit screenshots to log
+        if: always()
+        run: |
+          if [ -d ci-output/screenshots ]; then Scripts/emit-screenshots-to-log.sh ci-output/screenshots; fi
       - name: Upload screenshots and logs
         if: always()
         uses: actions/upload-artifact@v4
