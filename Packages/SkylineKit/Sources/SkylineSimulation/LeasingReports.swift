@@ -33,6 +33,16 @@ public struct UnitReport: Equatable, Sendable {
     public var interest: [Interest] = []
     /// Recent market events for this unit, newest first.
     public var history: [LeasingEvent] = []
+    /// Phase 10: utilities supplied (name, fraction), cleanliness and condition.
+    public var utilities: [(name: String, served: Double)] = []
+    public var cleanliness = 1.0
+    public var condition = 1.0
+
+    public static func == (a: UnitReport, b: UnitReport) -> Bool {
+        a.roomID == b.roomID && a.title == b.title && a.occupant == b.occupant && a.interest == b.interest && a.history == b.history
+            && a.utilities.map(\.name) == b.utilities.map(\.name) && a.utilities.map(\.served) == b.utilities.map(\.served)
+            && a.cleanliness == b.cleanliness && a.condition == b.condition && a.askingRent == b.askingRent
+    }
 
     public static func make(room: Room, world: GameWorld, engine: SimulationEngine) -> UnitReport? {
         guard let spec = engine.catalog.spec(room.definitionID) else { return nil }
@@ -57,6 +67,13 @@ public struct UnitReport: Equatable, Sendable {
             .sorted { $0.appraisal.total > $1.appraisal.total }
         }
         report.history = world.market.log.filter { $0.room == room.id }.reversed()
+        if let facilities = engine.rules.facilities {
+            let service = Utilities.allocate(building: room.buildingID, world: world, catalog: engine.catalog, rules: engine.rules)
+            let served = service.served[room.id] ?? [:]
+            report.utilities = facilities.utilities.compactMap { u in served[u.id].map { (u.name, $0) } }
+        }
+        report.cleanliness = world.upkeep[room.id]?.cleanliness ?? 1
+        report.condition = world.upkeep[room.id]?.condition ?? 1
         return report
     }
 }

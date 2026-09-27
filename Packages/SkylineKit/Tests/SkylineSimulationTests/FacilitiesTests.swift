@@ -155,3 +155,25 @@ private func room(_ f: SimFixture, _ id: String) throws -> Room {
         #expect(f.world.tenants.count < 15)
     }
 }
+
+@Suite struct FacilitiesReportTests {
+    @Test func summaryAndOverlayReflectProblems() throws {
+        var f = try SimFixture()
+        var s = FacilitiesSummary.make(world: f.world, engine: f.engine, building: f.building)
+        #expect(s.utilities.map(\.name) == ["Electricity", "Water", "Climate", "Data"])
+        #expect(s.utilities.allSatisfy { $0.shortRooms == 0 } && s.brokenEquipment == 0)
+        #expect(ServicesOverlay.marks(world: f.world, engine: f.engine, buildings: [f.building]).allSatisfy { $0.status == .ok })
+        FacilitiesManagement.hire(.janitor, building: f.building, world: &f.world, rules: f.library.simulationRules)
+        let electrical = f.world.rooms.values.first { $0.definitionID == "electrical-room" }!
+        f.world.upkeep.update(electrical.id) { $0.condition = 0.01 }
+        s = FacilitiesSummary.make(world: f.world, engine: f.engine, building: f.building)
+        #expect(s.brokenEquipment == 1 && s.janitors == 1 && s.wagesPerDay == f.library.simulationRules.facilities!.janitorWagePerDay)
+        #expect(s.utilities[0].shortRooms > 0)
+        let marks = ServicesOverlay.marks(world: f.world, engine: f.engine, buildings: [f.building])
+        #expect(marks.first { $0.room == electrical.id }?.status == .broken)
+        #expect(marks.contains { $0.status == .short })
+        let office = f.world.rooms.values.first { $0.definitionID == "office-small" }!
+        let report = try #require(UnitReport.make(room: office, world: f.world, engine: f.engine))
+        #expect(report.utilities.first { $0.name == "Electricity" }?.served == 0)
+    }
+}

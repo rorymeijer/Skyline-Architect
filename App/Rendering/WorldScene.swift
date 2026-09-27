@@ -58,6 +58,9 @@ final class WorldScene: SKScene {
     /// Daylight (0…1) and lit rooms for the visible area; nil = always day.
     var lightingProvider: ((Rect) -> (daylight: Double, rooms: [LitRoom]))?
     private let dayNight = DayNightLayer()
+    /// Services overlay marks (nil = hidden). Asked every frame.
+    var servicesProvider: (() -> [ServiceMark]?)?
+    private let servicesOverlay = ServicesOverlayNode()
     var onCommit: ((BuildCommand) -> Void)?
     private var placementAnchor: GridCell?
     /// Camera placement to use when first presented (nil = site overview).
@@ -132,6 +135,8 @@ final class WorldScene: SKScene {
         addChild(navigationOverlay)
         trafficOverlay.zPosition = 12.5
         addChild(trafficOverlay)
+        servicesOverlay.zPosition = 10.5
+        addChild(servicesOverlay)
         selectionOutline.zPosition = 11
         selectionOutline.strokeColor = SKColor(red: 1.0, green: 0.84, blue: 0.25, alpha: 1)
         selectionOutline.fillColor = SKColor(red: 1.0, green: 0.84, blue: 0.25, alpha: 0.10)
@@ -262,6 +267,7 @@ final class WorldScene: SKScene {
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
         navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
         trafficOverlay.update(traffic: trafficProvider?(), camera: camera)
+        servicesOverlay.update(marks: servicesProvider?(), camera: camera)
 
         if overlayDirty {
             if showGrid {

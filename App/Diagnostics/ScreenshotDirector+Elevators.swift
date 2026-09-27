@@ -42,6 +42,15 @@ extension ScreenshotDirector {
         return nil
     }
 
+    /// A staff member at work (job started), and where.
+    static func staffAtWork(_ role: PersonRole, in world: GameWorld) -> Vec2? {
+        for p in world.people where p.role == role {
+            guard case let .room(r, x) = p.place, p.job?.until != nil, let room = world.rooms[r] else { continue }
+            return Vec2(x, world.grid.y(ofFloor: room.floors.lowest))
+        }
+        return nil
+    }
+
     /// A grid cell inside a room (for selecting it like a click would).
     static func cell(of room: Room) -> GridCell {
         GridCell(column: room.columns.start + room.columns.count / 2, floor: room.floors.lowest)

@@ -55,69 +55,85 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    /// Phase 9 = milestone M1: the captures walk the First Playable checklist.
     let steps: [Step] = [
-        Step(name: "01-main-menu", grid: false) { model, scene in
-            model.showDeveloperHUD = false
-            model.showMainMenu = true
-            scene.apply(preset: .overview)
-            return "Launch: main menu (no saves yet, so no Continue)."
-        },
-        Step(name: "02-build-and-pay", grid: false) { model, scene in
-            model.startFromMenu()
+        Step(name: "01-equipment-rooms", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            let before = model.world?.ledger.cash ?? 0
             model.applyBlueprint("demo-tower")
-            model.showEconomyPanel = true
+            model.leaseAllVacant()
+            model.showDeveloperHUD = false
+            model.refreshSimulationSummary()
+            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first {
+                scene.withController { $0.jump(center: Vec2(Double(b.footprint.start) + 16, -1.6), zoom: 30) }
+            }
+            return "Basement plant: electrical room, telecom room, mechanical room; \(model.facilities.utilities.map { "\($0.name) \(Int($0.supply))/\(Int($0.demand))" }.joined(separator: ", "))."
+        },
+        Step(name: "02-services-ok", grid: false) { model, scene in
+            model.showServices = true
+            model.showFacilitiesPanel = true
+            model.advanceSimulation(toTimeOfDay: 10, minute: 0)
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            let after = model.world?.ledger.cash ?? 0
-            return "New game, demo tower built through construction commands: cash \(before) → \(after) (paid \(before - after))."
+            return "\(model.clockText): services overlay — every room supplied, clean and sound (green)."
         },
-        Step(name: "03-first-rent", grid: false) { model, scene in
-            model.borrow()
-            model.advanceSimulation(toTimeOfDay: 12, minute: 0)
-            model.advanceSimulation(toTimeOfDay: 6, minute: 5)            // day 2, after the first closing
+        Step(name: "03-neglect", grid: false) { model, scene in
+            model.advanceSimulation(ticks: 5 * SimClock.secondsPerDay)
             model.refreshSimulationSummary()
-            let e = model.economy
-            return "\(model.clockText): first daily closing — rent \(e.lastDay.amount(.rent)), maintenance \(e.lastDay.amount(.maintenance)), " +
-                "utilities \(e.lastDay.amount(.utilities)), interest \(e.lastDay.amount(.interest)); \(model.leasing.leased)/\(model.leasing.units) let; loan \(e.loans)."
+            let s = model.facilities
+            return "\(model.clockText), no staff for 5 days: \(s.openCleaning) cleaning jobs open, cleanliness \(Int(s.averageCleanliness * 100)) %, condition \(Int(s.averageCondition * 100)) %."
         },
-        Step(name: "04-dusk", grid: false) { model, scene in
-            model.showEconomyPanel = false
-            model.advanceSimulation(toTimeOfDay: 20, minute: 10)
-            model.refreshSimulationSummary()
-            return "\(model.clockText): dusk — ambient light \(Int(DayNight.daylight(atTick: Double(model.world?.clock.tick ?? 0)) * 100)) %, lights coming on."
-        },
-        Step(name: "05-night", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 23, minute: 0)
-            model.refreshSimulationSummary()
-            return "\(model.clockText): night — occupied rooms lit, lobbies dim; \(model.population.inRooms) people inside."
-        },
-        Step(name: "06-economy-week", grid: false) { model, scene in
+        Step(name: "04-janitors-at-work", grid: false) { model, scene in
+            model.showServices = false
+            model.showFacilitiesPanel = false
+            model.changeStaff(.janitor, by: 1)
+            model.changeStaff(.janitor, by: 1)
             model.advanceSimulation(toTimeOfDay: 7, minute: 0)
-            model.advanceSimulation(ticks: 5 * SimClock.secondsPerDay)     // day 7
-            model.showEconomyPanel = true
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 4 * 3600, step: 30) { world in
+                ScreenshotDirector.staffAtWork(.janitor, in: world) == nil ? 0 : 1
+            })
+            if let p = model.world.flatMap({ ScreenshotDirector.staffAtWork(.janitor, in: $0) }) {
+                scene.withController { $0.jump(center: p + Vec2(0, 1.6), zoom: 40) }
+            }
             model.refreshSimulationSummary()
-            let e = model.economy
-            return "\(model.clockText): cash \(e.cash), week income \(e.week.income), expenses \(e.week.expenses), loans \(e.loans)."
+            return "\(model.clockText): two janitors hired; one cleaning a room (teal coveralls); \(model.facilities.cleaned) rooms cleaned so far."
         },
-        Step(name: "07-menu-continue", grid: false) { model, scene in
-            model.showEconomyPanel = false
-            let saved = model.save(title: "M1 walkthrough")
-            model.startFromMenu()
-            model.setSpeed(.paused)
-            model.showMainMenu = true
-            return "Saved (\(saved)), started over, back at the main menu: Continue offers \(model.latestSave?.metadata?.title ?? "nothing")."
-        },
-        Step(name: "08-continued", grid: false) { model, scene in
-            let expected = try? model.saveStore.load(slot: model.latestSave?.slot ?? "", availablePacks: model.packReferences)
-            model.continueLatest()
-            model.setSpeed(.paused)
+        Step(name: "05-plant-failure", grid: false) { model, scene in
+            model.advanceSimulation(ticks: 20 * SimClock.secondsPerDay)
+            model.showServices = true
+            model.showFacilitiesPanel = true
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            return "Continued at \(model.clockText) with cash \(model.economy.cash) and \(model.leasing.leased) tenants; " +
-                "matches the save: \(expected.map { $0.world == model.world } ?? false)."
+            let s = model.facilities
+            return "\(model.clockText), no technician: \(s.brokenEquipment) equipment rooms out of order; " +
+                s.utilities.map { "\($0.name) \($0.shortRooms) rooms short" }.joined(separator: ", ") +
+                "; tenants \(model.leasing.leased)/\(model.leasing.units), moved out \(model.leasing.market.movedOut)."
+        },
+        Step(name: "06-technician-repairs", grid: false) { model, scene in
+            model.changeStaff(.technician, by: 1)
+            model.advanceSimulation(toTimeOfDay: 7, minute: 0)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 5 * 3600, step: 60) { world in
+                ScreenshotDirector.staffAtWork(.technician, in: world) == nil ? 0 : 1
+            })
+            model.refreshSimulationSummary()
+            let at = model.world.flatMap { ScreenshotDirector.staffAtWork(.technician, in: $0) }
+            if let p = at { scene.withController { $0.jump(center: p + Vec2(0, 1.6), zoom: 34) } }
+            return "\(model.clockText): technician hired and repairing (orange coveralls): \(at != nil); repaired so far \(model.facilities.repaired)."
+        },
+        Step(name: "07-restored", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 18, minute: 0)
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
+            let s = model.facilities
+            return "\(model.clockText): \(s.brokenEquipment) out of order, \(s.repaired) repairs, \(s.cleaned) cleanings; wages \(s.wagesPerDay)/day."
+        },
+        Step(name: "08-save-load-roundtrip", grid: false) { model, scene in
+            model.showServices = false
+            model.showFacilitiesPanel = false
+            let before = model.world
+            let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
+            let loaded = model.load(slot: "capture-roundtrip")
+            let identical = before != nil && before == model.world
+            model.refreshSimulationSummary()
+            return "Saved and reloaded with staff, jobs and upkeep: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical)"
         },
     ]
 
