@@ -56,69 +56,71 @@ final class ScreenshotDirector {
     private var started = false
 
     let steps: [Step] = [
-        Step(name: "01-morning-queues", grid: false) { model, scene in
+        Step(name: "01-skytower-traffic", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            model.applyBlueprint("demo-highrise")
-            model.advanceSimulation(toTimeOfDay: 7, minute: 40)
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 100 * 60, step: 10) { ScreenshotDirector.waiting(in: $0) })
+            model.applyBlueprint("demo-skytower")
+            model.showDeveloperHUD = false
+            model.showTraffic = true
+            model.advanceSimulation(toTimeOfDay: 7, minute: 50)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 80 * 60, step: 10) { ScreenshotDirector.waiting(in: $0) })
             model.refreshSimulationSummary()
             scene.apply(preset: .building)
             let p = model.population
-            return "Morning at \(model.clockText): \(p.waiting) waiting, \(p.riding) riding, longest wait \(p.longestWait) s, \(p.inRooms) in rooms."
+            return "Sky tower at \(model.clockText) with the traffic overlay: \(model.banks.count) banks, \(p.waiting) waiting, \(p.riding) riding."
         },
-        Step(name: "02-lobby-queue", grid: false) { model, scene in
-            model.showDeveloperHUD = false
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 5) { ScreenshotDirector.waiting(in: $0, floor: 0) })
-            if let world = model.world, let car = world.elevators.values.first, let c = ScreenshotDirector.carCenter(car, in: world) {
-                scene.withController { $0.jump(center: Vec2(c.x, 2.2), zoom: 42) }
+        Step(name: "02-bank-panel", grid: false) { model, scene in
+            model.showBanksPanel = true
+            if let low = model.banks.first { model.setStrategy(.zoning, bank: low.id) }
+            model.advanceSimulation(ticks: 20 * 60)
+            model.refreshSimulationSummary()
+            let lines = model.banks.map { b in
+                "\(b.name) \(b.strategy.rawValue): avg \(Int(b.stats.averageWait.rounded())) s, max \(b.stats.maxWait) s, \(b.stats.boardings) boardings"
+            }
+            return "\(model.clockText), bank A switched to zoning 20 min ago. " + lines.joined(separator: "; ")
+        },
+        Step(name: "03-sky-lobby-transfer", grid: false) { model, scene in
+            model.showBanksPanel = false
+            model.advanceSimulation(toTimeOfDay: 7, minute: 55)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 90 * 60, step: 2) { world in
+                ScreenshotDirector.skyLobbyWalker(on: 21, in: world) == nil ? 0 : 1
+            })
+            if let p = model.world.flatMap({ ScreenshotDirector.skyLobbyWalker(on: 21, in: $0) }) {
+                scene.withController { $0.jump(center: Vec2(p.x + 2, p.y + 2), zoom: 30) }
+            }
+            model.refreshSimulationSummary()
+            return "Day 2 \(model.clockText): a person crossing the floor-21 sky lobby from the express shuttle to the upper bank."
+        },
+        Step(name: "04-lobby-queues", grid: false) { model, scene in
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 60 * 60, step: 5) { ScreenshotDirector.waiting(in: $0, floor: 0) })
+            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first {
+                scene.withController { $0.jump(center: Vec2(Double(b.footprint.start) + 10, 2.6), zoom: 30) }
             }
             model.refreshSimulationSummary()
             let n = model.world.map { ScreenshotDirector.waiting(in: $0, floor: 0) } ?? 0
-            return "Ground-floor landing at \(model.clockText): \(n) people queuing for the elevator."
+            return "\(model.clockText): ground-floor landings of bank A and the express with \(n) waiting (badges: people · longest wait)."
         },
-        Step(name: "03-doors-open-boarding", grid: false) { model, scene in
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 1) { world in
-                ScreenshotDirector.boardingCar(in: world)?.passengers.count ?? 0
-            })
-            if let world = model.world, let car = ScreenshotDirector.boardingCar(in: world), let c = ScreenshotDirector.carCenter(car, in: world) {
-                scene.withController { $0.jump(center: c + Vec2(-1, 0), zoom: 44) }
-                model.refreshSimulationSummary()
-                return "\(model.clockText): car stopped at floor \(car.floor) with doors open, \(car.passengers.count) inside."
-            }
-            return "no boarding moment found"
-        },
-        Step(name: "04-car-moving-riders", grid: false) { model, scene in
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 2) { world in
-                ScreenshotDirector.movingCar(in: world)?.riders ?? 0
-            })
-            if let m = model.world.flatMap(ScreenshotDirector.movingCar(in:)) {
-                scene.withController { $0.jump(center: m.center, zoom: 30) }
-                model.refreshSimulationSummary()
-                return "\(model.clockText): moving car with \(m.riders) riders (cab drawn at its exact interpolated height)."
-            }
-            return "no moving car with riders found"
-        },
-        Step(name: "05-elevator-routes-overlay", grid: false) { model, scene in
-            model.showNavigationOverlay = true
+        Step(name: "05-evening-down-peak", grid: false) { model, scene in
             model.showDeveloperHUD = true
-            model.advanceSimulation(toTimeOfDay: 12, minute: 5)
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 40 * 60, step: 10) { ScreenshotDirector.travelling(in: $0) })
-            model.refreshSimulationSummary()
-            scene.apply(preset: .building)
-            let p = model.population
-            return "Lunch at \(model.clockText) with the navigation overlay: elevator links (green), stairs (orange); \(p.waiting) waiting, \(p.riding) riding."
-        },
-        Step(name: "06-evening-down-peak", grid: false) { model, scene in
-            model.showNavigationOverlay = false
-            model.advanceSimulation(toTimeOfDay: 16, minute: 45)
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 90 * 60, step: 10) { ScreenshotDirector.waiting(in: $0) })
+            model.advanceSimulation(toTimeOfDay: 16, minute: 40)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 100 * 60, step: 10) { ScreenshotDirector.waiting(in: $0) })
             model.refreshSimulationSummary()
             scene.apply(preset: .building)
             let p = model.population
             return "Evening down-peak at \(model.clockText): \(p.waiting) waiting, \(p.riding) riding, longest wait \(p.longestWait) s."
         },
+        Step(name: "06-bank-statistics", grid: false) { model, scene in
+            model.showDeveloperHUD = false
+            model.showBanksPanel = true
+            model.advanceSimulation(toTimeOfDay: 20, minute: 0)
+            model.refreshSimulationSummary()
+            let lines = model.banks.map { b in
+                "\(b.name): \(b.stats.boardings) boardings, avg \(Int(b.stats.averageWait.rounded())) s, max \(b.stats.maxWait) s, \(b.stats.abandoned) took stairs"
+            }
+            return "Day's statistics at \(model.clockText): " + lines.joined(separator: "; ")
+        },
         Step(name: "07-save-load-roundtrip", grid: false) { model, scene in
-            model.showNavigationOverlay = false
+            model.showBanksPanel = false
+            model.showTraffic = false
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")

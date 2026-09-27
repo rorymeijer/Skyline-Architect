@@ -59,6 +59,24 @@ extension AppModel {
         clockText = "Day \(SimClock.day(tick) + 1) · \(SimClock.timeString(tick))"
         population = PopulationSummary(world)
         if let simulation { navigationMetrics = simulation.navigation.metrics }
+        banks = traffic()?.banks ?? []
+    }
+
+    // MARK: Elevator banks
+
+    /// Traffic of the active property's buildings at the current (fractional) time.
+    func traffic() -> ElevatorTraffic? {
+        guard let world, let property = activePropertyID, let simulation else { return nil }
+        return ElevatorTraffic.make(world: world, rules: simulation.rules, buildings: world.buildings(on: property).map(\.id),
+                                    now: world.clock.tick)
+    }
+
+    func setStrategy(_ strategy: DispatchStrategy, bank: RoomID) {
+        guard var w = world, let simulation else { return }
+        ElevatorBanks.setStrategy(strategy, bank: bank, in: &w, rules: simulation.rules)
+        world = w
+        hasUnsavedChanges = true
+        refreshSimulationSummary()
     }
 
     /// Door open/close time of a shaft's cars (content), for rendering.

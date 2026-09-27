@@ -198,3 +198,22 @@ struct SkyFixture {
         #expect(s.boardings == 4)
     }
 }
+
+@Suite struct ElevatorTrafficTests {
+    @Test func trafficSummarizesQueuesCarsAndBanks() throws {
+        var f = try SkyFixture()
+        var traffic = ElevatorTraffic()
+        while SimClock.secondOfDay(f.world.clock.tick) < 10 * 3600 {
+            f.engine.advance(&f.world, by: 5)
+            traffic = ElevatorTraffic.make(world: f.world, rules: f.engine.rules, buildings: [f.building], now: f.world.clock.tick)
+            if traffic.queues.count >= 2 { break }
+        }
+        let waiting = f.count { if case .waiting = $0.place { true } else { false } }
+        #expect(traffic.queues.map(\.count).reduce(0, +) == waiting)
+        #expect(traffic.cars.count == 6)
+        #expect(traffic.banks.map(\.name) == ["A", "B", "C"])
+        #expect(traffic.banks[1].floors == "G ↔ 21")
+        #expect(traffic.banks.map(\.waitingNow).reduce(0, +) == waiting)
+        #expect(ElevatorTraffic.name(27) == "AB")
+    }
+}
