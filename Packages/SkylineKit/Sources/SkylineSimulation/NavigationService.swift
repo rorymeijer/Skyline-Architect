@@ -27,7 +27,7 @@ public struct NavigationMetrics: Equatable, Sendable {
 /// Shared by copies of `SimulationEngine`; internally synchronized.
 public final class NavigationService: @unchecked Sendable {
     struct RouteKey: Hashable {
-        var fromFloor: Int, fromX: UInt64, toFloor: Int, toX: UInt64
+        var fromFloor: Int, fromX: UInt64, toFloor: Int, toX: UInt64, elevators: Bool
     }
 
     struct BuildingNavigation {
@@ -79,17 +79,17 @@ public final class NavigationService: @unchecked Sendable {
     /// never need the graph (every floor is one walking surface). Assumes `refresh` ran since
     /// the last structural change.
     func path(from: Spot, to: Spot, building: Building, world: GameWorld, catalog: BuildCatalog,
-              rules: SimulationRules) -> (graph: NavigationGraph, portals: [Int])? {
+              rules: SimulationRules, elevators: Bool = true) -> (graph: NavigationGraph, portals: [Int])? {
         lock.lock(); defer { lock.unlock() }
         let graph = buildings[building.id]?.graph ?? build(building, world: world, catalog: catalog, rules: rules)
         counters.queries += 1
-        let key = RouteKey(fromFloor: from.floor, fromX: from.x.bitPattern, toFloor: to.floor, toX: to.x.bitPattern)
+        let key = RouteKey(fromFloor: from.floor, fromX: from.x.bitPattern, toFloor: to.floor, toX: to.x.bitPattern, elevators: elevators)
         let found: [Int]?
         if let cached = buildings[building.id]?.routes[key] {
             counters.cacheHits += 1
             found = cached
         } else {
-            found = graph.shortestPath(from: from, to: to, walkSpeed: rules.walkSpeed)
+            found = graph.shortestPath(from: from, to: to, walkSpeed: rules.walkSpeed, elevators: elevators)
             if buildings[building.id]!.routes.count >= Self.cacheLimit {
                 buildings[building.id]!.routes.removeAll(keepingCapacity: true)
             }

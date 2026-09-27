@@ -32,6 +32,11 @@ final class AppModel {
     var navigationMetrics = NavigationMetrics()
     /// Developer navigation overlay (Debug builds, ⌥⌘N).
     var showNavigationOverlay = false
+    /// Elevator traffic overlay (⌥⌘T) and bank panel (⌥⌘E).
+    var showTraffic = false
+    var showBanksPanel = false
+    /// Elevator banks of the active property with statistics (refreshed at 4 Hz).
+    var banks: [ElevatorTraffic.Bank] = []
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 
@@ -169,6 +174,10 @@ final class AppModel {
         #if DEBUG
         scene.navigationProvider = { [weak self] in self?.navigationOverlay() }
         #endif
+        scene.trafficProvider = { [weak self] in
+            guard let self, self.showTraffic else { return nil }
+            return self.traffic()
+        }
         scene.onCommit = { [weak self] command in self?.perform(command) }
         if let previous {
             scene.onReady = previous.onReady

@@ -69,6 +69,7 @@ public struct ArtPalette: Sendable {
         case "parking": (RGBA(hex: 0x9D9B95), RGBA(hex: 0x5C5D5E), RGBA(hex: 0xA7A59F))
         case "stairs": (RGBA(hex: 0x86847E), RGBA(hex: 0x6F6D68), RGBA(hex: 0x86847E))
         case "elevatorShaft": (RGBA(hex: 0x44484B), RGBA(hex: 0x303336), RGBA(hex: 0x44484B))
+        case "expressElevatorShaft": (RGBA(hex: 0x3A4450), RGBA(hex: 0x2A3038), RGBA(hex: 0x3A4450))
         default: (RGBA(hex: 0xC8C8C8), RGBA(hex: 0x888888), RGBA(hex: 0xDDDDDD))
         }
     }

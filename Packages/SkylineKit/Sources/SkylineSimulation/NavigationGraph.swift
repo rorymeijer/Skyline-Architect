@@ -57,8 +57,8 @@ public struct NavigationGraph: Sendable {
     private(set) var walkable: [Int: ClosedRange<Double>] = [:]
     private(set) var portalsByFloor: [Int: [Int]] = [:]
     private(set) var shafts: [RoomID: StairShaft] = [:]
-    /// Served floors and landing x of each elevator shaft.
-    private(set) var elevatorShafts: [RoomID: (floors: FloorSpan, x: Double)] = [:]
+    /// Floors where cars stop, and landing x, of each elevator shaft.
+    private(set) var elevatorShafts: [RoomID: (served: Set<Int>, x: Double)] = [:]
 
     public static let stairLanding = 1.1
 
@@ -103,7 +103,8 @@ public struct NavigationGraph: Sendable {
         for room in Self.transportRooms(of: building, world: world, catalog: catalog, kind: "elevator") {
             guard let spec = rules.elevator(for: room.definitionID) else { continue }
             let x = Self.elevatorLandingX(room, grid: grid)
-            elevatorShafts[room.id] = (room.floors, x)
+            let served = Set(spec.servedFloors(of: room.floors))
+            elevatorShafts[room.id] = (served, x)
             let perFloor = grid.floorHeight / spec.speed
             let boarding = spec.expectedWaitSeconds + Double(2 * spec.doorSeconds + spec.transferSeconds) + spec.speed / spec.acceleration
             var previousCar: Int?
@@ -114,7 +115,7 @@ public struct NavigationGraph: Sendable {
                     link(car, p, perFloor, .ride(shaft: room.id))
                 }
                 previousCar = car
-                guard walkable[floor] != nil else { continue }
+                guard walkable[floor] != nil, served.contains(floor) else { continue }
                 let landing = addPortal(Portal(floor: floor, x: x, shaft: room.id, kind: .elevatorLanding), walkable: true)
                 link(landing, car, boarding, .board(shaft: room.id))
                 link(car, landing, Double(spec.transferSeconds), .alight(shaft: room.id))
@@ -139,7 +140,7 @@ public struct NavigationGraph: Sendable {
 
     /// Whether the elevator shaft `id` exists and serves both floors.
     func elevatorServes(_ id: RoomID, _ a: Int, _ b: Int) -> Bool {
-        elevatorShafts[id].map { $0.floors.contains(a) && $0.floors.contains(b) } ?? false
+        elevatorShafts[id].map { $0.served.contains(a) && $0.served.contains(b) } ?? false
     }
 
     /// Whether `spot` is on a walking surface of this building.
@@ -176,8 +177,9 @@ public struct NavigationGraph: Sendable {
 
 extension NavigationGraph {
     /// Portal sequence of the fastest route from `from` to `to` (different floors), or nil.
+    /// `elevators: false` finds the fastest route without boarding any elevator.
     /// Deterministic Dijkstra: heap ordered by (cost, node index).
-    func shortestPath(from: Spot, to: Spot, walkSpeed: Double) -> [Int]? {
+    func shortestPath(from: Spot, to: Spot, walkSpeed: Double, elevators: Bool = true) -> [Int]? {
         guard let starts = portalsByFloor[from.floor], let ends = portalsByFloor[to.floor] else { return nil }
         let target = portals.count          // virtual target node
         var dist = [Double](repeating: .infinity, count: portals.count + 1)
@@ -197,6 +199,7 @@ extension NavigationGraph {
                 heap.push((d + c, target))
             }
             for edge in edges[node] where d + edge.cost < dist[edge.to] {
+                if !elevators, case .board = edge.kind { continue }
                 dist[edge.to] = d + edge.cost
                 previous[edge.to] = node
                 heap.push((dist[edge.to], edge.to))

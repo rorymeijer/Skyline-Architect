@@ -1,6 +1,6 @@
 # Save Format
 
-Status: **FUNCTIONAL** (Phases 2–6). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
+Status: **FUNCTIONAL** (Phases 2–7). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
 
 ## Versions
 
@@ -8,17 +8,18 @@ Status: **FUNCTIONAL** (Phases 2–6). Implemented in `Packages/SkylineKit/Sourc
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 4 | 0.7 | Cars gain `strategy` (`collective` / `zoning` / `destination`) and `stats` (boardings, totalWait, maxWait, abandoned, stops, day, hourly[24]); rides may carry `assigned` | v3→v4 adds `strategy: "collective"` and zeroed `stats` to every car |
 | 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1.skylinesave` and `save-v2.skylinesave` (frozen), `save-v3.skylinesave`
-(people waiting at a landing and riding a car).
+Golden fixtures: `save-v1`, `save-v2`, `save-v3` (frozen) and `save-v4.skylinesave`
+(people waiting and riding, car statistics).
 
-## Envelope (format version 3)
+## Envelope (format version 4)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 3,
+  "formatVersion": 4,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
     "contentPacks": [{ "id": "base", "version": "0.1.0" }],
@@ -36,7 +37,9 @@ Golden fixtures: `save-v1.skylinesave` and `save-v2.skylinesave` (frozen), `save
       "elevators": [ { "id": 9, "buildingID": 3, "floor": 0, "direction": 1,
                        "motion": { "moving": { "fromFloor": 0, "toFloor": 8, "start": 8440, "end": 8458,
                                                "speed": 2.5, "acceleration": 1 } },
-                       "passengers": [41, 44], "nextEventTick": 8458 } ]
+                       "passengers": [41, 44], "nextEventTick": 8458, "strategy": "collective",
+                       "stats": { "boardings": 12, "totalWait": 240, "maxWait": 41, "abandoned": 0,
+                                  "stops": 17, "day": 0, "hourly": [0, 0, …] } } ]
     }
   }
 }

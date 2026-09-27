@@ -40,13 +40,13 @@ enum RoutePlanner {
     /// one walk; otherwise the navigation graph supplies the portal sequence (stairs,
     /// transfers, elevators).
     static func plan(from: Spot, to: Spot, building: Building, world: GameWorld, navigation: NavigationService,
-                     catalog: BuildCatalog, rules: SimulationRules, now: Tick) -> Trip? {
+                     catalog: BuildCatalog, rules: SimulationRules, now: Tick, elevators: Bool = true) -> Trip? {
         var parts: [Segment]
         if from.floor == to.floor {
             parts = [.walk(floor: from.floor, from: from.x, to: to.x)]
         } else {
             guard let (graph, path) = navigation.path(from: from, to: to, building: building, world: world,
-                                                      catalog: catalog, rules: rules) else { return nil }
+                                                      catalog: catalog, rules: rules, elevators: elevators) else { return nil }
             parts = segments(from: from, to: to, path: path, graph: graph)
         }
         var ride: Ride?

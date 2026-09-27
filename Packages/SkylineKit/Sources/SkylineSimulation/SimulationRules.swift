@@ -64,9 +64,16 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
     /// Waiting time assumed by route planning when choosing elevator vs. stairs. A constant
     /// (not the live queue) so routes stay cacheable and deterministic (D-026).
     public var expectedWaitSeconds: Double
+    /// "all" (default): stops at every floor of the shaft; "ends": only at its lowest and
+    /// highest floor (express / shuttle to a sky lobby).
+    public var stops: String?
+    /// Typical patience at a landing before taking the stairs (default 150 s; personal
+    /// variation ±50 %).
+    public var patienceSeconds: Double?
 
     public init(room: String, name: String, capacity: Int, speed: Double, acceleration: Double,
-                doorSeconds: Tick, transferSeconds: Tick, expectedWaitSeconds: Double) {
+                doorSeconds: Tick, transferSeconds: Tick, expectedWaitSeconds: Double,
+                stops: String? = nil, patienceSeconds: Double? = nil) {
         self.room = room
         self.name = name
         self.capacity = capacity
@@ -75,6 +82,20 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
         self.doorSeconds = doorSeconds
         self.transferSeconds = transferSeconds
         self.expectedWaitSeconds = expectedWaitSeconds
+        self.stops = stops
+        self.patienceSeconds = patienceSeconds
+    }
+
+    /// Floors of a shaft spanning `floors` where cars stop.
+    public func servedFloors(of floors: FloorSpan) -> [Int] {
+        stops == "ends" ? [floors.lowest, floors.highest] : Array(floors.lowest...floors.highest)
+    }
+
+    /// A person's patience in whole seconds (deterministic per traits).
+    public func patience(traits: UInt32) -> Tick {
+        let base = patienceSeconds ?? 150
+        let factor = 0.5 + Double((traits >> 8) % 1000) / 1000
+        return Tick((base * factor).rounded())
     }
 
     /// Validation problems (empty if valid).
@@ -86,6 +107,8 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
         if doorSeconds < 1 || doorSeconds > 20 { p.append("elevator '\(room)': doorSeconds must be 1…20") }
         if transferSeconds > 20 { p.append("elevator '\(room)': transferSeconds must be ≤ 20") }
         if expectedWaitSeconds < 0 { p.append("elevator '\(room)': expectedWaitSeconds must be ≥ 0") }
+        if let s = stops, !["all", "ends"].contains(s) { p.append("elevator '\(room)': stops must be 'all' or 'ends'") }
+        if let q = patienceSeconds, !(q >= 10 && q <= 3600) { p.append("elevator '\(room)': patienceSeconds must be 10…3600") }
         return p
     }
 }
@@ -101,6 +124,9 @@ public struct SimulationRules: Sendable {
     public var stairsSecondsPerFloor: Tick = 14
     /// Street distance walked outside the entrance when arriving or leaving (meters).
     public var streetDistance = 14.0
+    /// Someone who runs out of patience at a landing takes the stairs only if that trip
+    /// takes at most this long (seconds); otherwise they keep waiting.
+    public var maxStairsDetourSeconds: Tick = 300
 
     public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = []) {
         self.schedules = schedules

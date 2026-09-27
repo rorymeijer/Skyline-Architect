@@ -29,6 +29,19 @@ extension ScreenshotDirector {
         return nil
     }
 
+    /// Someone walking across `floor` from one elevator to the next (a sky-lobby transfer).
+    static func skyLobbyWalker(on floor: Int, in world: GameWorld) -> Vec2? {
+        let now = world.clock.tick
+        for p in world.people {
+            guard p.pendingRide != nil, case let .travelling(legs, _) = p.place,
+                  let leg = legs.first(where: { now < $0.end }), case .walk(floor, _, _, let start, let end) = leg,
+                  end > start + 3, now > start + 1, now + 1 < end,          // mid-walk, not at a door
+                  let s = PersonMotion.sample(legs, at: Double(now), grid: world.grid) else { continue }
+            return s.position
+        }
+        return nil
+    }
+
     static func carCenter(_ car: ElevatorCar, in world: GameWorld) -> Vec2? {
         guard let shaft = world.rooms[car.id] else { return nil }
         let x = (world.grid.x(ofColumn: shaft.columns.start) + world.grid.x(ofColumn: shaft.columns.end)) / 2

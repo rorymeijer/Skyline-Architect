@@ -7,6 +7,20 @@
   "acceleration": 1.0,
   "doorSeconds": 2,
   "transferSeconds": 1,
-  "expectedWaitSeconds": 25
+  "expectedWaitSeconds": 25,
+  "stops": "all",
+  "patienceSeconds": 150
+ },
+ {
+  "room": "elevator-express",
+  "name": "Express elevator (20 persons, 6 m/s, stops at its ends)",
+  "capacity": 20,
+  "speed": 6.0,
+  "acceleration": 1.2,
+  "doorSeconds": 3,
+  "transferSeconds": 1,
+  "expectedWaitSeconds": 30,
+  "stops": "ends",
+  "patienceSeconds": 240
  }
 ]

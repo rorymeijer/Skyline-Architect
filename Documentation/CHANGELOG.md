@@ -2,6 +2,23 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.7.0] — Phase 7: Advanced elevator queues & dispatch
+
+### Added
+- **Elevator banks**: adjacent shafts of a type share hall calls; each call is assigned to a
+  car when the person reaches the landing (they walk to that car's doors).
+- **Dispatch strategies** per bank: collective (fastest estimated arrival), zoning (a floor
+  zone per car), destination (group people going to the same floor).
+- **Express shafts** stopping only at their ends, **sky lobby** room type, and the
+  `demo-skytower` blueprint (low bank of 3, express to floor 21, upper bank of 2).
+- **Patience and abandonment**: people who wait too long take the stairs when that is a
+  short walk; counted per car.
+- **Statistics** per car and bank: boardings, average/max wait, stops, abandonments,
+  passengers per hour.
+- **Traffic overlay** (⌥⌘T) with queue badges, car loads and bank labels; **Elevator Banks**
+  panel (⌥⌘E) to choose the strategy and read the statistics.
+- **Save format 4** (+ migration, golden fixture).
+
 ## [0.6.0] — Phase 6: First functioning elevators
 
 ### Added

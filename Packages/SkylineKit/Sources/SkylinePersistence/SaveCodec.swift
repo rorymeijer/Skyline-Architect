@@ -31,7 +31,7 @@ public enum SaveError: Error, Equatable, CustomStringConvertible {
 /// an inconsistent save is rejected instead of silently corrupting a game.
 public enum SaveCodec {
     public static let format = "skyline-architect-save"
-    public static let currentVersion = 3
+    public static let currentVersion = 4
 
     /// Upgrades the `game` JSON object from version `key` to `key + 1`.
     public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
@@ -51,6 +51,21 @@ public enum SaveCodec {
         2: { game in
             guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v2 save without world") }
             if world["elevators"] == nil { world["elevators"] = [Any]() }
+            game["world"] = world
+        },
+        // v3 → v4 (Phase 7): cars gain a dispatch strategy and statistics.
+        3: { game in
+            guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v3 save without world") }
+            let cars = (world["elevators"] as? [[String: Any]] ?? []).map { car -> [String: Any] in
+                var car = car
+                if car["strategy"] == nil { car["strategy"] = "collective" }
+                if car["stats"] == nil {
+                    car["stats"] = ["boardings": 0, "totalWait": 0, "maxWait": 0, "abandoned": 0, "stops": 0, "day": 0,
+                                    "hourly": [Int](repeating: 0, count: 24)] as [String: Any]
+                }
+                return car
+            }
+            world["elevators"] = cars
             game["world"] = world
         },
     ]

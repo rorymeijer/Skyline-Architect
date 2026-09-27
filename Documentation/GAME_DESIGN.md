@@ -131,3 +131,13 @@ wait at the doors, board, ride and get out at their floor; the car collects ever
 travelling its way and turns at the last call. Morning and evening rushes form visible
 queues, and the HUD shows how many people wait and for how long. One car per shaft;
 banks, express elevators and smarter dispatching come in Phase 7.
+
+## Phase 7 player experience (current)
+
+Elevator shafts placed side by side work as a bank: people press the call button and are
+sent to one of its cars. The Elevator Banks panel (⌥⌘E) lets the player choose how each bank
+dispatches — collective, zoning or destination — and shows average and maximum waits,
+passengers per hour and how many people gave up and took the stairs. The traffic overlay
+(⌥⌘T) shows every queue with its longest wait in green, amber or red. Express shafts run
+non-stop to a sky lobby where people change to a second bank, so towers can grow past the
+point where one bank is enough.

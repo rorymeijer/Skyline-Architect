@@ -47,6 +47,9 @@ final class WorldScene: SKScene {
     /// Developer navigation overlay data (nil = hidden). Asked every frame while set.
     var navigationProvider: (() -> NavigationOverlay?)?
     private let navigationOverlay = NavigationOverlayNode()
+    /// Elevator traffic overlay data (nil = hidden). Asked every frame.
+    var trafficProvider: (() -> ElevatorTraffic?)?
+    private let trafficOverlay = TrafficOverlayNode()
     var onCommit: ((BuildCommand) -> Void)?
     private var placementAnchor: GridCell?
     /// Camera placement to use when first presented (nil = site overview).
@@ -115,6 +118,8 @@ final class WorldScene: SKScene {
         addChild(gridOverlay)
         navigationOverlay.zPosition = 12
         addChild(navigationOverlay)
+        trafficOverlay.zPosition = 12.5
+        addChild(trafficOverlay)
         roomLabelLayer.zPosition = 13
         addChild(roomLabelLayer)
         placementOverlay.zPosition = 14
@@ -232,6 +237,7 @@ final class WorldScene: SKScene {
         elevatorLayer.update(carProvider?(camera.visibleRect, camera.zoom) ?? [])
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
         navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
+        trafficOverlay.update(traffic: trafficProvider?(), camera: camera)
 
         if overlayDirty {
             if showGrid {

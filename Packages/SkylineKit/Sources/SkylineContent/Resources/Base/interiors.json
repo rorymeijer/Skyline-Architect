@@ -172,6 +172,47 @@
   ]
  },
  {
+  "room": "sky-lobby",
+  "items": [
+   {
+    "furniture": "reception-desk",
+    "anchor": "center",
+    "offset": 0
+   },
+   {
+    "furniture": "plant-tall",
+    "anchor": "left",
+    "offset": 0.2
+   },
+   {
+    "furniture": "lobby-sofa",
+    "anchor": "left",
+    "offset": 1.2,
+    "minRoomWidth": 9
+   },
+   {
+    "furniture": "directory-board",
+    "anchor": "right",
+    "offset": 0.5,
+    "minRoomWidth": 8
+   },
+   {
+    "furniture": "plant-small",
+    "anchor": "right",
+    "offset": 1.6,
+    "minRoomWidth": 10
+   },
+   {
+    "furniture": "wall-art",
+    "anchor": "center",
+    "offset": 0,
+    "elevation": 1.8,
+    "reserve": false,
+    "minRoomWidth": 8
+   }
+  ]
+ },
+ {
   "room": "corridor",
   "items": [
    {

@@ -1,0 +1,101 @@
+import SpriteKit
+import SkylineCore
+import SkylinePresentation
+import SkylineSimulation
+
+/// Player overlay for elevator traffic (⌥⌘T): a badge per landing queue (count, coloured by
+/// the longest wait), each car's load, and a label per bank with its strategy and average
+/// wait. Screen space, pooled nodes; draws `ElevatorTraffic` data only.
+final class TrafficOverlayNode: SKNode {
+    private var badges: [SKNode] = []
+    private var loads: [SKNode] = []
+    private var labels: [SKNode] = []
+
+    override init() {
+        super.init()
+        isHidden = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) is not supported") }
+
+    func update(traffic: ElevatorTraffic?, camera: Camera2D) {
+        guard let traffic else { isHidden = true; return }
+        isHidden = false
+        layout(&badges, count: traffic.queues.count) { node, i in
+            let q = traffic.queues[i]
+            let p = camera.worldToScreen(q.position + Vec2(0, 2.4)).cgPoint
+            node.position = p
+            let color: SKColor = q.longestWait < 30 ? SKColor(red: 0.30, green: 0.75, blue: 0.40, alpha: 0.95)
+                : q.longestWait < 60 ? SKColor(red: 0.95, green: 0.70, blue: 0.20, alpha: 0.95)
+                : SKColor(red: 0.90, green: 0.30, blue: 0.25, alpha: 0.95)
+            Self.setText(node, "\(q.count) · \(q.longestWait)s", fill: color, textColor: .white)
+        }
+        // Car loads only when cabs are drawn large enough to tell apart.
+        let showLoads = camera.zoom >= Self.minLoadZoom
+        layout(&loads, count: showLoads ? traffic.cars.count : 0) { node, i in
+            let c = traffic.cars[i]
+            node.position = camera.worldToScreen(c.position + Vec2(0, 0.5)).cgPoint
+            Self.setText(node, "\(c.load)/\(c.capacity)", fill: SKColor(white: 0.08, alpha: 0.8), textColor: .white)
+        }
+        var placed: [CGRect] = []
+        let ceiling = CGFloat(camera.viewportSize.y) - Self.topInset
+        layout(&labels, count: traffic.banks.count) { node, i in
+            let b = traffic.banks[i]
+            Self.setText(node, "Bank \(b.name) · \(b.strategy.rawValue) · avg \(Int(b.stats.averageWait.rounded())) s",
+                         fill: SKColor(red: 0.12, green: 0.30, blue: 0.45, alpha: 0.9), textColor: .white)
+            // Keep labels below the top chrome and clear of each other (stack upward, then
+            // downward when there is no room above).
+            var p = camera.worldToScreen(b.position + Vec2(0, 12 / camera.zoom)).cgPoint
+            p.y = min(p.y, ceiling)
+            let width = (node.childNode(withName: "text") as? SKLabelNode).map { $0.frame.width + 12 } ?? 80
+            func frame(_ p: CGPoint) -> CGRect { CGRect(x: p.x - width / 2, y: p.y - 9, width: width, height: 18) }
+            var step: CGFloat = 20
+            while placed.contains(where: { $0.intersects(frame(p)) }) {
+                if p.y + step > ceiling { step = -abs(step) }
+                p.y += step
+            }
+            placed.append(frame(p))
+            node.position = p
+        }
+    }
+
+    static let minLoadZoom = 8.0
+    /// Height kept free for the clock / speed controls at the top of the window.
+    static let topInset: CGFloat = 64
+
+    private func layout(_ pool: inout [SKNode], count: Int, _ configure: (SKNode, Int) -> Void) {
+        while pool.count < count { pool.append(makeTag()) }
+        for (i, node) in pool.enumerated() {
+            node.isHidden = i >= count
+            if i < count { configure(node, i) }
+        }
+    }
+
+    private func makeTag() -> SKNode {
+        let container = SKNode()
+        let bg = SKShapeNode()
+        bg.name = "bg"
+        bg.strokeColor = SKColor(white: 1, alpha: 0.25)
+        container.addChild(bg)
+        let text = SKLabelNode(fontNamed: "HelveticaNeue-Bold")
+        text.name = "text"
+        text.fontSize = 10
+        text.horizontalAlignmentMode = .center
+        text.verticalAlignmentMode = .center
+        container.addChild(text)
+        addChild(container)
+        return container
+    }
+
+    private static func setText(_ node: SKNode, _ string: String, fill: SKColor, textColor: SKColor) {
+        guard let text = node.childNode(withName: "text") as? SKLabelNode, let bg = node.childNode(withName: "bg") as? SKShapeNode else { return }
+        text.fontColor = textColor
+        bg.fillColor = fill
+        guard text.text != string else { return }
+        text.text = string
+        let w = text.frame.width + 12
+        bg.path = CGPath(roundedRect: CGRect(x: -w / 2, y: -8, width: w, height: 16), cornerWidth: 8, cornerHeight: 8, transform: nil)
+    }
+}
+

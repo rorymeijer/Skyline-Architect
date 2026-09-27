@@ -7,12 +7,15 @@ public struct Ride: Codable, Hashable, Sendable {
     public var fromFloor: Int
     public var toFloor: Int
     public var x: Double
+    /// Set once the bank's dispatcher has chosen the car (`shaft`) for this ride (Phase 7).
+    public var assigned: Bool?
 
-    public init(shaft: RoomID, fromFloor: Int, toFloor: Int, x: Double) {
+    public init(shaft: RoomID, fromFloor: Int, toFloor: Int, x: Double, assigned: Bool? = nil) {
         self.shaft = shaft
         self.fromFloor = fromFloor
         self.toFloor = toFloor
         self.x = x
+        self.assigned = assigned
     }
 
     /// +1 up, −1 down.
@@ -30,6 +33,55 @@ public enum CarMotion: Codable, Hashable, Sendable {
     case stopped(since: Tick, until: Tick)
 }
 
+/// How a bank of elevators assigns hall calls to its cars (Phase 7). Chosen per bank by the
+/// player; stored on every car of the bank.
+public enum DispatchStrategy: String, Codable, CaseIterable, Hashable, Sendable {
+    /// Each call goes to the car that can reach it soonest; cars sweep collecting calls.
+    case collective
+    /// Upper floors are split into one zone per car; a car takes trips to its zone.
+    case zoning
+    /// Passengers going to the same floor are grouped into the same car.
+    case destination
+}
+
+/// Running statistics of one car (saved, deterministic).
+public struct CarStats: Codable, Hashable, Sendable {
+    public var boardings = 0
+    /// Sum and maximum of waiting times of everyone who boarded (seconds).
+    public var totalWait: Tick = 0
+    public var maxWait: Tick = 0
+    /// People who gave up waiting for this car and took the stairs.
+    public var abandoned = 0
+    /// Times the car stopped and opened its doors.
+    public var stops = 0
+    /// Boardings per hour of day on `day`.
+    public var day: Tick = 0
+    public var hourly: [Int] = Array(repeating: 0, count: 24)
+
+    public init() {}
+
+    public var averageWait: Double { boardings == 0 ? 0 : Double(totalWait) / Double(boardings) }
+
+    public mutating func recordBoarding(waited: Tick, at tick: Tick) {
+        boardings += 1
+        totalWait += waited
+        maxWait = max(maxWait, waited)
+        let today = SimClock.day(tick)
+        if today != day {
+            day = today
+            hourly = Array(repeating: 0, count: 24)
+        }
+        hourly[Int(SimClock.secondOfDay(tick) / 3600)] += 1
+    }
+
+    /// Boardings during the last completed hour of the current day (0 in the first hour).
+    public func passengersLastHour(at tick: Tick) -> Int {
+        guard SimClock.day(tick) == day else { return 0 }
+        let hour = Int(SimClock.secondOfDay(tick) / 3600)
+        return hour > 0 ? hourly[hour - 1] : 0
+    }
+}
+
 /// The (single) car of an elevator shaft. The shaft is a room whose spec has
 /// `transport: "elevator"`; the car shares its id.
 public struct ElevatorCar: Codable, Hashable, Sendable, Identifiable {
@@ -44,8 +96,11 @@ public struct ElevatorCar: Codable, Hashable, Sendable, Identifiable {
     public var passengers: [PersonID]
     /// Tick of the next car event (arrival, departure, decision); `Tick.max` when idle.
     public var nextEventTick: Tick
+    /// Dispatch strategy of the car's bank (Phase 7).
+    public var strategy: DispatchStrategy
+    public var stats: CarStats
 
-    public init(id: RoomID, buildingID: BuildingID, floor: Int) {
+    public init(id: RoomID, buildingID: BuildingID, floor: Int, strategy: DispatchStrategy = .collective) {
         self.id = id
         self.buildingID = buildingID
         self.floor = floor
@@ -53,6 +108,8 @@ public struct ElevatorCar: Codable, Hashable, Sendable, Identifiable {
         motion = .idle
         passengers = []
         nextEventTick = .max
+        self.strategy = strategy
+        stats = CarStats()
     }
 }
 

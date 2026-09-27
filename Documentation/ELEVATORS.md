@@ -1,10 +1,48 @@
 # Elevators
 
-Status: **FUNCTIONAL (Phase 6 subset)** — one car per shaft, analytic motion, doors and
-boarding times, hall calls as queues, collective control, elevator routes in navigation,
-rendering of cars / queues / riders. **PLANNED (Phase 7):** banks with several cars,
-express/local, sky lobbies, other dispatch strategies, statistics and traffic overlay.
+Status: **FUNCTIONAL (Phases 6–7)** — cars with analytic motion, doors and boarding times,
+queues, banks with call assignment (collective / zoning / destination), express shafts
+and sky-lobby transfers, patience and abandonment, per-car statistics, traffic overlay and
+bank panel. **PLANNED:** service/freight cars (with staff, Phase 10), mid-trip
+re-targeting, queue-aware route choice, jerk-limited motion.
 Elevators are a core feature and the main optimization puzzle.
+
+## Implemented (Phase 7)
+
+Code: `SkylineSimulation/ElevatorBanks.swift` (banks, assignment, ETA),
+`ElevatorTraffic.swift` (overlay/panel data), app `TrafficOverlayNode`, `ElevatorBanksPanel`.
+
+* **Banks** are derived, never stored: elevator shafts of the same room type that touch side
+  by side and overlap in floors. A bank's id is its lowest shaft id; its strategy is stored
+  on each of its cars (a shaft added next to a bank adopts the bank's strategy).
+* **Call assignment** happens when a person reaches a landing (`Ride.assigned`): the bank
+  picks the car; if it is another shaft of the bank the person walks over to its doors and
+  queues there. Cars then run the Phase 6 collective logic over the people assigned to them.
+  * **Collective**: the car with the lowest estimated arrival (ETA: travel along its
+    current sweep + a dwell per stop on the way + 60 s if it is full).
+  * **Zoning**: floors above the bank's main floor are split into one contiguous zone per
+    car (left to right); a trip belongs to the zone of its upper end. Other trips: ETA.
+  * **Destination**: join a car already collecting people from this floor to the same
+    floor (with room); otherwise ETA plus 8 s per extra destination the car already has.
+* **Express shafts** (`stops: "ends"` in `elevators.json`, room type `elevator-express`)
+  stop only at their lowest and highest floor. With a `sky-lobby` there and a second bank
+  above, navigation routes upper-floor trips G → express → sky lobby → upper bank.
+* **Patience**: queuing starts a personal patience timer (`patienceSeconds` ± 50 % by
+  traits; 150 s local, 240 s express). When it runs out the person takes the stairs if a
+  route without elevators exists and takes at most 5 minutes; otherwise they keep waiting.
+  Abandonments are counted per car.
+* **Statistics** (`CarStats`, saved): boardings, total and maximum wait, stops,
+  abandonments, boardings per hour of the current day. Summed per bank for the panel.
+* **Measured** (demo-skytower, 175 workers, morning 06:00–11:00; release): all strategies
+  deliver everyone; average waits 19–20 s per bank with every strategy; zoning shows higher
+  maxima in the low bank (66 s vs 52 s). In a sharp up-peak (arrivals 08:15 ± 5 min) the
+  low bank needs 98 stops for 72 boardings with destination dispatch vs 99 for 70 with
+  collective — grouping helps only slightly at this traffic level. A 60-floor tower with a
+  bank of two cars peaks at 15 waiting (21 with two separate shafts in Phase 6).
+* **UI**: traffic overlay (⌥⌘T): queue badges `people · longest wait` (green < 30 s, amber
+  < 60 s, red), car loads (when zoomed in), bank labels with strategy and average wait.
+  Bank panel (⌥⌘E): strategy per bank, average/max wait, passengers in the last hour,
+  boardings, stops, abandonments, waiting now.
 
 ## Implemented (Phase 6)
 
@@ -62,7 +100,7 @@ given distance, max speed and acceleration, the trip time and position(t) are ex
 Cars therefore only need events (arrive, doors open, doors closed), not per-tick
 integration — cheap and deterministic.
 
-## Dispatch strategies (planned)
+## Dispatch strategies (original plan; see "Implemented (Phase 7)")
 
 `ElevatorDispatcher` is a strategy chosen per bank:
 1. **Collective control** (Phase 6): cars serve calls in the direction of travel.
