@@ -51,6 +51,7 @@ struct GameCommands: Commands {
             #if DEBUG
             Divider()
             Button("Developer: Build Demo Tower") { model.applyBlueprint("demo-tower") }
+            Button("Developer: Lease All Vacant Units") { model.leaseAllVacant() }
             #endif
         }
         CommandGroup(after: .toolbar) {
@@ -62,6 +63,8 @@ struct GameCommands: Commands {
                 .keyboardShortcut("t", modifiers: [.command, .option])
             Button(model.showBanksPanel ? "Hide Elevator Banks" : "Show Elevator Banks") { model.showBanksPanel.toggle() }
                 .keyboardShortcut("e", modifiers: [.command, .option])
+            Button(model.showLeasingPanel ? "Hide Leasing" : "Show Leasing") { model.showLeasingPanel.toggle() }
+                .keyboardShortcut("l", modifiers: [.command, .option])
             #if DEBUG
             Button(model.showNavigationOverlay ? "Hide Navigation Overlay" : "Show Navigation Overlay") { model.toggleNavigationOverlay() }
                 .keyboardShortcut("n", modifiers: [.command, .option])

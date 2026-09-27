@@ -42,6 +42,11 @@ extension ScreenshotDirector {
         return nil
     }
 
+    /// A grid cell inside a room (for selecting it like a click would).
+    static func cell(of room: Room) -> GridCell {
+        GridCell(column: room.columns.start + room.columns.count / 2, floor: room.floors.lowest)
+    }
+
     static func carCenter(_ car: ElevatorCar, in world: GameWorld) -> Vec2? {
         guard let shaft = world.rooms[car.id] else { return nil }
         let x = (world.grid.x(ofColumn: shaft.columns.start) + world.grid.x(ofColumn: shaft.columns.end)) / 2

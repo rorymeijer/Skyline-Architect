@@ -37,6 +37,11 @@ final class AppModel {
     var showBanksPanel = false
     /// Elevator banks of the active property with statistics (refreshed at 4 Hz).
     var banks: [ElevatorTraffic.Bank] = []
+    /// Selected room (click) and its inspector data; leasing overview (Phase 8, 4 Hz).
+    var selectedRoom: RoomID?
+    var unitReport: UnitReport?
+    var leasing = LeasingSummary()
+    var showLeasingPanel = false
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 
@@ -169,7 +174,8 @@ final class AppModel {
         }
         scene.roomLabelProvider = { [weak self] visible, zoom in
             guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return [] }
-            return RoomLabels.build(world: world, propertyID: property, catalog: catalog, visible: visible, zoom: zoom)
+            return RoomLabels.build(world: world, propertyID: property, catalog: catalog, visible: visible, zoom: zoom,
+                                    text: self.roomLabelText)
         }
         #if DEBUG
         scene.navigationProvider = { [weak self] in self?.navigationOverlay() }
@@ -179,6 +185,7 @@ final class AppModel {
             return self.traffic()
         }
         scene.onCommit = { [weak self] command in self?.perform(command) }
+        scene.onSelect = { [weak self] cell in self?.selectRoom(at: cell) }
         if let previous {
             scene.onReady = previous.onReady
             // Keep the camera where the player was looking.
@@ -204,7 +211,9 @@ final class AppModel {
         case "speed2": setSpeed(.double)
         case "speed3": setSpeed(.quadruple)
         case "speed4": setSpeed(.fastest)
-        default: select(tool: nil)
+        default:
+            select(tool: nil)
+            selectRoom(at: nil)
         }
     }
 

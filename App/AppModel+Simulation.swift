@@ -60,6 +60,7 @@ extension AppModel {
         population = PopulationSummary(world)
         if let simulation { navigationMetrics = simulation.navigation.metrics }
         banks = traffic()?.banks ?? []
+        refreshLeasing()
     }
 
     // MARK: Elevator banks

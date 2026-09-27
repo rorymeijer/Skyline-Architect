@@ -154,3 +154,26 @@ private func room(_ f: SimFixture, _ definition: String, floor: Int, left: Bool 
         #expect(!bad.problems(schedules: rules.schedules, rooms: rooms).isEmpty)
     }
 }
+
+@Suite struct LeasingReportTests {
+    @Test func reportsDescribeLeasedAndVacantUnits() throws {
+        var f = try SimFixture()
+        f.run(until: "10:00")
+        let leased = try room(f, "office-small", floor: 2)
+        let report = try #require(UnitReport.make(room: leased, world: f.world, engine: f.engine))
+        let occupant = try #require(report.occupant)
+        #expect(occupant.members == 3 && occupant.present == 3 && occupant.typeName == "Consultancy")
+        #expect(report.leasable && report.interest.isEmpty)
+        // Vacate it: the report now lists interest per type, best first.
+        Leasing.moveOut(f.world.tenants.values.first { $0.room == leased.id }!.id, world: &f.world)
+        let vacant = try #require(UnitReport.make(room: leased, world: f.world, engine: f.engine))
+        #expect(vacant.occupant == nil && vacant.interest.count == 3)
+        #expect(zip(vacant.interest, vacant.interest.dropFirst()).allSatisfy { $0.appraisal.total >= $1.appraisal.total })
+        let lobby = try #require(f.world.rooms.values.first { $0.definitionID == "lobby" })
+        #expect(UnitReport.make(room: lobby, world: f.world, engine: f.engine)?.leasable == false)
+
+        let summary = LeasingSummary.make(world: f.world, engine: f.engine, buildings: [f.building])
+        #expect(summary.units == 15 && summary.leased == 14 && summary.businesses == 7 && summary.households == 7)
+        #expect(summary.rentRoll == f.world.tenants.values.reduce(0) { $0 + $1.rent })
+    }
+}

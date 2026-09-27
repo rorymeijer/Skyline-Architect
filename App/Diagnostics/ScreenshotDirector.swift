@@ -56,75 +56,67 @@ final class ScreenshotDirector {
     private var started = false
 
     let steps: [Step] = [
-        Step(name: "01-skytower-traffic", grid: false) { model, scene in
+        Step(name: "01-vacant-tower", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            model.applyBlueprint("demo-skytower")
+            model.applyBlueprint("demo-tower")
             model.showDeveloperHUD = false
-            model.showTraffic = true
-            model.advanceSimulation(toTimeOfDay: 7, minute: 50)
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 80 * 60, step: 10) { ScreenshotDirector.waiting(in: $0) })
+            model.showLeasingPanel = true
             model.refreshSimulationSummary()
-            scene.apply(preset: .building)
-            let p = model.population
-            return "Sky tower at \(model.clockText) with the traffic overlay: \(model.banks.count) banks, \(p.waiting) waiting, \(p.riding) riding."
+            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
+            return "New demo tower at \(model.clockText): \(model.leasing.units) rentable units, \(model.leasing.leased) let, nobody inside."
         },
-        Step(name: "02-bank-panel", grid: false) { model, scene in
-            model.showBanksPanel = true
-            if let low = model.banks.first { model.setStrategy(.zoning, bank: low.id) }
-            model.advanceSimulation(ticks: 20 * 60)
+        Step(name: "02-first-tenants", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 20, minute: 0)
             model.refreshSimulationSummary()
-            let lines = model.banks.map { b in
-                "\(b.name) \(b.strategy.rawValue): avg \(Int(b.stats.averageWait.rounded())) s, max \(b.stats.maxWait) s, \(b.stats.boardings) boardings"
-            }
-            return "\(model.clockText), bank A switched to zoning 20 min ago. " + lines.joined(separator: "; ")
+            let m = model.leasing.market
+            return "\(model.clockText): \(model.leasing.leased)/\(model.leasing.units) let after \(m.prospects) prospects " +
+                "(\(m.signed) signed); rent roll \(model.leasing.rentRoll)/month."
         },
-        Step(name: "03-sky-lobby-transfer", grid: false) { model, scene in
-            model.showBanksPanel = false
-            model.showTraffic = false
-            model.advanceSimulation(toTimeOfDay: 7, minute: 55)
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 90 * 60, step: 2) { world in
-                ScreenshotDirector.skyLobbyWalker(on: 21, in: world) == nil ? 0 : 1
-            })
-            if let p = model.world.flatMap({ ScreenshotDirector.skyLobbyWalker(on: 21, in: $0) }) {
-                scene.withController { $0.jump(center: Vec2(p.x + 2, p.y + 2), zoom: 30) }
-            }
-            model.refreshSimulationSummary()
-            return "\(model.clockText): a person crossing the floor-21 sky lobby from the express shuttle to the upper bank."
+        Step(name: "03-inspector-tenant", grid: false) { model, scene in
+            model.showLeasingPanel = false
+            guard let world = model.world, let tenant = world.tenants.values.first(where: { t in
+                model.simulation?.rules.tenantType(t.typeID)?.kind == "business" }) ?? world.tenants.values.first,
+                  let room = world.rooms[tenant.room] else { return "no tenant yet" }
+            model.selectRoom(at: ScreenshotDirector.cell(of: room))
+            return "\(model.clockText): inspector for \(tenant.name) (\(tenant.typeID)), rent \(tenant.rent)/month."
         },
-        Step(name: "04-lobby-queues", grid: false) { model, scene in
-            model.showTraffic = true
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 60 * 60, step: 5) { ScreenshotDirector.waiting(in: $0, floor: 0) })
-            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first {
-                scene.withController { $0.jump(center: Vec2(Double(b.footprint.start) + 10, 2.6), zoom: 30) }
-            }
-            model.refreshSimulationSummary()
-            let n = model.world.map { ScreenshotDirector.waiting(in: $0, floor: 0) } ?? 0
-            return "\(model.clockText): ground-floor landings of bank A and the express with \(n) waiting (badges: people · longest wait)."
+        Step(name: "04-inspector-vacant", grid: false) { model, scene in
+            guard let world = model.world, let simulation = model.simulation else { return "no world" }
+            let vacant = Leasing.vacantUnits(world, catalog: simulation.catalog)
+            guard let room = vacant.min(by: { a, b in
+                let sa = UnitReport.make(room: a, world: world, engine: simulation)?.interest.first?.appraisal.total ?? 0
+                let sb = UnitReport.make(room: b, world: world, engine: simulation)?.interest.first?.appraisal.total ?? 0
+                return (sa, a.id) < (sb, b.id)
+            }) else { return "no vacant unit left at \(model.clockText)" }
+            model.selectRoom(at: ScreenshotDirector.cell(of: room))
+            let r = model.unitReport
+            return "\(model.clockText): vacant \(r?.title ?? "") on \(r?.floor ?? "") — " +
+                (r?.interest.map { "\($0.typeName) \(Int($0.appraisal.total * 100))% \($0.wouldSign ? "would sign" : LeasingSummary.describe($0.appraisal.weakest))" }
+                    .joined(separator: ", ") ?? "")
         },
-        Step(name: "05-evening-down-peak", grid: false) { model, scene in
+        Step(name: "05-mixed-schedules", grid: false) { model, scene in
+            model.selectRoom(at: nil)
             model.showDeveloperHUD = true
-            model.advanceSimulation(toTimeOfDay: 16, minute: 40)
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 100 * 60, step: 10) { ScreenshotDirector.waiting(in: $0) })
+            model.advanceSimulation(toTimeOfDay: 7, minute: 20)       // day 2
+            model.advanceSimulation(ticks: SimClock.secondsPerDay)    // day 3
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3 * 3600, step: 60) { ScreenshotDirector.travelling(in: $0) })
             model.refreshSimulationSummary()
-            scene.apply(preset: .building)
-            let p = model.population
-            return "Evening down-peak at \(model.clockText): \(p.waiting) waiting, \(p.riding) riding, longest wait \(p.longestWait) s."
+            let types = Dictionary(grouping: model.world?.tenants.values ?? [], by: \.typeID).map { "\($0.key) \($0.value.count)" }.sorted()
+            return "Day 3 \(model.clockText): \(model.population.travelling) on the move; tenants: " + types.joined(separator: ", ")
         },
-        Step(name: "06-bank-statistics", grid: false) { model, scene in
+        Step(name: "06-leasing-week", grid: false) { model, scene in
             model.showDeveloperHUD = false
-            model.showBanksPanel = true
-            model.advanceSimulation(toTimeOfDay: 18, minute: 5)
+            model.showLeasingPanel = true
+            model.advanceSimulation(toTimeOfDay: 9, minute: 0)
+            model.advanceSimulation(ticks: 4 * SimClock.secondsPerDay)  // day 7
             model.refreshSimulationSummary()
-            scene.apply(preset: .building)
-            let lines = model.banks.map { b in
-                "\(b.name): \(b.stats.boardings) boardings, avg \(Int(b.stats.averageWait.rounded())) s, max \(b.stats.maxWait) s, " +
-                    "\(b.passengersLastHour) pax 17–18 h, \(b.stats.abandoned) took stairs"
-            }
-            return "Statistics since the start at \(model.clockText): " + lines.joined(separator: "; ")
+            let s = model.leasing, m = s.market
+            return "\(model.clockText): \(s.leased)/\(s.units) let, avg satisfaction \(Int(s.averageSatisfaction * 100))%, " +
+                "prospects \(m.prospects), signed \(m.signed), moved out \(m.movedOut), declines " +
+                DeclineReason.allCases.map { "\($0.rawValue) \(m.declines($0))" }.joined(separator: " ")
         },
         Step(name: "07-save-load-roundtrip", grid: false) { model, scene in
-            model.showBanksPanel = false
-            model.showTraffic = false
+            model.showLeasingPanel = false
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")

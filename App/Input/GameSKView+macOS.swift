@@ -17,6 +17,8 @@ final class GameSKView: SKView {
     /// Tool shortcuts: "floor", "demolish", "cancel".
     var onToolKey: ((String) -> Void)?
     private var isPlacing = false
+    /// Where a left click started (window coordinates), to tell clicks from drags.
+    private var clickStart: CGPoint?
 
     private var worldScene: WorldScene? { scene as? WorldScene }
     private var trackingArea: NSTrackingArea?
@@ -92,6 +94,7 @@ final class GameSKView: SKView {
             isPlacing = true
             worldScene.beginPlacement(at: scenePoint(event))
         } else {
+            clickStart = event.locationInWindow
             beginDrag(event)
         }
     }
@@ -111,6 +114,11 @@ final class GameSKView: SKView {
             worldScene?.endPlacement(at: scenePoint(event))
         } else {
             endDrag(event)
+            // A click that did not move is a selection.
+            if let start = clickStart, hypot(event.locationInWindow.x - start.x, event.locationInWindow.y - start.y) < 4 {
+                worldScene?.select(at: scenePoint(event))
+            }
+            clickStart = nil
         }
     }
     override func rightMouseUp(with event: NSEvent) { endDrag(event) }
