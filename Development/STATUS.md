@@ -12,7 +12,7 @@ M1 “First Playable” (end of Phase 9) — Phases 1–7 of 9 done.
 | Gate | Status | Evidence |
 |------|--------|----------|
 | Compiles (macOS + iPad Simulator) | ✅ | CI run 36339081561 |
-| Automated tests pass | ✅ | 163 tests (Linux + macOS) incl. bank detection, strategy adoption, all three strategies serve the sky tower, sky-lobby transfer, zoning zones, destination grouping in a peak, patience/abandonment, statistics, traffic data, save v3→v4 + v4 fixture |
+| Automated tests pass | ✅ | 161 tests (Linux + macOS) incl. bank detection, strategy adoption, all three strategies serve the sky tower, sky-lobby transfer, zoning zones, destination grouping in a peak, patience/abandonment, statistics, traffic data, save v3→v4 + v4 fixture |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
 | Feature demonstrable | ✅ | 7 captures in `Development/Screenshots/Phase-07/` |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
