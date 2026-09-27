@@ -2,6 +2,24 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.6.0] — Phase 6: First functioning elevators
+
+### Added
+- **Elevator cars**, one per elevator shaft: capacity, speed and acceleration
+  (trapezoidal motion), door and boarding times from `elevators.json`.
+- **Queues and hall calls**: people walk to the landing, wait in order, board, ride and
+  alight; **collective control** dispatch serves calls in the direction of travel.
+- **Routing** chooses stairs or elevator by expected time (stairs for 1–2 storeys).
+- **Rendering**: moving cabs with sliding doors and hoist rope; people queue at the
+  landing doors and stand inside cabs. HUD rows for cars, riders, waiting and longest wait;
+  elevator links in the navigation overlay.
+- **Save format 3** (+ migration, golden fixture) with cars and waiting/riding people.
+- `demo-highrise` blueprint (21 storeys, one full-height elevator) for captures and tests.
+
+### Changed
+- The event queue handles cars and people; re-planning after construction covers people
+  waiting for or riding a removed elevator.
+
 ## [0.5.0] — Phase 5: Navigation / pathfinding
 
 ### Added

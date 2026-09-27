@@ -122,6 +122,7 @@ final class AppModel {
     private func install(world: GameWorld, activePropertyID: PropertyID) {
         var world = world
         if let library { PopulationSync.sync(&world, catalog: library.buildCatalog, rules: library.simulationRules) }
+        simulation?.replanAfterConstruction(&world)     // also creates elevator cars
         self.world = world
         self.activePropertyID = activePropertyID
         let property = world.properties[activePropertyID]
@@ -151,6 +152,11 @@ final class AppModel {
             guard let self, let world = self.world, let property = self.activePropertyID else { return [] }
             return PeopleView.visible(world: world, propertyID: property, time: Double(world.clock.tick) + self.host.fraction,
                                       visible: visible, zoom: zoom)
+        }
+        scene.carProvider = { [weak self] visible, zoom in
+            guard let self, let world = self.world, let property = self.activePropertyID else { return [] }
+            return ElevatorView.visible(world: world, propertyID: property, time: Double(world.clock.tick) + self.host.fraction,
+                                        visible: visible, zoom: zoom) { self.doorSeconds(of: $0) }
         }
         scene.previewProvider = { [weak self] tool, anchor, current in
             guard let self, let world = self.world, let property = self.activePropertyID, let engine = self.engine else { return nil }

@@ -9,13 +9,17 @@ struct SimFixture {
     let engine: SimulationEngine
     let building: BuildingID
 
-    init(tower: Bool = true) throws {
+    /// `elevator: false` demolishes the demo tower's elevator shaft (stairs-only tests).
+    init(tower: Bool = true, elevator: Bool = true) throws {
         library = try ContentLibrary.loadBase()
         var game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: library)
         let b = game.world.buildings(on: game.activePropertyID).first!
         if tower {
             let construction = ConstructionEngine(catalog: library.buildCatalog)
             for c in library.blueprint("demo-tower")!.commands(for: b) { try construction.apply(c, to: &game.world) }
+            if !elevator, let shaft = game.world.rooms.values.first(where: { $0.definitionID == "elevator-shaft" }) {
+                try construction.apply(.demolishRoom(shaft.id), to: &game.world)
+            }
         }
         world = game.world
         building = b.id
@@ -103,7 +107,7 @@ struct SimFixture {
     }
 
     @Test func floorsWithoutStairsAreUnreachable() throws {
-        var f = try SimFixture()
+        var f = try SimFixture(elevator: false)
         let stairs = try #require(f.world.rooms.values.first { $0.definitionID == "stairs" })
         try ConstructionEngine(catalog: f.library.buildCatalog).apply(.demolishRoom(stairs.id), to: &f.world)
         f.run(until: "10:00")

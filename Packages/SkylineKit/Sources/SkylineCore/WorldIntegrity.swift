@@ -56,6 +56,21 @@ extension GameWorld {
                 throw WorldIntegrityError.danglingReference("person \(person.id) → room \(room)")
             }
         }
+        for car in elevators {
+            guard let shaft = rooms[car.id], shaft.buildingID == car.buildingID, shaft.floors.contains(car.floor) else {
+                throw WorldIntegrityError.danglingReference("elevator \(car.id) → shaft")
+            }
+            for id in car.passengers {
+                guard case let .riding(ride, _)? = people[id]?.place, ride.shaft == car.id else {
+                    throw WorldIntegrityError.danglingReference("elevator \(car.id) → passenger \(id)")
+                }
+            }
+        }
+        for person in people {
+            if case let .riding(ride, _) = person.place, elevators[ride.shaft]?.passengers.contains(person.id) != true {
+                throw WorldIntegrityError.danglingReference("rider \(person.id) → elevator \(ride.shaft)")
+            }
+        }
         guard ids.next > maxID else { throw WorldIntegrityError.idAllocatorBehind(maxID) }
     }
 }

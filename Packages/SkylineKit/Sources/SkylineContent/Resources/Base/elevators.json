@@ -1,0 +1,12 @@
+[
+ {
+  "room": "elevator-shaft",
+  "name": "Passenger elevator (13 persons, 2.5 m/s)",
+  "capacity": 13,
+  "speed": 2.5,
+  "acceleration": 1.0,
+  "doorSeconds": 2,
+  "transferSeconds": 1,
+  "expectedWaitSeconds": 25
+ }
+]

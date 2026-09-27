@@ -56,73 +56,68 @@ final class ScreenshotDirector {
     private var started = false
 
     let steps: [Step] = [
-        Step(name: "01-navigation-graph", grid: false) { model, scene in
+        Step(name: "01-morning-queues", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            model.applyBlueprint("demo-tower")
-            model.showNavigationOverlay = true
-            model.advanceSimulation(toTimeOfDay: 7, minute: 50)
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 80 * 60, step: 15) { ScreenshotDirector.travelling(in: $0) })
+            model.applyBlueprint("demo-highrise")
+            model.advanceSimulation(toTimeOfDay: 7, minute: 40)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 100 * 60, step: 10) { ScreenshotDirector.waiting(in: $0) })
             model.refreshSimulationSummary()
             scene.apply(preset: .building)
-            let m = model.navigationMetrics
-            return "Navigation overlay at \(model.clockText): \(m.portals) portals, \(m.edges) links; \(model.population.travelling) routes shown."
+            let p = model.population
+            return "Morning at \(model.clockText): \(p.waiting) waiting, \(p.riding) riding, longest wait \(p.longestWait) s, \(p.inRooms) in rooms."
         },
-        Step(name: "02-transfer-routes", grid: false) { model, scene in
-            let upper = ScreenshotDirector.buildTransferExtension(model)
-            model.advanceSimulation(toTimeOfDay: 7, minute: 50)
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 80 * 60, step: 10) { ScreenshotDirector.transfers(in: $0) })
+        Step(name: "02-lobby-queue", grid: false) { model, scene in
+            model.showDeveloperHUD = false
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 5) { ScreenshotDirector.waiting(in: $0, floor: 0) })
+            if let world = model.world, let car = world.elevators.values.first, let c = ScreenshotDirector.carCenter(car, in: world) {
+                scene.withController { $0.jump(center: Vec2(c.x, 2.2), zoom: 42) }
+            }
             model.refreshSimulationSummary()
-            model.showDeveloperHUD = false
-            scene.withController { $0.jump(center: Vec2(24, 32), zoom: 13) }
-            let transfers = model.world.map(ScreenshotDirector.transfers(in:)) ?? 0
-            return "Floors 9–12 added, reached via a second stairwell from floor 8 (\(upper.map { "\($0)" } ?? "missing")): " +
-                "\(transfers) people transferring at \(model.clockText)."
+            let n = model.world.map { ScreenshotDirector.waiting(in: $0, floor: 0) } ?? 0
+            return "Ground-floor landing at \(model.clockText): \(n) people queuing for the elevator."
         },
-        Step(name: "03-transfer-closeup", grid: false) { model, scene in
-            model.showNavigationOverlay = false
-            model.showDeveloperHUD = false
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 2 * 3600, step: 2) { world in
-                ScreenshotDirector.transferWalker(on: 8, in: world) == nil ? 0 : 1
+        Step(name: "03-doors-open-boarding", grid: false) { model, scene in
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 1) { world in
+                ScreenshotDirector.boardingCar(in: world)?.passengers.count ?? 0
             })
-            if let p = model.world.flatMap({ ScreenshotDirector.transferWalker(on: 8, in: $0) }) {
-                scene.withController { $0.jump(center: p + Vec2(0, 1.2), zoom: 40) }
+            if let world = model.world, let car = ScreenshotDirector.boardingCar(in: world), let c = ScreenshotDirector.carCenter(car, in: world) {
+                scene.withController { $0.jump(center: c + Vec2(-1, 0), zoom: 44) }
+                model.refreshSimulationSummary()
+                return "\(model.clockText): car stopped at floor \(car.floor) with doors open, \(car.passengers.count) inside."
             }
-            model.refreshSimulationSummary()
-            return "Close-up at \(model.clockText): a person crossing floor 8 from one stairwell to the other."
+            return "no boarding moment found"
         },
-        Step(name: "04-replanned-after-rebuild", grid: false) { model, scene in
+        Step(name: "04-car-moving-riders", grid: false) { model, scene in
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 2) { world in
+                ScreenshotDirector.movingCar(in: world)?.riders ?? 0
+            })
+            if let m = model.world.flatMap(ScreenshotDirector.movingCar(in:)) {
+                scene.withController { $0.jump(center: m.center, zoom: 30) }
+                model.refreshSimulationSummary()
+                return "\(model.clockText): moving car with \(m.riders) riders (cab drawn at its exact interpolated height)."
+            }
+            return "no moving car with riders found"
+        },
+        Step(name: "05-elevator-routes-overlay", grid: false) { model, scene in
             model.showNavigationOverlay = true
-            guard let world = model.world, let property = model.activePropertyID,
-                  let upper = world.buildings(on: property).first.flatMap({ world.room(in: $0.id, column: $0.footprint.start + 21, floor: 8) }) else {
-                return "upper stairwell missing"
-            }
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 5) { ScreenshotDirector.people(routedVia: upper.id, in: $0) })
-            let affected = model.world.map { ScreenshotDirector.people(routedVia: upper.id, in: $0) } ?? 0
-            // New stairwell first, then remove the old one: trips re-plan onto the new shaft.
-            let replacement = ScreenshotDirector.placeReplacementStairs(model)
-            model.perform(.demolishRoom(upper.id))
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 32), zoom: 13) }
-            let rerouted = replacement.flatMap { r in model.world.map { ScreenshotDirector.people(routedVia: r, in: $0) } } ?? 0
-            return "\(model.clockText): upper stairwell replaced by one on the far side while \(affected) trips used it; " +
-                "\(rerouted) trips now routed via the new shaft, unreachable \(model.population.unreachable)."
-        },
-        Step(name: "05-unreachable-floors", grid: false) { model, scene in
-            guard let world = model.world, let property = model.activePropertyID,
-                  let shaft = world.buildings(on: property).first.flatMap({
-                      world.room(in: $0.id, column: $0.footprint.start + ScreenshotDirector.replacementColumn, floor: 8) }) else {
-                return "replacement stairwell missing"
-            }
-            model.perform(.demolishRoom(shaft.id))
-            model.advanceSimulation(toTimeOfDay: 12, minute: 30)
-            model.refreshSimulationSummary()
             model.showDeveloperHUD = true
-            scene.withController { $0.jump(center: Vec2(12, 30), zoom: 13) }
-            let m = model.navigationMetrics
-            return "\(model.clockText): floors 9–12 have no stairs; \(model.population.unreachable) people unreachable, " +
-                "\(m.failures) failed path queries, \(m.graphBuilds) graph builds."
+            model.advanceSimulation(toTimeOfDay: 12, minute: 5)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 40 * 60, step: 10) { ScreenshotDirector.travelling(in: $0) })
+            model.refreshSimulationSummary()
+            scene.apply(preset: .building)
+            let p = model.population
+            return "Lunch at \(model.clockText) with the navigation overlay: elevator links (green), stairs (orange); \(p.waiting) waiting, \(p.riding) riding."
         },
-        Step(name: "06-save-load-roundtrip", grid: false) { model, scene in
+        Step(name: "06-evening-down-peak", grid: false) { model, scene in
+            model.showNavigationOverlay = false
+            model.advanceSimulation(toTimeOfDay: 16, minute: 45)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 90 * 60, step: 10) { ScreenshotDirector.waiting(in: $0) })
+            model.refreshSimulationSummary()
+            scene.apply(preset: .building)
+            let p = model.population
+            return "Evening down-peak at \(model.clockText): \(p.waiting) waiting, \(p.riding) riding, longest wait \(p.longestWait) s."
+        },
+        Step(name: "07-save-load-roundtrip", grid: false) { model, scene in
             model.showNavigationOverlay = false
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")

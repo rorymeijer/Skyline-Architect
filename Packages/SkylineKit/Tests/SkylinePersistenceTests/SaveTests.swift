@@ -32,6 +32,27 @@ func makeLivingSave() throws -> SaveGame {
     return save
 }
 
+/// A save with elevator traffic: first moment after 08:00 when someone waits at a landing
+/// and someone rides a car.
+func makeElevatorSave() throws -> SaveGame {
+    let lib = try ContentLibrary.loadBase()
+    var save = try makeDemoSave()
+    PopulationSync.sync(&save.world, catalog: lib.buildCatalog, rules: lib.simulationRules)
+    let engine = SimulationEngine(rules: lib.simulationRules, catalog: lib.buildCatalog)
+    engine.advance(&save.world, by: 2 * 3600)
+    func busy(_ w: GameWorld) -> Bool {
+        w.people.values.contains { if case .waiting = $0.place { true } else { false } }
+            && w.people.values.contains { if case .riding = $0.place { true } else { false } }
+    }
+    var guardSteps = 0
+    while !busy(save.world) && guardSteps < 4 * 3600 {
+        engine.advance(&save.world, by: 1)
+        guardSteps += 1
+    }
+    save.metadata.gameVersion = "0.6.0"
+    return save
+}
+
 let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
 
 @Suite struct SaveCodecTests {
@@ -136,18 +157,39 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(loaded == save)
     }
 
-    /// Golden fixture v2 (people + clock). Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV2`.
+    /// Golden fixture v2 (people + clock). Frozen since format 3: it upgrades on load and its
+    /// elevator shafts get cars on the first simulation step.
     @Test func goldenFixtureV2StillLoads() throws {
+        let lib = try ContentLibrary.loadBase()
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        var save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v2.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.people.count == 38)
+        #expect(save.world.clock.tick >= 2 * 3600)
+        #expect(save.world.elevators.isEmpty)
+        SimulationEngine(rules: lib.simulationRules, catalog: lib.buildCatalog).advance(&save.world, by: 60)
+        #expect(save.world.elevators.count == 1)
+        try save.world.validateIntegrity()
+    }
+
+    /// Golden fixture v3 (elevator cars, people waiting and riding). Regenerate only
+    /// deliberately: `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV3`.
+    @Test func goldenFixtureV3StillLoads() throws {
         if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v2.skylinesave")
-            try SaveCodec.encode(makeLivingSave()).write(to: source)
+            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v3.skylinesave")
+            try SaveCodec.encode(makeElevatorSave()).write(to: source)
             return
         }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
-        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v2.skylinesave")), availablePacks: basePacks)
-        #expect(save.world.people.count == 38)
-        #expect(save.world.clock.tick >= 2 * 3600)
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v3.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.elevators.count == 1)
+        #expect(save.world.people.values.contains { if case .waiting = $0.place { true } else { false } })
+        #expect(save.world.people.values.contains { if case .riding = $0.place { true } else { false } })
+    }
+
+    @Test func elevatorWorldRoundTrips() throws {
+        let save = try makeElevatorSave()
+        let loaded = try SaveCodec.decode(SaveCodec.encode(save), availablePacks: basePacks)
+        #expect(loaded == save)
     }
 
     /// Golden fixture: a format-1 save committed to the repository must load forever.

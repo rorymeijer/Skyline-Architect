@@ -123,3 +123,11 @@ floor and continue. Rebuilding or removing stairs takes effect immediately: peop
 on their way re-route from where they are, or give up and leave if no way remains, and the
 UI reports how many people cannot reach their home or work. In developer builds, ⌥⌘N shows
 the navigation graph and everyone's route. Elevators still have no cars (Phase 6).
+
+## Phase 6 player experience (current)
+
+Elevator shafts now have cars. People going more than two storeys walk to the landing,
+wait at the doors, board, ride and get out at their floor; the car collects everyone
+travelling its way and turns at the last call. Morning and evening rushes form visible
+queues, and the HUD shows how many people wait and for how long. One car per shaft;
+banks, express elevators and smarter dispatching come in Phase 7.

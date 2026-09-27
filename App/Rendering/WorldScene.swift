@@ -35,6 +35,8 @@ final class WorldScene: SKScene {
     /// Visible people for the current view (from the model; the scene only draws them).
     var peopleProvider: ((Rect, Double) -> [PersonSprite])?
     private let agentLayer = AgentLayer()
+    var carProvider: ((Rect, Double) -> [CarSprite])?
+    private let elevatorLayer = ElevatorLayer()
 
     // Construction interaction. The scene only tracks pointer state; rules and previews
     // come from the model through these closures (no game logic in the renderer).
@@ -105,6 +107,8 @@ final class WorldScene: SKScene {
         worldRoot.addChild(deep)
 
         worldRoot.addChild(tileLayer.node)
+        elevatorLayer.node.zPosition = 4
+        worldRoot.addChild(elevatorLayer.node)
         agentLayer.node.zPosition = 5
         worldRoot.addChild(agentLayer.node)
         gridOverlay.zPosition = 10
@@ -225,6 +229,7 @@ final class WorldScene: SKScene {
             overlayDirty = true
         }
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
+        elevatorLayer.update(carProvider?(camera.visibleRect, camera.zoom) ?? [])
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
         navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
 

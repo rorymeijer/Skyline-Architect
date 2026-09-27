@@ -49,6 +49,12 @@ presentation style (`office`, `apartment`, `lobby`, `corridor`, `stairs`, `eleva
 ids, sane ranges, shafts span ≥ 2 floors, non-negative costs. The build palette shows
 every definition automatically — a mod adding a room type needs no code.
 
+### ElevatorSpec (elevators.json)
+`room` (elevator shaft room id), `name, capacity, speed (m/s), acceleration (m/s²),
+doorSeconds, transferSeconds (per person), expectedWaitSeconds` (the waiting time route
+planning assumes when choosing elevator vs. stairs). Every room with `transport: "elevator"`
+needs exactly one entry; validation rejects out-of-range values and unknown rooms.
+
 ### BuildRules (build-rules.json)
 `slabCostPerModule, basementSlabCostPerModule, maxCantileverModules, demolitionRefund (0…1)`.
 

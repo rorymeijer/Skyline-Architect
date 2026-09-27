@@ -192,7 +192,7 @@ enum RoomArt {
     }
 
     /// Elevator hoistway: dark shaft, guide rails and landing doors at each floor.
-    /// (Cars arrive with Phase 6.)
+    /// Cars are drawn dynamically on top (`ElevatorArt`, app `ElevatorLayer`).
     private static func hoistway(into d: inout Drawing, room: Room, x0: Double, x1: Double, grid: GridSpec, palette p: ArtPalette) {
         let f = p.finishes("elevatorShaft")
         let bottom = grid.y(ofFloor: room.floors.lowest)

@@ -16,7 +16,7 @@ struct TransferFixture {
     let x0: Int
 
     init() throws {
-        f = try SimFixture()
+        f = try SimFixture(elevator: false)
         construction = ConstructionEngine(catalog: f.library.buildCatalog)
         let b = f.building
         x0 = f.world.buildings[b]!.footprint.start
@@ -44,7 +44,7 @@ struct TransferFixture {
         let street = RoutePlanner.street(of: building, rules: f.library.simulationRules)!
         return RoutePlanner.plan(from: street, to: Spot(floor: floor, x: Double(x0) + x), building: building, world: f.world,
                                  navigation: f.engine.navigation, catalog: f.library.buildCatalog,
-                                 rules: f.library.simulationRules, now: 100)
+                                 rules: f.library.simulationRules, now: 100)?.legs
     }
 }
 
@@ -76,7 +76,7 @@ private func stairs(_ legs: [Leg]) -> [(RoomID, Int, Int)] {
         // Down again: the same shafts in reverse order.
         let back = try #require(RoutePlanner.plan(from: Spot(floor: 11, x: Double(t.x0) + 6), to: Spot(floor: -1, x: Double(t.x0) + 3), building: t.building,
                                                   world: t.f.world, navigation: t.f.engine.navigation,
-                                                  catalog: t.f.library.buildCatalog, rules: t.f.library.simulationRules, now: 0))
+                                                  catalog: t.f.library.buildCatalog, rules: t.f.library.simulationRules, now: 0)?.legs)
         #expect(stairs(back).map(\.0) == [t.upperStairs, t.lowerStairs])
     }
 

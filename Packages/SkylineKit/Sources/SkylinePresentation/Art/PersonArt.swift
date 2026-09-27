@@ -114,12 +114,41 @@ public enum PeopleView {
     /// Walk-cycle stride: one frame per this many meters walked.
     static let metersPerFrame = 0.32
 
+    /// Where the i-th person in an elevator queue stands, relative to the landing (doors'
+    /// centre): first two at the doors, then alternating outward.
+    static func queueOffset(_ i: Int) -> Double {
+        let rank = Double(i / 2)
+        let side: Double = i % 2 == 0 ? -1 : 1
+        return side * (0.35 + 0.55 * rank)
+    }
+
+    /// Standing spots inside a car, around the shaft centre (two rows staggered).
+    static func carSlot(_ i: Int) -> Double {
+        let offsets = [-0.2, 0.25, -0.65, 0.7, 0.0, -0.45, 0.45, -0.85, 0.85]
+        return offsets[i % offsets.count]
+    }
+
+    /// Position of each waiting person in their queue (order: since, id).
+    static func queuePositions(_ world: GameWorld) -> [PersonID: Int] {
+        var queues: [String: [(Tick, PersonID)]] = [:]
+        for p in world.people {
+            guard case let .waiting(ride, _, since) = p.place else { continue }
+            queues["\(ride.shaft.raw)/\(ride.fromFloor)", default: []].append((since, p.id))
+        }
+        var index: [PersonID: Int] = [:]
+        for list in queues.values {
+            for (i, entry) in list.sorted(by: { ($0.0, $0.1) < ($1.0, $1.1) }).enumerated() { index[entry.1] = i }
+        }
+        return index
+    }
+
     public static func visible(world: GameWorld, propertyID: PropertyID, time: Double, visible: Rect, zoom: Double) -> [PersonSprite] {
         guard zoom >= minZoom else { return [] }
         let grid = world.grid
         let area = visible.insetBy(dx: -2, dy: -2)
         let buildings = Set(world.buildings(on: propertyID).map(\.id))
         var sprites: [PersonSprite] = []
+        let queues = queuePositions(world)
         for p in world.people where buildings.contains(p.buildingID) {
             switch p.place {
             case .outside:
@@ -138,6 +167,18 @@ public enum PeopleView {
                 let frame = Int((travelled / metersPerFrame).rounded(.down)) % PersonArt.walkFrames
                 sprites.append(PersonSprite(id: p.id, position: pos, facing: s.direction, pose: .walking,
                                             frame: frame, look: PersonLook(traits: p.traits, role: p.role)))
+            case let .waiting(ride, _, _):
+                // Queue in front of the landing doors, spreading out to both sides.
+                let pos = Vec2(ride.x + queueOffset(queues[p.id] ?? 0), grid.y(ofFloor: ride.fromFloor) + 0.08)
+                guard area.contains(pos) else { continue }
+                sprites.append(PersonSprite(id: p.id, position: pos, facing: 1, pose: .standing, frame: 0,
+                                            look: PersonLook(traits: p.traits, role: p.role)))
+            case let .riding(ride, _):
+                guard let car = world.elevators[ride.shaft], let slot = car.passengers.firstIndex(of: p.id) else { continue }
+                let pos = Vec2(ride.x + carSlot(slot), ElevatorMotion.y(of: car, at: time, grid: grid) + 0.08)
+                guard area.contains(pos) else { continue }
+                sprites.append(PersonSprite(id: p.id, position: pos, facing: slot % 2 == 0 ? 1 : -1, pose: .standing,
+                                            frame: 0, look: PersonLook(traits: p.traits, role: p.role)))
             }
         }
         return sprites

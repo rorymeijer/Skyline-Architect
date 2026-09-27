@@ -172,3 +172,17 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Alternatives:** Quantized keys (more hits, but results would depend on which query came first — breaking determinism across save/load); re-planning every traveller after any change.
 - **Reason:** The cache must never change outcomes (saves do not store it). Personal standing spots are fixed, so exact keys still hit on every repeated daily trip. Re-planning valid trips would make construction visibly jolt unrelated people.
 - **Consequences:** The first day of a large building is mostly misses (45 % hits in the 200-floor test day; higher on later days). The signature is recomputed every simulation step (O(rooms of the building)); fine at current scale, revisit with a construction revision counter if profiling shows it (Phase 19).
+
+## D-025 — Elevator cars are event-driven with analytic motion
+- **Date:** 2026-09-27
+- **Decision:** One `ElevatorCar` per shaft is saved state. It acts only at events (arrival, doors closed, a call waking an idle car) in the same event queue as people; cars act before people at equal ticks. Position between events is a trapezoidal profile evaluated analytically. Queues are not stored separately: they are the people in `waiting` state at a landing, ordered by (since, id).
+- **Alternatives:** Per-tick car integration; stored hall-call lists.
+- **Reason:** Consistent with D-019 (analytic trips): cheap at scale (60 floors, 354 workers, 5 h of rush in 14 ms release), exact rendering, deterministic across batch sizes; derived queues can never disagree with people's states.
+- **Consequences:** Calls that arrive while a car is moving wait for its next stop (no mid-trip re-targeting). Multi-car banks (Phase 7) add a bank dispatcher that assigns calls to cars; car state stays the same.
+
+## D-026 — Route planning assumes a constant elevator wait
+- **Date:** 2026-09-27
+- **Decision:** The boarding edge costs `expectedWaitSeconds` from content, not the live queue.
+- **Alternatives:** Queue-dependent costs.
+- **Reason:** Keeps routes a pure function of structure, so the exact-key route cache stays valid (D-024) and results do not depend on cache state.
+- **Consequences:** People do not switch to the stairs when a queue is long. Phase 7 can add a separate, deterministic decision at the landing (e.g. patience → take the stairs) without touching the cache.

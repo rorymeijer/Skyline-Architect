@@ -1,8 +1,9 @@
 # Simulation
 
-Status: **FUNCTIONAL (Phases 4–5)** — clock, speeds, people with schedules, population sync,
-navigation graph with stair transfers, route cache, re-planning after construction.
-PLANNED: elevators (6–7), tenants and needs (8), economy (9).
+Status: **FUNCTIONAL (Phases 4–6)** — clock, speeds, people with schedules, population sync,
+navigation graph with stair transfers and elevators, route cache, re-planning after
+construction, elevator cars with collective control. PLANNED: banks and dispatch
+strategies (7), tenants and needs (8), economy (9).
 
 Code: `Packages/SkylineKit/Sources/SkylineSimulation` (logic) and `SkylineCore/People.swift`
 (saved state).
@@ -32,9 +33,11 @@ Code: `Packages/SkylineKit/Sources/SkylineSimulation` (logic) and `SkylineCore/P
 ```
 advance(world, n):
   target = clock + n
-  structure changed since the last step? → re-plan invalidated trips (see Navigation)
-  heap ← people with nextEventTick ≤ target
-  while pop (tick, id):
+  structure changed / cars out of sync? → sync cars, re-plan invalidated trips
+  heap ← cars and people with nextEventTick ≤ target      (order: tick, cars, people, id)
+  while pop (tick, who):
+    car        → collective control step (ELEVATORS.md): alight, board, move or idle
+    arrival with pendingRide → place = waiting (queue); wake the car if idle
     arrival?   → place = destination; schedule next goal
     goal due?  → resolve work/home/outside → plan route → place = travelling(legs)
                  (no route → unreachable = true; stays put; next goal)
@@ -99,13 +102,16 @@ developer HUD.
 **Debug overlay** (Debug builds, ⌥⌘N): portals, walk links, stair links and each
 traveller's remaining route, drawn from `NavigationOverlay` data.
 
-Elevators (Phase 6) will add their own edge kind whose cost includes an expected wait, plus
-waiting as events; the graph and cache stay as they are.
+**Elevators** (Phase 6) add a landing node and an in-car node per served floor (board /
+ride / alight edges; see ELEVATORS.md). A planned trip stops at its first ride: the
+walking legs lead to the landing and `pendingRide` records the ride. After alighting the
+rest is planned again from that landing (identical to the original remainder, since the
+costs are static), which may include further walks, stairs or another elevator.
 
 ## Not yet simulated (honest list)
 
-Needs (hunger, energy …), moods, visitors, elevators (shafts exist but are not walkable
-routes yet), congestion (stairs have unlimited capacity), economy effects.
+Needs (hunger, energy …), moods, visitors, patience/abandonment in elevator queues, live
+queue length in route choice, congestion on stairs, economy effects.
 
 ## Concurrency
 

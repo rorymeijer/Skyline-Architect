@@ -9,46 +9,51 @@ public struct ReplanReport: Equatable, Sendable {
 }
 
 extension SimulationEngine {
-    /// Re-plans trips invalidated by construction. A trip is invalid when a remaining leg
-    /// walks where there is no floor or uses a shaft that no longer serves those floors.
-    /// Affected people continue from where they are now (people on stairs step onto the
-    /// nearest landing); if no route remains they leave the building and are marked
+    /// Brings cars in line with the shafts, then re-plans trips invalidated by construction.
+    /// A trip is invalid when a remaining leg walks where there is no floor, uses a stair
+    /// shaft that no longer serves those floors, or waits for / rides an elevator that no
+    /// longer serves the ride. Affected people continue from where they are now (people on
+    /// stairs step onto the nearest landing; riders of a removed car step out at the floor it
+    /// was nearest to); if no route remains they leave the building and are marked
     /// unreachable. Trips that are still valid are kept even if a faster route appeared.
     ///
     /// Runs automatically at the start of `advance` when the structure changed; the app also
     /// calls it right after a command so a paused game never shows people on removed stairs.
     @discardableResult
     public func replanAfterConstruction(_ world: inout GameWorld) -> ReplanReport {
+        ElevatorSync.sync(&world, catalog: catalog, rules: rules)
         navigation.refresh(world: world, catalog: catalog)
         var report = ReplanReport()
         let now = world.clock.tick
         var graphs: [BuildingID: NavigationGraph] = [:]
         for person in world.people.values {
-            guard case let .travelling(legs, destination) = person.place,
-                  let building = world.buildings[person.buildingID] else { continue }
+            guard let building = world.buildings[person.buildingID] else { continue }
             let graph = graphs[building.id] ?? navigation.graph(for: building, world: world, catalog: catalog, rules: rules)
             graphs[building.id] = graph
-            let remaining = legs.filter { $0.end > now }
-            guard !remaining.allSatisfy({ Self.isValid($0, in: graph) }),
-                  let position = currentSpot(legs, at: now, grid: world.grid) else { continue }
-            var p = person
-            let target: Spot?
-            switch destination {
-            case .outside: target = RoutePlanner.street(of: building, rules: rules)
-            case let .room(r, x): target = world.rooms[r].map { Spot(floor: $0.floors.lowest, x: x) }
+            let position: Spot?
+            let destination: Destination
+            switch person.place {
+            case .outside, .room:
+                continue
+            case let .travelling(legs, d):
+                let remaining = legs.filter { $0.end > now }
+                let rideOK = person.pendingRide.map { graph.elevatorServes($0.shaft, $0.fromFloor, $0.toFloor) } ?? true
+                guard !rideOK || !remaining.allSatisfy({ Self.isValid($0, in: graph) }) else { continue }
+                position = currentSpot(legs, at: now, grid: world.grid)
+                destination = d
+            case let .waiting(ride, d, _):
+                guard !(graph.elevatorServes(ride.shaft, ride.fromFloor, ride.toFloor) && world.elevators.contains(ride.shaft)) else { continue }
+                position = Spot(floor: ride.fromFloor, x: ride.x)
+                destination = d
+            case .riding:
+                continue                      // cars of removed shafts were emptied by the sync
             }
-            if let target, graph.isWalkable(position),
-               let newLegs = RoutePlanner.plan(from: position, to: target, building: building, world: world,
-                                               navigation: navigation, catalog: catalog, rules: rules, now: now),
-               let last = newLegs.last {
-                p.place = .travelling(legs: newLegs, destination: destination)
-                p.nextEventTick = last.end
+            var p = person
+            if let position, graph.isWalkable(position),
+               startTrip(&p, from: position, to: destination, building: building, world: world, now: now) {
                 report.replanned += 1
             } else {
-                p.place = .outside
-                p.unreachable = true
-                p.nextGoal = nil
-                if let schedule = rules.schedule(p.scheduleID) { scheduleNext(&p, after: now, schedule: schedule) }
+                strand(&p, at: now)
                 report.stranded += 1
             }
             world.people.update(p.id) { $0 = p }

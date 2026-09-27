@@ -51,7 +51,7 @@ sprites with simple animation, render LOD for agents.
 Hierarchical graph: per-floor walk graphs + vertical transport graph (stairs now,
 elevators next); route cache with invalidation on construction; path debug overlay.
 
-### Phase 6 — First functioning elevators
+### Phase 6 — First functioning elevators ✅ (2026-09-27)
 Shafts, cars, served floors, capacity, speed/acceleration, doors & boarding time,
 hall calls, queues on floors, visible boarding/riding/leaving. One simple dispatch
 strategy (collective control).

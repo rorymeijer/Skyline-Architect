@@ -46,10 +46,55 @@ public struct NamePool: Codable, Hashable, Sendable {
     }
 }
 
+/// Elevator car parameters for one shaft room type (`elevators.json`).
+public struct ElevatorSpec: Codable, Hashable, Sendable {
+    /// Room definition id of the shaft these cars run in.
+    public var room: String
+    public var name: String
+    /// Persons per car.
+    public var capacity: Int
+    /// Rated speed, m/s.
+    public var speed: Double
+    /// Acceleration and deceleration, m/s².
+    public var acceleration: Double
+    /// Seconds to open (and again to close) the doors.
+    public var doorSeconds: Tick
+    /// Seconds per person boarding or alighting.
+    public var transferSeconds: Tick
+    /// Waiting time assumed by route planning when choosing elevator vs. stairs. A constant
+    /// (not the live queue) so routes stay cacheable and deterministic (D-026).
+    public var expectedWaitSeconds: Double
+
+    public init(room: String, name: String, capacity: Int, speed: Double, acceleration: Double,
+                doorSeconds: Tick, transferSeconds: Tick, expectedWaitSeconds: Double) {
+        self.room = room
+        self.name = name
+        self.capacity = capacity
+        self.speed = speed
+        self.acceleration = acceleration
+        self.doorSeconds = doorSeconds
+        self.transferSeconds = transferSeconds
+        self.expectedWaitSeconds = expectedWaitSeconds
+    }
+
+    /// Validation problems (empty if valid).
+    public var problems: [String] {
+        var p: [String] = []
+        if capacity < 1 { p.append("elevator '\(room)': capacity must be at least 1") }
+        if !(speed > 0 && speed <= 20) { p.append("elevator '\(room)': speed must be in (0, 20] m/s") }
+        if !(acceleration > 0 && acceleration <= 3) { p.append("elevator '\(room)': acceleration must be in (0, 3] m/s²") }
+        if doorSeconds < 1 || doorSeconds > 20 { p.append("elevator '\(room)': doorSeconds must be 1…20") }
+        if transferSeconds > 20 { p.append("elevator '\(room)': transferSeconds must be ≤ 20") }
+        if expectedWaitSeconds < 0 { p.append("elevator '\(room)': expectedWaitSeconds must be ≥ 0") }
+        return p
+    }
+}
+
 /// Everything the simulation needs from content, plus movement constants.
 public struct SimulationRules: Sendable {
     public let schedules: [Schedule]
     public let names: NamePool
+    public let elevators: [ElevatorSpec]
     /// Walking speed in meters per game second.
     public var walkSpeed = 1.3
     /// Game seconds to climb or descend one storey by stairs.
@@ -57,12 +102,16 @@ public struct SimulationRules: Sendable {
     /// Street distance walked outside the entrance when arriving or leaving (meters).
     public var streetDistance = 14.0
 
-    public init(schedules: [Schedule], names: NamePool) {
+    public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = []) {
         self.schedules = schedules
         self.names = names
+        self.elevators = elevators
     }
 
     public func schedule(_ id: String) -> Schedule? { schedules.first { $0.id == id } }
+
+    /// Car parameters for an elevator shaft room type.
+    public func elevator(for roomDefinition: String) -> ElevatorSpec? { elevators.first { $0.room == roomDefinition } }
 
     /// The first schedule defined for a role (content order).
     public func defaultSchedule(for role: PersonRole) -> Schedule? { schedules.first { $0.role == role } }
