@@ -107,8 +107,7 @@ final class ScreenshotDirector {
                 "; tenants \(model.leasing.leased)/\(model.leasing.units), moved out \(model.leasing.market.movedOut)."
         },
         Step(name: "06-technician-repairs", grid: false) { model, scene in
-            model.changeStaff(.technician, by: 1)
-            model.advanceSimulation(toTimeOfDay: 7, minute: 0)
+            model.changeStaff(.technician, by: 1)                      // mid-shift: starts at once
             model.advanceSimulation(ticks: model.ticksToBestMoment(within: 5 * 3600, step: 60) { world in
                 ScreenshotDirector.staffAtWork(.technician, in: world) == nil ? 0 : 1
             })
