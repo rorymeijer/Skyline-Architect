@@ -1,26 +1,55 @@
 import Foundation
 import SkylineCore
 
-/// Everything static the renderer needs to draw one property: a single painter-ordered
-/// drawing (sections: backdrop, neighbors, terrain, structures, site), its spatial index,
-/// the sky, and framing information for the camera.
+/// A painter-ordered drawing with its spatial index.
+public struct CompositionLayer: Sendable {
+    public let name: String
+    public let drawing: Drawing
+    public let index: DrawingIndex
+
+    public init(name: String, drawing: Drawing) {
+        self.name = name
+        self.drawing = drawing
+        self.index = DrawingIndex(drawing)
+    }
+
+    /// Items touching `rect` visible at `detail` px/m, in paint order.
+    public func items(in rect: Rect, detail: Double) -> [DrawItem] {
+        index.items(in: rect, of: drawing, detail: detail).map { drawing.items[$0] }
+    }
+}
+
+/// Everything static the renderer needs to draw one property, in two layers:
+/// `site` (backdrop, neighbours, terrain — composed once) and `buildings` (foundations,
+/// storeys, rooms — recomposed when construction changes, see `SiteComposer.recompose`).
 public struct SiteComposition: Sendable {
     public let propertyID: PropertyID
     public let grid: GridSpec
     public let plot: Plot
-    public let drawing: Drawing
-    public let index: DrawingIndex
+    public let site: CompositionLayer
+    public internal(set) var buildings: CompositionLayer
     public let sky: SkyGradient
     /// Region covered by static art; tiles outside it are never requested.
-    public let extent: Rect
+    public internal(set) var extent: Rect
+    let siteExtent: Rect
     /// Site columns (frontage + margins) from the bottom of the ground section to grade.
     public let siteRect: Rect
     /// Buildable frontage from the deepest permitted basement to grade.
     public let frontageRect: Rect
     /// Union of all building foundations (excavation, piles, grade slab).
-    public let foundationRect: Rect?
+    public internal(set) var foundationRect: Rect?
+    /// Union of all built storeys (nil when nothing is built above the foundation).
+    public internal(set) var superstructureRect: Rect?
     /// Region the camera center is clamped to (see `CameraLimits.bounds`).
     public let cameraBounds: Rect
+
+    /// Layers in paint order.
+    public var layers: [CompositionLayer] { [site, buildings] }
+
+    /// Items of all layers touching `rect` visible at `detail` px/m, in paint order.
+    public func items(in rect: Rect, detail: Double) -> [DrawItem] {
+        layers.flatMap { $0.items(in: rect, detail: detail) }
+    }
 }
 
 public enum SiteComposer {
@@ -32,7 +61,8 @@ public enum SiteComposer {
     static let terrainHalfWidth = 6000.0
     static let backdropHalfWidth = 4500.0
 
-    public static func compose(world: GameWorld, propertyID: PropertyID, palette p: ArtPalette = .standard) -> SiteComposition? {
+    public static func compose(world: GameWorld, propertyID: PropertyID, catalog: BuildCatalog? = nil,
+                               palette p: ArtPalette = .standard) -> SiteComposition? {
         guard let property = world.properties[propertyID], let city = world.cities[property.cityID] else { return nil }
         let grid = world.grid
         let plot = property.plot
@@ -45,8 +75,7 @@ public enum SiteComposer {
         let maxBasementDepth = Double(plot.maxBasementFloors) * grid.floorHeight
         let groundBottom = -max(60, deepestPile + 25, maxBasementDepth + 30)
         let midX = (siteX0 + siteX1) / 2
-        let extent = Rect(minX: midX - terrainHalfWidth, minY: groundBottom,
-                          maxX: midX + terrainHalfWidth, maxY: 200)
+        let extent = Rect(minX: midX - terrainHalfWidth, minY: groundBottom, maxX: midX + terrainHalfWidth, maxY: 200)
 
         var d = Drawing()
         d.section("backdrop") {
@@ -70,9 +99,6 @@ public enum SiteComposer {
             TerrainArt.draw(into: &$0, plot: plot, extent: Rect(minX: extent.minX, minY: groundBottom, maxX: extent.maxX, maxY: 0),
                             detailSpan: siteX0...siteX1, palette: p, seed: city.seed ^ UInt64(propertyID.raw))
         }
-        d.section("structures") {
-            for b in buildings { FoundationArt.draw(into: &$0, building: b, grid: grid, palette: p) }
-        }
         d.section("site") { d in
             // Survey stakes marking the plot corners.
             for x in [frontX0, frontX1] {
@@ -80,18 +106,51 @@ public enum SiteComposer {
                 d.fill(Rect(minX: x - 0.05, minY: 0.85, maxX: x + 0.05, maxY: 1.05), p.surveyCap)
             }
         }
+        let siteLayer = CompositionLayer(name: "site", drawing: d)
+        let siteExtent = extent.union(d.bounds)
 
-        let foundationRect = buildings.map { b -> Rect in
+        var composition = SiteComposition(
+            propertyID: propertyID, grid: grid, plot: plot, site: siteLayer,
+            buildings: CompositionLayer(name: "buildings", drawing: Drawing()),
+            sky: .day(p), extent: siteExtent, siteExtent: siteExtent,
+            siteRect: Rect(minX: siteX0, minY: groundBottom, maxX: siteX1, maxY: 0),
+            frontageRect: Rect(minX: frontX0, minY: -maxBasementDepth, maxX: frontX1, maxY: 0),
+            foundationRect: nil, superstructureRect: nil,
+            cameraBounds: Rect(minX: siteX0, minY: groundBottom, maxX: siteX1, maxY: skyCeiling))
+        composition = recompose(composition, world: world, catalog: catalog, palette: p)
+        return composition
+    }
+
+    /// Rebuilds only the buildings layer (after construction). The site layer is reused.
+    public static func recompose(_ c: SiteComposition, world: GameWorld, catalog: BuildCatalog?,
+                                 palette p: ArtPalette = .standard) -> SiteComposition {
+        let grid = c.grid
+        let buildings = world.buildings(on: c.propertyID)
+        var d = Drawing()
+        for b in buildings {
+            d.section("building-\(b.id.raw)") { d in
+                FoundationArt.draw(into: &d, building: b, grid: grid, palette: p)
+                BuildingArt.draw(into: &d, building: b, rooms: world.rooms(in: b.id), catalog: catalog, grid: grid, palette: p)
+            }
+        }
+        var out = c
+        out.buildings = CompositionLayer(name: "buildings", drawing: d)
+        out.extent = c.siteExtent.union(d.bounds)
+        out.foundationRect = buildings.map { b -> Rect in
             Rect(minX: grid.x(ofColumn: b.footprint.start) - 1, minY: -b.foundation.pileDepth - 1,
                  maxX: grid.x(ofColumn: b.footprint.end) + 1, maxY: 1.5)
         }.reduce(nil as Rect?) { acc, r in acc.map { $0.union(r) } ?? r }
+        out.superstructureRect = buildings.flatMap(\.floors).filter { $0.level >= 0 }.map { plate -> Rect in
+            grid.rect(columns: plate.span, floors: FloorSpan(lowest: plate.level, highest: plate.level))
+        }.reduce(nil as Rect?) { acc, r in acc.map { $0.union(r) } ?? r }
+        return out
+    }
 
-        return SiteComposition(
-            propertyID: propertyID, grid: grid, plot: plot, drawing: d, index: DrawingIndex(d),
-            sky: .day(p), extent: extent.union(d.bounds),
-            siteRect: Rect(minX: siteX0, minY: groundBottom, maxX: siteX1, maxY: 0),
-            frontageRect: Rect(minX: frontX0, minY: -maxBasementDepth, maxX: frontX1, maxY: 0),
-            foundationRect: foundationRect,
-            cameraBounds: Rect(minX: siteX0, minY: groundBottom, maxX: siteX1, maxY: skyCeiling))
+    /// World region whose appearance changes when `plan` is applied or undone: the cells
+    /// plus a margin for partitions, façades, roofs and parapets drawn around them.
+    public static func dirtyRect(for plan: ConstructionPlan, grid: GridSpec) -> Rect {
+        let floors = FloorSpan(lowest: plan.floors.lowest - 1, highest: plan.floors.highest + 1)
+        let columns = ColumnSpan(start: plan.columns.start - 1, count: plan.columns.count + 2)
+        return grid.rect(columns: columns, floors: floors).insetBy(dx: -0.5, dy: -1.5)
     }
 }

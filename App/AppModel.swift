@@ -2,22 +2,52 @@ import Foundation
 import Observation
 import SkylineCore
 import SkylineContent
+import SkylinePersistence
 import SkylinePresentation
 
-/// App-level state: the authoritative game model, view settings and the renderer for the
-/// active property. Views read it; the renderer derives everything it draws from `world`.
+/// A message for the player (errors from saving, loading or construction).
+struct AppAlert: Identifiable, Equatable {
+    let id = UUID()
+    var title: String
+    var message: String
+}
+
+/// App-level state: the authoritative game model, construction session (engine, undo
+/// history, active tool), saves, view settings and the renderer for the active property.
+/// Views read it; the renderer derives everything it draws from `world`.
 @Observable
 final class AppModel {
     private(set) var world: GameWorld?
     private(set) var activePropertyID: PropertyID?
     private(set) var loadError: String?
+    private(set) var scene: WorldScene?
 
     private(set) var showGrid = true
     var showDeveloperHUD: Bool
     private(set) var diagnostics = RenderDiagnostics()
 
-    @ObservationIgnored private(set) var scene: WorldScene?
+    private(set) var activeTool: ConstructionTool?
+    /// Sum of construction costs this session. Not charged: the economy arrives in Phase 9.
+    private(set) var sessionBuildCost = 0
+    private(set) var canUndo = false
+    private(set) var canRedo = false
+    private(set) var lastSaveDescription: String?
+    var alert: AppAlert?
+    var showLoadSheet = false
+
+    @ObservationIgnored private(set) var library: ContentLibrary?
+    @ObservationIgnored private var engine: ConstructionEngine?
+    @ObservationIgnored private var history = ConstructionHistory()
+    /// Costs of the commands on the undo / redo stacks, so undo and redo keep the session
+    /// total consistent.
+    @ObservationIgnored private var undoCosts: [Int] = []
+    @ObservationIgnored private var redoCosts: [Int] = []
+    @ObservationIgnored private(set) var saveStore: SaveStore
+    @ObservationIgnored private var hasUnsavedChanges = false
+    @ObservationIgnored private var autosaveTimer: Timer?
     @ObservationIgnored private var screenshotDirector: AnyObject?
+
+    static let autosaveInterval: TimeInterval = 120
 
     init(arguments: [String] = CommandLine.arguments) {
         #if DEBUG
@@ -25,33 +55,242 @@ final class AppModel {
         #else
         showDeveloperHUD = false
         #endif
+        saveStore = SaveStore(directory: Self.defaultSaveDirectory())
         do {
             let library = try ContentLibrary.loadBase()
-            let game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: library)
-            world = game.world
-            activePropertyID = game.activePropertyID
-            guard let composition = SiteComposer.compose(world: game.world, propertyID: game.activePropertyID) else {
-                loadError = "The starting property could not be composed."
-                return
-            }
-            let scene = WorldScene(composition: composition)
-            scene.onDiagnostics = { [weak self] d in self?.diagnostics = d }
-            self.scene = scene
+            self.library = library
+            engine = ConstructionEngine(catalog: library.buildCatalog)
+            try startNewGame()
         } catch {
             loadError = "\(error)"
         }
         #if DEBUG
         if let config = ScreenshotDirector.Configuration(arguments: arguments), let scene {
+            // Captures must never touch the player's real saves.
+            saveStore = SaveStore(directory: config.directory.appendingPathComponent("saves", isDirectory: true))
             showDeveloperHUD = true
-            let director = ScreenshotDirector(configuration: config, scene: scene, model: self)
+            let director = ScreenshotDirector(configuration: config, model: self)
             screenshotDirector = director
             scene.onReady = { [weak director] in director?.start() }
         }
         #endif
+        autosaveTimer = Timer.scheduledTimer(withTimeInterval: Self.autosaveInterval, repeats: true) { [weak self] _ in
+            self?.autosaveIfNeeded()
+        }
+    }
+
+    static func defaultSaveDirectory() -> URL {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        return base.appendingPathComponent("Skyline Architect", isDirectory: true).appendingPathComponent("Saves", isDirectory: true)
     }
 
     var activeProperty: Property? { activePropertyID.flatMap { world?.properties[$0] } }
     var activeCity: City? { activeProperty.flatMap { world?.cities[$0.cityID] } }
+    var catalog: BuildCatalog? { engine?.catalog }
+
+    // MARK: Game lifecycle
+
+    private func startNewGame() throws {
+        guard let library else { return }
+        let game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: library)
+        install(world: game.world, activePropertyID: game.activePropertyID)
+    }
+
+    func newGame() {
+        do { try startNewGame() } catch { alert = AppAlert(title: "Could not start a new game", message: "\(error)") }
+    }
+
+    /// Replaces the world and builds a fresh scene for it.
+    private func install(world: GameWorld, activePropertyID: PropertyID) {
+        self.world = world
+        self.activePropertyID = activePropertyID
+        history.clear()
+        undoCosts.removeAll()
+        redoCosts.removeAll()
+        refreshUndoState()
+        sessionBuildCost = 0
+        hasUnsavedChanges = false
+        activeTool = nil
+        guard let composition = SiteComposer.compose(world: world, propertyID: activePropertyID, catalog: catalog) else {
+            loadError = "The starting property could not be composed."
+            return
+        }
+        let previous = scene
+        let scene = WorldScene(composition: composition)
+        scene.showGrid = showGrid
+        scene.onDiagnostics = { [weak self] d in self?.diagnostics = d }
+        scene.previewProvider = { [weak self] tool, anchor, current in
+            guard let self, let world = self.world, let property = self.activePropertyID, let engine = self.engine else { return nil }
+            return PlacementPlanner.preview(tool: tool, anchor: anchor, current: current, world: world, propertyID: property, engine: engine)
+        }
+        scene.roomLabelProvider = { [weak self] visible, zoom in
+            guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return [] }
+            return RoomLabels.build(world: world, propertyID: property, catalog: catalog, visible: visible, zoom: zoom)
+        }
+        scene.onCommit = { [weak self] command in self?.perform(command) }
+        if let previous {
+            scene.onReady = previous.onReady
+            // Keep the camera where the player was looking.
+            let cam = previous.controller.camera
+            scene.initialPlacement = (cam.center, cam.zoom)
+        }
+        self.scene = scene
+    }
+
+    // MARK: Construction
+
+    func select(tool: ConstructionTool?) {
+        activeTool = tool
+        scene?.activeTool = tool
+    }
+
+    func handleToolKey(_ key: String) {
+        switch key {
+        case "floor": select(tool: activeTool == .floor ? nil : .floor)
+        case "demolish": select(tool: activeTool == .demolish ? nil : .demolish)
+        default: select(tool: nil)
+        }
+    }
+
+    /// Applies a player command through the undo history.
+    @discardableResult
+    func perform(_ command: BuildCommand) -> Bool {
+        guard var world, let engine else { return false }
+        do {
+            let applied = try history.perform(command, engine: engine, world: &world)
+            record(cost: applied.plan.cost)
+            commit(world, plan: applied.plan)
+            return true
+        } catch {
+            alert = AppAlert(title: "Cannot build here", message: "\(error)")
+            return false
+        }
+    }
+
+    func undo() {
+        guard var world, let engine else { return }
+        do {
+            if let applied = try history.undo(engine: engine, world: &world) {
+                let cost = undoCosts.popLast() ?? 0
+                sessionBuildCost -= cost
+                redoCosts.append(cost)
+                commit(world, plan: applied.plan)
+            }
+        } catch {
+            alert = AppAlert(title: "Undo failed", message: "\(error)")
+        }
+    }
+
+    func redo() {
+        guard var world, let engine else { return }
+        do {
+            if let applied = try history.redo(engine: engine, world: &world) {
+                let cost = redoCosts.popLast() ?? 0
+                sessionBuildCost += cost
+                undoCosts.append(cost)
+                commit(world, plan: applied.plan)
+            }
+        } catch {
+            alert = AppAlert(title: "Redo failed", message: "\(error)")
+        }
+    }
+
+    /// Applies a content blueprint as a sequence of player commands (developer tool).
+    func applyBlueprint(_ id: String) {
+        guard var world, let engine, let property = activePropertyID,
+              let blueprint = library?.blueprint(id), let building = world.buildings(on: property).first else { return }
+        do {
+            for command in blueprint.commands(for: building) {
+                record(cost: try history.perform(command, engine: engine, world: &world).plan.cost)
+            }
+        } catch {
+            alert = AppAlert(title: "Blueprint failed", message: "\(error)")
+        }
+        commit(world, plan: nil)
+    }
+
+    private func record(cost: Int) {
+        sessionBuildCost += cost
+        undoCosts.append(cost)
+        if undoCosts.count > history.limit { undoCosts.removeFirst(undoCosts.count - history.limit) }
+        redoCosts.removeAll()
+    }
+
+    /// Stores the new world and re-renders only what changed (`plan` nil = everything).
+    private func commit(_ newWorld: GameWorld, plan: ConstructionPlan?) {
+        world = newWorld
+        hasUnsavedChanges = true
+        refreshUndoState()
+        guard let scene else { return }
+        let composition = SiteComposer.recompose(scene.composition, world: newWorld, catalog: catalog)
+        scene.updateComposition(composition, dirty: plan.map { SiteComposer.dirtyRect(for: $0, grid: newWorld.grid) })
+    }
+
+    private func refreshUndoState() {
+        canUndo = history.canUndo
+        canRedo = history.canRedo
+    }
+
+    // MARK: Saving
+
+    private var packReferences: [ContentPackReference] {
+        library.map { [ContentPackReference(id: $0.manifest.id, version: $0.manifest.version)] } ?? []
+    }
+
+    private func makeSave(title: String) -> SaveGame? {
+        guard let world, let property = activePropertyID else { return nil }
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
+        return SaveGame(metadata: SaveMetadata(title: title, savedAt: Date(), gameVersion: version),
+                        contentPacks: packReferences, activePropertyID: property, world: world)
+    }
+
+    @discardableResult
+    func save(slot: String = SaveStore.quicksaveSlot, title: String? = nil) -> Bool {
+        guard let save = makeSave(title: title ?? activeProperty?.name ?? "Skyline Architect") else { return false }
+        do {
+            try saveStore.write(save, slot: slot)
+            hasUnsavedChanges = false
+            lastSaveDescription = "Saved “\(slot)” at \(Self.timeFormatter.string(from: save.metadata.savedAt))"
+            return true
+        } catch {
+            alert = AppAlert(title: "Saving failed", message: "\(error)")
+            return false
+        }
+    }
+
+    @discardableResult
+    func load(slot: String) -> Bool {
+        do {
+            let save = try saveStore.load(slot: slot, availablePacks: packReferences)
+            install(world: save.world, activePropertyID: save.activePropertyID)
+            lastSaveDescription = "Loaded “\(slot)”"
+            return true
+        } catch {
+            alert = AppAlert(title: "This save cannot be loaded", message: "\(error)")
+            return false
+        }
+    }
+
+    func availableSaves() -> [SaveSlotInfo] { saveStore.list() }
+
+    func autosaveIfNeeded() {
+        guard hasUnsavedChanges, let save = makeSave(title: "Autosave") else { return }
+        do {
+            try saveStore.writeAutosave(save)
+            hasUnsavedChanges = false
+            lastSaveDescription = "Autosaved at \(Self.timeFormatter.string(from: save.metadata.savedAt))"
+        } catch {
+            alert = AppAlert(title: "Autosave failed", message: "\(error)")
+        }
+    }
+
+    static let timeFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .none
+        f.timeStyle = .short
+        return f
+    }()
 
     // MARK: View commands
 

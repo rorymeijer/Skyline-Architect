@@ -1,8 +1,9 @@
 // skyline-snapshot — renders a composition view to SVG for design review.
 // These are DESIGN PREVIEWS of the drawing IR, not screenshots of the running game.
 //
-// Usage: skyline-snapshot [--preset overview|foundation|detail|skyline] [--width 1440]
-//                         [--height 900] [--scale 1] [--no-grid] --out file.svg
+// Usage: skyline-snapshot [--preset overview|foundation|detail|skyline|building] [--width 1440]
+//                         [--height 900] [--scale 1] [--no-grid] [--blueprint demo-tower]
+//                         [--center x,y --zoom z] --out file.svg
 import Foundation
 import SkylineCore
 import SkylineContent
@@ -27,11 +28,23 @@ guard let out = option("--out") else { fail("--out is required") }
 
 do {
     let library = try ContentLibrary.loadBase()
-    let game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: library)
-    guard let composition = SiteComposer.compose(world: game.world, propertyID: game.activePropertyID) else {
+    var game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: library)
+    let catalog = library.buildCatalog
+    if let id = option("--blueprint") {
+        guard let blueprint = library.blueprint(id), let building = game.world.buildings(on: game.activePropertyID).first else {
+            fail("unknown blueprint \(id)")
+        }
+        let engine = ConstructionEngine(catalog: catalog)
+        for command in blueprint.commands(for: building) { try engine.apply(command, to: &game.world) }
+    }
+    guard let composition = SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: catalog) else {
         fail("property missing")
     }
-    let placement = preset.placement(for: composition, viewport: viewport)
+    var placement = preset.placement(for: composition, viewport: viewport)
+    if let c = option("--center")?.split(separator: ",").compactMap({ Double($0) }), c.count == 2,
+       let z = option("--zoom").flatMap(Double.init) {
+        placement = (Vec2(c[0], c[1]), z)
+    }
     var camera = Camera2D(center: placement.center, zoom: placement.zoom, viewportSize: viewport,
                           limits: .standard(bounds: composition.cameraBounds))
     camera.setCenter(placement.center)
@@ -40,10 +53,12 @@ do {
         : ArchitecturalGrid.build(grid: composition.grid, plot: composition.plot, visible: view, zoom: camera.zoom)
     let level = DetailLevelPolicy().level(forZoom: camera.zoom, current: nil)
     let caption = "DESIGN PREVIEW (skyline-snapshot, not a game screenshot) — preset \(preset.rawValue), \(String(format: "%.2f", camera.zoom)) pt/m, LOD \(level)"
+    let labels = RoomLabels.build(world: game.world, propertyID: game.activePropertyID, catalog: catalog, visible: view, zoom: camera.zoom)
     let svg = SVGRenderer.render(composition, view: view, options: .init(
-        pixelsPerMeter: camera.zoom * scale, gridOverlay: grid, caption: caption))
+        pixelsPerMeter: camera.zoom * scale, gridOverlay: grid, caption: caption, roomLabels: labels))
     try svg.write(toFile: out, atomically: true, encoding: .utf8)
-    print("wrote \(out) — \(composition.drawing.items.count) items total, view \(view)")
+    let items = composition.layers.map { $0.drawing.items.count }.reduce(0, +)
+    print("wrote \(out) — \(items) items total, view \(view)")
 } catch {
     fail("\(error)")
 }

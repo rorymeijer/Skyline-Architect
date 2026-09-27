@@ -7,9 +7,17 @@ struct RootView: View {
     var body: some View {
         if let scene = model.scene {
             ZStack(alignment: .topLeading) {
-                WorldView(scene: scene, onToggleGrid: { model.toggleGrid() })
+                WorldView(scene: scene, onToggleGrid: { model.toggleGrid() }, onToolKey: { model.handleToolKey($0) })
                     .ignoresSafeArea()
                 ChromeOverlay(model: model)
+            }
+            .sheet(isPresented: Binding(get: { model.showLoadSheet }, set: { model.showLoadSheet = $0 })) {
+                LoadGameSheet(model: model)
+            }
+            .alert(model.alert?.title ?? "", isPresented: Binding(get: { model.alert != nil }, set: { if !$0 { model.alert = nil } })) {
+                Button("OK", role: .cancel) { model.alert = nil }
+            } message: {
+                Text(model.alert?.message ?? "")
             }
         } else {
             VStack(spacing: 12) {
@@ -43,6 +51,12 @@ struct ChromeOverlay: View {
             ViewControls(model: model)
                 .padding(12)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            VStack(spacing: 8) {
+                StatusPill(model: model)
+                BuildPalette(model: model)
+            }
+            .padding(.bottom, 58)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         }
     }
 }
@@ -55,7 +69,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.activeProperty?.name ?? "—")
                 .font(.headline)
-            Text("\(model.activeCity?.name ?? "—") · Sandbox · Phase 1 preview")
+            Text("\(model.activeCity?.name ?? "—") · Sandbox · Phase 2 preview")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

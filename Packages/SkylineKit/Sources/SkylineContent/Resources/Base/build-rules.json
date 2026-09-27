@@ -1,0 +1,6 @@
+{
+  "slabCostPerModule": 1800,
+  "basementSlabCostPerModule": 3200,
+  "maxCantileverModules": 2,
+  "demolitionRefund": 0.4
+}

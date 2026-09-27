@@ -17,18 +17,18 @@ documentation updated (quality gates: see CLAUDE.md). Status per phase is tracke
 
 ## Phases
 
-### Phase 0 — Project bootstrap
+### Phase 0 — Project bootstrap ✅ (2026-09-26)
 Xcode project (multiplatform app target) + `SkylineKit` package; documentation set;
 CI (Linux package tests, macOS app build, iPad simulator build, screenshot capture).
 
-### Phase 1 — Renderer, camera, architectural grid
+### Phase 1 — Renderer, camera, architectural grid ✅ (2026-09-26)
 Window, SpriteKit world, camera (smooth zoom toward cursor, pan, inertia, limits,
 trackpad/mouse/keyboard, iPad pinch/pan), LOD bands, tile-based static rendering with
 culling, plot with soil cross-section, first foundation (retaining walls, raft, piles,
 grade slab, starter bars), architectural grid with adaptive density, developer HUD,
 screenshot capture. **No construction, no simulation.**
 
-### Phase 2 — Construction + saves
+### Phase 2 — Construction + saves ✅ (2026-09-27)
 Command-based construction (floors, slabs, walls, corridors, doors, stairs shafts, room
 shells, basements) with validation from data (build rules), demolition, undo for the
 current session. Cost preview (not yet charged). Versioned local save/load + autosave

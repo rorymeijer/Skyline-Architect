@@ -4,6 +4,7 @@ import ImageIO
 import SpriteKit
 import SwiftUI
 import UniformTypeIdentifiers
+import SkylineCore
 import SkylinePresentation
 #if os(macOS)
 import AppKit
@@ -11,8 +12,10 @@ import AppKit
 
 /// Debug-only automated capture used by CI and `Scripts/capture-screenshots.sh`.
 ///
-/// Launch with `--capture-screenshots <dir>`: the director steps through deterministic
-/// camera presets, waits until the camera is at rest and every wanted tile is displayed,
+/// Launch with `--capture-screenshots <dir>`: the director runs a deterministic script
+/// (build the demo tower through the construction engine, show placement previews, save and
+/// reload, undo), sets camera presets, waits until the camera is at rest and every wanted
+/// tile is displayed,
 /// captures the SKView's rendered scene (scene = viewport, DECISIONS D-004), composites
 /// the real SwiftUI chrome on top via `ImageRenderer`, writes PNGs plus
 /// `capture-report.json`, then exits.
@@ -28,14 +31,14 @@ final class ScreenshotDirector {
 
     struct Step {
         let name: String
-        let preset: CameraPreset
         let grid: Bool
-        let hoverAtCenter: Bool
+        /// Prepares the scene (camera, tool, world changes). Returns a note for the report.
+        let setup: (AppModel, WorldScene) -> String
     }
 
     struct ReportEntry: Codable {
         let file: String
-        let preset: String
+        let note: String
         let grid: Bool
         let settled: Bool
         let waitSeconds: Double
@@ -45,23 +48,63 @@ final class ScreenshotDirector {
     }
 
     private let configuration: Configuration
-    private weak var scene: WorldScene?
     private weak var model: AppModel?
+    private var scene: WorldScene? { model?.scene }
     private var stepIndex = 0
     private var report: [ReportEntry] = []
     private var started = false
 
-    let steps = [
-        Step(name: "01-overview", preset: .overview, grid: true, hoverAtCenter: false),
-        Step(name: "02-foundation", preset: .foundation, grid: true, hoverAtCenter: true),
-        Step(name: "03-detail", preset: .detail, grid: true, hoverAtCenter: false),
-        Step(name: "04-skyline", preset: .skyline, grid: true, hoverAtCenter: false),
-        Step(name: "05-overview-no-grid", preset: .overview, grid: false, hoverAtCenter: false),
+    let steps: [Step] = [
+        Step(name: "01-empty-foundation", grid: true) { _, scene in
+            scene.apply(preset: .building)
+            return "New sandbox game: prepared foundation, no floors."
+        },
+        Step(name: "02-demo-tower", grid: true) { model, scene in
+            model.applyBlueprint("demo-tower")
+            scene.apply(preset: .building)
+            return "Demo tower built through the construction engine (\(model.world?.rooms.count ?? 0) rooms), cost \(Money.format(model.sessionBuildCost))."
+        },
+        Step(name: "03-interiors", grid: false) { _, scene in
+            scene.withController { $0.jump(center: Vec2(20, 5.5), zoom: 30) }
+            return "Room shells with finishes, stairwell, hoistway, labels (grid off)."
+        },
+        Step(name: "04-core-detail", grid: true) { _, scene in
+            scene.withController { $0.jump(center: Vec2(22, 6), zoom: 64) }
+            return "Close-up of stairs and elevator shaft with landing doors."
+        },
+        Step(name: "05-place-floor-valid", grid: true) { model, scene in
+            scene.apply(preset: .building)
+            model.select(tool: .floor)
+            scene.setPlacementCells(anchor: GridCell(column: 12, floor: 9), current: GridCell(column: 35, floor: 9))
+            return "Floor tool dragging a new storey on the roof: valid (green) with cost."
+        },
+        Step(name: "06-place-room-invalid", grid: true) { model, scene in
+            model.select(tool: .room("office-small"))
+            scene.setPlacementCells(anchor: GridCell(column: 9, floor: -1), current: GridCell(column: 17, floor: -1))
+            return "Office tool in the basement: refused (red) with the reason."
+        },
+        Step(name: "07-save-load-roundtrip", grid: true) { model, scene in
+            model.select(tool: nil)
+            let before = model.world
+            let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
+            let loaded = model.load(slot: "capture-roundtrip")
+            let identical = before != nil && before == model.world
+            model.scene?.apply(preset: .building)
+            return "Saved and reloaded: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical)"
+        },
+        Step(name: "08-after-undo", grid: true) { model, scene in
+            // Build two storeys, then undo one: the renderer invalidates only the changed tiles.
+            _ = model.perform(.buildFloor(building: model.world!.buildings.values[0].id, level: 9, span: ColumnSpan(start: 12, count: 24)))
+            _ = model.perform(.buildFloor(building: model.world!.buildings.values[0].id, level: 10, span: ColumnSpan(start: 12, count: 24)))
+            model.undo()
+            scene.apply(preset: .building)
+            let levels = model.world?.buildings.values.first?.builtLevels.map { "\($0)" } ?? "-"
+            return "Built floors 9 and 10 after reload, undid floor 10: built levels \(levels)."
+        },
     ]
 
-    init(configuration: Configuration, scene: WorldScene, model: AppModel) {
+    init(configuration: Configuration, model: AppModel) {
         self.configuration = configuration
-        self.scene = scene
         self.model = model
     }
 
@@ -81,10 +124,10 @@ final class ScreenshotDirector {
         guard stepIndex < steps.count, let scene, let model else { finish(); return }
         let step = steps[stepIndex]
         model.setGrid(step.grid)
-        scene.apply(preset: step.preset)
-        scene.hoverPoint = step.hoverAtCenter ? CGPoint(x: scene.size.width / 2, y: scene.size.height / 2) : nil
+        let note = step.setup(model, scene)
+        log("\(step.name): \(note)")
         waitUntilSettled(started: Date(), stableChecks: 0) { settled, waited in
-            self.capture(step, settled: settled, waited: waited)
+            self.capture(step, note: note, settled: settled, waited: waited)
             self.stepIndex += 1
             self.runStep()
         }
@@ -107,7 +150,7 @@ final class ScreenshotDirector {
         }
     }
 
-    private func capture(_ step: Step, settled: Bool, waited: Double) {
+    private func capture(_ step: Step, note: String, settled: Bool, waited: Double) {
         guard let scene, let view = scene.view, let model else { return }
         guard let texture = view.texture(from: scene, crop: CGRect(origin: .zero, size: scene.size)) else {
             log("\(step.name): SKView returned no texture")
@@ -130,7 +173,7 @@ final class ScreenshotDirector {
         if writePNG(composed, to: url) {
             log("\(file): \(composed.width)×\(composed.height) settled=\(settled) after \(String(format: "%.1f", waited)) s")
         }
-        report.append(ReportEntry(file: file, preset: step.preset.rawValue, grid: step.grid, settled: settled,
+        report.append(ReportEntry(file: file, note: note, grid: step.grid, settled: settled,
                                   waitSeconds: waited, pixelWidth: composed.width, pixelHeight: composed.height,
                                   diagnostics: scene.currentDiagnostics))
     }

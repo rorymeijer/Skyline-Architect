@@ -2,6 +2,31 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.2.0] — Phase 2: Construction + saves
+
+### Added
+- **Construction model:** floor plates per building (setbacks), rooms and vertical shafts as
+  one entity type, `BuildCommand`s validated by a data-driven `ConstructionEngine`
+  (footprint, excavation, support/cantilever, width/height/level limits, overlap), costs and
+  refunds, demolition of rooms and empty top floors; no floor limit (300-storey test).
+- **Undo/redo** via inverse commands (⌘Z / ⇧⌘Z), session construction cost (not charged
+  until the economy phase).
+- **Content:** `rooms.json` (lobby, corridor, stairwell, elevator shaft, small office, studio
+  apartment, mechanical room, parking level), `build-rules.json`, `blueprints.json`
+  (demo tower); the build palette is generated from content.
+- **Persistence module:** versioned save envelope, migration harness, integrity-checked
+  loading (inconsistent saves are refused), atomic save store, quicksave (⌘S), Load Game
+  sheet (⌘O), rotating autosaves every 2 minutes; golden format-1 fixture test.
+- **Rendering:** layered composition (site + buildings), dirty-rect tile invalidation with
+  stale tiles kept until replaced; storey shells, slabs, columns, end façades with glazing,
+  roofs with parapets, basement retaining walls, per-appearance room finishes (lights,
+  doors, skirting, stone panels, plant, parking markings), stairwells with flights and
+  landings, hoistways with rails and landing doors; room labels.
+- **Interaction:** build palette, drag placement with live green/red/amber ghost and a
+  label (name · size · cost or the refusal reason), F/X/Esc keys, iPad tap/drag placement.
+- **CI:** scripted capture of 8 construction/save/undo scenarios; latest captures are
+  committed as JPEGs to development branches (`Development/Screenshots/_ci-latest`).
+
 ## [0.1.0] — Phase 1: Renderer, camera, architectural grid
 
 ### Added

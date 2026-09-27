@@ -30,8 +30,20 @@ public struct Foundation: Codable, Hashable, Sendable {
     }
 }
 
-/// A building on a property. Phase 1: footprint + foundation only; floors and rooms
-/// arrive with construction (Phase 2).
+/// One storey's slab: a single contiguous run of columns at a floor level.
+/// Setbacks are expressed by upper plates spanning fewer columns.
+public struct FloorPlate: Codable, Hashable, Sendable {
+    public var level: Int
+    public var span: ColumnSpan
+
+    public init(level: Int, span: ColumnSpan) {
+        self.level = level
+        self.span = span
+    }
+}
+
+/// A building on a property: footprint, foundation and its floor plates. Rooms live in
+/// `GameWorld.rooms` and reference the building (DECISIONS D-005).
 public struct Building: Codable, Hashable, Sendable, Identifiable {
     public let id: BuildingID
     public var propertyID: PropertyID
@@ -39,12 +51,36 @@ public struct Building: Codable, Hashable, Sendable, Identifiable {
     /// Columns occupied at grade.
     public var footprint: ColumnSpan
     public var foundation: Foundation
+    /// Floor plates sorted by level, at most one per level.
+    public internal(set) var floors: [FloorPlate]
 
-    public init(id: BuildingID, propertyID: PropertyID, name: String, footprint: ColumnSpan, foundation: Foundation) {
+    public init(id: BuildingID, propertyID: PropertyID, name: String, footprint: ColumnSpan,
+                foundation: Foundation, floors: [FloorPlate] = []) {
         self.id = id
         self.propertyID = propertyID
         self.name = name
         self.footprint = footprint
         self.foundation = foundation
+        self.floors = floors.sorted { $0.level < $1.level }
+    }
+
+    public func plate(at level: Int) -> FloorPlate? {
+        floors.first { $0.level == level }
+    }
+
+    /// Lowest and highest built levels, or nil if no floors exist.
+    public var builtLevels: FloorSpan? {
+        guard let lo = floors.first?.level, let hi = floors.last?.level else { return nil }
+        return FloorSpan(lowest: lo, highest: hi)
+    }
+
+    /// Inserts, replaces (non-nil) or removes (nil) the plate at `level`, keeping order.
+    mutating func setPlate(_ plate: FloorPlate?, at level: Int) {
+        floors.removeAll { $0.level == level }
+        if let plate {
+            precondition(plate.level == level)
+            let i = floors.firstIndex { $0.level > level } ?? floors.count
+            floors.insert(plate, at: i)
+        }
     }
 }

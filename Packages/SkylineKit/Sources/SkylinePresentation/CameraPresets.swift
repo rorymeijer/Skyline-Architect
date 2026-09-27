@@ -12,6 +12,8 @@ public enum CameraPreset: String, CaseIterable, Sendable {
     case detail
     /// Far zoom-out showing how high the (unlimited) grid reaches.
     case skyline
+    /// The whole building (all storeys and the foundation).
+    case building
 
     public func placement(for c: SiteComposition, viewport: Vec2) -> (center: Vec2, zoom: Double) {
         var cam = Camera2D(center: .zero, zoom: 1, viewportSize: viewport,
@@ -28,6 +30,10 @@ public enum CameraPreset: String, CaseIterable, Sendable {
             let x = f.minX + 1  // the left retaining wall
             cam.setZoom(64, anchoredAt: viewport / 2)
             cam.setCenter(Vec2(x + 3.2, -4.2))
+        case .building:
+            let f = c.foundationRect ?? c.frontageRect
+            let whole = c.superstructureRect.map { f.union($0.insetBy(dx: -2, dy: -3)) } ?? f
+            cam.frame(whole, padding: 0.04)
         case .skyline:
             cam.setZoom(0.45, anchoredAt: viewport / 2)
             cam.setCenter(Vec2(c.siteRect.center.x, viewport.y / 0.45 / 2 - 60))

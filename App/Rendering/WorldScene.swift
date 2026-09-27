@@ -9,12 +9,14 @@ import SkylinePresentation
 /// (DECISIONS D-004). Holds no game state: everything drawn comes from the composition,
 /// which is derived from the authoritative model.
 final class WorldScene: SKScene {
-    let composition: SiteComposition
+    private(set) var composition: SiteComposition
     private(set) var controller: CameraController
     private let palette: ArtPalette
     private let worldRoot = SKNode()
     private let tileLayer: TileLayer
     private let gridOverlay: GridOverlayNode
+    private let roomLabelLayer = RoomLabelLayer()
+    private let placementOverlay: PlacementOverlayNode
     private let lodPolicy = DetailLevelPolicy()
     private(set) var detailLevel: DetailLevel = .floors
 
@@ -27,6 +29,19 @@ final class WorldScene: SKScene {
     var onDiagnostics: ((RenderDiagnostics) -> Void)?
     /// Called once when the scene is first presented with a real size.
     var onReady: (() -> Void)?
+
+    // Construction interaction. The scene only tracks pointer state; rules and previews
+    // come from the model through these closures (no game logic in the renderer).
+    /// The active construction tool (nil = camera only).
+    var activeTool: ConstructionTool? { didSet { placementAnchor = nil; overlayDirty = true } }
+    var previewProvider: ((ConstructionTool, GridCell, GridCell) -> PlacementPreview?)?
+    var roomLabelProvider: ((Rect, Double) -> [RoomLabel])?
+    var onCommit: ((BuildCommand) -> Void)?
+    private var placementAnchor: GridCell?
+    /// Camera placement to use when first presented (nil = site overview).
+    var initialPlacement: (center: Vec2, zoom: Double)?
+    /// Current preview (for diagnostics and captures).
+    private(set) var currentPreview: PlacementPreview?
 
     private var cameraDirty = true
     private var overlayDirty = true
@@ -47,6 +62,7 @@ final class WorldScene: SKScene {
         controller = CameraController(camera: initial)
         tileLayer = TileLayer(composition: composition)
         gridOverlay = GridOverlayNode(palette: palette)
+        placementOverlay = PlacementOverlayNode(palette: palette)
         super.init(size: CGSize(width: 1440, height: 900))
         scaleMode = .resizeFill
         anchorPoint = .zero
@@ -82,7 +98,58 @@ final class WorldScene: SKScene {
         worldRoot.addChild(tileLayer.node)
         gridOverlay.zPosition = 10
         addChild(gridOverlay)
+        roomLabelLayer.zPosition = 13
+        addChild(roomLabelLayer)
+        placementOverlay.zPosition = 14
+        addChild(placementOverlay)
     }
+
+    /// Replaces the composition after construction; only tiles in `dirty` re-render.
+    func updateComposition(_ c: SiteComposition, dirty: Rect?) {
+        composition = c
+        tileLayer.replace(composition: c, dirty: dirty)
+        overlayDirty = true
+    }
+
+    // MARK: Placement (pointer state only)
+
+    private func cell(at point: CGPoint) -> GridCell {
+        composition.grid.cell(at: controller.camera.screenToWorld(Vec2(point)))
+    }
+
+    func beginPlacement(at point: CGPoint) {
+        guard activeTool != nil else { return }
+        placementAnchor = cell(at: point)
+        hoverPoint = point
+    }
+
+    func updatePlacement(at point: CGPoint) {
+        hoverPoint = point
+    }
+
+    /// Commits the preview under the pointer if it is valid.
+    func endPlacement(at point: CGPoint) {
+        guard let tool = activeTool, let anchor = placementAnchor else { return }
+        hoverPoint = point
+        let preview = previewProvider?(tool, anchor, cell(at: point))
+        placementAnchor = nil
+        overlayDirty = true
+        if let command = preview?.command, preview?.isValid == true { onCommit?(command) }
+    }
+
+    func cancelPlacement() {
+        placementAnchor = nil
+        overlayDirty = true
+    }
+
+    /// Places the pointer and drag anchor on exact cells (automated captures).
+    func setPlacementCells(anchor: GridCell, current: GridCell) {
+        placementAnchor = anchor
+        let world = composition.grid.rect(columns: ColumnSpan(start: current.column, count: 1),
+                                          floors: FloorSpan(lowest: current.floor, highest: current.floor)).center
+        hoverPoint = controller.camera.worldToScreen(world).cgPoint
+    }
+
 
     // MARK: Camera API (used by input views, menu commands, capture)
 
@@ -121,7 +188,11 @@ final class WorldScene: SKScene {
         guard !didPlaceInitialCamera, view != nil, size.width > 1, size.height > 1 else { return }
         didPlaceInitialCamera = true
         controller.setViewportSize(Vec2(size))
-        apply(preset: .overview)
+        if let p = initialPlacement {
+            withController { $0.jump(center: p.center, zoom: p.zoom) }
+        } else {
+            apply(preset: .overview)
+        }
         DispatchQueue.main.async { [weak self] in self?.onReady?() }
     }
 
@@ -141,16 +212,32 @@ final class WorldScene: SKScene {
         }
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
 
-        if overlayDirty, showGrid {
-            let overlay = ArchitecturalGrid.build(grid: composition.grid, plot: composition.plot,
-                                                  visible: camera.visibleRect, zoom: camera.zoom)
-            gridOverlay.update(overlay: overlay, camera: camera, backingScale: backingScale,
-                               frontageMinX: composition.frontageRect.minX, hoverRect: hoverCell().map { $0.rect })
+        if overlayDirty {
+            if showGrid {
+                let overlay = ArchitecturalGrid.build(grid: composition.grid, plot: composition.plot,
+                                                      visible: camera.visibleRect, zoom: camera.zoom)
+                gridOverlay.update(overlay: overlay, camera: camera, backingScale: backingScale,
+                                   frontageMinX: composition.frontageRect.minX,
+                                   hoverRect: activeTool == nil ? hoverCell().map { $0.rect } : nil)
+            }
+            roomLabelLayer.update(labels: roomLabelProvider?(camera.visibleRect, camera.zoom) ?? [], camera: camera)
+            updatePreview(camera: camera)
         }
         cameraDirty = false
         overlayDirty = false
 
         recordStats(dt: dt, updateSeconds: CACurrentMediaTime() - frameStart)
+    }
+
+    private func updatePreview(camera: Camera2D) {
+        guard let tool = activeTool, let hoverPoint else {
+            currentPreview = nil
+            placementOverlay.update(preview: nil, camera: camera, cursor: nil)
+            return
+        }
+        let current = cell(at: hoverPoint)
+        currentPreview = previewProvider?(tool, placementAnchor ?? current, current)
+        placementOverlay.update(preview: currentPreview, camera: camera, cursor: hoverPoint)
     }
 
     /// Grid cell under the cursor if it lies in the buildable frontage.

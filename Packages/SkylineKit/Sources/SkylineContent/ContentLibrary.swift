@@ -22,6 +22,9 @@ public struct ContentLibrary: Sendable {
     public private(set) var orderedCities: [CityDefinition] = []
     public private(set) var orderedPlots: [PlotDefinition] = []
     public private(set) var orderedStarts: [StartDefinition] = []
+    public private(set) var orderedRooms: [RoomSpec] = []
+    public private(set) var orderedBlueprints: [Blueprint] = []
+    public private(set) var buildRules = BuildRules(slabCostPerModule: 0, basementSlabCostPerModule: 0, maxCantileverModules: 0, demolitionRefund: 0)
     private var cityIndex: [String: Int] = [:]
     private var plotIndex: [String: Int] = [:]
     private var startIndex: [String: Int] = [:]
@@ -29,6 +32,13 @@ public struct ContentLibrary: Sendable {
     public func city(_ id: String) -> CityDefinition? { cityIndex[id].map { orderedCities[$0] } }
     public func plot(_ id: String) -> PlotDefinition? { plotIndex[id].map { orderedPlots[$0] } }
     public func start(_ id: String) -> StartDefinition? { startIndex[id].map { orderedStarts[$0] } }
+    public func blueprint(_ id: String) -> Blueprint? { orderedBlueprints.first { $0.id == id } }
+
+    /// Construction rules and room specs for the engine.
+    public var buildCatalog: BuildCatalog { BuildCatalog(rules: buildRules, specs: orderedRooms) }
+
+    /// Identity of this pack, stored in saves.
+    public var packReference: (id: String, version: String) { (manifest.id, manifest.version) }
 
     /// Loads the bundled base pack.
     public static func loadBase() throws -> ContentLibrary {
@@ -48,6 +58,11 @@ public struct ContentLibrary: Sendable {
         }
         var library = ContentLibrary(manifest: manifest)
         try library.register(cities: list("cities"), plots: list("plots"), starts: list("starts"))
+        if let file = manifest.files["buildRules"] {
+            let rules: BuildRules = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
+            try library.register(rules: rules)
+        }
+        try library.register(rooms: list("rooms"), blueprints: list("blueprints"))
         return library
     }
 
@@ -90,6 +105,39 @@ public struct ContentLibrary: Sendable {
             }
             startIndex[s.id] = orderedStarts.count
             orderedStarts.append(s)
+        }
+    }
+
+    mutating func register(rules: BuildRules) throws {
+        guard rules.slabCostPerModule >= 0, rules.basementSlabCostPerModule >= 0, rules.maxCantileverModules >= 0,
+              (0...1).contains(rules.demolitionRefund) else {
+            throw ContentError(pack: manifest.id, file: manifest.files["buildRules"] ?? "buildRules", message: "Build rules out of range")
+        }
+        buildRules = rules
+    }
+
+    mutating func register(rooms: [RoomSpec], blueprints: [Blueprint]) throws {
+        let file = manifest.files["rooms"] ?? "rooms"
+        var ids = Set(orderedRooms.map(\.id))
+        for r in rooms {
+            func fail(_ m: String) -> ContentError { ContentError(pack: manifest.id, file: file, message: "Room '\(r.id)': \(m)") }
+            guard ids.insert(r.id).inserted else { throw fail("duplicate id") }
+            guard r.minWidth >= 1, r.maxWidth >= r.minWidth else { throw fail("invalid width range") }
+            guard r.minFloors >= 1, r.maxFloors >= r.minFloors else { throw fail("invalid floor range") }
+            guard r.kind == .room || r.minFloors >= 2 else { throw fail("shafts must span at least 2 floors") }
+            guard r.costPerModule >= 0 else { throw fail("negative cost") }
+            if let lo = r.lowestLevel, let hi = r.highestLevel, lo > hi { throw fail("lowestLevel above highestLevel") }
+            orderedRooms.append(r)
+        }
+        let bpFile = manifest.files["blueprints"] ?? "blueprints"
+        for bp in blueprints {
+            func fail(_ m: String) -> ContentError { ContentError(pack: manifest.id, file: bpFile, message: "Blueprint '\(bp.id)': \(m)") }
+            guard !orderedBlueprints.contains(where: { $0.id == bp.id }) else { throw fail("duplicate id") }
+            for (i, step) in bp.steps.enumerated() {
+                guard (step.floor == nil) != (step.room == nil) else { throw fail("step \(i) must have exactly one of floor/room") }
+                if let r = step.room, !ids.contains(r.definition) { throw fail("step \(i) uses unknown room '\(r.definition)'") }
+            }
+            orderedBlueprints.append(bp)
         }
     }
 

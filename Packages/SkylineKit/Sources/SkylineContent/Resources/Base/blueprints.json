@@ -1,0 +1,412 @@
+[
+ {
+  "id": "demo-tower",
+  "name": "Demonstration Tower",
+  "description": "Nine storeys on the sandbox foundation: parking, lobby, offices, apartments, stairs and an elevator shaft. Used by developer tools, screenshot capture and tests.",
+  "steps": [
+   {
+    "floor": {
+     "level": -1,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 0,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 1,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 2,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 3,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 4,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 5,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 6,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 7,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 8,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "room": {
+     "definition": "stairs",
+     "start": 12,
+     "count": 4,
+     "lowest": -1,
+     "highest": 8
+    }
+   },
+   {
+    "room": {
+     "definition": "elevator-shaft",
+     "start": 16,
+     "count": 3,
+     "lowest": -1,
+     "highest": 8
+    }
+   },
+   {
+    "room": {
+     "definition": "parking",
+     "start": 0,
+     "count": 12,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "mechanical",
+     "start": 19,
+     "count": 8,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 27,
+     "count": 5,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "lobby",
+     "start": 0,
+     "count": 12,
+     "lowest": 0,
+     "highest": 0
+    }
+   },
+   {
+    "room": {
+     "definition": "lobby",
+     "start": 19,
+     "count": 13,
+     "lowest": 0,
+     "highest": 0
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 0,
+     "count": 10,
+     "lowest": 1,
+     "highest": 1
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 10,
+     "count": 2,
+     "lowest": 1,
+     "highest": 1
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 19,
+     "count": 2,
+     "lowest": 1,
+     "highest": 1
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 21,
+     "count": 11,
+     "lowest": 1,
+     "highest": 1
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 0,
+     "count": 10,
+     "lowest": 2,
+     "highest": 2
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 10,
+     "count": 2,
+     "lowest": 2,
+     "highest": 2
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 19,
+     "count": 2,
+     "lowest": 2,
+     "highest": 2
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 21,
+     "count": 11,
+     "lowest": 2,
+     "highest": 2
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 0,
+     "count": 10,
+     "lowest": 3,
+     "highest": 3
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 10,
+     "count": 2,
+     "lowest": 3,
+     "highest": 3
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 19,
+     "count": 2,
+     "lowest": 3,
+     "highest": 3
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 21,
+     "count": 11,
+     "lowest": 3,
+     "highest": 3
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 0,
+     "count": 10,
+     "lowest": 4,
+     "highest": 4
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 10,
+     "count": 2,
+     "lowest": 4,
+     "highest": 4
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 19,
+     "count": 2,
+     "lowest": 4,
+     "highest": 4
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 21,
+     "count": 11,
+     "lowest": 4,
+     "highest": 4
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 0,
+     "count": 8,
+     "lowest": 5,
+     "highest": 5
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 8,
+     "count": 4,
+     "lowest": 5,
+     "highest": 5
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 19,
+     "count": 3,
+     "lowest": 5,
+     "highest": 5
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 10,
+     "lowest": 5,
+     "highest": 5
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 0,
+     "count": 8,
+     "lowest": 6,
+     "highest": 6
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 8,
+     "count": 4,
+     "lowest": 6,
+     "highest": 6
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 19,
+     "count": 3,
+     "lowest": 6,
+     "highest": 6
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 10,
+     "lowest": 6,
+     "highest": 6
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 7,
+     "highest": 7
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 19,
+     "count": 2,
+     "lowest": 7,
+     "highest": 7
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 21,
+     "count": 7,
+     "lowest": 7,
+     "highest": 7
+    }
+   },
+   {
+    "room": {
+     "definition": "mechanical",
+     "start": 4,
+     "count": 8,
+     "lowest": 8,
+     "highest": 8
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 19,
+     "count": 2,
+     "lowest": 8,
+     "highest": 8
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 21,
+     "count": 7,
+     "lowest": 8,
+     "highest": 8
+    }
+   }
+  ]
+ }
+]

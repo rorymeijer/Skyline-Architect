@@ -11,6 +11,7 @@ let package = Package(
         .library(name: "SkylineCore", targets: ["SkylineCore"]),
         .library(name: "SkylineContent", targets: ["SkylineContent"]),
         .library(name: "SkylinePresentation", targets: ["SkylinePresentation"]),
+        .library(name: "SkylinePersistence", targets: ["SkylinePersistence"]),
         .executable(name: "skyline-snapshot", targets: ["SkylineSnapshot"]),
     ],
     targets: [
@@ -21,12 +22,18 @@ let package = Package(
             resources: [.copy("Resources/Base")]
         ),
         .target(name: "SkylinePresentation", dependencies: ["SkylineCore"]),
+        .target(name: "SkylinePersistence", dependencies: ["SkylineCore"]),
         .executableTarget(
             name: "SkylineSnapshot",
             dependencies: ["SkylineCore", "SkylineContent", "SkylinePresentation"]
         ),
         .testTarget(name: "SkylineCoreTests", dependencies: ["SkylineCore"]),
         .testTarget(name: "SkylineContentTests", dependencies: ["SkylineContent"]),
+        .testTarget(
+            name: "SkylinePersistenceTests",
+            dependencies: ["SkylinePersistence", "SkylineContent"],
+            resources: [.copy("Fixtures")]
+        ),
         .testTarget(
             name: "SkylinePresentationTests",
             dependencies: ["SkylinePresentation", "SkylineContent"]

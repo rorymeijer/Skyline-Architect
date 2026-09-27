@@ -1,0 +1,124 @@
+import Foundation
+import SkylineCore
+
+public enum SaveError: Error, Equatable, CustomStringConvertible {
+    case notASave
+    case newerFormat(found: Int, supported: Int)
+    case noMigration(from: Int)
+    case migrationFailed(from: Int, reason: String)
+    case corrupt(String)
+    case missingContentPack(String)
+    case invalidWorld(String)
+
+    public var description: String {
+        switch self {
+        case .notASave: "This file is not a Skyline Architect save."
+        case .newerFormat(let f, let s): "This save was made by a newer version (format \(f); this version reads up to \(s))."
+        case .noMigration(let v): "No upgrade path from save format \(v)."
+        case .migrationFailed(let v, let r): "Upgrading from save format \(v) failed: \(r)"
+        case .corrupt(let r): "The save is damaged: \(r)"
+        case .missingContentPack(let id): "The save needs content pack '\(id)', which is not installed."
+        case .invalidWorld(let r): "The saved world is inconsistent: \(r)"
+        }
+    }
+}
+
+/// Versioned save encoding. The envelope is
+/// `{ "format": "skyline-architect-save", "formatVersion": N, "game": SaveGame }`.
+///
+/// Older formats are upgraded step by step (`vN → vN+1`) on the untyped JSON tree before
+/// typed decoding; newer formats are refused. Every decoded world is integrity-checked, so
+/// an inconsistent save is rejected instead of silently corrupting a game.
+public enum SaveCodec {
+    public static let format = "skyline-architect-save"
+    public static let currentVersion = 1
+
+    /// Upgrades the `game` JSON object from version `key` to `key + 1`.
+    public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
+
+    /// Registered upgrades. Empty while only format 1 exists; add an entry for every
+    /// format change and keep a fixture of the old format in the tests.
+    public static let migrations: [Int: Migration] = [:]
+
+    private struct Envelope<Game: Codable>: Codable {
+        var format: String
+        var formatVersion: Int
+        var game: Game
+    }
+
+    private struct Header: Decodable {
+        var format: String?
+        var formatVersion: Int?
+    }
+
+    static func makeEncoder() -> JSONEncoder {
+        let e = JSONEncoder()
+        e.outputFormatting = [.sortedKeys]
+        e.dateEncodingStrategy = .iso8601
+        return e
+    }
+
+    static func makeDecoder() -> JSONDecoder {
+        let d = JSONDecoder()
+        d.dateDecodingStrategy = .iso8601
+        return d
+    }
+
+    public static func encode(_ save: SaveGame) throws -> Data {
+        try makeEncoder().encode(Envelope(format: format, formatVersion: currentVersion, game: save))
+    }
+
+    public static func decode(_ data: Data, availablePacks: [ContentPackReference],
+                              migrations: [Int: Migration] = SaveCodec.migrations,
+                              currentVersion: Int = SaveCodec.currentVersion) throws -> SaveGame {
+        guard let header = try? makeDecoder().decode(Header.self, from: data),
+              header.format == format, let version = header.formatVersion else { throw SaveError.notASave }
+        guard version <= currentVersion else { throw SaveError.newerFormat(found: version, supported: currentVersion) }
+
+        let save: SaveGame
+        if version == currentVersion {
+            do { save = try makeDecoder().decode(Envelope<SaveGame>.self, from: data).game } catch {
+                throw SaveError.corrupt(String(describing: error))
+            }
+        } else {
+            save = try migrateAndDecode(data, from: version, to: currentVersion, migrations: migrations)
+        }
+
+        let installed = Set(availablePacks.map(\.id))
+        if let missing = save.contentPacks.first(where: { !installed.contains($0.id) }) {
+            throw SaveError.missingContentPack(missing.id)
+        }
+        do { try save.world.validateIntegrity() } catch { throw SaveError.invalidWorld(String(describing: error)) }
+        guard save.world.properties.contains(save.activePropertyID) else { throw SaveError.invalidWorld("active property missing") }
+        return save
+    }
+
+    private static func migrateAndDecode(_ data: Data, from version: Int, to target: Int,
+                                         migrations: [Int: Migration]) throws -> SaveGame {
+        guard let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              var game = root["game"] as? [String: Any] else { throw SaveError.corrupt("missing game object") }
+        var v = version
+        while v < target {
+            guard let step = migrations[v] else { throw SaveError.noMigration(from: v) }
+            do { try step(&game) } catch { throw SaveError.migrationFailed(from: v, reason: String(describing: error)) }
+            v += 1
+        }
+        do {
+            let upgraded = try JSONSerialization.data(withJSONObject: game)
+            return try makeDecoder().decode(SaveGame.self, from: upgraded)
+        } catch {
+            throw SaveError.corrupt(String(describing: error))
+        }
+    }
+
+    /// Reads only the metadata of a save (for save lists) without validating the world.
+    public static func peekMetadata(_ data: Data) -> SaveMetadata? {
+        struct Peek: Decodable {
+            struct Game: Decodable { var metadata: SaveMetadata }
+            var format: String
+            var game: Game
+        }
+        guard let peek = try? makeDecoder().decode(Peek.self, from: data), peek.format == format else { return nil }
+        return peek.game.metadata
+    }
+}

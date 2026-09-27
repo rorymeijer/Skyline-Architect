@@ -11,21 +11,22 @@ import SkylineContent
 
     @Test func compositionIsDeterministic() throws {
         let a = try compose(), b = try compose()
-        #expect(a.drawing.items == b.drawing.items)
+        #expect(a.site.drawing.items == b.site.drawing.items)
+        #expect(a.buildings.drawing.items == b.buildings.drawing.items)
     }
 
     @Test func sectionsArePresentInPaintOrder() throws {
         let c = try compose()
-        #expect(c.drawing.sections.map(\.name) == ["backdrop", "neighbors", "terrain", "structures", "site"])
-        #expect(c.drawing.sections.allSatisfy { !$0.range.isEmpty })
+        #expect(c.site.drawing.sections.map(\.name) == ["backdrop", "neighbors", "terrain", "site"])
+        #expect(c.site.drawing.sections.allSatisfy { !$0.range.isEmpty })
+        #expect(c.buildings.drawing.sections.count == 1)
     }
 
     @Test func foundationLiesWithinFrontageAndReachesPileDepth() throws {
         let c = try compose()
         let f = try #require(c.foundationRect)
         #expect(f.minX >= c.frontageRect.minX - 1 && f.maxX <= c.frontageRect.maxX + 1)
-        let structures = c.drawing.sections.first { $0.name == "structures" }!.range
-        let deepest = structures.map { c.drawing.items[$0].bounds.minY }.min()!
+        let deepest = c.buildings.drawing.items.map(\.bounds.minY).min()!
         #expect(deepest <= -20 && deepest > -21)  // piles reach 20 m (+ rounded toe)
     }
 
@@ -49,8 +50,8 @@ import SkylineContent
     @Test func fineDetailIsHiddenWhenZoomedOut() throws {
         let c = try compose()
         let view = c.siteRect
-        let far = c.index.items(in: view, of: c.drawing, detail: 2).count
-        let near = c.index.items(in: view, of: c.drawing, detail: 128).count
+        let far = c.items(in: view, detail: 2).count
+        let near = c.items(in: view, detail: 128).count
         #expect(far * 5 < near)
     }
 
