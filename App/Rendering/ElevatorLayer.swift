@@ -20,7 +20,7 @@ final class ElevatorLayer {
             nodes.cab.size = CGSize(width: s.rect.width, height: s.rect.height + 0.42)
             nodes.cab.position = CGPoint(x: s.rect.minX, y: s.rect.minY - 0.12)
             let ropeBottom = s.rect.maxY + 0.3
-            nodes.rope.position = CGPoint(x: s.rect.midX, y: ropeBottom)
+            nodes.rope.position = CGPoint(x: s.rect.center.x, y: ropeBottom)
             nodes.rope.size = CGSize(width: 0.05, height: max(s.ropeTop - ropeBottom, 0))
         }
         for (id, nodes) in cabs where !seen.contains(id) {
