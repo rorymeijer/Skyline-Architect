@@ -10,6 +10,7 @@
 		5A0000000000000000000101 /* SkylineCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5A0000000000000000000201 /* SkylineCore */; };
 		5A0000000000000000000102 /* SkylineContent in Frameworks */ = {isa = PBXBuildFile; productRef = 5A0000000000000000000202 /* SkylineContent */; };
 		5A0000000000000000000103 /* SkylinePresentation in Frameworks */ = {isa = PBXBuildFile; productRef = 5A0000000000000000000203 /* SkylinePresentation */; };
+		5A0000000000000000000104 /* SkylinePersistence in Frameworks */ = {isa = PBXBuildFile; productRef = 5A0000000000000000000204 /* SkylinePersistence */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 				5A0000000000000000000101 /* SkylineCore in Frameworks */,
 				5A0000000000000000000102 /* SkylineContent in Frameworks */,
 				5A0000000000000000000103 /* SkylinePresentation in Frameworks */,
+				5A0000000000000000000104 /* SkylinePersistence in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +79,7 @@
 				5A0000000000000000000201 /* SkylineCore */,
 				5A0000000000000000000202 /* SkylineContent */,
 				5A0000000000000000000203 /* SkylinePresentation */,
+				5A0000000000000000000204 /* SkylinePersistence */,
 			);
 			productName = SkylineArchitect;
 			productReference = 5A0000000000000000000001 /* SkylineArchitect.app */;
@@ -368,6 +371,10 @@
 		5A0000000000000000000203 /* SkylinePresentation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SkylinePresentation;
+		};
+		5A0000000000000000000204 /* SkylinePersistence */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SkylinePersistence;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

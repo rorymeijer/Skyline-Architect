@@ -14,7 +14,7 @@ enum DrawingRasterizer {
                           tilePixels: Int, bleed: Int = 1) -> CGImage? {
         let bleedMeters = Double(bleed) / ppm
         let area = rect.insetBy(dx: -bleedMeters, dy: -bleedMeters)
-        let items = c.index.items(in: area, of: c.drawing, detail: ppm)
+        let items = c.items(in: area, detail: ppm)
         guard !items.isEmpty else { return nil }
         let size = tilePixels + 2 * bleed
         guard let ctx = CGContext(data: nil, width: size, height: size, bitsPerComponent: 8, bytesPerRow: 0,
@@ -25,7 +25,7 @@ enum DrawingRasterizer {
         // Bitmap origin is bottom-left with y up — the same orientation as world space.
         ctx.scaleBy(x: CGFloat(ppm), y: CGFloat(ppm))
         ctx.translateBy(x: CGFloat(-area.minX), y: CGFloat(-area.minY))
-        for i in items { draw(c.drawing.items[i], in: ctx) }
+        for item in items { draw(item, in: ctx) }
         return ctx.makeImage()
     }
 

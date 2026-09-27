@@ -10,7 +10,10 @@ import SkylinePresentation
 /// tools (Phase 2) will add contextual controls rather than reuse macOS mouse semantics.
 final class GameSKView: SKView, UIGestureRecognizerDelegate {
     var onToggleGrid: (() -> Void)?
+    var onToolKey: ((String) -> Void)?
     private var worldScene: WorldScene? { scene as? WorldScene }
+    /// True while a one-finger drag places construction (tool active) instead of panning.
+    private var isPlacing = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,6 +26,16 @@ final class GameSKView: SKView, UIGestureRecognizerDelegate {
         pinch.delegate = self
         addGestureRecognizer(pinch)
         addGestureRecognizer(UIHoverGestureRecognizer(target: self, action: #selector(handleHover(_:))))
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        addGestureRecognizer(tap)
+    }
+
+    /// With a tool active, a tap places at the default size.
+    @objc private func handleTap(_ g: UITapGestureRecognizer) {
+        guard let worldScene, worldScene.activeTool != nil else { return }
+        let p = scenePoint(g)
+        worldScene.beginPlacement(at: p)
+        worldScene.endPlacement(at: p)
     }
 
     @available(*, unavailable)
@@ -44,6 +57,20 @@ final class GameSKView: SKView, UIGestureRecognizerDelegate {
     @objc private func handlePan(_ g: UIPanGestureRecognizer) {
         guard let worldScene else { return }
         let time = CACurrentMediaTime()
+        // One finger with a construction tool drags out a placement; two fingers always pan.
+        if g.state == .began {
+            isPlacing = worldScene.activeTool != nil && g.numberOfTouches == 1
+        }
+        if isPlacing {
+            let p = scenePoint(g)
+            switch g.state {
+            case .began: worldScene.beginPlacement(at: p)
+            case .changed: worldScene.updatePlacement(at: p)
+            case .ended: worldScene.endPlacement(at: p); isPlacing = false
+            default: worldScene.cancelPlacement(); isPlacing = false
+            }
+            return
+        }
         switch g.state {
         case .began:
             worldScene.withController { $0.beginDrag(at: time) }

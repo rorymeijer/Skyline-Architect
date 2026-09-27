@@ -16,10 +16,23 @@ public struct ConstructionEngine: Sendable {
         case let .placeRoom(b, def, columns, floors): validatePlaceRoom(b, def, columns, floors, world)
         case let .demolishRoom(id): validateDemolishRoom(id, world)
         case let .restorePlate(b, level, plate):
-            .success(ConstructionPlan(cost: 0, buildingID: b, columns: plate?.span ?? world.buildings[b]?.plate(at: level)?.span ?? ColumnSpan(start: 0, count: 0),
+            // Affected columns: everything covered before or after the restore.
+            .success(ConstructionPlan(cost: 0, buildingID: b,
+                                      columns: Self.union(plate?.span, world.buildings[b]?.plate(at: level)?.span),
                                       floors: FloorSpan(lowest: level, highest: level)))
         case let .restoreRoom(room):
             .success(ConstructionPlan(cost: 0, buildingID: room.buildingID, columns: room.columns, floors: room.floors))
+        }
+    }
+
+    static func union(_ a: ColumnSpan?, _ b: ColumnSpan?) -> ColumnSpan {
+        switch (a, b) {
+        case let (a?, b?):
+            let lo = min(a.start, b.start), hi = max(a.end, b.end)
+            return ColumnSpan(start: lo, count: hi - lo)
+        case let (a?, nil): return a
+        case let (nil, b?): return b
+        default: return ColumnSpan(start: 0, count: 0)
         }
     }
 

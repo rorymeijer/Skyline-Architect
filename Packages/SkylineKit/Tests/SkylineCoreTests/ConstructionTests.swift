@@ -202,3 +202,16 @@ struct ConstructionFixture {
         #expect(throws: WorldIntegrityError.roomWithoutFloor(RoomID(raw: 902))) { try floating.validateIntegrity() }
     }
 }
+
+@Suite struct UndoPlanTests {
+    /// Undoing an extension must report the removed columns as affected (renderer invalidation).
+    @Test func undoOfExtensionCoversRemovedColumns() throws {
+        var f = try ConstructionFixture()
+        var h = ConstructionHistory()
+        try h.perform(.buildFloor(building: f.building, level: 0, span: ColumnSpan(start: 8, count: 8)), engine: f.engine, world: &f.world)
+        try h.perform(.buildFloor(building: f.building, level: 0, span: ColumnSpan(start: 16, count: 16)), engine: f.engine, world: &f.world)
+        let undone = try #require(try h.undo(engine: f.engine, world: &f.world))
+        #expect(undone.plan.columns == ColumnSpan(start: 8, count: 24))
+        #expect(f.world.buildings[f.building]?.plate(at: 0)?.span == ColumnSpan(start: 8, count: 8))
+    }
+}

@@ -26,6 +26,33 @@ struct GameCommands: Commands {
     let model: AppModel
 
     var body: some Commands {
+        CommandGroup(replacing: .newItem) {
+            Button("New Game") { model.newGame() }
+                .keyboardShortcut("n", modifiers: .command)
+        }
+        CommandGroup(replacing: .saveItem) {
+            Button("Save") { model.save() }
+                .keyboardShortcut("s", modifiers: .command)
+            Button("Load Game…") { model.showLoadSheet = true }
+                .keyboardShortcut("o", modifiers: .command)
+        }
+        CommandGroup(replacing: .undoRedo) {
+            Button("Undo Construction") { model.undo() }
+                .keyboardShortcut("z", modifiers: .command)
+                .disabled(!model.canUndo)
+            Button("Redo Construction") { model.redo() }
+                .keyboardShortcut("z", modifiers: [.command, .shift])
+                .disabled(!model.canRedo)
+        }
+        CommandMenu("Build") {
+            Button("Floor Tool") { model.handleToolKey("floor") }
+            Button("Demolish Tool") { model.handleToolKey("demolish") }
+            Button("Stop Building") { model.select(tool: nil) }
+            #if DEBUG
+            Divider()
+            Button("Developer: Build Demo Tower") { model.applyBlueprint("demo-tower") }
+            #endif
+        }
         CommandGroup(after: .toolbar) {
             Button(model.showGrid ? "Hide Architectural Grid" : "Show Architectural Grid") { model.toggleGrid() }
                 .keyboardShortcut("g", modifiers: [.command, .option])

@@ -59,6 +59,16 @@
                ReferencedContainer = "container:Packages/SkylineKit">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SkylinePersistenceTests"
+               BuildableName = "SkylinePersistenceTests"
+               BlueprintName = "SkylinePersistenceTests"
+               ReferencedContainer = "container:Packages/SkylineKit">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

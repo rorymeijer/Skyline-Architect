@@ -9,9 +9,14 @@ import SkylinePresentation
 /// - Trackpad: two-finger scroll pans (with system momentum), pinch zooms at the cursor,
 ///   ⌘/⌥ + scroll zooms.
 /// - Mouse: wheel zooms smoothly toward the cursor; left/right/middle drag pans with inertia.
-/// - Keyboard: WASD / arrows pan, Q/E or −/= zoom, G toggles the grid.
+/// - Keyboard: WASD / arrows pan, Q/E or −/= zoom, G toggles the grid, F floor tool,
+///   X demolish tool, Esc cancels the tool.
+/// - With a construction tool active, left-drag places (right/middle drag still pans).
 final class GameSKView: SKView {
     var onToggleGrid: (() -> Void)?
+    /// Tool shortcuts: "floor", "demolish", "cancel".
+    var onToolKey: ((String) -> Void)?
+    private var isPlacing = false
 
     private var worldScene: WorldScene? { scene as? WorldScene }
     private var trackingArea: NSTrackingArea?
@@ -81,13 +86,33 @@ final class GameSKView: SKView {
 
     // MARK: Drag panning
 
-    override func mouseDown(with event: NSEvent) { beginDrag(event) }
-    override func rightMouseDown(with event: NSEvent) { beginDrag(event) }
+    override func mouseDown(with event: NSEvent) {
+        if let worldScene, worldScene.activeTool != nil {
+            window?.makeFirstResponder(self)
+            isPlacing = true
+            worldScene.beginPlacement(at: scenePoint(event))
+        } else {
+            beginDrag(event)
+        }
+    }
+    override func rightMouseDown(with event: NSEvent) {
+        if isPlacing { isPlacing = false; worldScene?.cancelPlacement() }
+        beginDrag(event)
+    }
     override func otherMouseDown(with event: NSEvent) { beginDrag(event) }
-    override func mouseDragged(with event: NSEvent) { drag(event) }
+    override func mouseDragged(with event: NSEvent) {
+        if isPlacing { worldScene?.updatePlacement(at: scenePoint(event)) } else { drag(event) }
+    }
     override func rightMouseDragged(with event: NSEvent) { drag(event) }
     override func otherMouseDragged(with event: NSEvent) { drag(event) }
-    override func mouseUp(with event: NSEvent) { endDrag(event) }
+    override func mouseUp(with event: NSEvent) {
+        if isPlacing {
+            isPlacing = false
+            worldScene?.endPlacement(at: scenePoint(event))
+        } else {
+            endDrag(event)
+        }
+    }
     override func rightMouseUp(with event: NSEvent) { endDrag(event) }
     override func otherMouseUp(with event: NSEvent) { endDrag(event) }
 
@@ -115,7 +140,8 @@ final class GameSKView: SKView {
     // MARK: Keyboard
 
     private enum Key {
-        static let a: UInt16 = 0, s: UInt16 = 1, d: UInt16 = 2, g: UInt16 = 5, q: UInt16 = 12, w: UInt16 = 13, e: UInt16 = 14
+        static let a: UInt16 = 0, s: UInt16 = 1, d: UInt16 = 2, f: UInt16 = 3, g: UInt16 = 5, x: UInt16 = 7
+        static let q: UInt16 = 12, w: UInt16 = 13, e: UInt16 = 14, escape: UInt16 = 53
         static let equals: UInt16 = 24, minus: UInt16 = 27
         static let left: UInt16 = 123, right: UInt16 = 124, down: UInt16 = 125, up: UInt16 = 126
         static let movement: Set<UInt16> = [a, s, d, w, q, e, equals, minus, left, right, down, up]
@@ -129,6 +155,14 @@ final class GameSKView: SKView {
             applyHeldKeys()
         } else if event.keyCode == Key.g, !event.isARepeat {
             onToggleGrid?()
+        } else if event.keyCode == Key.f, !event.isARepeat {
+            onToolKey?("floor")
+        } else if event.keyCode == Key.x, !event.isARepeat {
+            onToolKey?("demolish")
+        } else if event.keyCode == Key.escape {
+            isPlacing = false
+            worldScene?.cancelPlacement()
+            onToolKey?("cancel")
         } else {
             super.keyDown(with: event)
         }
