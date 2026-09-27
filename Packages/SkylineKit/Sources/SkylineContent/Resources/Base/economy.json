@@ -1,0 +1,9 @@
+{
+ "loanStep": 500000,
+ "maxLoans": 5000000,
+ "loanInterestRate": 0.08,
+ "bankruptcyDays": 7,
+ "utilitiesPerPersonPerDay": 4,
+ "elevatorCarPerDay": 60,
+ "rentDaysPerMonth": 1
+}

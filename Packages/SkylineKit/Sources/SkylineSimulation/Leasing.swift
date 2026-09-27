@@ -28,18 +28,20 @@ public enum Leasing {
         return world.rooms.values.filter { catalog.spec($0.definitionID)?.rentPerModule != nil && !leased.contains($0.id) }
     }
 
-    /// Monthly asking rent: base rent per module × width, +1 % per storey above ground.
-    public static func askingRent(_ room: Room, catalog: BuildCatalog) -> Int? {
+    /// Monthly asking rent: base rent per module × width, +1 % per storey above ground, ×
+    /// the building's rent level (player setting, Phase 9).
+    public static func askingRent(_ room: Room, world: GameWorld, catalog: BuildCatalog) -> Int? {
         guard let base = catalog.spec(room.definitionID)?.rentPerModule else { return nil }
         let premium = 1 + 0.01 * Double(max(room.floors.lowest, 0))
-        return Int((Double(base * room.columns.count) * premium).rounded())
+        let level = world.buildings[room.buildingID]?.rentLevel ?? 1
+        return Int((Double(base * room.columns.count) * premium * level).rounded())
     }
 
     // MARK: Appraisal
 
     public static func appraise(_ room: Room, for type: TenantType, world: GameWorld, engine: SimulationEngine) -> UnitAppraisal? {
         let catalog = engine.catalog
-        guard let rent = askingRent(room, catalog: catalog), let building = world.buildings[room.buildingID] else { return nil }
+        guard let rent = askingRent(room, world: world, catalog: catalog), let building = world.buildings[room.buildingID] else { return nil }
         let perModule = Double(rent) / Double(max(room.columns.count, 1))
         let budget = Double(type.budgetPerModule)
         let rentScore = clamp((budget - perModule) / budget * 2 + 0.3)
@@ -120,7 +122,7 @@ public enum Leasing {
             name = rules.names.last[rng.int(in: 0..<rules.names.last.count)] + " household"
         }
         world.tenants.insert(Tenant(id: tenantID, typeID: type.id, name: name, buildingID: room.buildingID, room: room.id,
-                                    rent: askingRent(room, catalog: catalog) ?? 0, since: now, satisfaction: satisfaction))
+                                    rent: askingRent(room, world: world, catalog: catalog) ?? 0, since: now, satisfaction: satisfaction))
         var added: [PersonID] = []
         for _ in 0..<type.members.count(modules: room.columns.count) {
             let id = world.makePersonID()
@@ -203,7 +205,10 @@ extension SimulationEngine {
                                                  reason: best.1.weakest, score: best.1.total))
             }
         }
-        if SimClock.secondOfDay(now) == SimClock.startSecondOfDay { reviewTenants(at: now, world: &world) }
+        if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
+            closeDay(at: now, world: &world)
+            reviewTenants(at: now, world: &world)
+        }
         world.market.nextTick = now + 3600
         return added
     }

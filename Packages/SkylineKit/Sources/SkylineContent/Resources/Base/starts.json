@@ -13,6 +13,7 @@
       "basementFloors": 1,
       "pileDepthMeters": 20,
       "pileSpacingModules": 4
-    }
+    },
+    "startingCash": 2500000
   }
 ]

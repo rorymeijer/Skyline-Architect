@@ -66,7 +66,7 @@ public enum PopulationSync {
             let surname = world.people[members[0]]?.name.split(separator: " ").last.map(String.init) ?? "Resident"
             let name = type.kind == "business" ? "\(surname) & Co." : "\(surname) household"
             world.tenants.insert(Tenant(id: id, typeID: type.id, name: name, buildingID: room.buildingID, room: roomID,
-                                        rent: Leasing.askingRent(room, catalog: catalog) ?? 0, since: world.clock.tick, satisfaction: 0.6))
+                                        rent: Leasing.askingRent(room, world: world, catalog: catalog) ?? 0, since: world.clock.tick, satisfaction: 0.6))
             for pid in members { world.people.update(pid) { $0.tenantID = id } }
         }
     }

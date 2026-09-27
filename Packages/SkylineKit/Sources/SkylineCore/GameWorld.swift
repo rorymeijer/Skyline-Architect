@@ -76,6 +76,8 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var tenants = EntityStore<Tenant>()
     /// Rental market state (Phase 8).
     public var market = MarketState()
+    /// Money (Phase 9). Changed only through `Ledger.post`.
+    public var ledger = Ledger()
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()
@@ -135,6 +137,12 @@ public struct GameWorld: Codable, Sendable, Equatable {
 
     /// Allocates a fresh person id (used by the simulation's population system).
     public mutating func makePersonID() -> PersonID { ids.make() }
+
+    /// Player rent setting of a building (Phase 9), clamped to 0.6…1.6. Not construction:
+    /// no command, no undo.
+    public mutating func setRentLevel(_ level: Double, building: BuildingID) {
+        buildings.update(building) { $0.rentLevel = min(max(level, 0.6), 1.6) }
+    }
 
     /// Allocates a fresh tenant id (used by the simulation's leasing system).
     public mutating func makeTenantID() -> TenantID { ids.make() }
