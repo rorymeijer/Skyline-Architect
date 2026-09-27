@@ -27,7 +27,7 @@ let package = Package(
         .target(name: "SkylineSimulation", dependencies: ["SkylineCore"]),
         .executableTarget(
             name: "SkylineSnapshot",
-            dependencies: ["SkylineCore", "SkylineContent", "SkylinePresentation"]
+            dependencies: ["SkylineCore", "SkylineContent", "SkylinePresentation", "SkylineSimulation"]
         ),
         .testTarget(name: "SkylineCoreTests", dependencies: ["SkylineCore"]),
         .testTarget(name: "SkylineSimulationTests", dependencies: ["SkylineSimulation", "SkylineContent"]),

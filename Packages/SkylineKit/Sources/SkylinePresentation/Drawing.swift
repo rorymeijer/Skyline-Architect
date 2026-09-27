@@ -100,6 +100,26 @@ public struct Drawing: Sendable {
         }
     }
 
+    /// A copy with every point transformed by an affine map that keeps axes aligned
+    /// (translation, scaling, mirroring) — used to place figure drawings in the world.
+    public func mapped(_ f: (Vec2) -> Vec2) -> Drawing {
+        func rect(_ r: Rect) -> Rect { Rect(bounding: [f(Vec2(r.minX, r.minY)), f(Vec2(r.maxX, r.maxY))]) }
+        var out = Drawing()
+        for item in items {
+            let shape: DrawShape
+            switch item.shape {
+            case .rect(let r): shape = .rect(rect(r))
+            case .ellipse(let r): shape = .ellipse(rect(r))
+            case .polygon(let pts): shape = .polygon(pts.map(f))
+            case .polyline(let pts): shape = .polyline(pts.map(f))
+            }
+            var fill = item.fill
+            if case let .linear(start, end, stops)? = item.fill { fill = .linear(start: f(start), end: f(end), stops: stops) }
+            out.add(DrawItem(shape: shape, fill: fill, stroke: item.stroke, minDetail: item.minDetail, maxDetail: item.maxDetail))
+        }
+        return out
+    }
+
     /// Groups everything added inside `body` under a section name.
     public mutating func section(_ name: String, _ body: (inout Drawing) -> Void) {
         let start = items.count

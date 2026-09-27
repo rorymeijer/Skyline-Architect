@@ -11,6 +11,8 @@ public enum SVGRenderer {
         public var palette: ArtPalette
         public var caption: String?
         public var roomLabels: [RoomLabel]
+        /// Extra world-space drawing painted over the composition (e.g. people).
+        public var overlayDrawing: Drawing?
 
         public init(pixelsPerMeter: Double, gridOverlay: GridOverlay? = nil, palette: ArtPalette = .standard,
                     caption: String? = nil, roomLabels: [RoomLabel] = []) {
@@ -19,6 +21,7 @@ public enum SVGRenderer {
             self.palette = palette
             self.caption = caption
             self.roomLabels = roomLabels
+            self.overlayDrawing = nil
         }
     }
 
@@ -56,6 +59,15 @@ public enum SVGRenderer {
             if let s = item.stroke {
                 stroke = " stroke=\"\(rgb(s.color))\" stroke-opacity=\"\(n(s.color.a))\" stroke-width=\"\(n(s.width))\""
                 if !s.dash.isEmpty { stroke += " stroke-dasharray=\"\(s.dash.map(n).joined(separator: " "))\"" }
+            }
+            body += element(item.shape, attrs: fill + stroke) + "\n"
+        }
+
+        for item in o.overlayDrawing?.items ?? [] where Drawing.isVisible(item, at: ppm) && item.bounds.intersects(view) {
+            let fill = item.fill.map(paintAttr) ?? "fill=\"none\""
+            var stroke = ""
+            if let s = item.stroke {
+                stroke = " stroke=\"\(rgb(s.color))\" stroke-opacity=\"\(n(s.color.a))\" stroke-width=\"\(n(s.width))\" stroke-linecap=\"round\""
             }
             body += element(item.shape, attrs: fill + stroke) + "\n"
         }

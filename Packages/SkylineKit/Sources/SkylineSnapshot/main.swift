@@ -8,6 +8,7 @@ import Foundation
 import SkylineCore
 import SkylineContent
 import SkylinePresentation
+import SkylineSimulation
 
 func fail(_ message: String) -> Never {
     FileHandle.standardError.write(Data("skyline-snapshot: \(message)\n".utf8))
@@ -37,6 +38,15 @@ do {
         let engine = ConstructionEngine(catalog: catalog)
         for command in blueprint.commands(for: building) { try engine.apply(command, to: &game.world) }
     }
+    if let time = option("--time") {
+        // Populate and simulate until HH:MM on day 0.
+        let parts = time.split(separator: ":").compactMap { Tick($0) }
+        guard parts.count == 2 else { fail("--time expects HH:MM") }
+        PopulationSync.sync(&game.world, catalog: catalog, rules: library.simulationRules)
+        let target = parts[0] * 3600 + parts[1] * 60
+        let ticks = target >= SimClock.startSecondOfDay ? target - SimClock.startSecondOfDay : target + 86_400 - SimClock.startSecondOfDay
+        SimulationEngine(rules: library.simulationRules, catalog: catalog).advance(&game.world, by: ticks)
+    }
     guard let composition = SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: catalog,
                                                  art: library.artCatalog) else {
         fail("property missing")
@@ -55,8 +65,14 @@ do {
     let level = DetailLevelPolicy().level(forZoom: camera.zoom, current: nil)
     let caption = "DESIGN PREVIEW (skyline-snapshot, not a game screenshot) — preset \(preset.rawValue), \(String(format: "%.2f", camera.zoom)) pt/m, LOD \(level)"
     let labels = RoomLabels.build(world: game.world, propertyID: game.activePropertyID, catalog: catalog, visible: view, zoom: camera.zoom)
-    let svg = SVGRenderer.render(composition, view: view, options: .init(
-        pixelsPerMeter: camera.zoom * scale, gridOverlay: grid, caption: caption, roomLabels: labels))
+    var options = SVGRenderer.Options(pixelsPerMeter: camera.zoom * scale, gridOverlay: grid, caption: caption, roomLabels: labels)
+    var people = Drawing()
+    for sprite in PeopleView.visible(world: game.world, propertyID: game.activePropertyID, time: Double(game.world.clock.tick),
+                                     visible: view, zoom: camera.zoom) {
+        for item in sprite.worldDrawing.items { people.add(item) }
+    }
+    options.overlayDrawing = people
+    let svg = SVGRenderer.render(composition, view: view, options: options)
     try svg.write(toFile: out, atomically: true, encoding: .utf8)
     let items = composition.layers.map { $0.drawing.items.count }.reduce(0, +)
     print("wrote \(out) — \(items) items total, view \(view)")
