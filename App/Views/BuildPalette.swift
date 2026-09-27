@@ -9,26 +9,52 @@ struct BuildPalette: View {
 
     var body: some View {
         HStack(spacing: 2) {
-            ToolButton(symbol: "square.stack.3d.up", title: "Floor", help: "Build or extend floors — drag across columns (F)",
-                       isOn: model.activeTool == .floor) { model.handleToolKey("floor") }
+            floorButton
             divider
             ForEach(groupedSpecs) { group in
-                ForEach(group.specs, id: \.id) { spec in
-                    ToolButton(symbol: Self.symbol(for: spec.appearance), title: Self.shortName(spec.name),
-                               help: helpText(spec), isOn: model.activeTool == .room(spec.id)) {
-                        model.select(tool: model.activeTool == .room(spec.id) ? nil : .room(spec.id))
-                    }
-                }
-                divider
+                groupView(group)
             }
-            ToolButton(symbol: "hammer", title: "Demolish", help: "Remove a room, or an empty floor (X)",
-                       isOn: model.activeTool == .demolish, tint: .orange) { model.handleToolKey("demolish") }
+            demolishButton
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 5)
         .background(RoundedRectangle(cornerRadius: 14).fill(Color.black.opacity(0.6)))
         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.white.opacity(0.12)))
         .environment(\.colorScheme, .dark)
+    }
+
+    private var floorButton: some View {
+        let isOn: Bool = model.activeTool == ConstructionTool.floor
+        return ToolButton(symbol: "square.stack.3d.up", title: "Floor",
+                          help: "Build or extend floors — drag across columns (F)", isOn: isOn) {
+            model.handleToolKey("floor")
+        }
+    }
+
+    private var demolishButton: some View {
+        let isOn: Bool = model.activeTool == ConstructionTool.demolish
+        return ToolButton(symbol: "hammer", title: "Demolish", help: "Remove a room, or an empty floor (X)",
+                          isOn: isOn, tint: Color.orange) {
+            model.handleToolKey("demolish")
+        }
+    }
+
+    private func groupView(_ group: Group) -> some View {
+        HStack(spacing: 2) {
+            ForEach(group.specs, id: \.id) { spec in
+                specButton(spec)
+            }
+            divider
+        }
+    }
+
+    private func specButton(_ spec: RoomSpec) -> some View {
+        let tool = ConstructionTool.room(spec.id)
+        let isOn: Bool = model.activeTool == tool
+        return ToolButton(symbol: Self.symbol(for: spec.appearance), title: Self.shortName(spec.name),
+                          help: helpText(spec), isOn: isOn) {
+            model.select(tool: isOn ? nil : tool)
+        }
     }
 
     private struct Group: Identifiable {
