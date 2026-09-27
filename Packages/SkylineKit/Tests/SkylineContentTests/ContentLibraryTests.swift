@@ -51,3 +51,41 @@ import SkylineCore
         #expect(throws: ContentError.self) { try ContentLibrary.load(packAt: dir) }
     }
 }
+
+@Suite struct ConstructionContentTests {
+    @Test func baseRoomsAndRulesLoad() throws {
+        let lib = try ContentLibrary.loadBase()
+        let catalog = lib.buildCatalog
+        #expect(catalog.spec("office-small")?.lowestLevel == 1)
+        #expect(catalog.spec("stairs")?.kind == .shaft)
+        #expect(catalog.rules.slabCostPerModule > 0)
+    }
+
+    /// The demo blueprint must build cleanly on the default start with the real rules —
+    /// an end-to-end check of content + construction engine.
+    @Test func demoBlueprintBuildsOnDefaultStart() throws {
+        let lib = try ContentLibrary.loadBase()
+        var game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: lib)
+        let building = try #require(game.world.buildings(on: game.activePropertyID).first)
+        let engine = ConstructionEngine(catalog: lib.buildCatalog)
+        let blueprint = try #require(lib.blueprint("demo-tower"))
+        var total = 0
+        for command in blueprint.commands(for: building) {
+            total += try engine.apply(command, to: &game.world).plan.cost
+        }
+        #expect(game.world.buildings[building.id]?.builtLevels == FloorSpan(lowest: -1, highest: 8))
+        #expect(game.world.rooms.count > 30)
+        #expect(total > 0)
+        try game.world.validateIntegrity()
+    }
+
+    @Test func invalidRoomDefinitionsAreRejected() throws {
+        var lib = ContentLibrary(manifest: ContentPackManifest(id: "t", name: "t", version: "1", formatVersion: 1, files: [:]))
+        let bad = RoomSpec(id: "x", name: "x", category: "c", kind: .shaft, appearance: "a",
+                           minWidth: 2, maxWidth: 2, minFloors: 1, maxFloors: 3, costPerModule: 1)
+        #expect(throws: ContentError.self) { try lib.register(rooms: [bad], blueprints: []) }
+        let bp = Blueprint(id: "b", name: "b", description: "", steps: [
+            .init(floor: nil, room: .init(definition: "missing", start: 0, count: 4, lowest: 0, highest: 0))])
+        #expect(throws: ContentError.self) { try lib.register(rooms: [], blueprints: [bp]) }
+    }
+}

@@ -6,6 +6,9 @@
   "files": {
     "cities": "cities.json",
     "plots": "plots.json",
-    "starts": "starts.json"
+    "starts": "starts.json",
+    "rooms": "rooms.json",
+    "buildRules": "build-rules.json",
+    "blueprints": "blueprints.json"
   }
 }
