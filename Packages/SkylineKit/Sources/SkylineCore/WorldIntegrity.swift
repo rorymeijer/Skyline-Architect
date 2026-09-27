@@ -47,6 +47,15 @@ extension GameWorld {
             }
             roomsByBuilding[r.buildingID, default: []].append(r)
         }
+        for person in people {
+            maxID = max(maxID, person.id.raw)
+            guard buildings.contains(person.buildingID) else {
+                throw WorldIntegrityError.danglingReference("person \(person.id) → building \(person.buildingID)")
+            }
+            for room in [person.homeRoom, person.workRoom].compactMap({ $0 }) where !rooms.contains(room) {
+                throw WorldIntegrityError.danglingReference("person \(person.id) → room \(room)")
+            }
+        }
         guard ids.next > maxID else { throw WorldIntegrityError.idAllocatorBehind(maxID) }
     }
 }

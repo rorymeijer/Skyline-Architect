@@ -31,14 +31,22 @@ public enum SaveError: Error, Equatable, CustomStringConvertible {
 /// an inconsistent save is rejected instead of silently corrupting a game.
 public enum SaveCodec {
     public static let format = "skyline-architect-save"
-    public static let currentVersion = 1
+    public static let currentVersion = 2
 
     /// Upgrades the `game` JSON object from version `key` to `key + 1`.
     public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
 
-    /// Registered upgrades. Empty while only format 1 exists; add an entry for every
-    /// format change and keep a fixture of the old format in the tests.
-    public static let migrations: [Int: Migration] = [:]
+    /// Registered upgrades; one entry per format change. Keep a fixture of every old format
+    /// in the tests (SAVE_FORMAT.md).
+    public static let migrations: [Int: Migration] = [
+        // v1 → v2 (Phase 4): the world gains a simulation clock and people.
+        1: { game in
+            guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v1 save without world") }
+            if world["clock"] == nil { world["clock"] = ["tick": 0] }
+            if world["people"] == nil { world["people"] = [Any]() }
+            game["world"] = world
+        },
+    ]
 
     private struct Envelope<Game: Codable>: Codable {
         var format: String

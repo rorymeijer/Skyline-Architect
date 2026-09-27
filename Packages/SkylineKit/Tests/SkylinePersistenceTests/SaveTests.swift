@@ -85,22 +85,31 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(throws: SaveError.self) { try SaveCodec.decode(truncated, availablePacks: basePacks) }
     }
 
-    /// Migration harness: pretend the current format is 2 and register a v1 → v2 step that
+    /// Migration harness: pretend the current format is one newer and register a step that
     /// renames the save title. Real migrations follow exactly this pattern.
     @Test func migrationsRunStepByStep() throws {
         let data = try SaveCodec.encode(makeDemoSave())
+        let current = SaveCodec.currentVersion
         let migrations: [Int: SaveCodec.Migration] = [
-            1: { game in
+            current: { game in
                 var meta = game["metadata"] as? [String: Any] ?? [:]
                 meta["title"] = "Migrated"
                 game["metadata"] = meta
             },
         ]
-        let upgraded = try SaveCodec.decode(data, availablePacks: basePacks, migrations: migrations, currentVersion: 2)
+        let upgraded = try SaveCodec.decode(data, availablePacks: basePacks, migrations: migrations, currentVersion: current + 1)
         #expect(upgraded.metadata.title == "Migrated")
-        #expect(throws: SaveError.noMigration(from: 1)) {
-            try SaveCodec.decode(data, availablePacks: basePacks, migrations: [:], currentVersion: 2)
+        #expect(throws: SaveError.noMigration(from: current)) {
+            try SaveCodec.decode(data, availablePacks: basePacks, migrations: [:], currentVersion: current + 1)
         }
+    }
+
+    /// The real v1 → v2 step adds an empty population and a clock at tick 0.
+    @Test func v1SavesUpgradeToV2() throws {
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v1.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.people.isEmpty)
+        #expect(save.world.clock.tick == 0)
     }
 
     /// Golden fixture: a format-1 save committed to the repository must load forever.
