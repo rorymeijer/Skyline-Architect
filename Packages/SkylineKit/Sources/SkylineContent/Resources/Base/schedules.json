@@ -1,0 +1,44 @@
+[
+ {
+  "id": "office-worker",
+  "role": "worker",
+  "events": [
+   {
+    "at": "08:15",
+    "jitterMinutes": 40,
+    "goal": "work"
+   },
+   {
+    "at": "12:15",
+    "jitterMinutes": 20,
+    "goal": "outside"
+   },
+   {
+    "at": "13:00",
+    "jitterMinutes": 15,
+    "goal": "work"
+   },
+   {
+    "at": "17:15",
+    "jitterMinutes": 45,
+    "goal": "outside"
+   }
+  ]
+ },
+ {
+  "id": "resident-commuter",
+  "role": "resident",
+  "events": [
+   {
+    "at": "07:45",
+    "jitterMinutes": 40,
+    "goal": "outside"
+   },
+   {
+    "at": "18:15",
+    "jitterMinutes": 75,
+    "goal": "home"
+   }
+  ]
+ }
+]

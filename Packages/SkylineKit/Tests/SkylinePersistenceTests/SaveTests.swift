@@ -2,6 +2,7 @@ import Foundation
 import Testing
 import SkylineCore
 import SkylineContent
+import SkylineSimulation
 @testable import SkylinePersistence
 
 /// A realistic save: the default start with the demo tower built through the engine.
@@ -14,6 +15,21 @@ func makeDemoSave(savedAt: Date = Date(timeIntervalSince1970: 1_790_000_000)) th
     return SaveGame(metadata: SaveMetadata(title: "Demo", savedAt: savedAt, gameVersion: "0.2.0"),
                     contentPacks: [ContentPackReference(id: "base", version: lib.manifest.version)],
                     activePropertyID: game.activePropertyID, world: game.world)
+}
+
+/// A save with a living population: the demo tower during the morning arrival (people in
+/// rooms, outside and mid-trip). Deterministic: first minute after 08:00 with a traveller.
+func makeLivingSave() throws -> SaveGame {
+    let lib = try ContentLibrary.loadBase()
+    var save = try makeDemoSave()
+    PopulationSync.sync(&save.world, catalog: lib.buildCatalog, rules: lib.simulationRules)
+    let engine = SimulationEngine(rules: lib.simulationRules, catalog: lib.buildCatalog)
+    engine.advance(&save.world, by: 2 * 3600)
+    while !save.world.people.values.contains(where: { if case .travelling = $0.place { true } else { false } }) {
+        engine.advance(&save.world, by: 60)
+    }
+    save.metadata.gameVersion = "0.4.0"
+    return save
 }
 
 let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
@@ -112,16 +128,33 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(save.world.clock.tick == 0)
     }
 
+    @Test func livingWorldRoundTrips() throws {
+        let save = try makeLivingSave()
+        #expect(save.world.people.count == 38)
+        #expect(save.world.people.values.contains { if case .travelling = $0.place { return true } else { return false } })
+        let loaded = try SaveCodec.decode(SaveCodec.encode(save), availablePacks: basePacks)
+        #expect(loaded == save)
+    }
+
+    /// Golden fixture v2 (people + clock). Regenerate only deliberately:
+    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV2`.
+    @Test func goldenFixtureV2StillLoads() throws {
+        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
+            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v2.skylinesave")
+            try SaveCodec.encode(makeLivingSave()).write(to: source)
+            return
+        }
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v2.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.people.count == 38)
+        #expect(save.world.clock.tick >= 2 * 3600)
+    }
+
     /// Golden fixture: a format-1 save committed to the repository must load forever.
-    /// Regenerate only deliberately: `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixture`.
+    /// It is frozen: format 1 can no longer be written, so it is never regenerated.
     @Test func goldenFixtureV1StillLoads() throws {
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let url = fixtureDir.appendingPathComponent("save-v1.skylinesave")
-        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v1.skylinesave")
-            try SaveCodec.encode(makeDemoSave()).write(to: source)
-            return
-        }
         let save = try SaveCodec.decode(Data(contentsOf: url), availablePacks: basePacks)
         #expect(save.metadata.title == "Demo")
         #expect(save.world.rooms.count > 30)
