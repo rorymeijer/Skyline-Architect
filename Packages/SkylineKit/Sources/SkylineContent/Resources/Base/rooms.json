@@ -21,7 +21,7 @@
   "wearPerDay": 0.01
  },
  {
-  "id": "sky-lobby",
+  "id": "sky-lobby", "unlockClass": 2,
   "name": "Sky Lobby",
   "category": "circulation",
   "kind": "room",
@@ -92,7 +92,7 @@
   }
  },
  {
-  "id": "elevator-express",
+  "id": "elevator-express", "unlockClass": 2,
   "name": "Express Elevator Shaft",
   "category": "circulation",
   "kind": "shaft",
@@ -110,7 +110,7 @@
   }
  },
  {
-  "id": "service-elevator",
+  "id": "service-elevator", "unlockClass": 1,
   "name": "Service Elevator",
   "category": "circulation",
   "kind": "shaft",

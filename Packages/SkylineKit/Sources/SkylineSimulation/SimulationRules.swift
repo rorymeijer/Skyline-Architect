@@ -227,6 +227,8 @@ public struct SimulationRules: Sendable {
     public let tenantTypes: [TenantType]
     public let economy: EconomyRules?
     public let facilities: FacilitiesRules?
+    /// Reputation (Phase 11; nil = no reputation, nothing promoted).
+    public let progression: ReputationRules?
     /// Walking speed in meters per game second.
     public var walkSpeed = 1.3
     /// Game seconds to climb or descend one storey by stairs.
@@ -238,13 +240,14 @@ public struct SimulationRules: Sendable {
     public var maxStairsDetourSeconds: Tick = 300
 
     public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenantTypes: [TenantType] = [],
-                economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil) {
+                economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil, progression: ReputationRules? = nil) {
         self.schedules = schedules
         self.names = names
         self.elevators = elevators
         self.tenantTypes = tenantTypes
         self.economy = economy
         self.facilities = facilities
+        self.progression = progression
     }
 
     public func tenantType(_ id: String) -> TenantType? { tenantTypes.first { $0.id == id } }

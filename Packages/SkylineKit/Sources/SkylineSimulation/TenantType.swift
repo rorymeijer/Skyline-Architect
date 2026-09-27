@@ -57,10 +57,13 @@ public struct TenantType: Codable, Hashable, Sendable {
     public var leaveBelow: Double
     /// Average prospective tenants of this type per game day.
     public var prospectsPerDay: Double
+    /// Building class index a building needs before this type considers it (Phase 11;
+    /// nil = 0). Ignored in a sandbox.
+    public var minClass: Int?
 
     public init(id: String, name: String, kind: String, rooms: [String], role: PersonRole, members: Members,
                 schedules: [String], budgetPerModule: Int, weights: Weights, minScore: Double, leaveBelow: Double,
-                prospectsPerDay: Double) {
+                prospectsPerDay: Double, minClass: Int? = nil) {
         self.id = id
         self.name = name
         self.kind = kind
@@ -73,6 +76,7 @@ public struct TenantType: Codable, Hashable, Sendable {
         self.minScore = minScore
         self.leaveBelow = leaveBelow
         self.prospectsPerDay = prospectsPerDay
+        self.minClass = minClass
     }
 
     /// Validation problems against the loaded schedules and room ids (empty if valid).

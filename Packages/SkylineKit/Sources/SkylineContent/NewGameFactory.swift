@@ -19,6 +19,7 @@ public enum NewGameFactory {
         let plotDef = library.plot(start.plotID)!
 
         var world = GameWorld(grid: .standard)
+        world.unlocks = start.mode == .standard ? .byClass : .all
         let cityID = world.addCity(definitionID: cityDef.id, name: cityDef.name, seed: cityDef.seed)
         let plot = Plot(
             frontage: ColumnSpan(start: 0, count: plotDef.frontageModules),
@@ -42,4 +43,6 @@ public enum NewGameFactory {
 
     /// The default sandbox start used when the app launches directly into a game.
     public static let defaultStartID = "sandbox-quay"
+    /// The standard game (unlocks by building class).
+    public static let standardStartID = "standard-quay"
 }

@@ -15,5 +15,22 @@
       "pileSpacingModules": 4
     },
     "startingCash": 2500000
+  },
+  {
+    "id": "standard-quay",
+    "name": "Standard — Quay Street",
+    "mode": "standard",
+    "cityID": "port-calder",
+    "plotID": "calder-quay-lot",
+    "propertyName": "Quay Street Lot",
+    "startingFoundation": {
+      "buildingName": "Quay Street Tower",
+      "footprintOffsetModules": 8,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 20,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
   }
 ]

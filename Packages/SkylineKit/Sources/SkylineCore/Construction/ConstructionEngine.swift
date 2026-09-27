@@ -60,6 +60,7 @@ public struct ConstructionEngine: Sendable {
         } else if level == 0 {
             guard building.footprint.contains(merged) else { return .failure(.outsideFootprint) }
         } else {
+            if let locked = lockedClass(floor: level, building: b, world) { return .failure(.locked(className: locked)) }
             guard let below = building.plate(at: level - 1) else { return .failure(.unsupported) }
             let c = catalog.rules.maxCantileverModules
             let support = ColumnSpan(start: below.span.start - c, count: below.span.count + 2 * c)
@@ -68,6 +69,13 @@ public struct ConstructionEngine: Sendable {
         let added = merged.count - (existing?.span.count ?? 0)
         return .success(ConstructionPlan(cost: slabCost(level: level, modules: added), buildingID: b,
                                          columns: merged, floors: FloorSpan(lowest: level, highest: level)))
+    }
+
+    /// The class needed to build at `level`, if the building's class does not allow it yet.
+    private func lockedClass(floor level: Int, building b: BuildingID, _ world: GameWorld) -> String? {
+        let current = world.unlockedClass(of: b)
+        guard current < catalog.classes.count, let max = catalog.classes[current].maxFloor, level > max else { return nil }
+        return catalog.classAllowing(floor: level).map { catalog.classes[$0].name } ?? "a higher class"
     }
 
     private func validateDemolishFloor(_ b: BuildingID, _ level: Int, _ world: GameWorld) -> Result<ConstructionPlan, ConstructionError> {
@@ -85,6 +93,9 @@ public struct ConstructionEngine: Sendable {
                                    _ world: GameWorld) -> Result<ConstructionPlan, ConstructionError> {
         guard let building = world.buildings[b] else { return .failure(.unknownBuilding) }
         guard let spec = catalog.spec(def) else { return .failure(.unknownDefinition(def)) }
+        if let needed = spec.unlockClass, needed > world.unlockedClass(of: b) {
+            return .failure(.locked(className: catalog.classes.indices.contains(needed) ? catalog.classes[needed].name : "class \(needed)"))
+        }
         guard columns.count >= spec.minWidth, columns.count <= spec.maxWidth else {
             return .failure(.widthOutOfRange(min: spec.minWidth, max: spec.maxWidth))
         }

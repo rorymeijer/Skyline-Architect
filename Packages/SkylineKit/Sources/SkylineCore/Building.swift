@@ -55,6 +55,8 @@ public struct Building: Codable, Hashable, Sendable, Identifiable {
     public internal(set) var floors: [FloorPlate]
     /// Player rent setting (Phase 9): asking rents are multiplied by this (0.6…1.6).
     public var rentLevel: Double = 1
+    /// Reputation and class (Phase 11).
+    public var standing = Standing()
 
     public init(id: BuildingID, propertyID: PropertyID, name: String, footprint: ColumnSpan,
                 foundation: Foundation, floors: [FloorPlate] = []) {

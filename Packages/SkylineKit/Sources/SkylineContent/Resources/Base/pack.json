@@ -18,6 +18,7 @@
     "elevators": "elevators.json",
     "tenants": "tenants.json",
     "economy": "economy.json",
-    "facilities": "facilities.json"
+    "facilities": "facilities.json",
+    "progression": "progression.json"
   }
 }

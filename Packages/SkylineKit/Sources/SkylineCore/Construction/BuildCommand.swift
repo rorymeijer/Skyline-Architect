@@ -43,6 +43,8 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
     case heightOutOfRange(min: Int, max: Int)
     case levelNotAllowed
     case overlaps(RoomID)
+    /// Standard game: the room type or height needs a higher building class (Phase 11).
+    case locked(className: String)
 
     public var description: String {
         switch self {
@@ -62,6 +64,7 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
         case .heightOutOfRange(let a, let b): a == b ? "Must span \(a) floor(s)" : "Must span \(a)–\(b) floors"
         case .levelNotAllowed: "Not allowed on this floor"
         case .overlaps: "Overlaps an existing room"
+        case .locked(let name): "Unlocks at \(name)"
         }
     }
 }

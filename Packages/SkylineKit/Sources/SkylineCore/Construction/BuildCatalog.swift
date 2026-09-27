@@ -43,6 +43,8 @@ public struct RoomSpec: Codable, Hashable, Sendable {
     public var wearPerDay: Double?
     /// Vertical transport provided by a shaft (`"stairs"`; `"elevator"` from Phase 6).
     public var transport: String?
+    /// Building class index needed to place it in a standard game (Phase 11; nil = 0).
+    public var unlockClass: Int?
 
     public init(id: String, name: String, category: String, kind: RoomKind, appearance: String,
                 minWidth: Int, maxWidth: Int, minFloors: Int, maxFloors: Int,
@@ -88,11 +90,14 @@ public struct BuildRules: Codable, Hashable, Sendable {
 public struct BuildCatalog: Sendable {
     public let rules: BuildRules
     public let specs: [RoomSpec]
+    /// Building classes in order (Phase 11; empty = no classes, nothing gated).
+    public let classes: [BuildingClass]
     private let index: [String: Int]
 
-    public init(rules: BuildRules, specs: [RoomSpec]) {
+    public init(rules: BuildRules, specs: [RoomSpec], classes: [BuildingClass] = []) {
         self.rules = rules
         self.specs = specs
+        self.classes = classes
         var index: [String: Int] = [:]
         for (i, s) in specs.enumerated() where index[s.id] == nil { index[s.id] = i }
         self.index = index

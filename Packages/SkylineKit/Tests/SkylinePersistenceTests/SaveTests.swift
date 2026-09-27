@@ -226,17 +226,33 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(save.world.upkeep.isEmpty)
     }
 
-    /// Golden fixture v7 (upkeep, facilities). Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV7`.
+    /// Golden fixture v7 (upkeep, facilities). Frozen since format 8: buildings start in the
+    /// first class at reputation 50 and the game keeps everything unlocked.
     @Test func goldenFixtureV7StillLoads() throws {
-        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v7.skylinesave")
-            try SaveCodec.encode(makeElevatorSave()).write(to: source)
-            return
-        }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v7.skylinesave")), availablePacks: basePacks)
         #expect(save.world.upkeep.count == save.world.rooms.count)
+        #expect(save.world.tenants.count == 15)
+        #expect(save.world.unlocks == .all)
+        #expect(save.world.buildings.values.allSatisfy { $0.standing == Standing() })
+    }
+
+    /// Golden fixture v8 (standing, unlock mode). Regenerate only deliberately:
+    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV8`.
+    @Test func goldenFixtureV8StillLoads() throws {
+        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
+            var save = try makeElevatorSave()
+            save.world.unlocks = .byClass
+            let b = save.world.buildings.values[0].id
+            save.world.setStanding(Standing(classLevel: 1, reputation: 61.25, promotions: [Tick(3 * 86_400)]), building: b)
+            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v8.skylinesave")
+            try SaveCodec.encode(save).write(to: source)
+            return
+        }
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v8.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.unlocks == .byClass)
+        #expect(save.world.buildings.values[0].standing == Standing(classLevel: 1, reputation: 61.25, promotions: [Tick(3 * 86_400)]))
         #expect(save.world.tenants.count == 15)
     }
 
