@@ -21,5 +21,5 @@ GitHub Actions `macos-15` runner. Details:
 ## Inspection notes
 
 * **First run (CI run 36345094325):** captures 04 and 06 jumped to 07:00 the next morning. By then the hired staff had already cleared the backlog, so there was nobody at work to close in on. Both steps now capture right after hiring, while the jobs are still open, and were recaptured (CI run 36345637290). The captions report whether a staff member was found.
-* **Tenant reaction:** in 05 no tenant has moved out yet. The equipment failed only recently, and it takes three bad daily reviews in a row to move out. This reaction is covered by `FacilitiesTests` rather than by a capture.
+* **Tenant reaction:** in 05 no tenant has moved out yet. The equipment failed only recently, and it takes three bad daily reviews in a row to move out. `FacilitiesTests.missingUtilitiesDeterProspects` covers only new prospects turning such units down. The move-out of existing tenants after three bad reviews goes through the Phase 8 review path, and no Phase 10 test or capture exercises it.
 * **Abstract utilities:** there are no pipes or cables to draw. The overlay colours rooms by how well they are served.
