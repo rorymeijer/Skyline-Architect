@@ -230,3 +230,16 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Date:** 2026-09-27
 - **Decision:** Daylight, ambient tint and lit rooms are computed in Presentation from the clock and people's places; the simulation does not depend on light.
 - **Reason:** Delivers the M1 visual requirement cheaply; energy use and light sources belong to Phase 12, where lighting becomes simulation input.
+
+## D-034 — Utilities are derived; upkeep lives beside rooms
+- **Date:** 2026-09-27
+- **Decision:** Utility supply is recomputed from equipment rooms, ranges and upkeep whenever needed (never saved). Wear and cleanliness are an `Upkeep` store keyed by room id, not fields of `Room`.
+- **Alternatives:** Pipe/cable networks as placed entities; utility state saved per room; upkeep inside `Room`.
+- **Reason:** Abstract distribution gives the planning challenge (capacity, plant floors) without network editing; derived data cannot go stale. Keeping upkeep out of `Room` keeps construction commands and their exact inverses independent of simulation state (rule 16).
+- **Consequences:** Allocation runs per appraisal and per UI refresh (cheap at current sizes; cache if profiling says so).
+
+## D-035 — Staff share people, navigation and elevators; route modes
+- **Date:** 2026-09-27
+- **Decision:** Staff are `Person`s with roles janitor/technician and a `JobAssignment`; their behaviour is event-driven like everyone's, and they route with mode `staff` (service elevators allowed). Tenants route `public`; impatient people `stairsOnly`. The mode is part of the route cache key.
+- **Reason:** One movement system (queues, cars, re-planning) for everybody; service elevators are a data flag, not a new transport type.
+- **Consequences:** Queue mechanics had to stop assuming everyone has a schedule (fixed in this phase).

@@ -59,6 +59,9 @@ struct ChromeOverlay: View {
                 if model.showEconomyPanel {
                     EconomyPanel(model: model)
                 }
+                if model.showFacilitiesPanel {
+                    FacilitiesPanel(model: model)
+                }
                 if model.showLeasingPanel {
                     LeasingPanel(summary: model.leasing) { model.showLeasingPanel = false }
                 }
@@ -95,7 +98,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · Sandbox · Phase 9 · M1")
+            Text("\(model.cityName) · Sandbox · Phase 10")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -126,6 +129,8 @@ struct ViewControls: View {
             ControlButton(symbol: "slider.horizontal.3", help: "Elevator Banks (⌥⌘E)", isOn: model.showBanksPanel) { model.showBanksPanel.toggle() }
             ControlButton(symbol: "key", help: "Leasing (⌥⌘L)", isOn: model.showLeasingPanel) { model.showLeasingPanel.toggle() }
             ControlButton(symbol: "banknote", help: "Economy (⌥⌘M)", isOn: model.showEconomyPanel) { model.showEconomyPanel.toggle() }
+            ControlButton(symbol: "wrench.and.screwdriver", help: "Facilities (⌥⌘F)", isOn: model.showFacilitiesPanel) { model.showFacilitiesPanel.toggle() }
+            ControlButton(symbol: "bolt.horizontal", help: "Services overlay (⌥⌘U)", isOn: model.showServices) { model.showServices.toggle() }
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 4)

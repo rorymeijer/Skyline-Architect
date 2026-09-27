@@ -36,7 +36,7 @@ public struct Tenant: Codable, Hashable, Sendable, Identifiable {
 
 /// Why a prospective tenant did not sign (their weakest criterion).
 public enum DeclineReason: String, Codable, CaseIterable, Hashable, Sendable {
-    case noVacancy, tooExpensive, poorAccess, tooNoisy, poorView
+    case noVacancy, tooExpensive, poorAccess, tooNoisy, poorView, poorServices
 }
 
 /// One entry of the leasing log (kept short, for the UI).

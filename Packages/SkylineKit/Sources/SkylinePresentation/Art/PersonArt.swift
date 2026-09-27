@@ -8,18 +8,21 @@ public struct PersonLook: Hashable, Sendable {
     public var top: Int
     public var bottom: Int
     public var business: Bool
+    /// Staff wear coveralls in their trade's colour (0 none, 1 janitor, 2 technician).
+    public var uniform: Int
 
     public init(traits: UInt32, role: PersonRole) {
         var rng = SeededRandom(seed: UInt64(traits), stream: 0x100C)
         skin = rng.int(in: 0..<PersonArt.skins.count)
         hair = rng.int(in: 0..<PersonArt.hairs.count)
         business = role == .worker
+        uniform = role == .janitor ? 1 : role == .technician ? 2 : 0
         top = rng.int(in: 0..<(business ? PersonArt.businessTops.count : PersonArt.casualTops.count))
         bottom = rng.int(in: 0..<PersonArt.bottoms.count)
     }
 
     /// Stable cache key for textures.
-    public var key: String { "\(skin)-\(hair)-\(top)-\(bottom)-\(business ? 1 : 0)" }
+    public var key: String { "\(skin)-\(hair)-\(top)-\(bottom)-\(business ? 1 : 0)-\(uniform)" }
 }
 
 public enum PersonPose: Int, Hashable, Sendable {
@@ -38,14 +41,16 @@ public enum PersonArt {
     static let businessTops = [RGBA(hex: 0x2E3A4B), RGBA(hex: 0x3B3F45), RGBA(hex: 0x5B6C7F), RGBA(hex: 0xE9ECEF), RGBA(hex: 0x6A4F3B)]
     static let casualTops = [RGBA(hex: 0xB8453A), RGBA(hex: 0x3F7CAC), RGBA(hex: 0x6C8F4E), RGBA(hex: 0xE0C23A), RGBA(hex: 0x8E6CA8),
                              RGBA(hex: 0xD98E48), RGBA(hex: 0xEDEDED), RGBA(hex: 0x3A3A3A)]
+    /// Coveralls: janitor teal, technician safety orange.
+    static let uniforms = [RGBA(hex: 0x2F8F83), RGBA(hex: 0xE07B28)]
     static let bottoms = [RGBA(hex: 0x2A2F38), RGBA(hex: 0x3E4F6B), RGBA(hex: 0x5C5248), RGBA(hex: 0x1E1F21)]
 
     /// Figure drawing for a look, pose and walk frame (0..<walkFrames).
     public static func figure(_ look: PersonLook, pose: PersonPose, frame: Int) -> Drawing {
         var d = Drawing()
         let skin = skins[look.skin], hair = hairs[look.hair]
-        let top = look.business ? businessTops[look.top] : casualTops[look.top]
-        let bottom = bottoms[look.bottom]
+        let top = look.uniform > 0 ? uniforms[look.uniform - 1] : look.business ? businessTops[look.top] : casualTops[look.top]
+        let bottom = look.uniform > 0 ? uniforms[look.uniform - 1].shaded(0.8) : bottoms[look.bottom]
         let shoe = RGBA(hex: 0x1C1C1C)
         let cx = width / 2
         // Leg swing per frame (radians-ish offsets in meters at the feet).

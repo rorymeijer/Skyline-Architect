@@ -46,6 +46,10 @@ final class AppModel {
     var economy = EconomySummary()
     var showEconomyPanel = false
     var showMainMenu = false
+    /// Facilities (Phase 10, 4 Hz), panel and services overlay.
+    var facilities = FacilitiesSummary()
+    var showFacilitiesPanel = false
+    var showServices = false
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 
@@ -186,6 +190,7 @@ final class AppModel {
         }
         scene.onCommit = { [weak self] command in self?.perform(command) }
         scene.onSelect = { [weak self] cell in self?.selectRoom(at: cell) }
+        scene.servicesProvider = { [weak self] in self?.serviceMarks() }
         scene.lightingProvider = { [weak self] visible in
             guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return (1, []) }
             let t = Double(world.clock.tick) + self.host.fraction

@@ -78,6 +78,10 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var market = MarketState()
     /// Money (Phase 9). Changed only through `Ledger.post`.
     public var ledger = Ledger()
+    /// Wear and cleanliness per room (Phase 10), kept in step with `rooms` by the simulation.
+    public var upkeep = EntityStore<Upkeep>()
+    /// Facilities jobs and counters (Phase 10).
+    public var facilities = FacilitiesState()
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()

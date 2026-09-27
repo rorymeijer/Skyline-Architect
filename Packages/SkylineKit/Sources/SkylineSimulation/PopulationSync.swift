@@ -7,7 +7,7 @@ import SkylineCore
 /// rental market (`Leasing`). This sync only: ends the leases of demolished units (their
 /// people leave), sends people heading to a removed room outside, and adopts people from
 /// pre-tenant saves (people without a tenant are grouped per room into a tenant of the
-/// first type that rents that room type).
+/// first type that rents that room type); keeps upkeep and facilities jobs in step with rooms.
 public enum PopulationSync {
     @discardableResult
     public static func sync(_ world: inout GameWorld, catalog: BuildCatalog, rules: SimulationRules) -> (added: Int, removed: Int) {
@@ -18,7 +18,7 @@ public enum PopulationSync {
             Leasing.moveOut(tenant.id, world: &world)
         }
         // People whose anchor room is gone leave immediately.
-        for person in world.people.values where person.anchorRoom.map({ !world.rooms.contains($0) }) ?? true {
+        for person in world.people.values where !person.role.isStaff && (person.anchorRoom.map({ !world.rooms.contains($0) }) ?? true) {
             leaveCar(person.id, &world)
             world.people.remove(person.id)
         }
@@ -42,6 +42,7 @@ public enum PopulationSync {
             world.people.update(p.id) { $0 = p }
         }
         adoptUntenanted(&world, catalog: catalog, rules: rules)
+        FacilitiesManagement.sync(&world)                 // upkeep and jobs follow the rooms
         return (0, before - world.people.count)
     }
 

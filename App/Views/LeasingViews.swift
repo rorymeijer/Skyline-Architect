@@ -42,6 +42,17 @@ struct UnitInspector: View {
             } else {
                 Text("Not rentable — shared space or services.").font(.caption).foregroundStyle(.secondary)
             }
+            if !report.utilities.isEmpty {
+                Divider()
+                HStack(spacing: 8) {
+                    ForEach(report.utilities, id: \.name) { u in
+                        Label(u.name, systemImage: u.served >= 0.99 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                            .font(.caption2).foregroundStyle(u.served >= 0.99 ? Color.green : Color.orange)
+                    }
+                }
+                Meter(label: "Cleanliness", value: report.cleanliness)
+                Meter(label: "Condition", value: report.condition)
+            }
             if !report.history.isEmpty {
                 Divider()
                 ForEach(Array(report.history.prefix(4).enumerated()), id: \.offset) { _, e in
@@ -99,6 +110,7 @@ private struct Criteria: View {
             Meter(label: appraisal.accessSeconds.isFinite ? "Access \(Int(appraisal.accessSeconds)) s" : "Access —", value: appraisal.access)
             Meter(label: "Quiet", value: appraisal.noise)
             Meter(label: "View", value: appraisal.view)
+            Meter(label: "Services", value: appraisal.services)
         }
     }
 }

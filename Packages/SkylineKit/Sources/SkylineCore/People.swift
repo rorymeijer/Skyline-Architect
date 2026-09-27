@@ -41,6 +41,12 @@ public struct SimClock: Codable, Hashable, Sendable {
 
 public enum PersonRole: String, Codable, Hashable, Sendable {
     case worker, resident
+    /// Building staff (Phase 10), hired by the player: they clean or repair.
+    case janitor, technician
+
+    public var isStaff: Bool { self == .janitor || self == .technician }
+    /// The job kind a staff role does.
+    public var jobKind: JobKind? { self == .janitor ? .clean : self == .technician ? .repair : nil }
 }
 
 /// One segment of a trip with absolute start/end ticks. Positions along a leg are an exact
@@ -111,6 +117,8 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
     public var pendingRide: Ride?
     /// The household or business this person belongs to (Phase 8).
     public var tenantID: TenantID?
+    /// Staff only (Phase 10): the job being travelled to or worked on.
+    public var job: JobAssignment?
 
     public init(id: PersonID, name: String, age: Int, role: PersonRole, scheduleID: String, buildingID: BuildingID,
                 homeRoom: RoomID?, workRoom: RoomID?, place: Place, nextEventTick: Tick, nextGoal: Goal?, traits: UInt32) {
@@ -129,10 +137,19 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
         self.unreachable = false
         self.pendingRide = nil
         self.tenantID = nil
+        self.job = nil
+    }
+
+    /// Waiting at a landing, or at the end of a walk that leads into a queue (elevator
+    /// mechanics apply to them rather than role behaviour).
+    public var isQueuing: Bool {
+        if case .waiting = place { return true }
+        if case .travelling = place, pendingRide != nil { return true }
+        return false
     }
 
     /// The room this person belongs to by role.
-    public var anchorRoom: RoomID? { role == .worker ? workRoom : homeRoom }
+    public var anchorRoom: RoomID? { role == .worker ? workRoom : role == .resident ? homeRoom : nil }
 }
 
 /// Exact position of a person on a trip at (fractional) time `t`, in world meters, plus the

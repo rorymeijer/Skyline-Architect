@@ -82,7 +82,11 @@ interest, taxes), configurable rents, demand from city data, bankruptcy, economy
 Basic day/night: sky, sun/ambient tint, lit windows at night. Main menu (new game,
 continue, load). **M1 checklist = §38 of the brief (launch → … → reload & continue).**
 
-### Phase 10 — Utilities + maintenance
+### Phase 10 — Utilities + maintenance ✅ (2026-09-27)
+Delivered: utilities with capacity/range/failure, wear and cleanliness, jobs, janitors and technicians
+who travel (service elevators), wages, services criterion, panel and overlay. Waste and energy prices
+later.
+
 Abstracted distribution (electricity, water, HVAC, waste, internet) with capacity,
 equipment rooms, failures; wear, cleanliness, repair jobs with staff who travel.
 

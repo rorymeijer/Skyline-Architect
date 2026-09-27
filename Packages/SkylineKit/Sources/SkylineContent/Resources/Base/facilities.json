@@ -1,0 +1,32 @@
+{
+ "utilities": [
+  {
+   "id": "electricity",
+   "name": "Electricity"
+  },
+  {
+   "id": "water",
+   "name": "Water"
+  },
+  {
+   "id": "hvac",
+   "name": "Climate"
+  },
+  {
+   "id": "data",
+   "name": "Data"
+  }
+ ],
+ "janitorWagePerDay": 180,
+ "technicianWagePerDay": 260,
+ "dirtPerPersonPerDay": 0.07,
+ "circulationDirtPerDay": 0.03,
+ "cleanBelow": 0.6,
+ "repairBelow": 0.3,
+ "equipmentRepairBelow": 0.5,
+ "failureBelow": 0.15,
+ "cleanMinutes": 20,
+ "repairMinutes": 45,
+ "shiftStart": "07:00",
+ "shiftEnd": "19:00"
+}

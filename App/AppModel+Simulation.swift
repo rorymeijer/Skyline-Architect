@@ -62,6 +62,7 @@ extension AppModel {
         banks = traffic()?.banks ?? []
         refreshLeasing()
         refreshEconomy()
+        refreshFacilities()
     }
 
     // MARK: Elevator banks

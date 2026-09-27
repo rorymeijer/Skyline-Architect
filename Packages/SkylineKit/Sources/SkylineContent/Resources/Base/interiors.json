@@ -282,5 +282,46 @@
     }
    }
   ]
+ },
+ {
+  "room": "electrical-room",
+  "items": [
+   {
+    "repeat": {
+     "spacing": 1.2,
+     "margin": 0.3,
+     "items": [
+      {
+       "furniture": "electrical-panel",
+       "offset": 0
+      }
+     ]
+    }
+   },
+   {
+    "furniture": "fire-extinguisher",
+    "anchor": "right",
+    "offset": 0.2,
+    "elevation": 0.3,
+    "reserve": false
+   }
+  ]
+ },
+ {
+  "room": "telecom-room",
+  "items": [
+   {
+    "repeat": {
+     "spacing": 0.9,
+     "margin": 0.3,
+     "items": [
+      {
+       "furniture": "server-rack",
+       "offset": 0
+      }
+     ]
+    }
+   }
+  ]
  }
 ]

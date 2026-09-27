@@ -29,6 +29,7 @@ struct TransferFixture {
         }
         PopulationSync.sync(&f.world, catalog: f.library.buildCatalog, rules: f.library.simulationRules)
         Leasing.fillAll(&f.world, catalog: f.library.buildCatalog, rules: f.library.simulationRules)
+        f.engine.replanAfterConstruction(&f.world)          // as the app does after construction
     }
 
     static func place(_ c: ConstructionEngine, _ definition: String, _ columns: ColumnSpan, _ floors: ClosedRange<Int>,
@@ -102,16 +103,18 @@ private func stairs(_ legs: [Leg]) -> [(RoomID, Int, Int)] {
 @Suite struct RouteCacheTests {
     @Test func repeatedQueriesHitTheCache() throws {
         let t = try TransferFixture()
+        let before = t.f.engine.navigation.metrics                  // the fixture's setup already planned
         let first = t.plan(to: 11)
         let second = t.plan(to: 11)
         #expect(first == second)
         let m = t.f.engine.navigation.metrics
-        #expect(m.queries == 2 && m.cacheHits == 1 && m.graphBuilds == 1 && m.cachedRoutes == 1)
+        #expect(m.queries - before.queries == 2 && m.cacheHits - before.cacheHits == 1 && m.graphBuilds == before.graphBuilds)
     }
 
     @Test func constructionInvalidatesGraphAndCache() throws {
         var t = try TransferFixture()
         _ = t.plan(to: 11)
+        let builds = t.f.engine.navigation.metrics.graphBuilds
         // A room that is not transport leaves the graph alone…
         try t.construction.apply(.demolishRoom(t.offices[0]), to: &t.f.world)
         #expect(t.f.engine.navigation.refresh(world: t.f.world, catalog: t.f.library.buildCatalog) == false)
@@ -121,7 +124,7 @@ private func stairs(_ legs: [Leg]) -> [(RoomID, Int, Int)] {
         #expect(t.f.engine.navigation.refresh(world: t.f.world, catalog: t.f.library.buildCatalog))
         #expect(t.f.engine.navigation.metrics.cachedRoutes == 0)
         _ = t.plan(to: 11)
-        #expect(t.f.engine.navigation.metrics.graphBuilds == 2)
+        #expect(t.f.engine.navigation.metrics.graphBuilds == builds + 1)
     }
 
     /// Cached answers are exactly what a fresh search returns: a run with a warm cache equals

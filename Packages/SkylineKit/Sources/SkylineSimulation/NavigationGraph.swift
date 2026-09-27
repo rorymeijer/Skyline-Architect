@@ -1,6 +1,16 @@
 import Foundation
 import SkylineCore
 
+/// Which vertical transport a route may use.
+public enum RouteMode: Hashable, Sendable {
+    /// Stairs and public elevators (tenants).
+    case `public`
+    /// Stairs only (someone who gave up on a queue).
+    case stairsOnly
+    /// Stairs and all elevators including service elevators (building staff).
+    case staff
+}
+
 /// Walkable structure of one building, as a small graph over *portals*.
 ///
 /// Two levels (SIMULATION.md §Navigation):
@@ -57,6 +67,8 @@ public struct NavigationGraph: Sendable {
     private(set) var walkable: [Int: ClosedRange<Double>] = [:]
     private(set) var portalsByFloor: [Int: [Int]] = [:]
     private(set) var shafts: [RoomID: StairShaft] = [:]
+    /// Elevator shafts only staff may use (service elevators, Phase 10).
+    private(set) var serviceShafts = Set<RoomID>()
     /// Floors where cars stop, and landing x, of each elevator shaft.
     private(set) var elevatorShafts: [RoomID: (served: Set<Int>, x: Double)] = [:]
 
@@ -105,6 +117,7 @@ public struct NavigationGraph: Sendable {
             let x = Self.elevatorLandingX(room, grid: grid)
             let served = Set(spec.servedFloors(of: room.floors))
             elevatorShafts[room.id] = (served, x)
+            if spec.serviceOnly == true { serviceShafts.insert(room.id) }
             let perFloor = grid.floorHeight / spec.speed
             let boarding = spec.expectedWaitSeconds + Double(2 * spec.doorSeconds + spec.transferSeconds) + spec.speed / spec.acceleration
             var previousCar: Int?
@@ -139,8 +152,9 @@ public struct NavigationGraph: Sendable {
     }
 
     /// Whether the elevator shaft `id` exists and serves both floors.
-    func elevatorServes(_ id: RoomID, _ a: Int, _ b: Int) -> Bool {
-        elevatorShafts[id].map { $0.served.contains(a) && $0.served.contains(b) } ?? false
+    func elevatorServes(_ id: RoomID, _ a: Int, _ b: Int, mode: RouteMode = .staff) -> Bool {
+        if mode == .public && serviceShafts.contains(id) { return false }
+        return elevatorShafts[id].map { $0.served.contains(a) && $0.served.contains(b) } ?? false
     }
 
     /// Whether `spot` is on a walking surface of this building.
@@ -177,9 +191,9 @@ public struct NavigationGraph: Sendable {
 
 extension NavigationGraph {
     /// Portal sequence of the fastest route from `from` to `to` (different floors), or nil.
-    /// `elevators: false` finds the fastest route without boarding any elevator.
+    /// `mode` restricts which elevators may be boarded (stairs only, public, or staff).
     /// Deterministic Dijkstra: heap ordered by (cost, node index).
-    func shortestPath(from: Spot, to: Spot, walkSpeed: Double, elevators: Bool = true) -> [Int]? {
+    func shortestPath(from: Spot, to: Spot, walkSpeed: Double, mode: RouteMode = .public) -> [Int]? {
         guard let starts = portalsByFloor[from.floor], let ends = portalsByFloor[to.floor] else { return nil }
         let target = portals.count          // virtual target node
         var dist = [Double](repeating: .infinity, count: portals.count + 1)
@@ -199,7 +213,9 @@ extension NavigationGraph {
                 heap.push((d + c, target))
             }
             for edge in edges[node] where d + edge.cost < dist[edge.to] {
-                if !elevators, case .board = edge.kind { continue }
+                if case let .board(shaft) = edge.kind {
+                    if mode == .stairsOnly || (mode == .public && serviceShafts.contains(shaft)) { continue }
+                }
                 dist[edge.to] = d + edge.cost
                 previous[edge.to] = node
                 heap.push((dist[edge.to], edge.to))

@@ -71,6 +71,15 @@ extension GameWorld {
                 throw WorldIntegrityError.danglingReference("person \(person.id) → tenant \(t)")
             }
         }
+        for u in upkeep where !rooms.contains(u.id) {
+            throw WorldIntegrityError.danglingReference("upkeep → room \(u.id)")
+        }
+        for job in facilities.jobs {
+            guard rooms.contains(job.room) else { throw WorldIntegrityError.danglingReference("job → room \(job.room)") }
+            if let a = job.assignee, people[a]?.job?.room != job.room {
+                throw WorldIntegrityError.danglingReference("job in \(job.room) → staff \(a)")
+            }
+        }
         for car in elevators {
             guard let shaft = rooms[car.id], shaft.buildingID == car.buildingID, shaft.floors.contains(car.floor) else {
                 throw WorldIntegrityError.danglingReference("elevator \(car.id) → shaft")

@@ -17,6 +17,7 @@
     "names": "names.json",
     "elevators": "elevators.json",
     "tenants": "tenants.json",
-    "economy": "economy.json"
+    "economy": "economy.json",
+    "facilities": "facilities.json"
   }
 }

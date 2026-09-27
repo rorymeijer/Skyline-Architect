@@ -80,8 +80,12 @@ public struct ContentLibrary: Sendable {
         if let file = manifest.files["economy"] {
             economy = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
         }
+        var facilities: FacilitiesRules?
+        if let file = manifest.files["facilities"] {
+            facilities = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
+        }
         try library.register(schedules: list("schedules"), names: names, elevators: list("elevators"), tenants: list("tenants"),
-                             economy: economy)
+                             economy: economy, facilities: facilities)
         return library
     }
 
@@ -183,7 +187,7 @@ public struct ContentLibrary: Sendable {
     /// Registers simulation content (schedules, name pools, elevator cars) and checks room
     /// rent/noise, transport specs and tenant types.
     mutating func register(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenants: [TenantType] = [],
-                           economy: EconomyRules? = nil) throws {
+                           economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil) throws {
         var problems = SimulationRules.validate(schedules: schedules, names: names)
         var elevatorRooms = Set<String>()
         for e in elevators {
@@ -203,6 +207,15 @@ public struct ContentLibrary: Sendable {
             }
         }
         problems += economy?.problems ?? []
+        problems += facilities?.problems ?? []
+        let utilityIDs = Set(facilities?.utilities.map(\.id) ?? [])
+        for room in orderedRooms {
+            for key in (room.utilityDemand ?? [:]).keys.sorted() + (room.utilitySupply ?? [:]).keys.sorted() where !utilityIDs.contains(key) {
+                problems.append("room '\(room.id)': unknown utility '\(key)'")
+            }
+            if room.utilitySupply != nil, (room.utilityRange ?? 0) < 0 { problems.append("room '\(room.id)': utilityRange must be ≥ 0") }
+            if let w = room.wearPerDay, !(0...1).contains(w) { problems.append("room '\(room.id)': wearPerDay must be 0…1") }
+        }
         let roomIDs = Set(orderedRooms.map(\.id))
         var tenantIDs = Set<String>()
         for t in tenants {
@@ -213,9 +226,10 @@ public struct ContentLibrary: Sendable {
             }
         }
         if let first = problems.first {
-            throw ContentError(pack: manifest.id, file: "schedules/names/rooms/elevators/tenants/economy", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
+            throw ContentError(pack: manifest.id, file: "schedules/names/rooms/elevators/tenants/economy/facilities", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
         }
-        simulationRules = SimulationRules(schedules: schedules, names: names, elevators: elevators, tenantTypes: tenants, economy: economy)
+        simulationRules = SimulationRules(schedules: schedules, names: names, elevators: elevators, tenantTypes: tenants, economy: economy,
+                                          facilities: facilities)
     }
 
     private static func decode<T: Decodable>(_ url: URL, pack: String, file: String) throws -> T {
