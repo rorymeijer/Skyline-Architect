@@ -98,8 +98,7 @@ final class ScreenshotDirector {
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")
             let identical = before != nil && before == model.world
-            model.scene?.apply(preset: .building)
-            return "Saved and reloaded: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical)"
+            return "Saved and reloaded (camera kept): saved=\(saved) loaded=\(loaded) worldIdentical=\(identical)"
         },
     ]
 
