@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Phase 2 (2026-09-27). This document describes what exists and the intended evolution.
+Status: Phase 5 (2026-09-27). This document describes what exists and the intended evolution.
 Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomplete) or
 **PLANNED** (design only).
 
@@ -13,9 +13,9 @@ Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomp
 └───────────────▲──────────────────────────▲─────────────────────────┘
                 │ reads                    │ reads (snapshots)
 ┌───────────────┴──────────────┐  ┌────────┴──────────────────────────┐
-│ SkylinePresentation          │  │ SkylineSimulation (Phase 4)        │
-│ camera · LOD · culling ·     │  │ clock · people · schedules ·       │
-│ drawing IR · procedural art ·│  │ routes — owns mutation of people   │
+│ SkylinePresentation          │  │ SkylineSimulation (Phase 4–5)      │
+│ camera · LOD · culling ·     │  │ clock · people · schedules · nav   │
+│ drawing IR · procedural art ·│  │ graph — owns mutation of people    │
 │ scene composition · tiles    │  └────────┬──────────────────────────┘
 └───────────────┬──────────────┘           │
                 │                          │
@@ -23,7 +23,7 @@ Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomp
 │ SkylineContent: JSON definitions, validation, new-game factory      │
 │   (depends on Presentation for visual definition types, D-017)      │
 │ SkylinePersistence: versioned saves, migrations, save store          │
-│ SkylineSimulation: clock, schedules, population, routes, engine      │
+│ SkylineSimulation: clock, schedules, population, navigation, engine  │
 ├─────────────────────────────────────────────────────────────────────┤
 │ SkylineCore: authoritative model (world→city→property→building),    │
 │ grid, geometry, IDs, deterministic RNG                              │
@@ -141,6 +141,14 @@ packs merged by id — the engine never executes mod code. See MODDING.md.
   camera changes.
 * Sky is a screen-space gradient sprite.
 * `RenderDiagnostics` is published to the SwiftUI HUD at 4 Hz, never per frame.
+
+## 5b. Simulation & navigation (SkylineSimulation) — FUNCTIONAL (Phases 4–5)
+
+`SimulationEngine` (value type) advances the world event by event; `NavigationService`
+(a shared, internally locked cache owned by the engine) holds per-building
+`NavigationGraph`s and cached routes, invalidated by a structure signature. Neither the
+cache nor the graph is saved: both are derived and never change outcomes (SIMULATION.md,
+DECISIONS D-023/D-024). Construction → `PopulationSync` → `replanAfterConstruction`.
 
 ## 6. Concurrency model
 

@@ -114,3 +114,12 @@ evening, office workers arrive around 08:15, go out for lunch and leave around 1
 walking in from the street, through the entrance and up the stairwell. The clock runs at
 1× (a day ≈ 60 real minutes) up to 10×; Space pauses. Floors without stairs are
 unreachable and reported. No money, needs or elevators yet.
+
+## Phase 5 player experience (current)
+
+People find their way through any arrangement of stairwells: a tower whose upper floors are
+served by a second stairwell starting higher up works — people climb, cross the transfer
+floor and continue. Rebuilding or removing stairs takes effect immediately: people already
+on their way re-route from where they are, or give up and leave if no way remains, and the
+UI reports how many people cannot reach their home or work. In developer builds, ⌥⌘N shows
+the navigation graph and everyone's route. Elevators still have no cars (Phase 6).

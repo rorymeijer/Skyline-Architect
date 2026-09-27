@@ -158,3 +158,17 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Date:** 2026-09-27
 - **Decision:** `AppModel.world` is `@ObservationIgnored`; views read clock/population summaries refreshed at 4 Hz.
 - **Reason:** The simulation mutates the world up to 240 times per second; observing it would re-evaluate SwiftUI views every frame.
+
+## D-023 — Navigation over a portal graph; floors are implicit
+- **Date:** 2026-09-27
+- **Decision:** The graph's nodes are vertical-transport landings (portals), one per shaft and served floor; floors are not rasterized into walk cells. Portals on a floor are chained in x order. Dijkstra runs with a virtual source/target, ties broken by node index. Replaces the Phase 4 single-stairwell planner (D-021).
+- **Alternatives:** Grid/cell A* per floor; a full two-level hierarchy with per-floor subgraphs and precomputed floor-to-floor tables.
+- **Reason:** A floor plate is one contiguous 1-D walking surface, so walking between two points is exact and needs no search. The graph size is proportional to shafts × floors (209 portals for a 200-floor tower with 10 stair segments), cheap to rebuild on every structural change. Elevators slot in as a new edge kind.
+- **Consequences:** Interior walls and doors do not obstruct walking (walls are derived art, D-014). If obstacles or partial plates appear later, floors gain their own segments without changing the vertical level.
+
+## D-024 — Exact-key route cache; re-plan only invalidated trips
+- **Date:** 2026-09-27
+- **Decision:** Routes are cached by the exact positions (bit patterns) of both ends and store portal sequences; graphs and caches are dropped when the building's structure signature (plates + transport shafts) changes. After construction only trips whose remaining legs became invalid are re-planned, from the traveller's current position; with no route they leave the building.
+- **Alternatives:** Quantized keys (more hits, but results would depend on which query came first — breaking determinism across save/load); re-planning every traveller after any change.
+- **Reason:** The cache must never change outcomes (saves do not store it). Personal standing spots are fixed, so exact keys still hit on every repeated daily trip. Re-planning valid trips would make construction visibly jolt unrelated people.
+- **Consequences:** The first day of a large building is mostly misses (45 % hits in the 200-floor test day; higher on later days). The signature is recomputed every simulation step (O(rooms of the building)); fine at current scale, revisit with a construction revision counter if profiling shows it (Phase 19).

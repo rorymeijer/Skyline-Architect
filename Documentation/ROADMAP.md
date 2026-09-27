@@ -47,7 +47,7 @@ scaling dt), `SimulationHost`, agents with identity/needs/schedule skeleton, spa
 lobby, walk on floors, enter/leave rooms. Render snapshots + interpolation, agent
 sprites with simple animation, render LOD for agents.
 
-### Phase 5 — Navigation / pathfinding
+### Phase 5 — Navigation / pathfinding ✅ (2026-09-27)
 Hierarchical graph: per-floor walk graphs + vertical transport graph (stairs now,
 elevators next); route cache with invalidation on construction; path debug overlay.
 
