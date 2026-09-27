@@ -40,7 +40,7 @@ public struct DrawingIndex: Sendable {
     }
 
     /// Indices of items whose bounds intersect `rect` and which are visible at `detail`
-    /// pixels per meter, sorted ascending (painter's order).
+    /// pixels per meter (see `Drawing.isVisible`), sorted ascending (painter's order).
     public func items(in rect: Rect, of drawing: Drawing, detail: Double = .infinity) -> [Int] {
         guard !rect.isEmpty else { return [] }
         var result = Set<Int32>()
@@ -60,7 +60,7 @@ public struct DrawingIndex: Sendable {
         result.formUnion(large)
         return result.map(Int.init).filter {
             let item = drawing.items[$0]
-            return item.minDetail <= detail && item.bounds.intersects(rect)
+            return Drawing.isVisible(item, at: detail) && item.bounds.intersects(rect)
         }.sorted()
     }
 }
