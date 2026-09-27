@@ -35,7 +35,11 @@ camera center · cursor cell. Screenshot capture writes the same values into
 | 2026-09-27 | 0.2.0 (1) Debug | GitHub macos-15 runner, 1×, 60 Hz | demo tower (37 rooms), 10.4 pt/m | 60 fps, scene update 0.14 ms, 15 tiles shown, 14.6 ms/tile, 129 nodes, 165 MB |
 | 2026-09-27 | 0.2.0 (1) Debug | same | tower close-up, 64 pt/m | 52–60 fps during tile bursts, 0.11 ms update, 16.8 ms/tile |
 
-Observations: raster time per tile roughly doubled with interiors (more items per tile) but
+| 2026-09-27 | 0.3.0 (1) Debug | GitHub macos-15 runner, 1×, 60 Hz | furnished tower, 36 pt/m | 60 fps, scene update 0.10 ms, 9 tiles shown, ~13 ms/tile avg, 188 nodes, 171 MB |
+| 2026-09-27 | 0.3.0 (1) Debug | same | façade LOD, 3.2 pt/m | 60 fps, 0.10 ms update, 8 tiles shown, 95 nodes, 147 MB |
+
+Observations (Phase 3): furniture adds items per tile but tiles stay off the main thread;
+the façade LOD keeps far-zoom tiles cheap. Observations: raster time per tile roughly doubled with interiors (more items per tile) but
 stays off the main thread; scene update stays well under 1 ms. Memory grows with the tile cache (budget 96 tiles × up to 1 MB); budget
 should become memory-aware on iPad (Phase 19 or earlier if profiling shows pressure).
 

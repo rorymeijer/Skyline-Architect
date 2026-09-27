@@ -1,59 +1,53 @@
 # Development Status
 
-_Last updated: 2026-09-27_
+_Last updated: 2026-09-27 (Phase 3)_
 
 ## Current phase
-**Phase 2 — Construction + saves: COMPLETE** (awaiting approval to start Phase 3).
+**Phase 3 — First furnished rooms: COMPLETE** (awaiting approval to start Phase 4).
 
 ## Current milestone
-M1 “First Playable” (end of Phase 9) — Phases 1–2 of 9 done.
+M1 “First Playable” (end of Phase 9) — Phases 1–3 of 9 done.
 
-## Quality gates (Phase 2)
+## Quality gates (Phase 3)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36306205755 (`74289b0`), no warnings except Xcode's AppIntents notice |
-| Automated tests pass | ✅ | 92 tests (Linux + macOS): construction rules, undo round trips, integrity, saves, migrations, golden fixture, placement, composition |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36327134414 (`dc4dfb3`) |
+| Automated tests pass | ✅ | 104 tests (Linux + macOS), incl. layout resolver, art catalog validation, detail bands, façade/cutaway LOD |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-02/` incl. save→load round trip (`worldIdentical=true`) and undo |
-| Obvious runtime errors fixed | ✅ | all captures settle ≈1 s, exit 0 |
-| Documentation updated | ✅ | ARCHITECTURE, SAVE_FORMAT, MODDING, DECISIONS D-013…D-016, CHANGELOG |
-| Screenshots produced & inspected | ✅ | 5 issues found and fixed (see screenshot README) |
+| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-03/` |
+| Obvious runtime errors fixed | ✅ | all captures settle, exit 0 |
+| Documentation updated | ✅ | GRAPHICS, MODDING, ARCHITECTURE, DECISIONS D-017/D-018, ASSET_REQUIREMENTS, CHANGELOG |
+| Screenshots produced & inspected | ✅ | 2 issues found and fixed |
 | Known issues recorded | ✅ | below |
 
 ## Completed
-- Phase 0 + Phase 1 (merged in rorymeijer/Skyline-Architect#1).
-- Phase 2 (FUNCTIONAL): floor plates, rooms/shafts, data-driven construction rules and costs,
-  demolition, inverse-command undo/redo, content rooms/rules/blueprints, persistence module
-  (versioned saves, migrations, integrity checks, atomic store, quicksave, load sheet,
-  autosave), layered composition with dirty-rect tile invalidation, building/room art,
-  placement planner with live preview, build palette, room labels, iPad placement gestures.
+- Phases 0–2 (merged in rorymeijer/Skyline-Architect#1 and rorymeijer/Skyline-Architect#2).
+- Phase 3 (FUNCTIONAL, programmer art): data-driven materials/furniture/interiors, layout
+  resolver, furnished offices/apartments/lobbies/corridors/mechanical/parking, exterior
+  façade LOD, asset requirements document.
 
 ## In progress
-- Nothing. Waiting for Phase 3 approval.
+- Nothing. Waiting for Phase 4 approval.
 
 ## Known bugs / unverified
-- Interactive input (mouse/trackpad placement feel, natural-scroll direction, pinch) not yet
-  exercised by a human; logic is unit-tested and captures drive the same APIs.
-- iPad build compiles but has never been launched.
-- Session construction cost is informational; money is not charged until Phase 9.
-- Undo history is cleared by New Game / Load (by design) and not persisted in saves.
+- Interactive input not yet exercised by a human; iPad build never launched.
+- Construction cost informational until Phase 9; undo history cleared by New Game / Load.
 
 ## Technical debt
-- `ConstructionEngine` overlap checks scan all rooms of a building (O(rooms)); fine for
-  hundreds, add an occupancy index before thousands (Phase 19 or when profiling says so).
-- `SiteComposer.recompose` rebuilds every building on the property after each command;
-  per-building caching when properties hold several towers.
+- `ConstructionEngine` overlap checks and `SiteComposer.recompose` are O(rooms) / whole
+  property per command — fine now, index/caching when profiling shows need.
+- Furniture recipes are flat vector art; close-up sprites per ASSET_REQUIREMENTS.md later.
 - Distant skyline has no parallax.
-- CI commits JPEG captures to `Development/Screenshots/_ci-latest/` on every push to a
-  `claude/**` branch (~1 MB each; chosen with the user because artifact storage is blocked
-  from restricted sessions). Consider pruning history before a 1.0 release.
+- CI commits ~1 MB of JPEG captures per development-branch run (`_ci-latest`).
 
-## Next tasks (Phase 3 — First furnished rooms)
-1. Furniture recipes per room appearance (office desks/chairs/computers/meeting tables,
-   apartment bed/sofa/kitchen/bath, lobby reception) as data-driven layouts.
-2. Exterior façade treatment + LOD: façade when zoomed out, cutaway interiors when zoomed in.
-3. `ASSET_REQUIREMENTS.md` for art procedural generation cannot reach.
-4. Screenshot presets for furnished interiors; Phase-03 screenshots.
+## Next tasks (Phase 4 — Basic people simulation)
+1. `SimulationHost` with fixed-tick clock; pause / 1× / 2× / 4× / 10× by tick count
+   (never scaling dt); determinism test comparing state hashes across speeds.
+2. People: identity, simple schedule skeleton, spawn at the lobby, walk along floors, enter
+   and leave rooms (stairs only — elevators arrive in Phase 6).
+3. Render snapshots + interpolation; agent sprites with walk animation (programmer art),
+   agent render LOD; HUD: sim time, speed, agent counts, tick time.
+4. Save format v2 with a migration (people + clock) and a kept v1 fixture.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,
