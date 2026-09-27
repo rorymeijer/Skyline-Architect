@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Phase 6 (2026-09-27). This document describes what exists and the intended evolution.
+Status: Phase 7 (2026-09-27). This document describes what exists and the intended evolution.
 Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomplete) or
 **PLANNED** (design only).
 
@@ -142,7 +142,7 @@ packs merged by id — the engine never executes mod code. See MODDING.md.
 * Sky is a screen-space gradient sprite.
 * `RenderDiagnostics` is published to the SwiftUI HUD at 4 Hz, never per frame.
 
-## 5b. Simulation & navigation (SkylineSimulation) — FUNCTIONAL (Phases 4–6)
+## 5b. Simulation & navigation (SkylineSimulation) — FUNCTIONAL (Phases 4–7)
 
 `SimulationEngine` (value type) advances the world event by event; `NavigationService`
 (a shared, internally locked cache owned by the engine) holds per-building
@@ -150,7 +150,8 @@ packs merged by id — the engine never executes mod code. See MODDING.md.
 cache nor the graph is saved: both are derived and never change outcomes (SIMULATION.md,
 DECISIONS D-023/D-024). Construction → `PopulationSync` → `replanAfterConstruction` (which
 also keeps one `ElevatorCar` per elevator shaft). Cars and people share one event queue
-(D-025); the app draws cars with `ElevatorView` → `ElevatorLayer`.
+(D-025); the app draws cars with `ElevatorView` → `ElevatorLayer`. Banks are derived from
+adjacency (D-027); `ElevatorTraffic` feeds the traffic overlay and the bank panel.
 
 ## 6. Concurrency model
 

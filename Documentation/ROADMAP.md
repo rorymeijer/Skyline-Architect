@@ -56,7 +56,11 @@ Shafts, cars, served floors, capacity, speed/acceleration, doors & boarding time
 hall calls, queues on floors, visible boarding/riding/leaving. One simple dispatch
 strategy (collective control).
 
-### Phase 7 — Advanced elevator queues & dispatch
+### Phase 7 — Advanced elevator queues & dispatch ✅ (2026-09-27)
+Delivered: banks, strategy per bank (collective, zoning, destination), express/local with sky-lobby
+transfers, statistics, traffic overlay, patience. Deferred: service/freight cars → Phase 10 (they
+need staff); jerk-limited motion and mid-trip re-targeting → Phase 19/20.
+
 Strategy interface with several algorithms (collective, zoning, destination dispatch),
 banks, express/local, sky lobbies/transfers, service/freight cars, statistics (avg/max
 wait, passengers/hour, abandonment), elevator traffic overlay.

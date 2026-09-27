@@ -80,6 +80,7 @@ final class ScreenshotDirector {
         },
         Step(name: "03-sky-lobby-transfer", grid: false) { model, scene in
             model.showBanksPanel = false
+            model.showTraffic = false
             model.advanceSimulation(toTimeOfDay: 7, minute: 55)
             model.advanceSimulation(ticks: model.ticksToBestMoment(within: 90 * 60, step: 2) { world in
                 ScreenshotDirector.skyLobbyWalker(on: 21, in: world) == nil ? 0 : 1
@@ -91,6 +92,7 @@ final class ScreenshotDirector {
             return "\(model.clockText): a person crossing the floor-21 sky lobby from the express shuttle to the upper bank."
         },
         Step(name: "04-lobby-queues", grid: false) { model, scene in
+            model.showTraffic = true
             model.advanceSimulation(ticks: model.ticksToBestMoment(within: 60 * 60, step: 5) { ScreenshotDirector.waiting(in: $0, floor: 0) })
             if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first {
                 scene.withController { $0.jump(center: Vec2(Double(b.footprint.start) + 10, 2.6), zoom: 30) }

@@ -54,6 +54,8 @@ every definition automatically — a mod adding a room type needs no code.
 doorSeconds, transferSeconds (per person), expectedWaitSeconds` (the waiting time route
 planning assumes when choosing elevator vs. stairs). Every room with `transport: "elevator"`
 needs exactly one entry; validation rejects out-of-range values and unknown rooms.
+Optional: `stops` (`"all"` default, or `"ends"` for express/shuttle shafts that stop only at
+their lowest and highest floor) and `patienceSeconds` (default 150; personal ±50 %).
 
 ### BuildRules (build-rules.json)
 `slabCostPerModule, basementSlabCostPerModule, maxCantileverModules, demolitionRefund (0…1)`.

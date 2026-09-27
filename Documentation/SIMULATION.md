@@ -1,9 +1,9 @@
 # Simulation
 
-Status: **FUNCTIONAL (Phases 4–6)** — clock, speeds, people with schedules, population sync,
+Status: **FUNCTIONAL (Phases 4–7)** — clock, speeds, people with schedules, population sync,
 navigation graph with stair transfers and elevators, route cache, re-planning after
-construction, elevator cars with collective control. PLANNED: banks and dispatch
-strategies (7), tenants and needs (8), economy (9).
+construction, elevator cars, banks and dispatch strategies, patience. PLANNED: tenants and
+needs (8), economy (9).
 
 Code: `Packages/SkylineKit/Sources/SkylineSimulation` (logic) and `SkylineCore/People.swift`
 (saved state).
@@ -37,7 +37,9 @@ advance(world, n):
   heap ← cars and people with nextEventTick ≤ target      (order: tick, cars, people, id)
   while pop (tick, who):
     car        → collective control step (ELEVATORS.md): alight, board, move or idle
-    arrival with pendingRide → place = waiting (queue); wake the car if idle
+    arrival with pendingRide → bank assigns a car (walk to its doors if another shaft);
+                               place = waiting (queue), patience timer; wake the car if idle
+    patience ran out → take the stairs if ≤ 5 min (counted as abandoned), else keep waiting
     arrival?   → place = destination; schedule next goal
     goal due?  → resolve work/home/outside → plan route → place = travelling(legs)
                  (no route → unreachable = true; stays put; next goal)
@@ -110,8 +112,8 @@ costs are static), which may include further walks, stairs or another elevator.
 
 ## Not yet simulated (honest list)
 
-Needs (hunger, energy …), moods, visitors, patience/abandonment in elevator queues, live
-queue length in route choice, congestion on stairs, economy effects.
+Needs (hunger, energy …), moods, visitors, live queue length in route choice (patience is
+the only reaction to queues), congestion on stairs, economy effects.
 
 ## Concurrency
 

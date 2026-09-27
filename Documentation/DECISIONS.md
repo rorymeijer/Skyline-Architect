@@ -186,3 +186,16 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Alternatives:** Queue-dependent costs.
 - **Reason:** Keeps routes a pure function of structure, so the exact-key route cache stays valid (D-024) and results do not depend on cache state.
 - **Consequences:** People do not switch to the stairs when a queue is long. Phase 7 can add a separate, deterministic decision at the landing (e.g. patience → take the stairs) without touching the cache.
+
+## D-027 — Banks are derived; calls are assigned to a car when people reach the landing
+- **Date:** 2026-09-27
+- **Decision:** A bank is computed from adjacency (same type, touching, overlapping floors), not stored. When a person reaches a landing, the bank's strategy assigns one car (`Ride.assigned`); the person walks to that car's doors and queues there. Cars keep running collective logic over their own queues. The strategy is stored on every car of the bank.
+- **Alternatives:** Stored bank entities; a shared bank queue polled by all cars (late assignment).
+- **Reason:** Nothing to keep in sync when shafts are built or demolished; immediate assignment makes all three strategies one mechanism (only the choice differs) and keeps each car's decisions local and deterministic.
+- **Consequences:** An assignment is not revised if another car becomes free sooner. Estimated arrival is a heuristic (sweep distance + dwells); a smarter re-assignment can be added without changing saved state.
+
+## D-028 — Patience: stairs only when the detour is short
+- **Date:** 2026-09-27
+- **Decision:** Queuing people get a personal patience (content value ± 50 % by traits). When it expires they take a route without elevators if it takes ≤ 5 minutes, otherwise keep waiting. Elevator-free routes are cached under their own key.
+- **Reason:** Visible, measurable reaction to bad service (abandonment statistic) without breaking the static-cost routing of D-026; nobody climbs 30 storeys out of impatience.
+- **Consequences:** Queue length still does not affect the initial route choice.
