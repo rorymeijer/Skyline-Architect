@@ -66,8 +66,9 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var grid: GridSpec
     public private(set) var cities = EntityStore<City>()
     public private(set) var properties = EntityStore<Property>()
-    public private(set) var buildings = EntityStore<Building>()
-    private var ids = IDAllocator()
+    public internal(set) var buildings = EntityStore<Building>()
+    public internal(set) var rooms = EntityStore<Room>()
+    var ids = IDAllocator()
 
     public init(grid: GridSpec = .standard) {
         self.grid = grid
@@ -120,6 +121,16 @@ public struct GameWorld: Codable, Sendable, Equatable {
     /// Buildings on a property, in construction order.
     public func buildings(on propertyID: PropertyID) -> [Building] {
         buildings.filter { $0.propertyID == propertyID }
+    }
+
+    /// Rooms of a building, in placement order.
+    public func rooms(in buildingID: BuildingID) -> [Room] {
+        rooms.filter { $0.buildingID == buildingID }
+    }
+
+    /// The room occupying a cell of a building, if any.
+    public func room(in buildingID: BuildingID, column: Int, floor: Int) -> Room? {
+        rooms.first { $0.buildingID == buildingID && $0.occupies(column: column, floor: floor) }
     }
 
     public func properties(in cityID: CityID) -> [Property] {
