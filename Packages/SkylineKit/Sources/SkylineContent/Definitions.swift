@@ -42,4 +42,6 @@ public struct StartDefinition: Codable, Hashable, Sendable {
     public var plotID: String
     public var propertyName: String
     public var startingFoundation: StartingFoundation?
+    /// Cash at the start (Phase 9; nil = 0).
+    public var startingCash: Int?
 }

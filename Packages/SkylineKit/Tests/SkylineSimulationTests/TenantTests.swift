@@ -27,7 +27,7 @@ private func room(_ f: SimFixture, _ definition: String, floor: Int, left: Bool 
             let members = f.world.people.values.filter { $0.tenantID == tenant.id }
             #expect(!members.isEmpty)
             #expect(members.allSatisfy { $0.anchorRoom == tenant.room })
-            #expect(tenant.rent == Leasing.askingRent(f.world.rooms[tenant.room]!, catalog: f.library.buildCatalog))
+            #expect(tenant.rent == Leasing.askingRent(f.world.rooms[tenant.room]!, world: f.world, catalog: f.library.buildCatalog))
         }
         #expect(f.world.tenants.values.contains { $0.name.hasSuffix("household") })
         #expect(f.world.tenants.values.contains { !$0.name.hasSuffix("household") })

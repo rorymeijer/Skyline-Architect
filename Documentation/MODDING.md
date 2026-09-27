@@ -53,6 +53,11 @@ every definition automatically — a mod adding a room type needs no code.
 `rentPerModule` (monthly asking rent per module; makes the room rentable) and `noise`
 (0…1 emitted to neighbours). The Phase 4–7 `occupancy` field was replaced by tenant types.
 
+### Economy (economy.json, rooms.json, starts.json)
+`economy.json`: `loanStep, maxLoans, loanInterestRate, bankruptcyDays,
+utilitiesPerPersonPerDay, elevatorCarPerDay, rentDaysPerMonth`. Rooms may set
+`maintenancePerModulePerDay`; starts may set `startingCash`. See ECONOMY.md.
+
 ### TenantType (tenants.json)
 `id, name, kind ("household" | "business"), rooms [room ids with rentPerModule], role,
 members {fixed | perModule}, schedules [schedule ids of that role], budgetPerModule,

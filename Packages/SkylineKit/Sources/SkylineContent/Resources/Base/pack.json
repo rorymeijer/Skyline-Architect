@@ -16,6 +16,7 @@
     "schedules": "schedules.json",
     "names": "names.json",
     "elevators": "elevators.json",
-    "tenants": "tenants.json"
+    "tenants": "tenants.json",
+    "economy": "economy.json"
   }
 }

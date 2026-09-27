@@ -2,6 +2,21 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.9.0] — Phase 9: Economy + basic day/night → M1 First Playable
+
+### Added
+- **Ledger** with traceable transactions (category, detail, building/room/tenant), daily
+  totals, starting capital.
+- **Construction is paid**: cost charged on build, exact refund on undo, refused when cash
+  is short (preview shows *not enough money*); demolition refunds 40 %.
+- **Daily closing**: rent from every tenant, maintenance, utilities, loan interest;
+  bankruptcy after seven days in the red.
+- **Loans** (borrow/repay) and **rent level** per building (affects appraisal and demand).
+- **Economy panel** (⌥⌘M); cash in the status pill.
+- **Day/night**: ambient tint and lit rooms at night.
+- **Main menu** (Continue newest save, New Game, Load) and bankruptcy screen.
+- **Save format 6** (+ migration, golden fixture).
+
 ## [0.8.0] — Phase 8: Tenants + schedules
 
 ### Added

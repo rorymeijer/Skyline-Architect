@@ -56,6 +56,9 @@ struct ChromeOverlay: View {
                 if let report = model.unitReport {
                     UnitInspector(report: report) { model.selectRoom(at: nil) }
                 }
+                if model.showEconomyPanel {
+                    EconomyPanel(model: model)
+                }
                 if model.showLeasingPanel {
                     LeasingPanel(summary: model.leasing) { model.showLeasingPanel = false }
                 }
@@ -75,6 +78,11 @@ struct ChromeOverlay: View {
             }
             .padding(.bottom, 58)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            if model.economy.bankrupt {
+                BankruptcyView(model: model)
+            } else if model.showMainMenu {
+                MainMenuView(model: model)
+            }
         }
     }
 }
@@ -87,7 +95,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · Sandbox · Phase 8 preview")
+            Text("\(model.cityName) · Sandbox · Phase 9 · M1")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -117,6 +125,7 @@ struct ViewControls: View {
             ControlButton(symbol: "arrow.up.arrow.down", help: "Elevator Traffic (⌥⌘T)", isOn: model.showTraffic) { model.showTraffic.toggle() }
             ControlButton(symbol: "slider.horizontal.3", help: "Elevator Banks (⌥⌘E)", isOn: model.showBanksPanel) { model.showBanksPanel.toggle() }
             ControlButton(symbol: "key", help: "Leasing (⌥⌘L)", isOn: model.showLeasingPanel) { model.showLeasingPanel.toggle() }
+            ControlButton(symbol: "banknote", help: "Economy (⌥⌘M)", isOn: model.showEconomyPanel) { model.showEconomyPanel.toggle() }
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 4)

@@ -73,7 +73,10 @@ retail/services room types; rent is charged in Phase 9.
 Households and businesses choose space (rent, accessibility, elevator wait, noise,
 amenities); daily schedules generate traffic (morning up-peak, lunch, evening down-peak).
 
-### Phase 9 — Economy + basic day/night → **M1 First Playable**
+### Phase 9 — Economy + basic day/night → **M1 First Playable** ✅ (2026-09-27)
+Delivered: ledger, charged construction, daily closing, loans, rent level, bankruptcy, economy panel,
+basic day/night, main menu. M1 checklist: see `Development/STATUS.md`.
+
 Ledger with traceable transactions (rent, wages, utilities, maintenance, loans,
 interest, taxes), configurable rents, demand from city data, bankruptcy, economy panel.
 Basic day/night: sky, sun/ambient tint, lit windows at night. Main menu (new game,

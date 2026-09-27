@@ -39,7 +39,7 @@ public struct UnitReport: Equatable, Sendable {
         let floor = room.floors.count == 1 ? FloorLabel.label(for: room.floors.lowest)
             : "\(FloorLabel.label(for: room.floors.lowest))–\(FloorLabel.label(for: room.floors.highest))"
         var report = UnitReport(roomID: room.id, title: spec.name, floor: floor, width: room.columns.count,
-                                leasable: spec.rentPerModule != nil, askingRent: Leasing.askingRent(room, catalog: engine.catalog))
+                                leasable: spec.rentPerModule != nil, askingRent: Leasing.askingRent(room, world: world, catalog: engine.catalog))
         if let tenant = world.tenants.values.first(where: { $0.room == room.id }) {
             let type = engine.rules.tenantType(tenant.typeID)
             let members = world.people.values.filter { $0.tenantID == tenant.id }

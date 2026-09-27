@@ -49,6 +49,11 @@ camera center · cursor cell. Screenshot capture writes the same values into
 | 2026-09-27 | 0.7.0 package, release | Linux cloud container | 60-floor tower (bank of 2 + stairs), 354 workers, 06:00–11:00 | 20 ms for 5 game hours (call assignment included); peak 15 waiting |
 | 2026-09-27 | same | same | demo-skytower (3 banks, 6 cars, 175 workers), morning per strategy | all strategies: avg waits 19–20 s; see ELEVATORS.md |
 
+Observations (Phase 9): daily closing is O(tenants + rooms + people) once per game day;
+lit rooms are computed per frame over the visible rooms of the property (demo tower: 37
+rooms). Day/night adds one screen-sized multiply sprite and one additive sprite per lit
+room.
+
 Observations (Phase 8): the hourly market appraises every vacant unit of a type per
 prospect (route plans, cached). Measured only on the demo tower (15 units, negligible);
 large buildings with many vacancies are unmeasured — profile in Phase 19 if needed.

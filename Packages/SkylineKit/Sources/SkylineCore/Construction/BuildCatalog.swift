@@ -31,13 +31,15 @@ public struct RoomSpec: Codable, Hashable, Sendable {
     public var rentPerModule: Int?
     /// Noise this space makes for its neighbours (0…1; nil = silent).
     public var noise: Double?
+    /// Upkeep per module (per floor for shafts) per game day (Phase 9; nil = none).
+    public var maintenancePerModulePerDay: Int?
     /// Vertical transport provided by a shaft (`"stairs"`; `"elevator"` from Phase 6).
     public var transport: String?
 
     public init(id: String, name: String, category: String, kind: RoomKind, appearance: String,
                 minWidth: Int, maxWidth: Int, minFloors: Int, maxFloors: Int,
                 lowestLevel: Int? = nil, highestLevel: Int? = nil, costPerModule: Int,
-                rentPerModule: Int? = nil, noise: Double? = nil, transport: String? = nil) {
+                rentPerModule: Int? = nil, noise: Double? = nil, maintenancePerModulePerDay: Int? = nil, transport: String? = nil) {
         self.id = id
         self.name = name
         self.category = category
@@ -52,6 +54,7 @@ public struct RoomSpec: Codable, Hashable, Sendable {
         self.costPerModule = costPerModule
         self.rentPerModule = rentPerModule
         self.noise = noise
+        self.maintenancePerModulePerDay = maintenancePerModulePerDay
         self.transport = transport
     }
 }

@@ -34,6 +34,9 @@ public enum NewGameFactory {
                 footprint: ColumnSpan(start: f.footprintOffsetModules, count: f.footprintModules),
                 foundation: Foundation(basementFloors: f.basementFloors, pileDepth: f.pileDepthMeters, pileSpacing: f.pileSpacingModules))
         }
+        if let cash = start.startingCash, cash > 0 {
+            world.ledger.post(Transaction(tick: 0, amount: cash, category: .grant, detail: "Starting capital"))
+        }
         return NewGame(world: world, activePropertyID: propertyID, startID: start.id)
     }
 

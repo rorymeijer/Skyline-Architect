@@ -27,6 +27,7 @@ struct ConstructionFixture {
             strata: [SoilStratum(material: .clay, thickness: 10), SoilStratum(material: .bedrock, thickness: 1)]))
         building = try w.addBuilding(propertyID: property, name: "T", footprint: ColumnSpan(start: 8, count: 32),
                                      foundation: Foundation(basementFloors: 1, pileDepth: 20, pileSpacing: 4))
+        w.ledger.post(Transaction(tick: 0, amount: 1_000_000, category: .grant, detail: "Test capital"))
         world = w
         engine = ConstructionEngine(catalog: Self.catalog)
     }
@@ -167,6 +168,37 @@ struct ConstructionFixture {
         #expect(f.world.buildings.values == snapshots.last!.buildings.values)
         #expect(f.world.rooms.isEmpty)  // the final redo re-applies the demolition
         try f.world.validateIntegrity()
+    }
+
+    /// Money follows the history: each step is charged, undo refunds exactly what was
+    /// charged, redo charges it again; cash always equals the sum of the journal.
+    @Test func constructionIsChargedAndUndoRefundsExactly() throws {
+        var f = try ConstructionFixture()
+        var history = ConstructionHistory()
+        let start = f.world.ledger.cash
+        try history.perform(.buildFloor(building: f.building, level: 0, span: ColumnSpan(start: 8, count: 10)), engine: f.engine, world: &f.world)
+        #expect(f.world.ledger.cash == start - 1000)                     // 10 modules × 100
+        #expect(f.world.ledger.journal.last?.category == .construction)
+        try history.perform(.buildFloor(building: f.building, level: 1, span: ColumnSpan(start: 8, count: 10)), engine: f.engine, world: &f.world)
+        try history.perform(.demolishFloor(building: f.building, level: 1), engine: f.engine, world: &f.world)
+        #expect(f.world.ledger.cash == start - 2000 + 500)               // 50 % refund
+        try history.undo(engine: f.engine, world: &f.world)              // un-demolish: refund returned
+        try history.undo(engine: f.engine, world: &f.world)              // un-build: full cost back
+        #expect(f.world.ledger.cash == start - 1000)
+        try history.redo(engine: f.engine, world: &f.world)
+        #expect(f.world.ledger.cash == start - 2000)
+        #expect(f.world.ledger.cash == f.world.ledger.journal.reduce(0) { $0 + $1.amount })
+    }
+
+    @Test func constructionNeedsCash() throws {
+        var f = try ConstructionFixture()
+        f.world.ledger.post(Transaction(tick: 0, amount: -f.world.ledger.cash + 500, category: .grant, detail: "Spend"))
+        var history = ConstructionHistory()
+        let before = f.world
+        #expect(throws: LedgerError.insufficientFunds(needed: 1000, available: 500)) {
+            try history.perform(.buildFloor(building: f.building, level: 0, span: ColumnSpan(start: 8, count: 10)), engine: f.engine, world: &f.world)
+        }
+        #expect(f.world == before && !history.canUndo)
     }
 
     @Test func newActionClearsRedo() throws {

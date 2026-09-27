@@ -118,12 +118,50 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
     }
 }
 
+/// Money rules (`economy.json`, Phase 9).
+public struct EconomyRules: Codable, Hashable, Sendable {
+    /// Loans are taken and repaid in steps of this amount, up to `maxLoans` outstanding.
+    public var loanStep: Int
+    public var maxLoans: Int
+    /// Annual interest rate on outstanding loans (charged daily).
+    public var loanInterestRate: Double
+    /// Consecutive daily closings in the red that end the game.
+    public var bankruptcyDays: Int
+    public var utilitiesPerPersonPerDay: Int
+    public var elevatorCarPerDay: Int
+    /// Monthly rents are collected at each daily closing as rent / rentDaysPerMonth. The base
+    /// content uses 1: time is compressed so that one game day bills one rent month.
+    public var rentDaysPerMonth: Int
+
+    public init(loanStep: Int, maxLoans: Int, loanInterestRate: Double, bankruptcyDays: Int,
+                utilitiesPerPersonPerDay: Int, elevatorCarPerDay: Int, rentDaysPerMonth: Int) {
+        self.loanStep = loanStep
+        self.maxLoans = maxLoans
+        self.loanInterestRate = loanInterestRate
+        self.bankruptcyDays = bankruptcyDays
+        self.utilitiesPerPersonPerDay = utilitiesPerPersonPerDay
+        self.elevatorCarPerDay = elevatorCarPerDay
+        self.rentDaysPerMonth = rentDaysPerMonth
+    }
+
+    public var problems: [String] {
+        var p: [String] = []
+        if loanStep <= 0 || maxLoans < loanStep { p.append("economy: loanStep must be positive and ≤ maxLoans") }
+        if !(0...1).contains(loanInterestRate) { p.append("economy: loanInterestRate must be 0…1") }
+        if bankruptcyDays < 1 { p.append("economy: bankruptcyDays must be ≥ 1") }
+        if utilitiesPerPersonPerDay < 0 || elevatorCarPerDay < 0 { p.append("economy: daily costs must be ≥ 0") }
+        if rentDaysPerMonth < 1 { p.append("economy: rentDaysPerMonth must be ≥ 1") }
+        return p
+    }
+}
+
 /// Everything the simulation needs from content, plus movement constants.
 public struct SimulationRules: Sendable {
     public let schedules: [Schedule]
     public let names: NamePool
     public let elevators: [ElevatorSpec]
     public let tenantTypes: [TenantType]
+    public let economy: EconomyRules?
     /// Walking speed in meters per game second.
     public var walkSpeed = 1.3
     /// Game seconds to climb or descend one storey by stairs.
@@ -134,11 +172,13 @@ public struct SimulationRules: Sendable {
     /// takes at most this long (seconds); otherwise they keep waiting.
     public var maxStairsDetourSeconds: Tick = 300
 
-    public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenantTypes: [TenantType] = []) {
+    public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenantTypes: [TenantType] = [],
+                economy: EconomyRules? = nil) {
         self.schedules = schedules
         self.names = names
         self.elevators = elevators
         self.tenantTypes = tenantTypes
+        self.economy = economy
     }
 
     public func tenantType(_ id: String) -> TenantType? { tenantTypes.first { $0.id == id } }

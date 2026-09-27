@@ -31,7 +31,7 @@ public enum SaveError: Error, Equatable, CustomStringConvertible {
 /// an inconsistent save is rejected instead of silently corrupting a game.
 public enum SaveCodec {
     public static let format = "skyline-architect-save"
-    public static let currentVersion = 5
+    public static let currentVersion = 6
 
     /// Upgrades the `game` JSON object from version `key` to `key + 1`.
     public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
@@ -77,6 +77,20 @@ public enum SaveCodec {
                 let tick = ((world["clock"] as? [String: Any])?["tick"] as? NSNumber)?.uint64Value ?? 0
                 world["market"] = ["nextTick": (tick / 3600 + 1) * 3600, "prospects": 0, "signed": 0, "movedOut": 0,
                                    "declined": [Int](repeating: 0, count: 5), "log": [Any]()] as [String: Any]
+            }
+            game["world"] = world
+        },
+        // v5 → v6 (Phase 9): the world gains a ledger (older games start with no money and no
+        // history) and buildings a rent level of 1.
+        5: { game in
+            guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v5 save without world") }
+            if world["ledger"] == nil {
+                world["ledger"] = ["cash": 0, "loans": 0, "journal": [Any](), "days": [Any](), "negativeDays": 0, "bankrupt": false] as [String: Any]
+            }
+            world["buildings"] = (world["buildings"] as? [[String: Any]] ?? []).map { b -> [String: Any] in
+                var b = b
+                if b["rentLevel"] == nil { b["rentLevel"] = 1.0 }
+                return b
             }
             game["world"] = world
         },

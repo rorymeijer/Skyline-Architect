@@ -151,3 +151,13 @@ take), quiet and with a view that suits them. Clicking a room shows who lives or
 there and how they rate it, or why nobody has taken it yet ("design studio: poor view").
 Tenants who become unhappy — for instance because their floor can no longer be reached —
 leave after three days. Rent is recorded but not yet charged (Phase 9).
+
+## Phase 9 player experience (current) — M1 First Playable
+
+The game opens on a main menu (Continue, New Game, Load). A new sandbox starts with
+$2.5 M: every floor and room costs money when placed (undo gives it back), and the preview
+says so when the cash is short. Tenants pay rent at every morning's closing; maintenance,
+utilities and loan interest are paid at the same time, all listed line by line in the
+Economy panel. The player can borrow, repay and set the building's rent level — higher rents
+earn more per tenant but scare off prospects. Evenings darken, occupied homes light up at
+night. Seven days in the red end the game.
