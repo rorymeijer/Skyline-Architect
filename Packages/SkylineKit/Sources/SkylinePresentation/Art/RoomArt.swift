@@ -7,7 +7,8 @@ import SkylineCore
 enum RoomArt {
     static let partitionThickness = 0.12
 
-    static func draw(into d: inout Drawing, room: Room, appearance: String, building: Building, grid: GridSpec, palette p: ArtPalette) {
+    static func draw(into d: inout Drawing, room: Room, appearance: String, layout: InteriorLayout?, art: ArtCatalog,
+                     building: Building, grid: GridSpec, palette p: ArtPalette) {
         let x0 = grid.x(ofColumn: room.columns.start), x1 = grid.x(ofColumn: room.columns.end)
         let f = p.finishes(appearance)
         var rng = SeededRandom(seed: UInt64(room.id.raw), stream: 0x2A0)
@@ -22,7 +23,13 @@ enum RoomArt {
             for level in room.floors.lowest...room.floors.highest {
                 let fy = grid.y(ofFloor: level), cy = grid.y(ofFloor: level + 1) - grid.slabThickness
                 storey(into: &d, appearance: appearance, rect: Rect(minX: x0, minY: fy, maxX: x1, maxY: cy),
-                       finishes: f, palette: p, rng: &rng)
+                       finishes: f, palette: p, drawDoor: layout == nil, rng: &rng)
+                if let layout {
+                    let (ix0, ix1) = innerSpan(room: room, level: level, building: building, x0: x0, x1: x1)
+                    let placements = LayoutResolver.resolve(layout, catalog: art, x0: ix0, x1: ix1, floorY: fy + 0.08,
+                                                            seed: UInt64(room.id.raw) &* 31 &+ UInt64(bitPattern: Int64(level)))
+                    for placed in placements { FurnitureArt.draw(into: &d, placed, catalog: art) }
+                }
             }
         }
 
@@ -40,8 +47,18 @@ enum RoomArt {
         }
     }
 
+    /// Usable width inside partitions, façades or retaining walls.
+    static func innerSpan(room: Room, level: Int, building: Building, x0: Double, x1: Double) -> (Double, Double) {
+        guard let plate = building.plate(at: level) else { return (x0, x1) }
+        let edge = level >= 0 ? BuildingArt.facadeThickness : Foundation.retainingWallThickness
+        let left = room.columns.start == plate.span.start ? edge : partitionThickness / 2
+        let right = room.columns.end == plate.span.end ? edge : partitionThickness / 2
+        return (x0 + left, x1 - right)
+    }
+
     private static func storey(into d: inout Drawing, appearance: String, rect r: Rect,
-                               finishes f: (wall: RGBA, floor: RGBA, ceiling: RGBA), palette p: ArtPalette, rng: inout SeededRandom) {
+                               finishes f: (wall: RGBA, floor: RGBA, ceiling: RGBA), palette p: ArtPalette,
+                               drawDoor: Bool, rng: inout SeededRandom) {
         // Back wall, floor finish, ceiling band, contact shading.
         d.verticalGradient(r, top: f.wall.shaded(0.96), bottom: f.wall.shaded(1.02))
         d.fill(Rect(minX: r.minX, minY: r.minY, maxX: r.maxX, maxY: r.minY + 0.08), f.floor)
@@ -58,13 +75,13 @@ enum RoomArt {
             lights(into: &d, r, y: r.maxY - ceilingBand, spacing: 1.8, width: 0.9, palette: p)
             // Cable tray / window-band reflection line on the back wall.
             d.fill(Rect(minX: r.minX, minY: r.minY + 1.0, maxX: r.maxX, maxY: r.minY + 1.03), f.wall.shaded(0.85), minDetail: 14)
-            door(into: &d, x: r.minX + 0.6, floorY: r.minY + 0.08, palette: p, glazed: true)
+            if drawDoor { door(into: &d, x: r.minX + 0.6, floorY: r.minY + 0.08, palette: p, glazed: true) }
         case "apartment":
             lights(into: &d, r, y: r.maxY - ceilingBand, spacing: 3.2, width: 0.35, palette: p)
             // Skirting board and a picture rail.
             d.fill(Rect(minX: r.minX, minY: r.minY + 0.08, maxX: r.maxX, maxY: r.minY + 0.2), p.partition, minDetail: 10)
             d.fill(Rect(minX: r.minX, minY: r.maxY - ceilingBand - 0.35, maxX: r.maxX, maxY: r.maxY - ceilingBand - 0.32), p.partition, minDetail: 14)
-            door(into: &d, x: r.minX + 0.5, floorY: r.minY + 0.08, palette: p, glazed: false)
+            if drawDoor { door(into: &d, x: r.minX + 0.5, floorY: r.minY + 0.08, palette: p, glazed: false) }
         case "lobby":
             // Stone panel joints and a warm light line.
             var x = r.minX + 1.2

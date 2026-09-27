@@ -49,6 +49,7 @@ public struct ArtPalette: Sendable {
     public var shellWall = RGBA(hex: 0x9A978F)
     public var facadePanel = RGBA(hex: 0x7C8288)
     public var glazing = RGBA(hex: 0x9CC3D8)
+    public var facadeGlass = RGBA(hex: 0x5F7C92)
     public var mullion = RGBA(hex: 0x4F555B)
     public var partition = RGBA(hex: 0xE9E6DF)
     public var door = RGBA(hex: 0x6B5A48)

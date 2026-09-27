@@ -62,7 +62,7 @@ public enum SiteComposer {
     static let backdropHalfWidth = 4500.0
 
     public static func compose(world: GameWorld, propertyID: PropertyID, catalog: BuildCatalog? = nil,
-                               palette p: ArtPalette = .standard) -> SiteComposition? {
+                               art: ArtCatalog = .empty, palette p: ArtPalette = .standard) -> SiteComposition? {
         guard let property = world.properties[propertyID], let city = world.cities[property.cityID] else { return nil }
         let grid = world.grid
         let plot = property.plot
@@ -117,20 +117,20 @@ public enum SiteComposer {
             frontageRect: Rect(minX: frontX0, minY: -maxBasementDepth, maxX: frontX1, maxY: 0),
             foundationRect: nil, superstructureRect: nil,
             cameraBounds: Rect(minX: siteX0, minY: groundBottom, maxX: siteX1, maxY: skyCeiling))
-        composition = recompose(composition, world: world, catalog: catalog, palette: p)
+        composition = recompose(composition, world: world, catalog: catalog, art: art, palette: p)
         return composition
     }
 
     /// Rebuilds only the buildings layer (after construction). The site layer is reused.
     public static func recompose(_ c: SiteComposition, world: GameWorld, catalog: BuildCatalog?,
-                                 palette p: ArtPalette = .standard) -> SiteComposition {
+                                 art: ArtCatalog = .empty, palette p: ArtPalette = .standard) -> SiteComposition {
         let grid = c.grid
         let buildings = world.buildings(on: c.propertyID)
         var d = Drawing()
         for b in buildings {
             d.section("building-\(b.id.raw)") { d in
                 FoundationArt.draw(into: &d, building: b, grid: grid, palette: p)
-                BuildingArt.draw(into: &d, building: b, rooms: world.rooms(in: b.id), catalog: catalog, grid: grid, palette: p)
+                BuildingArt.draw(into: &d, building: b, rooms: world.rooms(in: b.id), catalog: catalog, art: art, grid: grid, palette: p)
             }
         }
         var out = c
