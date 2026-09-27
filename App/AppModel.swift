@@ -4,6 +4,7 @@ import SkylineCore
 import SkylineContent
 import SkylinePersistence
 import SkylinePresentation
+import SkylineSimulation
 
 /// A message for the player (errors from saving, loading or construction).
 struct AppAlert: Identifiable, Equatable {
@@ -17,8 +18,17 @@ struct AppAlert: Identifiable, Equatable {
 /// Views read it; the renderer derives everything it draws from `world`.
 @Observable
 final class AppModel {
-    private(set) var world: GameWorld?
+    /// Authoritative state. Not observed: the simulation mutates it every tick; views read
+    /// the 4 Hz summaries below instead.
+    @ObservationIgnored internal(set) var world: GameWorld?
     private(set) var activePropertyID: PropertyID?
+    private(set) var propertyName = "—"
+    private(set) var cityName = "—"
+
+    // Simulation summaries (refreshed at 4 Hz).
+    internal(set) var speed: GameSpeed = .normal
+    internal(set) var clockText = "Day 1 · 06:00"
+    internal(set) var population = PopulationSummary()
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 
@@ -43,9 +53,13 @@ final class AppModel {
     @ObservationIgnored private var undoCosts: [Int] = []
     @ObservationIgnored private var redoCosts: [Int] = []
     @ObservationIgnored private(set) var saveStore: SaveStore
-    @ObservationIgnored private var hasUnsavedChanges = false
+    @ObservationIgnored var hasUnsavedChanges = false
     @ObservationIgnored private var autosaveTimer: Timer?
     @ObservationIgnored private var screenshotDirector: AnyObject?
+    @ObservationIgnored var simulation: SimulationEngine?
+    @ObservationIgnored var host = SimulationHost()
+    @ObservationIgnored var speedBeforePause: GameSpeed = .normal
+    @ObservationIgnored internal(set) var lastSimulationMs = 0.0
 
     static let autosaveInterval: TimeInterval = 120
 
@@ -60,6 +74,7 @@ final class AppModel {
             let library = try ContentLibrary.loadBase()
             self.library = library
             engine = ConstructionEngine(catalog: library.buildCatalog)
+            simulation = SimulationEngine(rules: library.simulationRules, catalog: library.buildCatalog)
             try startNewGame()
         } catch {
             loadError = "\(error)"
@@ -85,8 +100,6 @@ final class AppModel {
         return base.appendingPathComponent("Skyline Architect", isDirectory: true).appendingPathComponent("Saves", isDirectory: true)
     }
 
-    var activeProperty: Property? { activePropertyID.flatMap { world?.properties[$0] } }
-    var activeCity: City? { activeProperty.flatMap { world?.cities[$0.cityID] } }
     var catalog: BuildCatalog? { engine?.catalog }
     var art: ArtCatalog { library?.artCatalog ?? .empty }
 
@@ -104,8 +117,14 @@ final class AppModel {
 
     /// Replaces the world and builds a fresh scene for it.
     private func install(world: GameWorld, activePropertyID: PropertyID) {
+        var world = world
+        if let library { PopulationSync.sync(&world, catalog: library.buildCatalog, rules: library.simulationRules) }
         self.world = world
         self.activePropertyID = activePropertyID
+        let property = world.properties[activePropertyID]
+        propertyName = property?.name ?? "—"
+        cityName = property.flatMap { world.cities[$0.cityID]?.name } ?? "—"
+        refreshSimulationSummary()
         history.clear()
         undoCosts.removeAll()
         redoCosts.removeAll()
@@ -120,7 +139,16 @@ final class AppModel {
         let previous = scene
         let scene = WorldScene(composition: composition)
         scene.showGrid = showGrid
-        scene.onDiagnostics = { [weak self] d in self?.diagnostics = d }
+        scene.onDiagnostics = { [weak self] d in
+            self?.diagnostics = d
+            self?.refreshSimulationSummary()
+        }
+        scene.onFrame = { [weak self] dt in self?.stepSimulation(realDelta: dt) }
+        scene.peopleProvider = { [weak self] visible, zoom in
+            guard let self, let world = self.world, let property = self.activePropertyID else { return [] }
+            return PeopleView.visible(world: world, propertyID: property, time: Double(world.clock.tick) + self.host.fraction,
+                                      visible: visible, zoom: zoom)
+        }
         scene.previewProvider = { [weak self] tool, anchor, current in
             guard let self, let world = self.world, let property = self.activePropertyID, let engine = self.engine else { return nil }
             return PlacementPlanner.preview(tool: tool, anchor: anchor, current: current, world: world, propertyID: property, engine: engine)
@@ -150,6 +178,11 @@ final class AppModel {
         switch key {
         case "floor": select(tool: activeTool == .floor ? nil : .floor)
         case "demolish": select(tool: activeTool == .demolish ? nil : .demolish)
+        case "pause": togglePause()
+        case "speed1": setSpeed(.normal)
+        case "speed2": setSpeed(.double)
+        case "speed3": setSpeed(.quadruple)
+        case "speed4": setSpeed(.fastest)
         default: select(tool: nil)
         }
     }
@@ -219,7 +252,10 @@ final class AppModel {
     }
 
     /// Stores the new world and re-renders only what changed (`plan` nil = everything).
+    /// The population follows the rooms (occupants appear for new rooms, leave demolished ones).
     private func commit(_ newWorld: GameWorld, plan: ConstructionPlan?) {
+        var newWorld = newWorld
+        if let library { PopulationSync.sync(&newWorld, catalog: library.buildCatalog, rules: library.simulationRules) }
         world = newWorld
         hasUnsavedChanges = true
         refreshUndoState()
@@ -248,7 +284,7 @@ final class AppModel {
 
     @discardableResult
     func save(slot: String = SaveStore.quicksaveSlot, title: String? = nil) -> Bool {
-        guard let save = makeSave(title: title ?? activeProperty?.name ?? "Skyline Architect") else { return false }
+        guard let save = makeSave(title: title ?? propertyName) else { return false }
         do {
             try saveStore.write(save, slot: slot)
             hasUnsavedChanges = false

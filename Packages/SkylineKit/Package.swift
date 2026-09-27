@@ -12,26 +12,29 @@ let package = Package(
         .library(name: "SkylineContent", targets: ["SkylineContent"]),
         .library(name: "SkylinePresentation", targets: ["SkylinePresentation"]),
         .library(name: "SkylinePersistence", targets: ["SkylinePersistence"]),
+        .library(name: "SkylineSimulation", targets: ["SkylineSimulation"]),
         .executable(name: "skyline-snapshot", targets: ["SkylineSnapshot"]),
     ],
     targets: [
         .target(name: "SkylineCore"),
         .target(
             name: "SkylineContent",
-            dependencies: ["SkylineCore", "SkylinePresentation"],
+            dependencies: ["SkylineCore", "SkylinePresentation", "SkylineSimulation"],
             resources: [.copy("Resources/Base")]
         ),
         .target(name: "SkylinePresentation", dependencies: ["SkylineCore"]),
         .target(name: "SkylinePersistence", dependencies: ["SkylineCore"]),
+        .target(name: "SkylineSimulation", dependencies: ["SkylineCore"]),
         .executableTarget(
             name: "SkylineSnapshot",
-            dependencies: ["SkylineCore", "SkylineContent", "SkylinePresentation"]
+            dependencies: ["SkylineCore", "SkylineContent", "SkylinePresentation", "SkylineSimulation"]
         ),
         .testTarget(name: "SkylineCoreTests", dependencies: ["SkylineCore"]),
+        .testTarget(name: "SkylineSimulationTests", dependencies: ["SkylineSimulation", "SkylineContent"]),
         .testTarget(name: "SkylineContentTests", dependencies: ["SkylineContent"]),
         .testTarget(
             name: "SkylinePersistenceTests",
-            dependencies: ["SkylinePersistence", "SkylineContent"],
+            dependencies: ["SkylinePersistence", "SkylineContent", "SkylineSimulation"],
             resources: [.copy("Fixtures")]
         ),
         .testTarget(

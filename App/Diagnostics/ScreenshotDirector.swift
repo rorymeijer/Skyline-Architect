@@ -55,50 +55,62 @@ final class ScreenshotDirector {
     private var started = false
 
     let steps: [Step] = [
-        Step(name: "01-tower-facade", grid: false) { model, scene in
+        Step(name: "01-morning-arrivals", grid: false) { model, scene in
+            model.setSpeed(.paused)  // captures advance time explicitly
             model.applyBlueprint("demo-tower")
-            scene.withController { $0.jump(center: Vec2(24, 22), zoom: 3.2) }
-            return "Demo tower at massing zoom: exterior curtain-wall façade stands in for the cutaway."
-        },
-        Step(name: "02-cutaway-lod", grid: false) { _, scene in
+            model.advanceSimulation(toTimeOfDay: 7, minute: 40)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 100 * 60, step: 15) { ScreenshotDirector.travelling(in: $0) })
+            model.refreshSimulationSummary()
             scene.apply(preset: .building)
-            return "Same tower zoomed in past the LOD threshold: furnished cutaway."
+            return "Morning rush at \(model.clockText) (busiest moment 07:40–09:20): \(model.population.travelling) moving, \(model.population.inRooms) in rooms, \(model.population.outside) away."
         },
-        Step(name: "03-offices", grid: false) { model, scene in
+        Step(name: "02-stairs-closeup", grid: false) { model, scene in
             model.showDeveloperHUD = false
-            scene.withController { $0.jump(center: Vec2(28, 10), zoom: 36) }
-            return "Offices: workstations with monitors and chairs, filing cabinets, meeting set, whiteboard, printer, plants."
+            // Next moment someone is on the stairs between the ground floor and floor 3.
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3 * 3600, step: 3) { world in
+                ScreenshotDirector.climbers(in: world, lowFloorsOnly: true).isEmpty ? 0 : 1
+            })
+            if let p = model.world.flatMap({ ScreenshotDirector.climbers(in: $0, lowFloorsOnly: true).first }) {
+                scene.withController { $0.jump(center: p + Vec2(0, 0.8), zoom: 48) }
+            }
+            model.refreshSimulationSummary()
+            return "Close-up of a person on the stairwell at \(model.clockText)."
         },
-        Step(name: "04-apartments", grid: false) { model, scene in
-            model.showDeveloperHUD = false
-            scene.withController { $0.jump(center: Vec2(28, 26), zoom: 36) }
-            return "Studio apartments: kitchen or kitchenette, fridge, bed, nightstand, bathroom pod (wide units), art."
+        Step(name: "03-offices-occupied", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 10)
+            scene.withController { $0.jump(center: Vec2(28, 10), zoom: 38) }
+            model.refreshSimulationSummary()
+            return "Offices at \(model.clockText): workers at their workplaces."
         },
-        Step(name: "05-lobby-parking", grid: false) { model, scene in
-            model.showDeveloperHUD = false
-            scene.withController { $0.jump(center: Vec2(16, 0.5), zoom: 36) }
-            return "Lobby (reception, sofa, directory, plants) above the parking level with parked cars."
-        },
-        Step(name: "06-mechanical-roof", grid: false) { model, scene in
-            model.showDeveloperHUD = false
-            scene.withController { $0.jump(center: Vec2(20, 33), zoom: 36) }
-            return "Top floor: mechanical plant (AHU, electrical panel), corridor, apartment, roof parapets."
-        },
-        Step(name: "07-new-office-furnished", grid: true) { model, scene in
+        Step(name: "04-lunch-exodus", grid: false) { model, scene in
             model.showDeveloperHUD = true
-            guard let building = model.world?.buildings.values.first?.id else { return "no building" }
-            let floor = model.perform(.buildFloor(building: building, level: 9, span: ColumnSpan(start: 12, count: 24)))
-            let office = model.perform(.placeRoom(building: building, definition: "office-small",
-                                                  columns: ColumnSpan(start: 21, count: 15), floors: FloorSpan(lowest: 9, highest: 9)))
-            scene.withController { $0.jump(center: Vec2(26, 38), zoom: 30) }
-            return "Built floor 9 and a 15 m office through the engine (floor=\(floor), office=\(office)): furnished immediately."
+            model.advanceSimulation(toTimeOfDay: 11, minute: 50)
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 50 * 60, step: 10) { ScreenshotDirector.travelling(in: $0) })
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(20, 12), zoom: 14) }
+            return "Lunch at \(model.clockText): \(model.population.travelling) moving, \(model.population.outside) away."
         },
-        Step(name: "08-save-load-roundtrip", grid: false) { model, scene in
+        Step(name: "05-evening-home", grid: false) { model, scene in
+            model.showDeveloperHUD = false
+            model.advanceSimulation(toTimeOfDay: 20, minute: 30)
+            scene.withController { $0.jump(center: Vec2(28, 26), zoom: 38) }
+            model.refreshSimulationSummary()
+            return "Evening at \(model.clockText): residents home, offices empty."
+        },
+        Step(name: "06-far-zoom-lod", grid: false) { model, scene in
+            model.showDeveloperHUD = true
+            model.advanceSimulation(toTimeOfDay: 8, minute: 30)
+            scene.withController { $0.jump(center: Vec2(24, 22), zoom: 3.2) }
+            model.refreshSimulationSummary()
+            return "Day 2 morning at massing zoom: people are simulated (\(model.population.total)) but not drawn (render LOD)."
+        },
+        Step(name: "07-save-load-roundtrip", grid: false) { model, scene in
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")
             let identical = before != nil && before == model.world
-            return "Saved and reloaded (camera kept): saved=\(saved) loaded=\(loaded) worldIdentical=\(identical)"
+            model.refreshSimulationSummary()
+            return "Saved and reloaded with \(model.population.total) people: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical)"
         },
     ]
 
@@ -211,6 +223,20 @@ final class ScreenshotDirector {
     }
 
     private struct UncheckedBox<T>: @unchecked Sendable { let value: T }
+
+    static func travelling(in world: GameWorld) -> Int {
+        world.people.values.filter { if case .travelling = $0.place { true } else { false } }.count
+    }
+
+    /// Positions of people currently on stairs (optionally only between G and floor 3).
+    static func climbers(in world: GameWorld, lowFloorsOnly: Bool) -> [Vec2] {
+        world.people.values.compactMap { p in
+            guard case let .travelling(legs, _) = p.place,
+                  let s = PersonMotion.sample(legs, at: Double(world.clock.tick), grid: world.grid), s.onStairs else { return nil }
+            if lowFloorsOnly && !(0...14).contains(s.position.y) { return nil }
+            return s.position
+        }
+    }
 
     private func log(_ message: String) {
         FileHandle.standardError.write(Data("[capture] \(message)\n".utf8))

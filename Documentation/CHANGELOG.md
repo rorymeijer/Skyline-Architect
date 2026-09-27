@@ -2,6 +2,23 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.4.0] — Phase 4: Basic people simulation
+
+### Added
+- **Simulation clock and speeds:** 1 tick = 1 game second; pause / 1× / 2× / 4× / 10× run
+  0 / 24 / 48 / 96 / 240 ticks per real second; results identical at every speed (tested).
+- **People:** workers and residents with generated names, ages, schedules
+  (`schedules.json`, `names.json`), homes/workplaces from room occupancy; event-driven
+  engine with analytic trips (street → entrance → stairwell → room), unreachable detection.
+- **Population sync** after construction and on load (Phase 8 tenants will replace it).
+- **Rendering:** procedural person figures (4-frame walk cycle, skin/hair/clothing variety,
+  business vs. casual), exact interpolation at fractional ticks, culling, render LOD
+  (not drawn below 3.5 pt/m; still simulated).
+- **UI:** clock, speed buttons, population pill; Space / 1–4 shortcuts; HUD rows for drawn
+  and simulated people and simulation time per frame.
+- **Save format 2** with v1→v2 migration and a v2 golden fixture with people mid-trip.
+- `skyline-snapshot --time HH:MM` simulates before rendering and draws people.
+
 ## [0.3.0] — Phase 3: First furnished rooms
 
 ### Added

@@ -1,6 +1,7 @@
 import Foundation
 import SkylineCore
 import SkylinePresentation
+import SkylineSimulation
 
 public struct ContentError: Error, CustomStringConvertible, Equatable {
     public var pack: String
@@ -26,6 +27,7 @@ public struct ContentLibrary: Sendable {
     public private(set) var orderedRooms: [RoomSpec] = []
     public private(set) var orderedBlueprints: [Blueprint] = []
     public private(set) var artCatalog = ArtCatalog.empty
+    public private(set) var simulationRules = SimulationRules(schedules: [], names: NamePool(first: [], last: []))
     public private(set) var buildRules = BuildRules(slabCostPerModule: 0, basementSlabCostPerModule: 0, maxCantileverModules: 0, demolitionRefund: 0)
     private var cityIndex: [String: Int] = [:]
     private var plotIndex: [String: Int] = [:]
@@ -70,6 +72,11 @@ public struct ContentLibrary: Sendable {
             materials = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
         }
         try library.register(materials: materials, furniture: list("furniture"), interiors: list("interiors"))
+        var names = NamePool(first: [], last: [])
+        if let file = manifest.files["names"] {
+            names = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
+        }
+        try library.register(schedules: list("schedules"), names: names)
         return library
     }
 
@@ -166,6 +173,23 @@ public struct ContentLibrary: Sendable {
             throw ContentError(pack: manifest.id, file: "furniture/interiors", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
         }
         artCatalog = ArtCatalog(materials: materials, furniture: furniture, layouts: interiors)
+    }
+
+    /// Registers simulation content (schedules, name pools) and checks room occupancy specs.
+    mutating func register(schedules: [Schedule], names: NamePool) throws {
+        var problems = SimulationRules.validate(schedules: schedules, names: names)
+        for room in orderedRooms {
+            if let o = room.occupancy, o.fixed == nil, (o.perModule ?? 0) <= 0 {
+                problems.append("room '\(room.id)': occupancy needs 'fixed' or a positive 'perModule'")
+            }
+            if let t = room.transport, room.kind != .shaft || !["stairs", "elevator"].contains(t) {
+                problems.append("room '\(room.id)': transport '\(t)' requires a shaft and must be stairs or elevator")
+            }
+        }
+        if let first = problems.first {
+            throw ContentError(pack: manifest.id, file: "schedules/names/rooms", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
+        }
+        simulationRules = SimulationRules(schedules: schedules, names: names)
     }
 
     private static func decode<T: Decodable>(_ url: URL, pack: String, file: String) throws -> T {

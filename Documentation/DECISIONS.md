@@ -134,3 +134,27 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Alternatives:** Separate compositions per LOD; switching node trees in SpriteKit by zoom.
 - **Reason:** LOD becomes automatic per tile level, needs no renderer logic, and works identically in the SVG preview tool and tests.
 - **Consequences:** The switch point depends on pixel density (Retina switches at lower zoom). Items must not straddle both bands unintentionally.
+
+## D-019 — Analytic trips instead of per-tick movement
+- **Date:** 2026-09-27
+- **Decision:** A person's trip is stored as legs with absolute start/end ticks; position is a pure function of time. Only arrivals and schedule goals are events.
+- **Alternatives:** Integrate every agent every tick; snapshot buffers for rendering interpolation.
+- **Reason:** Thousands of walking people cost nothing between events; rendering gets exact sub-tick positions; saves capture motion exactly; determinism is easy to prove.
+- **Consequences:** Anything that changes a trip mid-way (construction, elevators waiting) must re-plan explicitly — Phase 5/6 add re-planning and queue waits as events.
+
+## D-020 — 1 tick = 1 game second; speed = ticks per real second
+- **Date:** 2026-09-27
+- **Decision:** 24 ticks per real second at 1× (a game day lasts 60 real minutes); faster speeds only run more ticks per frame (max 480 per frame).
+- **Reason:** Second resolution suffices for walking and (later) elevator stops; batch independence makes speeds deterministic.
+- **Consequences:** At 10× the engine runs 240 ticks/s — fine while event-driven; profile again with thousands of people (Phase 19).
+
+## D-021 — Phase 4 population sync and single-stairwell routing are stand-ins
+- **Date:** 2026-09-27
+- **Decision:** Rooms are occupied automatically from `RoomSpec.occupancy`; routes use one stairwell between two floors.
+- **Reason:** Delivers visible, believable traffic now without pre-empting Phase 5 (navigation graph) and Phase 8 (tenant choice, rent, vacancy).
+- **Consequences:** Both are replaced, not extended; their tests describe behaviour the replacements must keep (occupancy counts, reachability).
+
+## D-022 — SwiftUI does not observe the live world
+- **Date:** 2026-09-27
+- **Decision:** `AppModel.world` is `@ObservationIgnored`; views read clock/population summaries refreshed at 4 Hz.
+- **Reason:** The simulation mutates the world up to 240 times per second; observing it would re-evaluate SwiftUI views every frame.

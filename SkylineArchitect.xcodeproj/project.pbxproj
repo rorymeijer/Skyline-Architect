@@ -11,6 +11,7 @@
 		5A0000000000000000000102 /* SkylineContent in Frameworks */ = {isa = PBXBuildFile; productRef = 5A0000000000000000000202 /* SkylineContent */; };
 		5A0000000000000000000103 /* SkylinePresentation in Frameworks */ = {isa = PBXBuildFile; productRef = 5A0000000000000000000203 /* SkylinePresentation */; };
 		5A0000000000000000000104 /* SkylinePersistence in Frameworks */ = {isa = PBXBuildFile; productRef = 5A0000000000000000000204 /* SkylinePersistence */; };
+		5A0000000000000000000105 /* SkylineSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = 5A0000000000000000000205 /* SkylineSimulation */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 				5A0000000000000000000102 /* SkylineContent in Frameworks */,
 				5A0000000000000000000103 /* SkylinePresentation in Frameworks */,
 				5A0000000000000000000104 /* SkylinePersistence in Frameworks */,
+				5A0000000000000000000105 /* SkylineSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +82,7 @@
 				5A0000000000000000000202 /* SkylineContent */,
 				5A0000000000000000000203 /* SkylinePresentation */,
 				5A0000000000000000000204 /* SkylinePersistence */,
+				5A0000000000000000000205 /* SkylineSimulation */,
 			);
 			productName = SkylineArchitect;
 			productReference = 5A0000000000000000000001 /* SkylineArchitect.app */;
@@ -281,7 +284,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MARKETING_VERSION = 0.3.0;
+				MARKETING_VERSION = 0.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.skylinearchitect.SkylineArchitect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -315,7 +318,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MARKETING_VERSION = 0.3.0;
+				MARKETING_VERSION = 0.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.skylinearchitect.SkylineArchitect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -375,6 +378,10 @@
 		5A0000000000000000000204 /* SkylinePersistence */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SkylinePersistence;
+		};
+		5A0000000000000000000205 /* SkylineSimulation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SkylineSimulation;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

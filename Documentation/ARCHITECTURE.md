@@ -13,9 +13,9 @@ Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomp
 └───────────────▲──────────────────────────▲─────────────────────────┘
                 │ reads                    │ reads (snapshots)
 ┌───────────────┴──────────────┐  ┌────────┴──────────────────────────┐
-│ SkylinePresentation          │  │ (PLANNED) SkylineSimulation        │
-│ camera · LOD · culling ·     │  │ clock · agents · elevators ·       │
-│ drawing IR · procedural art ·│  │ economy — owns mutation of world   │
+│ SkylinePresentation          │  │ SkylineSimulation (Phase 4)        │
+│ camera · LOD · culling ·     │  │ clock · people · schedules ·       │
+│ drawing IR · procedural art ·│  │ routes — owns mutation of people   │
 │ scene composition · tiles    │  └────────┬──────────────────────────┘
 └───────────────┬──────────────┘           │
                 │                          │
@@ -23,6 +23,7 @@ Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomp
 │ SkylineContent: JSON definitions, validation, new-game factory      │
 │   (depends on Presentation for visual definition types, D-017)      │
 │ SkylinePersistence: versioned saves, migrations, save store          │
+│ SkylineSimulation: clock, schedules, population, routes, engine      │
 ├─────────────────────────────────────────────────────────────────────┤
 │ SkylineCore: authoritative model (world→city→property→building),    │
 │ grid, geometry, IDs, deterministic RNG                              │

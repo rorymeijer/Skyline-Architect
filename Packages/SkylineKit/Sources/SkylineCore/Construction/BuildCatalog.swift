@@ -26,10 +26,34 @@ public struct RoomSpec: Codable, Hashable, Sendable {
     public var highestLevel: Int?
     /// Construction cost per module per floor.
     public var costPerModule: Int
+    /// Who belongs to this room (nil = nobody): workers or residents, either a fixed count
+    /// or a count per module of width.
+    public var occupancy: Occupancy?
+    /// Vertical transport provided by a shaft (`"stairs"`; `"elevator"` from Phase 6).
+    public var transport: String?
+
+    public struct Occupancy: Codable, Hashable, Sendable {
+        public var role: PersonRole
+        public var fixed: Int?
+        public var perModule: Double?
+
+        public init(role: PersonRole, fixed: Int? = nil, perModule: Double? = nil) {
+            self.role = role
+            self.fixed = fixed
+            self.perModule = perModule
+        }
+
+        /// Number of occupants for a room `modules` wide (at least 1).
+        public func count(modules: Int) -> Int {
+            if let fixed { return max(0, fixed) }
+            return max(1, Int((Double(modules) * (perModule ?? 0)).rounded(.down)))
+        }
+    }
 
     public init(id: String, name: String, category: String, kind: RoomKind, appearance: String,
                 minWidth: Int, maxWidth: Int, minFloors: Int, maxFloors: Int,
-                lowestLevel: Int? = nil, highestLevel: Int? = nil, costPerModule: Int) {
+                lowestLevel: Int? = nil, highestLevel: Int? = nil, costPerModule: Int,
+                occupancy: Occupancy? = nil, transport: String? = nil) {
         self.id = id
         self.name = name
         self.category = category
@@ -42,6 +66,8 @@ public struct RoomSpec: Codable, Hashable, Sendable {
         self.lowestLevel = lowestLevel
         self.highestLevel = highestLevel
         self.costPerModule = costPerModule
+        self.occupancy = occupancy
+        self.transport = transport
     }
 }
 

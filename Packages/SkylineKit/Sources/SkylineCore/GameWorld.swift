@@ -68,6 +68,10 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public private(set) var properties = EntityStore<Property>()
     public internal(set) var buildings = EntityStore<Building>()
     public internal(set) var rooms = EntityStore<Room>()
+    /// Simulated people (Phase 4). Mutated only by the simulation.
+    public var people = EntityStore<Person>()
+    /// Simulation clock. Advanced only by the simulation.
+    public var clock = SimClock()
     var ids = IDAllocator()
 
     public init(grid: GridSpec = .standard) {
@@ -122,6 +126,9 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public func buildings(on propertyID: PropertyID) -> [Building] {
         buildings.filter { $0.propertyID == propertyID }
     }
+
+    /// Allocates a fresh person id (used by the simulation's population system).
+    public mutating func makePersonID() -> PersonID { ids.make() }
 
     /// Rooms of a building, in placement order.
     public func rooms(in buildingID: BuildingID) -> [Room] {

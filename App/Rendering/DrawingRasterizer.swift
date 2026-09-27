@@ -29,6 +29,18 @@ enum DrawingRasterizer {
         return ctx.makeImage()
     }
 
+    /// Rasterizes a standalone drawing (e.g. a person figure) covering `rect`.
+    static func rasterize(_ drawing: Drawing, rect: Rect, pixelsPerMeter ppm: Double) -> CGImage? {
+        let w = max(1, Int((rect.width * ppm).rounded(.up))), h = max(1, Int((rect.height * ppm).rounded(.up)))
+        guard let ctx = CGContext(data: nil, width: w, height: h, bitsPerComponent: 8, bytesPerRow: 0,
+                                  space: ColorSpaces.sRGB, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
+        ctx.setShouldAntialias(true)
+        ctx.scaleBy(x: CGFloat(ppm), y: CGFloat(ppm))
+        ctx.translateBy(x: CGFloat(-rect.minX), y: CGFloat(-rect.minY))
+        for item in drawing.items { draw(item, in: ctx) }
+        return ctx.makeImage()
+    }
+
     static func draw(_ item: DrawItem, in ctx: CGContext) {
         let path = cgPath(item.shape)
         if let fill = item.fill, !isOpen(item.shape) {

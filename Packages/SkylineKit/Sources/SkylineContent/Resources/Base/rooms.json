@@ -35,7 +35,8 @@
     "maxWidth": 4,
     "minFloors": 2,
     "maxFloors": 400,
-    "costPerModule": 1500
+    "costPerModule": 1500,
+    "transport": "stairs"
   },
   {
     "id": "elevator-shaft",
@@ -47,7 +48,8 @@
     "maxWidth": 3,
     "minFloors": 2,
     "maxFloors": 400,
-    "costPerModule": 4500
+    "costPerModule": 4500,
+    "transport": "elevator"
   },
   {
     "id": "office-small",
@@ -60,7 +62,11 @@
     "minFloors": 1,
     "maxFloors": 1,
     "costPerModule": 1200,
-    "lowestLevel": 1
+    "lowestLevel": 1,
+    "occupancy": {
+      "role": "worker",
+      "perModule": 0.3
+    }
   },
   {
     "id": "apartment-studio",
@@ -73,7 +79,11 @@
     "minFloors": 1,
     "maxFloors": 1,
     "costPerModule": 1400,
-    "lowestLevel": 1
+    "lowestLevel": 1,
+    "occupancy": {
+      "role": "resident",
+      "fixed": 2
+    }
   },
   {
     "id": "mechanical",

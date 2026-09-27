@@ -14,6 +14,7 @@ struct RenderDiagnostics: Equatable, Codable {
     var tilesPending = 0
     var tilesRasterized = 0
     var tileRasterMs = 0.0
+    var agentsRendered = 0
     var memoryMB = 0.0
     var zoom = 0.0
     var detailLevel = "—"

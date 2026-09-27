@@ -105,3 +105,12 @@ the room's width: offices fill with workstations and gain a meeting table when w
 studios get a kitchenette or a full kitchen and (when wide) a bathroom, lobbies a reception
 desk, parking levels parked cars. Zoomed out, towers show a glass façade; zooming in reveals
 the furnished cutaway. People arrive in Phase 4.
+
+## Phase 4 player experience (current)
+
+Rooms come alive: offices get workers (0.3 per metre of width) and studios two residents
+each. A day starts at 06:00; residents leave for work in the morning and return in the
+evening, office workers arrive around 08:15, go out for lunch and leave around 17:15 — all
+walking in from the street, through the entrance and up the stairwell. The clock runs at
+1× (a day ≈ 60 real minutes) up to 10×; Space pauses. Floors without stairs are
+unreachable and reported. No money, needs or elevators yet.
