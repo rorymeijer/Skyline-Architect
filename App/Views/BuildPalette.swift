@@ -87,6 +87,7 @@ struct BuildPalette: View {
     static func shortName(_ name: String) -> String {
         name.replacingOccurrences(of: "Small ", with: "").replacingOccurrences(of: "Studio ", with: "")
             .replacingOccurrences(of: " Room", with: "").replacingOccurrences(of: " Level", with: "")
+            .replacingOccurrences(of: " Shaft", with: "")
     }
 
     /// Presentation choice: an icon per appearance key (content stays icon-agnostic).

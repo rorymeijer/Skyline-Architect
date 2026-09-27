@@ -46,7 +46,9 @@ final class PlacementOverlayNode: SKNode {
         ghost.strokeColor = edge.withAlpha(1).skColor
 
         label.text = preview.label
-        label.fontColor = preview.isValid ? .white : edge.withAlpha(1).mixed(with: .white, 0.35).skColor
+        label.fontColor = .white
+        labelBackground.fillColor = preview.isValid ? SKColor(white: 0.05, alpha: 0.78)
+            : palette.previewInvalidEdge.shaded(0.55).withAlpha(0.9).skColor
         // Place the label next to the cursor (or above the ghost), kept on screen.
         let anchor = cursor ?? CGPoint(x: a.x, y: b.y)
         let size = label.frame.size
