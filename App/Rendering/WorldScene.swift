@@ -257,7 +257,7 @@ final class WorldScene: SKScene {
         }
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         elevatorLayer.update(carProvider?(camera.visibleRect, camera.zoom) ?? [])
-        let lighting = lightingProvider?(camera.visibleRect) ?? (1, [])
+        let lighting = lightingProvider?(camera.visibleRect) ?? (daylight: 1, rooms: [])
         dayNight.update(daylight: lighting.daylight, rooms: lighting.rooms, viewport: size)
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
         navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
