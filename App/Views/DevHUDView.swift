@@ -26,6 +26,8 @@ struct DevHUDView: View {
                                 navigation.hitRate * 100, navigation.failures))
             row("Nav graph", "\(navigation.portals) portals · \(navigation.edges) links · \(navigation.graphBuilds) builds")
             row("Unreachable", "\(population.unreachable) people")
+            row("Elevators", "\(population.cars) cars · \(population.riding) riding · \(population.waiting) waiting")
+            row("Longest wait", population.waiting == 0 ? "—" : "\(population.longestWait) s")
             Divider()
             row("Zoom", String(format: "%.2f pt/m", d.zoom) + " · " + d.detailLevel)
             row("Center", String(format: "%.1f m, %.1f m", d.centerX, d.centerY))

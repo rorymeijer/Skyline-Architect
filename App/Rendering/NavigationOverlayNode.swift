@@ -4,11 +4,13 @@ import SkylinePresentation
 import SkylineSimulation
 
 /// Developer overlay (⌥⌘N, Debug builds): the navigation graph — portals, walk links along
-/// floors, stair links between storeys — and the remaining route of every traveller.
+/// floors, stair links (orange) and elevator links (green) between storeys — and the
+/// remaining route of every traveller.
 /// Screen space, rebuilt per frame while visible; it only draws `NavigationOverlay` data.
 final class NavigationOverlayNode: SKNode {
     private let walkLinks = SKShapeNode()
     private let stairLinks = SKShapeNode()
+    private let elevatorLinks = SKShapeNode()
     private let routes = SKShapeNode()
     private let portals = SKShapeNode()
 
@@ -20,10 +22,12 @@ final class NavigationOverlayNode: SKNode {
         walkLinks.lineWidth = 2
         stairLinks.strokeColor = SKColor(red: 1.0, green: 0.72, blue: 0.20, alpha: 0.95)
         stairLinks.lineWidth = 3
+        elevatorLinks.strokeColor = SKColor(red: 0.45, green: 0.95, blue: 0.45, alpha: 0.95)
+        elevatorLinks.lineWidth = 3
         portals.fillColor = SKColor(red: 1.0, green: 0.93, blue: 0.55, alpha: 1)
         portals.strokeColor = SKColor(white: 0.05, alpha: 0.9)
         portals.lineWidth = 1
-        for (z, node) in [routes, walkLinks, stairLinks, portals].enumerated() {
+        for (z, node) in [routes, walkLinks, stairLinks, elevatorLinks, portals].enumerated() {
             node.zPosition = CGFloat(z)
             node.lineCap = .round
             node.lineJoin = .round
@@ -49,6 +53,7 @@ final class NavigationOverlayNode: SKNode {
         }
         walkLinks.path = segments(overlay.walkLinks)
         stairLinks.path = segments(overlay.stairLinks)
+        elevatorLinks.path = segments(overlay.elevatorLinks)
         let routePath = CGMutablePath()
         for line in overlay.routes {
             routePath.addLines(between: line.map(p))

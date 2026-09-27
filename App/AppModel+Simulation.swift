@@ -61,6 +61,12 @@ extension AppModel {
         if let simulation { navigationMetrics = simulation.navigation.metrics }
     }
 
+    /// Door open/close time of a shaft's cars (content), for rendering.
+    func doorSeconds(of shaft: RoomID) -> Double {
+        guard let world, let room = world.rooms[shaft], let spec = simulation?.rules.elevator(for: room.definitionID) else { return 2 }
+        return Double(spec.doorSeconds)
+    }
+
     // MARK: Navigation overlay (developer)
 
     func toggleNavigationOverlay() { showNavigationOverlay.toggle() }
@@ -74,6 +80,7 @@ extension AppModel {
             let o = NavigationOverlay.make(graph: graph, world: world, now: Double(world.clock.tick) + host.fraction)
             merged.walkLinks += o.walkLinks
             merged.stairLinks += o.stairLinks
+            merged.elevatorLinks += o.elevatorLinks
             merged.portals += o.portals
             merged.routes += o.routes
         }
@@ -88,10 +95,16 @@ struct PopulationSummary: Equatable {
     var travelling = 0
     var outside = 0
     var unreachable = 0
+    var waiting = 0
+    var riding = 0
+    var cars = 0
+    /// Longest current wait at any landing, seconds.
+    var longestWait: Tick = 0
 
     init() {}
 
     init(_ world: GameWorld) {
+        cars = world.elevators.count
         for p in world.people {
             total += 1
             if p.unreachable { unreachable += 1 }
@@ -99,6 +112,13 @@ struct PopulationSummary: Equatable {
             case .outside: outside += 1
             case .room: inRooms += 1
             case .travelling: travelling += 1
+            case let .waiting(_, _, since):
+                travelling += 1
+                waiting += 1
+                longestWait = max(longestWait, world.clock.tick - since)
+            case .riding:
+                travelling += 1
+                riding += 1
             }
         }
     }
