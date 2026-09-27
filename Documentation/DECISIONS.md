@@ -199,3 +199,16 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Decision:** Queuing people get a personal patience (content value ± 50 % by traits). When it expires they take a route without elevators if it takes ≤ 5 minutes, otherwise keep waiting. Elevator-free routes are cached under their own key.
 - **Reason:** Visible, measurable reaction to bad service (abandonment statistic) without breaking the static-cost routing of D-026; nobody climbs 30 storeys out of impatience.
 - **Consequences:** Queue length still does not affect the initial route choice.
+
+## D-029 — A deterministic hourly rental market with explainable appraisals
+- **Date:** 2026-09-27
+- **Decision:** Prospects are drawn hourly per tenant type from a seeded generator (city seed, hour, type). Each appraises vacant units on four 0…1 criteria (rent, access incl. measured elevator waits, noise, view) with content weights; it signs the best unit above its threshold or declines with its weakest criterion. Tenants review daily and leave after three bad reviews.
+- **Alternatives:** Aggregate demand curves (occupancy as a number); utility with randomness per decision.
+- **Reason:** Individual, inspectable decisions ("declined: too noisy") serve pillar 3 (honest systems) and connect construction and elevator service to vacancy; seeded draws keep runs reproducible and batch-independent.
+- **Consequences:** Appraisal routes through the navigation cache; many vacancies × prospects cost route plans (cached per exact spot). Balancing happens in data.
+
+## D-030 — Rooms are no longer filled automatically
+- **Date:** 2026-09-27
+- **Decision:** Room `occupancy` moved into tenant types; `PopulationSync` only ends leases of demolished units and adopts people of older saves into tenants. Tests and the developer menu use `Leasing.fillAll`.
+- **Reason:** Replaces the Phase 4 stand-in (D-021) as planned instead of layering on it; keeps old saves playable without inventing data (adoption is based on who is already there).
+- **Consequences:** A new building starts empty and fills over the first game days.

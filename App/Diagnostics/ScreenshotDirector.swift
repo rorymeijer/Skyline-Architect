@@ -102,7 +102,7 @@ final class ScreenshotDirector {
             model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3 * 3600, step: 60) { ScreenshotDirector.travelling(in: $0) })
             model.refreshSimulationSummary()
             let types = Dictionary(grouping: model.world?.tenants.values ?? [], by: \.typeID).map { "\($0.key) \($0.value.count)" }.sorted()
-            return "Day 3 \(model.clockText): \(model.population.travelling) on the move; tenants: " + types.joined(separator: ", ")
+            return "\(model.clockText): \(model.population.travelling) on the move; tenants: " + types.joined(separator: ", ")
         },
         Step(name: "06-leasing-week", grid: false) { model, scene in
             model.showDeveloperHUD = false

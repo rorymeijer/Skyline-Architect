@@ -113,7 +113,7 @@ private func room(_ f: SimFixture, _ definition: String, floor: Int, left: Bool 
         #expect(m.prospects == m.signed + m.declined.reduce(0, +))
         #expect(world.tenants.values.contains { $0.typeID != "consultancy" && $0.typeID != "couple" })
         #expect(world.people.values.allSatisfy { $0.tenantID != nil })
-        #expect(m.log.count == min(MarketState.logLimit, m.prospects + m.movedOut))
+        #expect(m.log.count == min(MarketState.logLimit, m.prospects - m.declines(.noVacancy) + m.movedOut))
         try world.validateIntegrity()
         #expect(try run() == world)
         print("[market] 3 days: prospects \(m.prospects), signed \(m.signed), declined " +

@@ -190,8 +190,7 @@ extension SimulationEngine {
             let appraised = candidates.compactMap { room in Leasing.appraise(room, for: type, world: world, engine: self).map { (room, $0) } }
             guard let best = appraised.filter({ $0.1.affordable }).min(by: { ($1.1.total, $0.0.id) < ($0.1.total, $1.0.id) })
                     ?? appraised.min(by: { ($1.1.total, $0.0.id) < ($0.1.total, $1.0.id) }) else {
-                world.market.countDecline(.noVacancy)
-                world.market.record(LeasingEvent(tick: now, typeID: type.id, outcome: .declined, room: nil, reason: .noVacancy, score: 0))
+                world.market.countDecline(.noVacancy)          // counted, not logged (would flood a full building's log)
                 continue
             }
             if best.1.affordable, best.1.total >= type.minScore {

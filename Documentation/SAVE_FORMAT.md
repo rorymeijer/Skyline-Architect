@@ -1,6 +1,6 @@
 # Save Format
 
-Status: **FUNCTIONAL** (Phases 2–7). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
+Status: **FUNCTIONAL** (Phases 2–8). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
 
 ## Versions
 
@@ -8,18 +8,18 @@ Status: **FUNCTIONAL** (Phases 2–7). Implemented in `Packages/SkylineKit/Sourc
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 5 | 0.8 | World gains `tenants` and `market` (next step, counters, declines per reason, log); people gain optional `tenantID` | v4→v5 adds `tenants: []` and a market whose next step is the next full hour; on load the population sync adopts existing people into one tenant per room |
 | 4 | 0.7 | Cars gain `strategy` (`collective` / `zoning` / `destination`) and `stats` (boardings, totalWait, maxWait, abandoned, stops, day, hourly[24]); rides may carry `assigned` | v3→v4 adds `strategy: "collective"` and zeroed `stats` to every car |
 | 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1`, `save-v2`, `save-v3` (frozen) and `save-v4.skylinesave`
-(people waiting and riding, car statistics).
+Golden fixtures: `save-v1` … `save-v4` (frozen) and `save-v5.skylinesave` (tenants, market).
 
-## Envelope (format version 4)
+## Envelope (format version 5)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 4,
+  "formatVersion": 5,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
     "contentPacks": [{ "id": "base", "version": "0.1.0" }],

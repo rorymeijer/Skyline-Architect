@@ -32,10 +32,10 @@ extension AppModel {
         leasing = LeasingSummary.make(world: world, engine: simulation, buildings: world.buildings(on: property).map(\.id))
     }
 
-    /// Room label text: the tenant's name, or "vacant" for rentable units without a tenant.
+    /// Room label text: the tenant's name, or "Vacant" for rentable units without a tenant.
     func roomLabelText(_ room: Room, _ spec: RoomSpec) -> String? {
         guard let world, spec.rentPerModule != nil else { return nil }
-        return world.tenants.values.first { $0.room == room.id }?.name ?? "\(spec.name) · vacant"
+        return world.tenants.values.first { $0.room == room.id }?.name ?? "Vacant"
     }
 
     #if DEBUG

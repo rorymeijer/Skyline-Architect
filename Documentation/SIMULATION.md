@@ -1,9 +1,9 @@
 # Simulation
 
-Status: **FUNCTIONAL (Phases 4–7)** — clock, speeds, people with schedules, population sync,
-navigation graph with stair transfers and elevators, route cache, re-planning after
-construction, elevator cars, banks and dispatch strategies, patience. PLANNED: tenants and
-needs (8), economy (9).
+Status: **FUNCTIONAL (Phases 4–8)** — clock, speeds, people with schedules, tenants and a
+rental market (TENANTS.md), navigation graph with stair transfers and elevators, route
+cache, re-planning after construction, elevator cars, banks and dispatch strategies,
+patience. PLANNED: needs, economy (9).
 
 Code: `Packages/SkylineKit/Sources/SkylineSimulation` (logic) and `SkylineCore/People.swift`
 (saved state).
@@ -34,8 +34,9 @@ Code: `Packages/SkylineKit/Sources/SkylineSimulation` (logic) and `SkylineCore/P
 advance(world, n):
   target = clock + n
   structure changed / cars out of sync? → sync cars, re-plan invalidated trips
-  heap ← cars and people with nextEventTick ≤ target      (order: tick, cars, people, id)
+  heap ← market, cars and people with nextEventTick ≤ target   (order: tick, market, cars, people, id)
   while pop (tick, who):
+    market     → hourly prospects sign or decline; 06:00 tenant reviews/move-outs (TENANTS.md)
     car        → collective control step (ELEVATORS.md): alight, board, move or idle
     arrival with pendingRide → bank assigns a car (walk to its doors if another shaft);
                                place = waiting (queue), patience timer; wake the car if idle
@@ -53,9 +54,11 @@ advance(world, n):
   building, home or work room, traits seed (appearance + jitter).
 * Schedules (`schedules.json`): office workers arrive 08:15 ± 40 min, lunch out 12:15 ± 20,
   back 13:00 ± 15, leave 17:15 ± 45; residents commute out 07:45 ± 40 and return 18:15 ± 75.
-* Population sync (stand-in for Phase 8 tenants): rooms whose spec has `occupancy` get
-  that many people (offices 0.3 per module, studios 2 residents); demolished rooms'
-  occupants leave. Runs after every construction command and on load.
+  Phase 8 adds early offices (07:30–16:15), late offices (10:00–19:00), late commuters
+  (08:40 / 19:40) and retirees (two outings a day); each tenant type picks its schedules.
+* People belong to tenants (Phase 8, TENANTS.md); the Phase 4 automatic occupancy was
+  replaced. The population sync ends leases of demolished units after every construction
+  command and adopts people of older saves on load.
 
 ## Navigation (Phase 5)
 

@@ -2,6 +2,22 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.8.0] — Phase 8: Tenants + schedules
+
+### Added
+- **Tenants**: households and businesses with names, members, agreed rent and
+  satisfaction; six tenant types in `tenants.json`; rooms gain rent and noise.
+- **Rental market**: hourly prospects appraise vacant units (rent, access with measured
+  elevator waits, noise, view), sign or decline with a reason; daily reviews, move-outs.
+- **Schedules**: early and late offices, late commuters and retirees — traffic peaks spread.
+- **UI**: click a room to inspect it (tenant, criteria, or why a vacancy stays empty);
+  tenant names on rooms; Leasing panel (⌥⌘L) with occupancy, rent roll and market log;
+  developer "Lease All Vacant Units".
+- **Save format 5** (+ migration adopting existing people, golden fixture).
+
+### Changed
+- New buildings start empty; rooms are no longer filled automatically.
+
 ## [0.7.0] — Phase 7: Advanced elevator queues & dispatch
 
 ### Added
