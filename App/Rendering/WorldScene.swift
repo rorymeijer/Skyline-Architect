@@ -50,6 +50,11 @@ final class WorldScene: SKScene {
     /// Elevator traffic overlay data (nil = hidden). Asked every frame.
     var trafficProvider: (() -> ElevatorTraffic?)?
     private let trafficOverlay = TrafficOverlayNode()
+    /// Click without a tool (a room inspector request); nil cell = empty space.
+    var onSelect: ((GridCell?) -> Void)?
+    /// World rectangle of the selected room, outlined on screen.
+    var selectionRect: Rect? { didSet { overlayDirty = true } }
+    private let selectionOutline = SKShapeNode()
     var onCommit: ((BuildCommand) -> Void)?
     private var placementAnchor: GridCell?
     /// Camera placement to use when first presented (nil = site overview).
@@ -120,6 +125,11 @@ final class WorldScene: SKScene {
         addChild(navigationOverlay)
         trafficOverlay.zPosition = 12.5
         addChild(trafficOverlay)
+        selectionOutline.zPosition = 11
+        selectionOutline.strokeColor = SKColor(red: 1.0, green: 0.84, blue: 0.25, alpha: 1)
+        selectionOutline.fillColor = SKColor(red: 1.0, green: 0.84, blue: 0.25, alpha: 0.10)
+        selectionOutline.lineWidth = 2
+        addChild(selectionOutline)
         roomLabelLayer.zPosition = 13
         addChild(roomLabelLayer)
         placementOverlay.zPosition = 14
@@ -157,6 +167,11 @@ final class WorldScene: SKScene {
         placementAnchor = nil
         overlayDirty = true
         if let command = preview?.command, preview?.isValid == true { onCommit?(command) }
+    }
+
+    /// A click or tap without a tool: select what is under it.
+    func select(at point: CGPoint) {
+        onSelect?(cell(at: point))
     }
 
     func cancelPlacement() {
@@ -248,6 +263,13 @@ final class WorldScene: SKScene {
                                    hoverRect: activeTool == nil ? hoverCell().map { $0.rect } : nil)
             }
             roomLabelLayer.update(labels: roomLabelProvider?(camera.visibleRect, camera.zoom) ?? [], camera: camera)
+            if let r = selectionRect {
+                let a = camera.worldToScreen(Vec2(r.minX, r.minY)), b = camera.worldToScreen(Vec2(r.maxX, r.maxY))
+                selectionOutline.path = CGPath(rect: CGRect(x: a.x, y: a.y, width: b.x - a.x, height: b.y - a.y), transform: nil)
+                selectionOutline.isHidden = false
+            } else {
+                selectionOutline.isHidden = true
+            }
             updatePreview(camera: camera)
         }
         cameraDirty = false

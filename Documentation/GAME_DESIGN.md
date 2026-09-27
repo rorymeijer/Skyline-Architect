@@ -141,3 +141,13 @@ passengers per hour and how many people gave up and took the stairs. The traffic
 (⌥⌘T) shows every queue with its longest wait in green, amber or red. Express shafts run
 non-stop to a sky lobby where people change to a second bank, so towers can grow past the
 point where one bank is enough.
+
+## Phase 8 player experience (current)
+
+A new building starts empty. Prospective households and businesses come by every hour,
+look at the vacant units they could rent and sign if the unit is good enough for them —
+affordable, quick to reach from the street (including how long the elevators actually
+take), quiet and with a view that suits them. Clicking a room shows who lives or works
+there and how they rate it, or why nobody has taken it yet ("design studio: poor view").
+Tenants who become unhappy — for instance because their floor can no longer be reached —
+leave after three days. Rent is recorded but not yet charged (Phase 9).

@@ -64,5 +64,39 @@
   "Driessen",
   "Engel",
   "Fontaine"
+ ],
+ "businessWords": [
+  "Harbor",
+  "Northlight",
+  "Quayside",
+  "Copperfield",
+  "Meridian",
+  "Tidewater",
+  "Brightline",
+  "Ashgrove",
+  "Keystone",
+  "Lanternhill",
+  "Riverbend",
+  "Saltmarsh",
+  "Cobalt",
+  "Juniper",
+  "Halcyon",
+  "Beacon",
+  "Ironbridge",
+  "Westgate",
+  "Palisade",
+  "Foxglove"
+ ],
+ "businessSuffixes": [
+  "Partners",
+  "Analytics",
+  "Studio",
+  "Associates",
+  "Works",
+  "Collective",
+  "Advisory",
+  "Labs",
+  "Group",
+  "& Co."
  ]
 }

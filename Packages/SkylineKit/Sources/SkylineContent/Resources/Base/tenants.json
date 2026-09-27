@@ -1,0 +1,152 @@
+[
+ {
+  "id": "consultancy",
+  "name": "Consultancy",
+  "kind": "business",
+  "rooms": [
+   "office-small"
+  ],
+  "role": "worker",
+  "members": {
+   "perModule": 0.3
+  },
+  "schedules": [
+   "office-worker"
+  ],
+  "budgetPerModule": 460,
+  "weights": {
+   "rent": 0.25,
+   "access": 0.35,
+   "noise": 0.2,
+   "view": 0.2
+  },
+  "minScore": 0.6,
+  "leaveBelow": 0.45,
+  "prospectsPerDay": 3
+ },
+ {
+  "id": "design-studio",
+  "name": "Design studio",
+  "kind": "business",
+  "rooms": [
+   "office-small"
+  ],
+  "role": "worker",
+  "members": {
+   "perModule": 0.25
+  },
+  "schedules": [
+   "office-late"
+  ],
+  "budgetPerModule": 430,
+  "weights": {
+   "rent": 0.2,
+   "access": 0.15,
+   "noise": 0.3,
+   "view": 0.35
+  },
+  "minScore": 0.63,
+  "leaveBelow": 0.48,
+  "prospectsPerDay": 2
+ },
+ {
+  "id": "call-centre",
+  "name": "Call centre",
+  "kind": "business",
+  "rooms": [
+   "office-small"
+  ],
+  "role": "worker",
+  "members": {
+   "perModule": 0.45
+  },
+  "schedules": [
+   "office-early"
+  ],
+  "budgetPerModule": 400,
+  "weights": {
+   "rent": 0.5,
+   "access": 0.3,
+   "noise": 0.1,
+   "view": 0.1
+  },
+  "minScore": 0.55,
+  "leaveBelow": 0.4,
+  "prospectsPerDay": 2
+ },
+ {
+  "id": "couple",
+  "name": "Couple",
+  "kind": "household",
+  "rooms": [
+   "apartment-studio"
+  ],
+  "role": "resident",
+  "members": {
+   "fixed": 2
+  },
+  "schedules": [
+   "resident-commuter"
+  ],
+  "budgetPerModule": 260,
+  "weights": {
+   "rent": 0.3,
+   "access": 0.3,
+   "noise": 0.2,
+   "view": 0.2
+  },
+  "minScore": 0.62,
+  "leaveBelow": 0.46,
+  "prospectsPerDay": 4
+ },
+ {
+  "id": "single-professional",
+  "name": "Single professional",
+  "kind": "household",
+  "rooms": [
+   "apartment-studio"
+  ],
+  "role": "resident",
+  "members": {
+   "fixed": 1
+  },
+  "schedules": [
+   "resident-late"
+  ],
+  "budgetPerModule": 300,
+  "weights": {
+   "rent": 0.1,
+   "access": 0.45,
+   "noise": 0.25,
+   "view": 0.2
+  },
+  "minScore": 0.66,
+  "leaveBelow": 0.5,
+  "prospectsPerDay": 3
+ },
+ {
+  "id": "retired-couple",
+  "name": "Retired couple",
+  "kind": "household",
+  "rooms": [
+   "apartment-studio"
+  ],
+  "role": "resident",
+  "members": {
+   "fixed": 2
+  },
+  "schedules": [
+   "resident-retired"
+  ],
+  "budgetPerModule": 240,
+  "weights": {
+   "rent": 0.15,
+   "access": 0.35,
+   "noise": 0.4,
+   "view": 0.1
+  },
+  "minScore": 0.7,
+  "leaveBelow": 0.52,
+  "prospectsPerDay": 1.5
+ }
+]

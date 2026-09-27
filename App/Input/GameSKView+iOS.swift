@@ -30,10 +30,11 @@ final class GameSKView: SKView, UIGestureRecognizerDelegate {
         addGestureRecognizer(tap)
     }
 
-    /// With a tool active, a tap places at the default size.
+    /// With a tool active, a tap places at the default size; otherwise it selects.
     @objc private func handleTap(_ g: UITapGestureRecognizer) {
-        guard let worldScene, worldScene.activeTool != nil else { return }
+        guard let worldScene else { return }
         let p = scenePoint(g)
+        guard worldScene.activeTool != nil else { worldScene.select(at: p); return }
         worldScene.beginPlacement(at: p)
         worldScene.endPlacement(at: p)
     }

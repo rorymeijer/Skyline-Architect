@@ -65,7 +65,11 @@ Strategy interface with several algorithms (collective, zoning, destination disp
 banks, express/local, sky lobbies/transfers, service/freight cars, statistics (avg/max
 wait, passengers/hour, abandonment), elevator traffic overlay.
 
-### Phase 8 — Tenants + schedules
+### Phase 8 — Tenants + schedules ✅ (2026-09-27)
+Delivered: tenant types, deterministic market (rent, access with measured elevator waits, noise,
+view), reviews and move-outs, varied schedules, inspector and leasing panel. Amenities arrive with
+retail/services room types; rent is charged in Phase 9.
+
 Households and businesses choose space (rent, accessibility, elevator wait, noise,
 amenities); daily schedules generate traffic (morning up-peak, lunch, evening down-peak).
 

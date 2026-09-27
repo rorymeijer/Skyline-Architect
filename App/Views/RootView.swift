@@ -52,12 +52,20 @@ struct ChromeOverlay: View {
             ViewControls(model: model)
                 .padding(12)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            if model.showBanksPanel {
-                ElevatorBanksPanel(model: model)
-                    .padding(.top, 60)
-                    .padding(.trailing, 12)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            VStack(alignment: .trailing, spacing: 8) {
+                if let report = model.unitReport {
+                    UnitInspector(report: report) { model.selectRoom(at: nil) }
+                }
+                if model.showLeasingPanel {
+                    LeasingPanel(summary: model.leasing) { model.showLeasingPanel = false }
+                }
+                if model.showBanksPanel {
+                    ElevatorBanksPanel(model: model)
+                }
             }
+            .padding(.top, 60)
+            .padding(.trailing, 12)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             SimulationControls(model: model)
                 .padding(.top, 12)
                 .frame(maxWidth: .infinity, alignment: .top)
@@ -79,7 +87,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · Sandbox · Phase 7 preview")
+            Text("\(model.cityName) · Sandbox · Phase 8 preview")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -108,6 +116,7 @@ struct ViewControls: View {
             ControlButton(symbol: "square.grid.3x3", help: "Architectural Grid (G, ⌥⌘G)", isOn: model.showGrid) { model.toggleGrid() }
             ControlButton(symbol: "arrow.up.arrow.down", help: "Elevator Traffic (⌥⌘T)", isOn: model.showTraffic) { model.showTraffic.toggle() }
             ControlButton(symbol: "slider.horizontal.3", help: "Elevator Banks (⌥⌘E)", isOn: model.showBanksPanel) { model.showBanksPanel.toggle() }
+            ControlButton(symbol: "key", help: "Leasing (⌥⌘L)", isOn: model.showLeasingPanel) { model.showLeasingPanel.toggle() }
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 4)

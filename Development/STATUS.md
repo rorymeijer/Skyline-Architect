@@ -1,55 +1,55 @@
 # Development Status
 
-_Last updated: 2026-09-27 (Phase 7)_
+_Last updated: 2026-09-27 (Phase 8)_
 
 ## Current phase
-**Phase 7 — Advanced elevator queues & dispatch: COMPLETE** (awaiting approval to start Phase 8).
+**Phase 8 — Tenants + schedules: COMPLETE** (awaiting approval to start Phase 9).
 
 ## Current milestone
-M1 “First Playable” (end of Phase 9) — Phases 1–7 of 9 done.
+M1 “First Playable” (end of Phase 9) — Phases 1–8 of 9 done.
 
-## Quality gates (Phase 7)
+## Quality gates (Phase 8)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36339081561 |
-| Automated tests pass | ✅ | 161 tests (Linux + macOS) incl. bank detection, strategy adoption, all three strategies serve the sky tower, sky-lobby transfer, zoning zones, destination grouping in a peak, patience/abandonment, statistics, traffic data, save v3→v4 + v4 fixture |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36341716790 |
+| Automated tests pass | ✅ | 172 tests (Linux + macOS) incl. tenant model, adoption of old populations, appraisal criteria, market fill (reproducible), move-outs when units become unreachable, satisfied tenants stay, reports, content validation, save v4→v5 + v5 fixture |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 7 captures in `Development/Screenshots/Phase-07/` |
+| Feature demonstrable | ✅ | 7 captures in `Development/Screenshots/Phase-08/` |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | ELEVATORS (Phase 7 + measurements), SIMULATION, SAVE_FORMAT v4, MODDING, ARCHITECTURE, DECISIONS D-027/D-028, PERFORMANCE, CHANGELOG 0.7.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | label overlap, clipping, badge clutter and framing fixed, recaptured |
+| Documentation updated | ✅ | TENANTS.md (new), SIMULATION, SAVE_FORMAT v5, MODDING, ARCHITECTURE, DECISIONS D-029/D-030, PERFORMANCE, CHANGELOG 0.8.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | vacant labels and log flooding found, fixed, recaptured |
 | Known issues recorded | ✅ | below |
 
 ## Completed
-- Phases 0–6 (merged: rorymeijer/Skyline-Architect#1 … #6).
-- Phase 7 (FUNCTIONAL): derived elevator banks; call assignment at the landing by strategy
-  (collective ETA, zoning, destination grouping); express shafts stopping at their ends,
-  sky lobby room type and `demo-skytower`; patience with stairs fallback and abandonment
-  counts; per-car statistics; traffic overlay (⌥⌘T) and Elevator Banks panel (⌥⌘E) with
-  strategy choice; save format 4.
+- Phases 0–7 (merged: rorymeijer/Skyline-Architect#1 … #7).
+- Phase 8 (FUNCTIONAL): tenants (households/businesses) from `tenants.json`; rooms with
+  rent and noise; deterministic hourly market with appraisal (rent, access incl. measured
+  elevator waits, noise, view), signing/declining with reasons; daily reviews and
+  move-outs; four new schedules; unit inspector (click), tenant labels, Leasing panel
+  (⌥⌘L), developer lease-all; save format 5 with adoption of existing people.
 
 ## In progress
-- Nothing. Waiting for Phase 8 approval.
+- Nothing. Waiting for Phase 9 approval.
 
 ## Known bugs / unverified
-- Interactive input (panel buttons, ⌥⌘T/⌥⌘E) not exercised by a human; iPad never launched.
-- Strategies differ little at current traffic levels (measured, ELEVATORS.md); destination
-  dispatch only slightly reduces stops in a sharp peak.
-- Assignments are never revised; calls during motion wait for the next stop.
-- Riders drawn in front of car doors; queues can overlap a stopped cab (cutaway convention).
-- Service/freight cars deferred to Phase 10 (need staff).
+- Clicking rooms, the inspector and ⌥⌘L not exercised by a human; iPad never launched.
+- Market balance: the demo tower fills within ~1 day; rates/budgets to be tuned with the
+  economy. Rent is recorded, not charged.
+- People of a tenant who moves out vanish immediately (no leaving walk).
+- Long tenant names only show when zoomed in; no amenities criterion yet (retail later).
 
 ## Technical debt
-- Call assignment recomputes banks and scans people per call; car decisions scan waiting
-  people (fine at 175–354 people; index per landing if profiling shows it, Phase 19).
-- Structure signature and elevator sync check every step (O(rooms)).
-- `PopulationSync` is a stand-in for Phase 8 tenants; simulation on the main thread.
+- Market appraisal cost with many vacancies is unmeasured (route plans cached).
+- Call assignment/car decisions scan people; signature and sync checks per step (O(rooms)).
+- Simulation on the main thread.
 
-## Next tasks (Phase 8 — Tenants + schedules)
-1. Tenant model: households and businesses renting units (replacing PopulationSync).
-2. Choice model: rent, accessibility (measured elevator waits), noise, amenities; vacancy.
-3. Richer schedules and daily traffic patterns (lunch, visitors); up/down peaks per tenant type.
-4. Tenant info in the UI (unit inspector), save format bump.
+## Next tasks (Phase 9 — Economy + basic day/night → M1 First Playable)
+1. Ledger with traceable transactions: rent collection, construction costs charged,
+   maintenance, utilities; balance and bankruptcy.
+2. Configurable rents (per unit or building) feeding tenant appraisal.
+3. Economy panel (income/expenses by source, cash flow).
+4. Basic day/night: sky, ambient tint, lit windows at night.
+5. Main menu (new game, continue, load) and the M1 checklist (§38).
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,

@@ -25,6 +25,7 @@ struct SimFixture {
         building = b.id
         engine = SimulationEngine(rules: library.simulationRules, catalog: library.buildCatalog)
         PopulationSync.sync(&world, catalog: library.buildCatalog, rules: library.simulationRules)
+        Leasing.fillAll(&world, catalog: library.buildCatalog, rules: library.simulationRules)
     }
 
     /// Advance to a time of day ("HH:MM") on day 0 (or later day).

@@ -49,6 +49,16 @@ presentation style (`office`, `apartment`, `lobby`, `corridor`, `stairs`, `eleva
 ids, sane ranges, shafts span ≥ 2 floors, non-negative costs. The build palette shows
 every definition automatically — a mod adding a room type needs no code.
 
+### Rooms: rent and noise (rooms.json)
+`rentPerModule` (monthly asking rent per module; makes the room rentable) and `noise`
+(0…1 emitted to neighbours). The Phase 4–7 `occupancy` field was replaced by tenant types.
+
+### TenantType (tenants.json)
+`id, name, kind ("household" | "business"), rooms [room ids with rentPerModule], role,
+members {fixed | perModule}, schedules [schedule ids of that role], budgetPerModule,
+weights {rent, access, noise, view}, minScore, leaveBelow, prospectsPerDay`. See TENANTS.md.
+`names.json` may add `businessWords` and `businessSuffixes` for business names.
+
 ### ElevatorSpec (elevators.json)
 `room` (elevator shaft room id), `name, capacity, speed (m/s), acceleration (m/s²),
 doorSeconds, transferSeconds (per person), expectedWaitSeconds` (the waiting time route

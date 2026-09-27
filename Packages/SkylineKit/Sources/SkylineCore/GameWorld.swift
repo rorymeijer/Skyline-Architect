@@ -72,6 +72,10 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var people = EntityStore<Person>()
     /// Elevator cars, one per elevator shaft (Phase 6). Mutated only by the simulation.
     public var elevators = EntityStore<ElevatorCar>()
+    /// Households and businesses renting units (Phase 8). Mutated only by the simulation.
+    public var tenants = EntityStore<Tenant>()
+    /// Rental market state (Phase 8).
+    public var market = MarketState()
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()
@@ -131,6 +135,9 @@ public struct GameWorld: Codable, Sendable, Equatable {
 
     /// Allocates a fresh person id (used by the simulation's population system).
     public mutating func makePersonID() -> PersonID { ids.make() }
+
+    /// Allocates a fresh tenant id (used by the simulation's leasing system).
+    public mutating func makeTenantID() -> TenantID { ids.make() }
 
     /// Rooms of a building, in placement order.
     public func rooms(in buildingID: BuildingID) -> [Room] {

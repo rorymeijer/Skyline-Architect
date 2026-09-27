@@ -43,6 +43,7 @@ do {
         let parts = time.split(separator: ":").compactMap { Tick($0) }
         guard parts.count == 2 else { fail("--time expects HH:MM") }
         PopulationSync.sync(&game.world, catalog: catalog, rules: library.simulationRules)
+        Leasing.fillAll(&game.world, catalog: catalog, rules: library.simulationRules)
         let target = parts[0] * 3600 + parts[1] * 60
         let ticks = target >= SimClock.startSecondOfDay ? target - SimClock.startSecondOfDay : target + 86_400 - SimClock.startSecondOfDay
         SimulationEngine(rules: library.simulationRules, catalog: catalog).advance(&game.world, by: ticks)
