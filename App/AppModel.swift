@@ -50,6 +50,11 @@ final class AppModel {
     var facilities = FacilitiesSummary()
     var showFacilitiesPanel = false
     var showServices = false
+    /// Class and reputation (Phase 11, 4 Hz), progress panel and the latest promotion.
+    var progression = ProgressionSummary()
+    var showProgressPanel = false
+    var promotionNotice: String?
+    @ObservationIgnored var seenPromotions: Int?
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 
@@ -124,14 +129,15 @@ final class AppModel {
 
     // MARK: Game lifecycle
 
-    private func startNewGame() throws {
+    private func startNewGame(startID: String = NewGameFactory.defaultStartID) throws {
         guard let library else { return }
-        let game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: library)
+        let game = try NewGameFactory.make(startID: startID, library: library)
         install(world: game.world, activePropertyID: game.activePropertyID)
     }
 
-    func newGame() {
-        do { try startNewGame() } catch { alert = AppAlert(title: "Could not start a new game", message: "\(error)") }
+    /// A new game from a start (default: the standard game, unlocks by building class).
+    func newGame(startID: String = NewGameFactory.standardStartID) {
+        do { try startNewGame(startID: startID) } catch { alert = AppAlert(title: "Could not start a new game", message: "\(error)") }
     }
 
     /// Replaces the world and builds a fresh scene for it.
@@ -142,6 +148,8 @@ final class AppModel {
         self.world = world
         self.activePropertyID = activePropertyID
         showMainMenu = false
+        seenPromotions = nil
+        promotionNotice = nil
         let property = world.properties[activePropertyID]
         propertyName = property?.name ?? "—"
         cityName = property.flatMap { world.cities[$0.cityID]?.name } ?? "—"

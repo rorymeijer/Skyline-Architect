@@ -56,6 +56,9 @@ struct ChromeOverlay: View {
                 if let report = model.unitReport {
                     UnitInspector(report: report) { model.selectRoom(at: nil) }
                 }
+                if model.showProgressPanel {
+                    ProgressPanel(model: model)
+                }
                 if model.showEconomyPanel {
                     EconomyPanel(model: model)
                 }
@@ -72,9 +75,14 @@ struct ChromeOverlay: View {
             .padding(.top, 60)
             .padding(.trailing, 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            SimulationControls(model: model)
-                .padding(.top, 12)
-                .frame(maxWidth: .infinity, alignment: .top)
+            VStack(spacing: 8) {
+                SimulationControls(model: model)
+                if let notice = model.promotionNotice {
+                    PromotionBanner(text: notice) { model.promotionNotice = nil }
+                }
+            }
+            .padding(.top, 12)
+            .frame(maxWidth: .infinity, alignment: .top)
             VStack(spacing: 8) {
                 StatusPill(model: model)
                 BuildPalette(model: model)
@@ -98,7 +106,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · Sandbox · Phase 10")
+            Text("\(model.cityName) · \(model.progression.byClass ? "Standard" : "Sandbox") · Phase 11")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -127,6 +135,7 @@ struct ViewControls: View {
             ControlButton(symbol: "square.grid.3x3", help: "Architectural Grid (G, ⌥⌘G)", isOn: model.showGrid) { model.toggleGrid() }
             ControlButton(symbol: "arrow.up.arrow.down", help: "Elevator Traffic (⌥⌘T)", isOn: model.showTraffic) { model.showTraffic.toggle() }
             ControlButton(symbol: "slider.horizontal.3", help: "Elevator Banks (⌥⌘E)", isOn: model.showBanksPanel) { model.showBanksPanel.toggle() }
+            ControlButton(symbol: "rosette", help: "Standing (⌥⌘P)", isOn: model.showProgressPanel) { model.showProgressPanel.toggle() }
             ControlButton(symbol: "key", help: "Leasing (⌥⌘L)", isOn: model.showLeasingPanel) { model.showLeasingPanel.toggle() }
             ControlButton(symbol: "banknote", help: "Economy (⌥⌘M)", isOn: model.showEconomyPanel) { model.showEconomyPanel.toggle() }
             ControlButton(symbol: "wrench.and.screwdriver", help: "Facilities (⌥⌘F)", isOn: model.showFacilitiesPanel) { model.showFacilitiesPanel.toggle() }

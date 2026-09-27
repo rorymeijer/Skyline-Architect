@@ -173,4 +173,19 @@ struct StandardFixture {
         #expect(f.standing.classLevel == 1)
         try f.world.validateIntegrity()
     }
+
+    @Test func summaryShowsTheWayToTheNextClass() throws {
+        var f = try StandardFixture(leased: true)
+        f.setStanding(reputation: 40)
+        let s = ProgressionSummary.make(world: f.world, engine: f.engine, building: f.building)
+        #expect(s.byClass && s.className == "Class C" && s.nextClassName == "Class B" && s.maxFloor == 12)
+        #expect(s.requirements.map(\.met) == [true, false, true])
+        #expect(s.nextUnlocks == ["Service Elevator", "Design studio tenants", "Single professional tenants", "Floors up to 25"])
+        #expect(s.lockedRooms["service-elevator"] == "Class B" && s.lockedRooms["sky-lobby"] == "Class A")
+        #expect(s.assessment != nil)
+        f.world.unlocks = .all
+        let sandbox = ProgressionSummary.make(world: f.world, engine: f.engine, building: f.building)
+        #expect(!sandbox.byClass && sandbox.lockedRooms.isEmpty && sandbox.maxFloor == nil)
+    }
 }
+

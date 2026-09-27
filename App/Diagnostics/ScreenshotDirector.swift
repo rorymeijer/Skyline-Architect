@@ -56,82 +56,78 @@ final class ScreenshotDirector {
     private var started = false
 
     let steps: [Step] = [
-        Step(name: "01-equipment-rooms", grid: false) { model, scene in
+        Step(name: "01-main-menu", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            model.applyBlueprint("demo-tower")
-            model.leaseAllVacant()
             model.showDeveloperHUD = false
-            model.refreshSimulationSummary()
+            model.showMainMenu = true
+            return "Main menu: New Game (standard, unlocks by building class) and New Sandbox (everything unlocked)."
+        },
+        Step(name: "02-standard-start", grid: false) { model, scene in
+            model.startFromMenu()
+            model.setSpeed(.paused)
+            model.showProgressPanel = true
             if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first {
-                scene.withController { $0.jump(center: Vec2(Double(b.footprint.start) + 16, -1.6), zoom: 30) }
+                // A new game builds a new scene: move its camera, not the old one's.
+                model.scene?.withController { $0.jump(center: Vec2(Double(b.footprint.start) + 16, 8), zoom: 14) }
             }
-            return "Basement plant: electrical room, telecom room, mechanical room; \(model.facilities.utilities.map { "\($0.name) \(Int($0.supply))/\(Int($0.demand))" }.joined(separator: ", "))."
+            model.refreshSimulationSummary()
+            let p = model.progression
+            return "Standard game: \(p.className), reputation \(Int(p.reputation)), floors up to \(p.maxFloor.map(String.init) ?? "∞"); " +
+                "locked: \(p.lockedRooms.keys.sorted().joined(separator: ", "))."
         },
-        Step(name: "02-services-ok", grid: false) { model, scene in
-            model.showServices = true
-            model.showFacilitiesPanel = true
-            model.advanceSimulation(toTimeOfDay: 10, minute: 0)
+        Step(name: "03-class-c-tower", grid: false) { model, scene in
+            model.applyBlueprint("demo-tower")
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            return "\(model.clockText): services overlay — every room supplied, clean and sound (green)."
+            return "Demo tower built in class C: " + ScreenshotDirector.requirements(model.progression) + "."
         },
-        Step(name: "03-neglect", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 5 * SimClock.secondsPerDay)
+        Step(name: "04-first-tenants", grid: false) { model, scene in
+            model.advanceSimulation(ticks: 2 * SimClock.secondsPerDay + 4 * 3600)
             model.refreshSimulationSummary()
-            let s = model.facilities
-            return "\(model.clockText), no staff for 5 days: \(s.openCleaning) cleaning jobs open, cleanliness \(Int(s.averageCleanliness * 100)) %, condition \(Int(s.averageCondition * 100)) %."
+            let p = model.progression
+            return "\(model.clockText): \(model.leasing.leased)/\(model.leasing.units) units let, reputation \(Int(p.reputation)); " +
+                ScreenshotDirector.requirements(p) + "."
         },
-        Step(name: "04-janitors-at-work", grid: false) { model, scene in
-            model.showServices = false
-            model.showFacilitiesPanel = false
-            model.changeStaff(.janitor, by: 1)
-            model.changeStaff(.janitor, by: 1)
-            // Hired mid-shift they start at once; by the next morning the backlog is gone.
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 4 * 3600, step: 30) { world in
-                ScreenshotDirector.staffAtWork(.janitor, in: world) == nil ? 0 : 1
-            })
-            let at = model.world.flatMap { ScreenshotDirector.staffAtWork(.janitor, in: $0) }
-            if let p = at { scene.withController { $0.jump(center: p + Vec2(0, 1.6), zoom: 40) } }
+        Step(name: "05-promotion", grid: false) { model, scene in
+            var days = 0
+            while model.progression.classLevel == 0 && days < 12 {
+                model.advanceSimulation(toTimeOfDay: 6, minute: 5)
+                model.refreshSimulationSummary()
+                days += 1
+            }
+            model.advanceSimulation(toTimeOfDay: 9)
             model.refreshSimulationSummary()
-            return "\(model.clockText): two janitors hired; cleaning a room (teal coveralls): \(at != nil); \(model.facilities.cleaned) rooms cleaned so far."
+            return "\(model.clockText): \(model.progression.className) after \(days) more closing(s); banner: \(model.promotionNotice ?? "none")."
         },
-        Step(name: "05-plant-failure", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 20 * SimClock.secondsPerDay)
-            model.showServices = true
-            model.showFacilitiesPanel = true
+        Step(name: "06-taller-than-class-c", grid: false) { model, scene in
+            model.promotionNotice = nil
+            var built: [Int] = []
+            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
+               let top = b.builtLevels?.highest, let span = b.plate(at: top)?.span {
+                for level in (top + 1)...13 where model.perform(.buildFloor(building: b.id, level: level, span: span)) { built.append(level) }
+            }
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            let s = model.facilities
-            return "\(model.clockText), no technician: \(s.brokenEquipment) equipment rooms out of order; " +
-                s.utilities.map { "\($0.name) \($0.shortRooms) rooms short" }.joined(separator: ", ") +
-                "; tenants \(model.leasing.leased)/\(model.leasing.units), moved out \(model.leasing.market.movedOut)."
+            scene.withController { $0.jump(center: Vec2(22, 30), zoom: 11.5) }
+            return "Floors built after the promotion: \(built.map(String.init).joined(separator: ", ")) (floor 13 needs class B); " +
+                "limit now floor \(model.progression.maxFloor.map(String.init) ?? "∞")."
         },
-        Step(name: "06-technician-repairs", grid: false) { model, scene in
-            model.changeStaff(.technician, by: 1)                      // mid-shift: starts at once
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 5 * 3600, step: 60) { world in
-                ScreenshotDirector.staffAtWork(.technician, in: world) == nil ? 0 : 1
-            })
-            model.refreshSimulationSummary()
-            let at = model.world.flatMap { ScreenshotDirector.staffAtWork(.technician, in: $0) }
-            if let p = at { scene.withController { $0.jump(center: p + Vec2(0, 1.6), zoom: 34) } }
-            return "\(model.clockText): technician hired and repairing (orange coveralls): \(at != nil); repaired so far \(model.facilities.repaired)."
-        },
-        Step(name: "07-restored", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 18, minute: 0)
+        Step(name: "07-reputation-falls", grid: false) { model, scene in
+            let before = model.progression.reputation
+            model.adjustRentLevel(by: 0.6)
+            model.advanceSimulation(ticks: 6 * SimClock.secondsPerDay)
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            let s = model.facilities
-            return "\(model.clockText): \(s.brokenEquipment) out of order, \(s.repaired) repairs, \(s.cleaned) cleanings; wages \(s.wagesPerDay)/day."
+            return "\(model.clockText), rent level \(String(format: "%.1f", model.economy.rentLevel)): reputation \(Int(before)) → " +
+                "\(Int(model.progression.reputation)), moved out \(model.leasing.market.movedOut); still \(model.progression.className)."
         },
         Step(name: "08-save-load-roundtrip", grid: false) { model, scene in
-            model.showServices = false
-            model.showFacilitiesPanel = false
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")
             let identical = before != nil && before == model.world
             model.refreshSimulationSummary()
-            return "Saved and reloaded with staff, jobs and upkeep: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical)"
+            return "Saved and reloaded with class and reputation: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical), " +
+                "\(model.progression.className) \(Int(model.progression.reputation))"
         },
     ]
 

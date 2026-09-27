@@ -1,6 +1,7 @@
 #if DEBUG
 import Foundation
 import SkylineCore
+import SkylineSimulation
 
 /// Scenario helpers for the Phase 6 (elevator) captures.
 extension ScreenshotDirector {
@@ -49,6 +50,12 @@ extension ScreenshotDirector {
             return Vec2(x, world.grid.y(ofFloor: room.floors.lowest))
         }
         return nil
+    }
+
+    /// "Population 12/35 ✗, …" for the next class's requirements.
+    static func requirements(_ p: ProgressionSummary) -> String {
+        guard let next = p.nextClassName else { return "highest class" }
+        return "next \(next): " + p.requirements.map { "\($0.label) \(Int($0.current))/\(Int($0.needed)) \($0.met ? "✓" : "✗")" }.joined(separator: ", ")
     }
 
     /// A grid cell inside a room (for selecting it like a click would).

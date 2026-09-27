@@ -1,4 +1,5 @@
 import Foundation
+import SkylineContent
 import SkylineCore
 import SkylinePersistence
 import SkylineSimulation
@@ -43,8 +44,8 @@ extension AppModel {
         setSpeed(.normal)
     }
 
-    func startFromMenu() {
-        newGame()
+    func startFromMenu(startID: String = NewGameFactory.standardStartID) {
+        newGame(startID: startID)
         showMainMenu = false
         setSpeed(.normal)
     }

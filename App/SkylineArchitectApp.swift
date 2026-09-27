@@ -1,4 +1,5 @@
 import SwiftUI
+import SkylineContent
 import SkylinePresentation
 
 @main
@@ -29,6 +30,7 @@ struct GameCommands: Commands {
         CommandGroup(replacing: .newItem) {
             Button("New Game") { model.newGame() }
                 .keyboardShortcut("n", modifiers: .command)
+            Button("New Sandbox Game") { model.newGame(startID: NewGameFactory.defaultStartID) }
         }
         CommandGroup(replacing: .saveItem) {
             Button("Save") { model.save() }
@@ -65,6 +67,8 @@ struct GameCommands: Commands {
                 .keyboardShortcut("e", modifiers: [.command, .option])
             Button(model.showLeasingPanel ? "Hide Leasing" : "Show Leasing") { model.showLeasingPanel.toggle() }
                 .keyboardShortcut("l", modifiers: [.command, .option])
+            Button(model.showProgressPanel ? "Hide Standing" : "Show Standing") { model.showProgressPanel.toggle() }
+                .keyboardShortcut("p", modifiers: [.command, .option])
             Button(model.showEconomyPanel ? "Hide Economy" : "Show Economy") { model.showEconomyPanel.toggle() }
                 .keyboardShortcut("m", modifiers: [.command, .option])
             Button(model.showFacilitiesPanel ? "Hide Facilities" : "Show Facilities") { model.showFacilitiesPanel.toggle() }
