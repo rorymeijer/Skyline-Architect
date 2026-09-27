@@ -1,55 +1,58 @@
 # Development Status
 
-_Last updated: 2026-09-27 (Phase 4)_
+_Last updated: 2026-09-27 (Phase 5)_
 
 ## Current phase
-**Phase 4 — Basic people simulation: COMPLETE** (awaiting approval to start Phase 5).
+**Phase 5 — Navigation / pathfinding: COMPLETE** (awaiting approval to start Phase 6).
 
 ## Current milestone
-M1 “First Playable” (end of Phase 9) — Phases 1–4 of 9 done.
+M1 “First Playable” (end of Phase 9) — Phases 1–5 of 9 done.
 
-## Quality gates (Phase 4)
+## Quality gates (Phase 5)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36328915766 (`35bab60`) |
-| Automated tests pass | ✅ | 124 tests (Linux + macOS) incl. daily rhythm, stairs usage, unreachable floors, determinism across batch sizes, save v1→v2 migration, v2 golden fixture |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36332717554 |
+| Automated tests pass | ✅ | 136 tests (Linux + macOS) incl. transfers, unreachable, cache hits/invalidation, cache-independence of outcomes, re-planning (replaced / removed stairwell, automatic in `advance`), overlay, 200-floor scale day |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 7 captures in `Development/Screenshots/Phase-04/` |
+| Feature demonstrable | ✅ | 6 captures in `Development/Screenshots/Phase-05/` |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | SIMULATION (rewritten), SAVE_FORMAT v2, ARCHITECTURE, DECISIONS D-019…D-022, CHANGELOG |
-| Screenshots produced & inspected | ✅ | 1 capture-script issue found and fixed |
+| Documentation updated | ✅ | SIMULATION (Navigation), ARCHITECTURE, DECISIONS D-023/D-024, PERFORMANCE, CHANGELOG 0.5.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | framing/badge issues found and fixed, recaptured |
 | Known issues recorded | ✅ | below |
 
 ## Completed
-- Phases 0–3 (merged: rorymeijer/Skyline-Architect#1, #2, #3).
-- Phase 4 (FUNCTIONAL): `SkylineSimulation` module — fixed-tick clock, speeds as ticks per
-  second, event-driven engine with analytic trips, schedules and names from content,
-  population sync from room occupancy, street→entrance→stairwell routes with unreachable
-  detection; person figures with walk cycle, render LOD and culling; speed/clock/population
-  UI; save format 2 with migration.
+- Phases 0–4 (merged: rorymeijer/Skyline-Architect#1, #2, #3, #4).
+- Phase 5 (FUNCTIONAL): `NavigationGraph` (stair portals per served floor, walk links along
+  floors, transfers), deterministic Dijkstra, `NavigationService` with exact-key route cache
+  and structure-signature invalidation, metrics; re-planning of invalidated trips after
+  construction (app commit + automatic in `advance`); Debug navigation overlay (⌥⌘N) and
+  HUD metrics. Scale: 200 floors / 1 194 people, one day at 10× in 68 ms (release).
 
 ## In progress
-- Nothing. Waiting for Phase 5 approval.
+- Nothing. Waiting for Phase 6 approval.
 
 ## Known bugs / unverified
-- Interactive input and live speed changes not yet exercised by a human; iPad never launched.
-- People already mid-trip when construction changes finish their old trip (possibly through a
-  removed floor) — re-planning arrives with Phase 5 route invalidation.
+- Interactive input (incl. ⌥⌘N) not yet exercised by a human; iPad never launched.
+- Walking ignores interior partitions and shaft walls on a floor (derived walls, D-014/D-023).
+- Stairs have unlimited capacity (no congestion) — queues arrive with elevators (Phase 6–7).
+- Stranded people go "outside" instantly when no route remains (no walking animation for it).
 - People stand in rooms; no sitting/lying animation.
 
 ## Technical debt
-- `RoutePlanner` is a Phase 4 stand-in (single stairwell); replaced by the Phase 5 navigation graph.
+- Structure signature is recomputed every simulation step (O(rooms of the building));
+  replace with a construction revision counter if profiling shows cost (Phase 19).
+- Route cache is cleared wholesale at 4 096 entries per building (simple, deterministic).
 - `PopulationSync` is a stand-in for Phase 8 tenants.
 - Simulation runs on the main thread (fine at this scale; background host in Phase 19).
 - Earlier items: O(rooms) construction checks, no skyline parallax, CI JPEG commits.
 
-## Next tasks (Phase 5 — Navigation / pathfinding)
-1. Navigation graph: per-floor walk segments (plates, room doors) + vertical transport edges
-   (stairwells now; elevator banks in Phase 6) with transfers between shafts.
-2. Hierarchical search (floor graph + transport graph), route cache keyed by building
-   revision, invalidation on construction, re-planning of people mid-trip.
-3. Path debug overlay (developer mode) and pathfinding metrics in the HUD.
-4. Tests: multi-stairwell transfers, unreachable detection, cache invalidation, determinism.
+## Next tasks (Phase 6 — First functioning elevators)
+1. Elevator model: cars per shaft, served floors, capacity, speed/acceleration, doors and
+   boarding time; state saved (save format 3 + migration + fixture).
+2. Hall calls, floor queues, collective-control dispatch; waiting as events.
+3. Navigation: elevator edge kind with expected-wait cost; people choose stairs vs. elevator.
+4. Rendering: moving cars, doors, people waiting/boarding/riding/leaving; HUD wait metrics.
+5. Tests: dispatch correctness, capacity, determinism across speeds, save round trip.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,

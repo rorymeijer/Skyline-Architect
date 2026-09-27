@@ -44,7 +44,8 @@ struct ChromeOverlay: View {
             VStack(alignment: .leading, spacing: 10) {
                 TitleBadge(model: model)
                 if model.showDeveloperHUD {
-                    DevHUDView(diagnostics: model.diagnostics, population: model.population, simulationMs: model.lastSimulationMs)
+                    DevHUDView(diagnostics: model.diagnostics, population: model.population, simulationMs: model.lastSimulationMs,
+                               navigation: model.navigationMetrics)
                 }
             }
             .padding(12)
@@ -72,7 +73,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · Sandbox · Phase 4 preview")
+            Text("\(model.cityName) · Sandbox · Phase 5 preview")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

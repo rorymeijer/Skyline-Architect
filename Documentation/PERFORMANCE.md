@@ -40,6 +40,14 @@ camera center · cursor cell. Screenshot capture writes the same values into
 
 | 2026-09-27 | 0.4.0 (1) Debug | GitHub macos-15 runner, 1×, 60 Hz | 38 people, morning rush, 10.4 pt/m | 59 fps, scene update 0.26 ms, simulation 0.25 ms/frame, 14 people drawn |
 
+| 2026-09-27 | 0.5.0 package, release (`swift test -c release`) | Linux cloud container | 200 floors, 10 stair segments (every trip above floor 20 transfers), 1 194 workers, one game day at 10× (360 steps of 240 ticks) | 68 ms for the whole day (0.19 ms per step, incl. signature check); 4 364 path queries, 1 978 cache hits, 1 graph build (209 portals, 416 links) |
+| 2026-09-27 | same, debug | same | same | 0.60–0.69 s per day (1.7–1.9 ms per step) |
+
+Observations (Phase 5): navigation cost is dominated by first-day misses; Dijkstra over a
+few hundred portals is microseconds. The per-step structure signature is O(rooms of the
+building) and included above. The in-app overlay is Debug-only and rebuilt per frame
+while visible (not a release cost).
+
 Observations (Phase 4): the event-driven simulation costs ~0.1–0.3 ms per frame for 38
 people; people are drawn as pooled sprites with cached figure textures. Scale test with
 thousands of people is scheduled with the navigation work (Phase 5) and Phase 19.

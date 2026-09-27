@@ -1,8 +1,8 @@
 # Simulation
 
-Status: **FUNCTIONAL (Phase 4 subset)** — clock, speeds, people with schedules, routes via
-stairs, population sync. PLANNED: navigation graph (Phase 5), elevators (6–7), tenants and
-needs (8), economy (9).
+Status: **FUNCTIONAL (Phases 4–5)** — clock, speeds, people with schedules, population sync,
+navigation graph with stair transfers, route cache, re-planning after construction.
+PLANNED: elevators (6–7), tenants and needs (8), economy (9).
 
 Code: `Packages/SkylineKit/Sources/SkylineSimulation` (logic) and `SkylineCore/People.swift`
 (saved state).
@@ -32,6 +32,7 @@ Code: `Packages/SkylineKit/Sources/SkylineSimulation` (logic) and `SkylineCore/P
 ```
 advance(world, n):
   target = clock + n
+  structure changed since the last step? → re-plan invalidated trips (see Navigation)
   heap ← people with nextEventTick ≤ target
   while pop (tick, id):
     arrival?   → place = destination; schedule next goal
@@ -51,18 +52,60 @@ advance(world, n):
   that many people (offices 0.3 per module, studios 2 residents); demolished rooms'
   occupants leave. Runs after every construction command and on load.
 
-## Routing (Phase 4 minimum)
+## Navigation (Phase 5)
 
-Street (14 m left of the entrance) → ground-floor entrance → walk → **one stairwell** whose
-floor range contains both floors (nearest overall) → walk → personal spot in the room.
-Walking 1.3 m/s, stairs 14 s per storey. No stairs to a floor ⇒ unreachable (reported in
-the UI). Phase 5 replaces this with a hierarchical navigation graph (transfers, elevators,
-route caching, invalidation on construction).
+Code: `NavigationGraph.swift`, `NavigationService.swift`, `RoutePlanner.swift`,
+`Replanning.swift`, `NavigationOverlay.swift`.
+
+Two levels:
+
+* **Floors.** A floor plate is one contiguous walking surface (the ground floor extends out
+  to the street, 14 m left of the entrance), so two points on one floor are always joined
+  by a straight walk. Same-floor trips never touch the graph.
+* **Vertical transport.** Each stair shaft (`transport: "stairs"` in `rooms.json`) adds a
+  *portal* at its landing on every floor it serves, linked storey by storey
+  (14 s per storey). On each floor the portals are chained in x order with walk links
+  (distance / 1.3 m/s). A walk link between two shafts is a **transfer**.
+
+A trip between floors = walk to a portal, climb, (transfer walks, climbs)…, walk to the
+target. Deterministic Dijkstra over the portals with a virtual source (all portals on the
+start floor) and target (all portals on the target floor); the heap orders by
+(cost, node index). Consecutive storeys on one shaft merge into one multi-floor leg;
+consecutive walks on a floor merge into one walk.
+
+**Cache and invalidation.** `NavigationService` (one per engine, shared by copies) keeps
+each building's graph with a *structure signature* — a hash of the floor plates and all
+transport shafts. `advance` recomputes the signatures once per step; a changed signature
+drops that graph and its cached routes. Placing or removing ordinary rooms does not
+invalidate anything. Routes are cached per exact (from floor, from x, to floor, to x) — the
+bit patterns of the positions — and store the portal sequence. Because the key is exact, a
+cache hit returns precisely what a fresh search would: the cache never changes outcomes
+(tested against a run that discards the cache every step, as after loading a save). People
+repeat their trips daily from fixed personal spots, so hit rates grow after the first day.
+The cache holds at most 4096 routes per building and is cleared when full.
+
+**Re-planning after construction.** A trip is invalid when a remaining leg walks where there
+is no floor or uses a shaft that no longer serves those floors. Affected travellers are
+re-planned from where they are at that tick (people on stairs step onto the nearest
+landing of that shaft). With no route left they leave the building
+(`place = outside`, `unreachable = true`) and resume their schedule later. Valid trips are
+kept even when a faster route has appeared. The app re-plans right after every command (so
+a paused game is consistent); `advance` also does it whenever the structure changed.
+
+**Unreachable** people are counted in the UI; failures are counted in the navigation
+metrics (queries, cache hits, failures, graph builds, portals, links) shown in the
+developer HUD.
+
+**Debug overlay** (Debug builds, ⌥⌘N): portals, walk links, stair links and each
+traveller's remaining route, drawn from `NavigationOverlay` data.
+
+Elevators (Phase 6) will add their own edge kind whose cost includes an expected wait, plus
+waiting as events; the graph and cache stay as they are.
 
 ## Not yet simulated (honest list)
 
-Needs (hunger, energy …), moods, visitors, elevators, route invalidation for people already
-mid-trip when construction changes (they finish the old trip), economy effects.
+Needs (hunger, energy …), moods, visitors, elevators (shafts exist but are not walkable
+routes yet), congestion (stairs have unlimited capacity), economy effects.
 
 ## Concurrency
 

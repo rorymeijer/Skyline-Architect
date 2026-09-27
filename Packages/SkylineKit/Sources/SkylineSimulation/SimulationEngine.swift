@@ -16,17 +16,22 @@ public struct SimulationReport: Equatable, Sendable {
 public struct SimulationEngine: Sendable {
     public let rules: SimulationRules
     public let catalog: BuildCatalog
+    /// Graphs and route cache; shared by copies of this engine (a cache, never state).
+    public let navigation: NavigationService
 
-    public init(rules: SimulationRules, catalog: BuildCatalog) {
+    public init(rules: SimulationRules, catalog: BuildCatalog, navigation: NavigationService = NavigationService()) {
         self.rules = rules
         self.catalog = catalog
+        self.navigation = navigation
     }
 
     @discardableResult
     public func advance(_ world: inout GameWorld, by ticks: Tick) -> SimulationReport {
         var report = SimulationReport(ticks: ticks)
         let target = world.clock.tick + ticks
-        var queue = EventQueue(world.people.values.filter { $0.nextEventTick <= target }.map { ($0.nextEventTick, $0.id) })
+        if navigation.refresh(world: world, catalog: catalog) { replanAfterConstruction(&world) }
+        var queue = MinHeap<(Tick, PersonID)> { $0.0 == $1.0 ? $0.1 < $1.1 : $0.0 < $1.0 }
+        for p in world.people where p.nextEventTick <= target { queue.push((p.nextEventTick, p.id)) }
         while let (tick, id) = queue.popMin() {
             guard var person = world.people[id], person.nextEventTick == tick else { continue }
             world.clock.tick = max(world.clock.tick, tick)
@@ -85,7 +90,8 @@ public struct SimulationEngine: Sendable {
             origin = nil
         }
         guard let from = origin,
-              let legs = RoutePlanner.plan(from: from, to: target, building: building, world: world, catalog: catalog, rules: rules, now: now),
+              let legs = RoutePlanner.plan(from: from, to: target, building: building, world: world, navigation: navigation,
+                                                 catalog: catalog, rules: rules, now: now),
               let last = legs.last else {
             p.unreachable = true
             report.unreachable += 1
@@ -97,7 +103,7 @@ public struct SimulationEngine: Sendable {
         p.nextEventTick = last.end
     }
 
-    private func scheduleNext(_ p: inout Person, after now: Tick, schedule: Schedule) {
+    func scheduleNext(_ p: inout Person, after now: Tick, schedule: Schedule) {
         if let next = rules.nextScheduled(after: now, schedule: schedule, traits: p.traits) {
             p.nextGoal = next.goal
             p.nextEventTick = next.tick
@@ -105,46 +111,5 @@ public struct SimulationEngine: Sendable {
             p.nextGoal = nil
             p.nextEventTick = now + SimClock.secondsPerDay
         }
-    }
-}
-
-/// Binary min-heap of (tick, person id); ties broken by id for determinism.
-struct EventQueue {
-    private var heap: [(Tick, PersonID)] = []
-
-    init(_ items: [(Tick, PersonID)]) {
-        for item in items { push(item) }
-    }
-
-    private static func less(_ a: (Tick, PersonID), _ b: (Tick, PersonID)) -> Bool {
-        a.0 == b.0 ? a.1 < b.1 : a.0 < b.0
-    }
-
-    mutating func push(_ item: (Tick, PersonID)) {
-        heap.append(item)
-        var i = heap.count - 1
-        while i > 0 {
-            let parent = (i - 1) / 2
-            guard Self.less(heap[i], heap[parent]) else { break }
-            heap.swapAt(i, parent)
-            i = parent
-        }
-    }
-
-    mutating func popMin() -> (Tick, PersonID)? {
-        guard !heap.isEmpty else { return nil }
-        heap.swapAt(0, heap.count - 1)
-        let min = heap.removeLast()
-        var i = 0
-        while true {
-            let l = 2 * i + 1, r = l + 1
-            var smallest = i
-            if l < heap.count, Self.less(heap[l], heap[smallest]) { smallest = l }
-            if r < heap.count, Self.less(heap[r], heap[smallest]) { smallest = r }
-            if smallest == i { break }
-            heap.swapAt(i, smallest)
-            i = smallest
-        }
-        return min
     }
 }

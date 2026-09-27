@@ -2,6 +2,25 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.5.0] — Phase 5: Navigation / pathfinding
+
+### Added
+- **Navigation graph** per building: stair-shaft portals on every served floor, walk links
+  along floors, storey links through shafts; deterministic Dijkstra. Routes may **transfer**
+  between stairwells (walk across a floor to another shaft).
+- **Route cache** keyed by exact trip ends; graph and cache are rebuilt only when floor
+  plates or transport shafts change (structure signature). The cache never changes
+  outcomes (tested against a cache-less run).
+- **Re-planning after construction:** trips through removed stairs or floors continue from
+  the traveller's current position; with no route left they leave and are marked unreachable.
+- **Developer tools:** navigation overlay (⌥⌘N, Debug builds) with portals, links and live
+  routes; HUD rows for path queries, cache hit rate, failures, graph size/builds, unreachable.
+- Scale test: 200 floors, 1 194 people, one day at 10× in 68 ms (release).
+
+### Changed
+- `RoutePlanner` plans through the graph (replaces the Phase 4 single-stairwell planner).
+- Event queue and Dijkstra share one `MinHeap`.
+
 ## [0.4.0] — Phase 4: Basic people simulation
 
 ### Added

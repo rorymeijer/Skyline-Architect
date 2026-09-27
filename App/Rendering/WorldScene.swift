@@ -3,6 +3,7 @@ import QuartzCore
 import SpriteKit
 import SkylineCore
 import SkylinePresentation
+import SkylineSimulation
 
 /// Renders one property. The scene is the viewport (size = view size, anchor bottom-left,
 /// scene coordinates = view points); `worldRoot` carries the camera transform
@@ -41,6 +42,9 @@ final class WorldScene: SKScene {
     var activeTool: ConstructionTool? { didSet { placementAnchor = nil; overlayDirty = true } }
     var previewProvider: ((ConstructionTool, GridCell, GridCell) -> PlacementPreview?)?
     var roomLabelProvider: ((Rect, Double) -> [RoomLabel])?
+    /// Developer navigation overlay data (nil = hidden). Asked every frame while set.
+    var navigationProvider: (() -> NavigationOverlay?)?
+    private let navigationOverlay = NavigationOverlayNode()
     var onCommit: ((BuildCommand) -> Void)?
     private var placementAnchor: GridCell?
     /// Camera placement to use when first presented (nil = site overview).
@@ -105,6 +109,8 @@ final class WorldScene: SKScene {
         worldRoot.addChild(agentLayer.node)
         gridOverlay.zPosition = 10
         addChild(gridOverlay)
+        navigationOverlay.zPosition = 12
+        addChild(navigationOverlay)
         roomLabelLayer.zPosition = 13
         addChild(roomLabelLayer)
         placementOverlay.zPosition = 14
@@ -220,6 +226,7 @@ final class WorldScene: SKScene {
         }
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
+        navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
 
         if overlayDirty {
             if showGrid {
