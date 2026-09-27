@@ -50,6 +50,18 @@ extension ScreenshotDirector {
         }.count
     }
 
+    /// Travellers whose remaining trip still uses `shaft`.
+    static func people(routedVia shaft: RoomID, in world: GameWorld) -> Int {
+        let now = world.clock.tick
+        return world.people.values.filter { p in
+            guard case let .travelling(legs, _) = p.place else { return false }
+            return legs.contains { leg in
+                if case let .stairs(s, _, _, _, _, _, end) = leg { return s == shaft && end > now }
+                return false
+            }
+        }.count
+    }
+
     /// People currently on a leg that uses `shaft`.
     static func people(onShaft shaft: RoomID, in world: GameWorld) -> Int {
         let now = world.clock.tick

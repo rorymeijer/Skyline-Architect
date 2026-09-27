@@ -72,7 +72,8 @@ final class ScreenshotDirector {
             model.advanceSimulation(toTimeOfDay: 7, minute: 50)
             model.advanceSimulation(ticks: model.ticksToBestMoment(within: 80 * 60, step: 10) { ScreenshotDirector.transfers(in: $0) })
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(28, 30), zoom: 13) }
+            model.showDeveloperHUD = false
+            scene.withController { $0.jump(center: Vec2(24, 32), zoom: 13) }
             let transfers = model.world.map(ScreenshotDirector.transfers(in:)) ?? 0
             return "Floors 9–12 added, reached via a second stairwell from floor 8 (\(upper.map { "\($0)" } ?? "missing")): " +
                 "\(transfers) people transferring at \(model.clockText)."
@@ -91,22 +92,20 @@ final class ScreenshotDirector {
         },
         Step(name: "04-replanned-after-rebuild", grid: false) { model, scene in
             model.showNavigationOverlay = true
-            model.showDeveloperHUD = true
             guard let world = model.world, let property = model.activePropertyID,
                   let upper = world.buildings(on: property).first.flatMap({ world.room(in: $0.id, column: $0.footprint.start + 21, floor: 8) }) else {
                 return "upper stairwell missing"
             }
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 5) { ScreenshotDirector.people(onShaft: upper.id, in: $0) })
-            let onShaft = model.world.map { ScreenshotDirector.people(onShaft: upper.id, in: $0) } ?? 0
+            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 5) { ScreenshotDirector.people(routedVia: upper.id, in: $0) })
+            let affected = model.world.map { ScreenshotDirector.people(routedVia: upper.id, in: $0) } ?? 0
             // New stairwell first, then remove the old one: trips re-plan onto the new shaft.
             let replacement = ScreenshotDirector.placeReplacementStairs(model)
             model.perform(.demolishRoom(upper.id))
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(26, 30), zoom: 13) }
-            let rerouted = replacement.flatMap { r in model.world.map { ScreenshotDirector.people(onShaft: r, in: $0) } } ?? 0
-            return "\(model.clockText): upper stairwell replaced by one on the far side while \(onShaft) people climbed it; " +
-                "\(model.population.travelling) trips re-planned or continuing (\(rerouted) already on the new shaft), " +
-                "unreachable \(model.population.unreachable)."
+            scene.withController { $0.jump(center: Vec2(22, 32), zoom: 13) }
+            let rerouted = replacement.flatMap { r in model.world.map { ScreenshotDirector.people(routedVia: r, in: $0) } } ?? 0
+            return "\(model.clockText): upper stairwell replaced by one on the far side while \(affected) trips used it; " +
+                "\(rerouted) trips now routed via the new shaft, unreachable \(model.population.unreachable)."
         },
         Step(name: "05-unreachable-floors", grid: false) { model, scene in
             guard let world = model.world, let property = model.activePropertyID,
@@ -117,7 +116,8 @@ final class ScreenshotDirector {
             model.perform(.demolishRoom(shaft.id))
             model.advanceSimulation(toTimeOfDay: 12, minute: 30)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(26, 30), zoom: 13) }
+            model.showDeveloperHUD = true
+            scene.withController { $0.jump(center: Vec2(12, 30), zoom: 13) }
             let m = model.navigationMetrics
             return "\(model.clockText): floors 9–12 have no stairs; \(model.population.unreachable) people unreachable, " +
                 "\(m.failures) failed path queries, \(m.graphBuilds) graph builds."
