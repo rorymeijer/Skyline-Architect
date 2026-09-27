@@ -86,15 +86,14 @@ final class ScreenshotDirector {
             model.showFacilitiesPanel = false
             model.changeStaff(.janitor, by: 1)
             model.changeStaff(.janitor, by: 1)
-            model.advanceSimulation(toTimeOfDay: 7, minute: 0)
+            // Hired mid-shift they start at once; by the next morning the backlog is gone.
             model.advanceSimulation(ticks: model.ticksToBestMoment(within: 4 * 3600, step: 30) { world in
                 ScreenshotDirector.staffAtWork(.janitor, in: world) == nil ? 0 : 1
             })
-            if let p = model.world.flatMap({ ScreenshotDirector.staffAtWork(.janitor, in: $0) }) {
-                scene.withController { $0.jump(center: p + Vec2(0, 1.6), zoom: 40) }
-            }
+            let at = model.world.flatMap { ScreenshotDirector.staffAtWork(.janitor, in: $0) }
+            if let p = at { scene.withController { $0.jump(center: p + Vec2(0, 1.6), zoom: 40) } }
             model.refreshSimulationSummary()
-            return "\(model.clockText): two janitors hired; one cleaning a room (teal coveralls); \(model.facilities.cleaned) rooms cleaned so far."
+            return "\(model.clockText): two janitors hired; cleaning a room (teal coveralls): \(at != nil); \(model.facilities.cleaned) rooms cleaned so far."
         },
         Step(name: "05-plant-failure", grid: false) { model, scene in
             model.advanceSimulation(ticks: 20 * SimClock.secondsPerDay)
