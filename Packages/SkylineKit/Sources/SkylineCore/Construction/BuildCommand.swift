@@ -73,6 +73,13 @@ public struct ConstructionPlan: Equatable, Sendable {
     public var buildingID: BuildingID
     public var columns: ColumnSpan
     public var floors: FloorSpan
+
+    public init(cost: Int, buildingID: BuildingID, columns: ColumnSpan, floors: FloorSpan) {
+        self.cost = cost
+        self.buildingID = buildingID
+        self.columns = columns
+        self.floors = floors
+    }
 }
 
 /// A command that was applied: what it cost and how to undo it.

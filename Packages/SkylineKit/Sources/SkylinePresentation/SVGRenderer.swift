@@ -10,12 +10,15 @@ public enum SVGRenderer {
         public var gridOverlay: GridOverlay?
         public var palette: ArtPalette
         public var caption: String?
+        public var roomLabels: [RoomLabel]
 
-        public init(pixelsPerMeter: Double, gridOverlay: GridOverlay? = nil, palette: ArtPalette = .standard, caption: String? = nil) {
+        public init(pixelsPerMeter: Double, gridOverlay: GridOverlay? = nil, palette: ArtPalette = .standard,
+                    caption: String? = nil, roomLabels: [RoomLabel] = []) {
             self.pixelsPerMeter = pixelsPerMeter
             self.gridOverlay = gridOverlay
             self.palette = palette
             self.caption = caption
+            self.roomLabels = roomLabels
         }
     }
 
@@ -47,8 +50,7 @@ public enum SVGRenderer {
         body += paintAttr(.linear(start: Vec2(0, 0), end: Vec2(0, sky.top),
                                   stops: sky.stops.map { GradientStop($0.altitude / sky.top, $0.color) })) + "/>\n"
 
-        for i in c.index.items(in: view, of: c.drawing, detail: ppm) {
-            let item = c.drawing.items[i]
+        for item in c.items(in: view, detail: ppm) {
             let fill = item.fill.map(paintAttr) ?? "fill=\"none\""
             var stroke = ""
             if let s = item.stroke {
@@ -73,6 +75,10 @@ public enum SVGRenderer {
                 let y = (view.maxY - label.y) * ppm + 4
                 overlay += "<text x=\"\(n(max(labelX, 24)))\" y=\"\(n(y))\" font-family=\"Helvetica, Arial, sans-serif\" font-size=\"11\" text-anchor=\"end\" fill=\"\(rgb(o.palette.gridLabel))\">\(label.text)</text>\n"
             }
+        }
+        for label in o.roomLabels {
+            let x = (label.position.x - view.minX) * ppm, y = (view.maxY - label.position.y) * ppm
+            overlay += "<text x=\"\(n(x))\" y=\"\(n(y + 4))\" font-family=\"Helvetica, Arial, sans-serif\" font-size=\"11\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#26303a\" fill-opacity=\"0.75\">\(escape(label.text))</text>\n"
         }
         if let caption = o.caption {
             overlay += "<rect x=\"0\" y=\"\(n(h - 22))\" width=\"\(n(w))\" height=\"22\" fill=\"#000\" fill-opacity=\"0.55\"/>"

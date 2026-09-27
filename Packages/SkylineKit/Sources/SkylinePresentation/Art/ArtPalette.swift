@@ -45,6 +45,33 @@ public struct ArtPalette: Sendable {
     public var surveyStake = RGBA(hex: 0xB8966A)
     public var surveyCap = RGBA(hex: 0xE2702A)
 
+    // Building shell and finishes.
+    public var shellWall = RGBA(hex: 0x9A978F)
+    public var facadePanel = RGBA(hex: 0x7C8288)
+    public var glazing = RGBA(hex: 0x9CC3D8)
+    public var mullion = RGBA(hex: 0x4F555B)
+    public var partition = RGBA(hex: 0xE9E6DF)
+    public var door = RGBA(hex: 0x6B5A48)
+    public var doorFrame = RGBA(hex: 0x3F4347)
+    public var ceilingLight = RGBA(hex: 0xFFF6DD)
+    public var roofMembrane = RGBA(hex: 0x3B3D40)
+    public var steel = RGBA(hex: 0xA9B0B6)
+
+    /// Wall, floor-finish and ceiling colours per room appearance key.
+    public func finishes(_ appearance: String) -> (wall: RGBA, floor: RGBA, ceiling: RGBA) {
+        switch appearance {
+        case "office": (RGBA(hex: 0xD8DCDF), RGBA(hex: 0x5E6873), RGBA(hex: 0xEEF0F1))
+        case "apartment": (RGBA(hex: 0xE3D7C2), RGBA(hex: 0x98734C), RGBA(hex: 0xF4F1EA))
+        case "lobby": (RGBA(hex: 0xCFC7B9), RGBA(hex: 0xB9B3A8), RGBA(hex: 0xF1EEE7))
+        case "corridor": (RGBA(hex: 0xC9CAC5), RGBA(hex: 0x8C8F8C), RGBA(hex: 0xE7E8E5))
+        case "mechanical": (RGBA(hex: 0xA9ACAD), RGBA(hex: 0x7D8182), RGBA(hex: 0xB7BABB))
+        case "parking": (RGBA(hex: 0x9D9B95), RGBA(hex: 0x5C5D5E), RGBA(hex: 0xA7A59F))
+        case "stairs": (RGBA(hex: 0x86847E), RGBA(hex: 0x6F6D68), RGBA(hex: 0x86847E))
+        case "elevatorShaft": (RGBA(hex: 0x44484B), RGBA(hex: 0x303336), RGBA(hex: 0x44484B))
+        default: (RGBA(hex: 0xC8C8C8), RGBA(hex: 0x888888), RGBA(hex: 0xDDDDDD))
+        }
+    }
+
     // Overlays.
     public var gridModule = RGBA(hex: 0x5BC8F0, alpha: 0.16)
     public var gridBay = RGBA(hex: 0x5BC8F0, alpha: 0.34)
@@ -54,6 +81,11 @@ public struct ArtPalette: Sendable {
     public var plotBoundary = RGBA(hex: 0xF08A3C, alpha: 0.85)
     public var hoverCell = RGBA(hex: 0x8FE0FF, alpha: 0.22)
     public var gridLabel = RGBA(hex: 0xDFF4FF, alpha: 0.9)
+    public var previewValid = RGBA(hex: 0x5FE39A, alpha: 0.28)
+    public var previewValidEdge = RGBA(hex: 0x7CF2B0, alpha: 0.95)
+    public var previewInvalid = RGBA(hex: 0xF0625A, alpha: 0.28)
+    public var previewInvalidEdge = RGBA(hex: 0xFF7A70, alpha: 0.95)
+    public var previewDemolish = RGBA(hex: 0xF0A23C, alpha: 0.3)
 
     public init() {}
 
