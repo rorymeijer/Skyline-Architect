@@ -18,6 +18,9 @@ enum RoomArt {
             stairs(into: &d, room: room, x0: x0, x1: x1, grid: grid, palette: p, rng: &rng)
         case "elevatorShaft":
             hoistway(into: &d, room: room, x0: x0, x1: x1, grid: grid, palette: p)
+        case "expressElevatorShaft":
+            hoistway(into: &d, room: room, x0: x0, x1: x1, grid: grid, palette: p,
+                     landings: [room.floors.lowest, room.floors.highest], finish: "expressElevatorShaft")
         default:
             // One storey at a time so multi-storey rooms still show their levels.
             for level in room.floors.lowest...room.floors.highest {
@@ -193,8 +196,11 @@ enum RoomArt {
 
     /// Elevator hoistway: dark shaft, guide rails and landing doors at each floor.
     /// Cars are drawn dynamically on top (`ElevatorArt`, app `ElevatorLayer`).
-    private static func hoistway(into d: inout Drawing, room: Room, x0: Double, x1: Double, grid: GridSpec, palette p: ArtPalette) {
-        let f = p.finishes("elevatorShaft")
+    /// `landings`: floors with landing doors (nil = every floor); express shafts only stop at
+    /// their ends.
+    private static func hoistway(into d: inout Drawing, room: Room, x0: Double, x1: Double, grid: GridSpec, palette p: ArtPalette,
+                                 landings: [Int]? = nil, finish: String = "elevatorShaft") {
+        let f = p.finishes(finish)
         let bottom = grid.y(ofFloor: room.floors.lowest)
         let top = grid.y(ofFloor: room.floors.highest + 1) - grid.slabThickness
         // Pit below the lowest landing.
@@ -204,7 +210,7 @@ enum RoomArt {
             d.fill(Rect(minX: rx - 0.04, minY: shaft.minY, maxX: rx + 0.04, maxY: shaft.maxY), p.steel.shaded(0.9), minDetail: 4)
         }
         let cx = (x0 + x1) / 2
-        for level in room.floors.lowest...room.floors.highest {
+        for level in landings ?? Array(room.floors.lowest...room.floors.highest) {
             let y = grid.y(ofFloor: level)
             let doorRect = Rect(minX: cx - 0.55, minY: y, maxX: cx + 0.55, maxY: y + 2.2)
             d.fill(doorRect.insetBy(dx: -0.08, dy: 0).union(Rect(minX: doorRect.minX - 0.08, minY: y, maxX: doorRect.maxX + 0.08, maxY: doorRect.maxY + 0.1)), p.doorFrame, minDetail: 4)

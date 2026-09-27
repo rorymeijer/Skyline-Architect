@@ -35,8 +35,14 @@ enum ElevatorSync {
             world.elevators.remove(car.id)
         }
         for shaft in shafts where !world.elevators.contains(shaft.id) {
-            let floor = min(max(0, shaft.floors.lowest), shaft.floors.highest)
+            let served = rules.elevator(for: shaft.definitionID)?.servedFloors(of: shaft.floors) ?? [shaft.floors.lowest]
+            let floor = served.min { (abs($0), $0) < (abs($1), $1) }!
             world.elevators.insert(ElevatorCar(id: shaft.id, buildingID: shaft.buildingID, floor: floor))
+            // A shaft added next to an existing bank adopts the bank's strategy.
+            if let bank = ElevatorBanks.bank(of: shaft.id, in: world, rules: rules), let other = bank.cars.first(where: { $0 != shaft.id }),
+               let strategy = world.elevators[other]?.strategy {
+                world.elevators.update(shaft.id) { $0.strategy = strategy }
+            }
         }
     }
 }
@@ -104,6 +110,7 @@ extension SimulationEngine {
             // Doors open, people get out, people get in, doors close.
             let dwell = 2 * spec.doorSeconds + spec.transferSeconds * Tick(alighting.count + boarding.count)
             car.motion = .stopped(since: now, until: now + dwell)
+            car.stats.stops += 1
             car.nextEventTick = now + dwell
             for (i, pid) in alighting.enumerated() {
                 guard var p = world.people[pid], case let .riding(r, destination) = p.place else { continue }
@@ -117,7 +124,10 @@ extension SimulationEngine {
             }
             for entry in boarding {
                 world.people.update(entry.id) { p in
-                    if case let .waiting(r, destination, _) = p.place { p.place = .riding(r, destination: destination) }
+                    guard case let .waiting(r, destination, since) = p.place else { return }
+                    p.place = .riding(r, destination: destination)
+                    p.nextEventTick = .max                 // patience no longer matters
+                    car.stats.recordBoarding(waited: now - since, at: now)
                 }
             }
             car.passengers = staying + boarding.map(\.id)

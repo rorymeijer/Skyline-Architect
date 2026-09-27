@@ -171,19 +171,30 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         try save.world.validateIntegrity()
     }
 
-    /// Golden fixture v3 (elevator cars, people waiting and riding). Regenerate only
-    /// deliberately: `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV3`.
+    /// Golden fixture v3 (elevator cars, people waiting and riding). Frozen since format 4:
+    /// cars gain the collective strategy and empty statistics.
     @Test func goldenFixtureV3StillLoads() throws {
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v3.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.elevators.count == 1)
+        #expect(save.world.elevators.values.allSatisfy { $0.strategy == .collective && $0.stats == CarStats() })
+        #expect(save.world.people.values.contains { if case .waiting = $0.place { true } else { false } })
+        #expect(save.world.people.values.contains { if case .riding = $0.place { true } else { false } })
+    }
+
+    /// Golden fixture v4 (strategies and statistics). Regenerate only deliberately:
+    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV4`.
+    @Test func goldenFixtureV4StillLoads() throws {
         if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v3.skylinesave")
+            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v4.skylinesave")
             try SaveCodec.encode(makeElevatorSave()).write(to: source)
             return
         }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
-        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v3.skylinesave")), availablePacks: basePacks)
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v4.skylinesave")), availablePacks: basePacks)
         #expect(save.world.elevators.count == 1)
+        #expect(save.world.elevators.values.allSatisfy { $0.stats.boardings > 0 })
         #expect(save.world.people.values.contains { if case .waiting = $0.place { true } else { false } })
-        #expect(save.world.people.values.contains { if case .riding = $0.place { true } else { false } })
     }
 
     @Test func elevatorWorldRoundTrips() throws {

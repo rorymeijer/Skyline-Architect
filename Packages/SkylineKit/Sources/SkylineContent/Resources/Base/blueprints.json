@@ -1118,5 +1118,918 @@
     }
    }
   ]
+ },
+ {
+  "id": "demo-skytower",
+  "name": "Demonstration Sky Tower",
+  "description": "42 storeys: a bank of three elevators serves B1–20, an express shuttle runs from G to the sky lobby on floor 21, and a bank of two serves 21–40. Used for Phase 7 captures and tests.",
+  "steps": [
+   {
+    "floor": {
+     "level": -1,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 0,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 1,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 2,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 3,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 4,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 5,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 6,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 7,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 8,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 9,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 10,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 11,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 12,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 13,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 14,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 15,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 16,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 17,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 18,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 19,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 20,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 21,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 22,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 23,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 24,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 25,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 26,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 27,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 28,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 29,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 30,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 31,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 32,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 33,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 34,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 35,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 36,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 37,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 38,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 39,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 40,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "room": {
+     "definition": "stairs",
+     "start": 0,
+     "count": 4,
+     "lowest": -1,
+     "highest": 40
+    }
+   },
+   {
+    "room": {
+     "definition": "elevator-shaft",
+     "start": 4,
+     "count": 3,
+     "lowest": -1,
+     "highest": 20
+    }
+   },
+   {
+    "room": {
+     "definition": "elevator-shaft",
+     "start": 7,
+     "count": 3,
+     "lowest": -1,
+     "highest": 20
+    }
+   },
+   {
+    "room": {
+     "definition": "elevator-shaft",
+     "start": 10,
+     "count": 3,
+     "lowest": -1,
+     "highest": 20
+    }
+   },
+   {
+    "room": {
+     "definition": "elevator-express",
+     "start": 13,
+     "count": 3,
+     "lowest": 0,
+     "highest": 21
+    }
+   },
+   {
+    "room": {
+     "definition": "elevator-shaft",
+     "start": 4,
+     "count": 3,
+     "lowest": 21,
+     "highest": 40
+    }
+   },
+   {
+    "room": {
+     "definition": "elevator-shaft",
+     "start": 7,
+     "count": 3,
+     "lowest": 21,
+     "highest": 40
+    }
+   },
+   {
+    "room": {
+     "definition": "parking",
+     "start": 16,
+     "count": 16,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "lobby",
+     "start": 16,
+     "count": 16,
+     "lowest": 0,
+     "highest": 0
+    }
+   },
+   {
+    "room": {
+     "definition": "sky-lobby",
+     "start": 16,
+     "count": 16,
+     "lowest": 21,
+     "highest": 21
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 1,
+     "highest": 1
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 2,
+     "highest": 2
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 3,
+     "highest": 3
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 4,
+     "highest": 4
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 5,
+     "highest": 5
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 6,
+     "highest": 6
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 7,
+     "highest": 7
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 8,
+     "highest": 8
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 9,
+     "highest": 9
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 10,
+     "highest": 10
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 11,
+     "highest": 11
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 12,
+     "highest": 12
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 13,
+     "highest": 13
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 14,
+     "highest": 14
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 15,
+     "highest": 15
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 16,
+     "highest": 16
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 17,
+     "highest": 17
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 18,
+     "highest": 18
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 19,
+     "highest": 19
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 16,
+     "count": 16,
+     "lowest": 20,
+     "highest": 20
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 22,
+     "highest": 22
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 22,
+     "highest": 22
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 23,
+     "highest": 23
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 23,
+     "highest": 23
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 24,
+     "highest": 24
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 24,
+     "highest": 24
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 25,
+     "highest": 25
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 25,
+     "highest": 25
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 26,
+     "highest": 26
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 26,
+     "highest": 26
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 27,
+     "highest": 27
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 27,
+     "highest": 27
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 28,
+     "highest": 28
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 28,
+     "highest": 28
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 29,
+     "highest": 29
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 29,
+     "highest": 29
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 30,
+     "highest": 30
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 30,
+     "highest": 30
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 31,
+     "highest": 31
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 31,
+     "highest": 31
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 32,
+     "highest": 32
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 32,
+     "highest": 32
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 33,
+     "highest": 33
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 33,
+     "highest": 33
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 34,
+     "highest": 34
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 34,
+     "highest": 34
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 35,
+     "highest": 35
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 35,
+     "highest": 35
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 36,
+     "highest": 36
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 36,
+     "highest": 36
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 37,
+     "highest": 37
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 37,
+     "highest": 37
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 38,
+     "highest": 38
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 38,
+     "highest": 38
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 39,
+     "highest": 39
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 39,
+     "highest": 39
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 10,
+     "count": 16,
+     "lowest": 40,
+     "highest": 40
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 26,
+     "count": 6,
+     "lowest": 40,
+     "highest": 40
+    }
+   }
+  ]
  }
 ]
