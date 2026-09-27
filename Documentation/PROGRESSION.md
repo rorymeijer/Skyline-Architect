@@ -79,7 +79,9 @@ Rules:
   the start, so a class C building can supply every utility.
 
 The demo tower fills through the market and reaches class B on its third morning
-(`anEmptyTowerEarnsClassBByPlaying`).
+(`anEmptyTowerEarnsClassBByPlaying`). If its electrical room is then demolished, all 15 tenants move out
+within five days. Reputation falls from 75 to 50, but the building stays class B
+(`aPowerCutCostsReputationNotTheClass`).
 
 ## UI
 

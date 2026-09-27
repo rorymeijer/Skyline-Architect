@@ -159,6 +159,23 @@ struct StandardFixture {
         #expect(f.standing.reputation < 5)
     }
 
+    /// A power cut (electrical room demolished) empties units and costs reputation; the
+    /// class stays.
+    @Test func aPowerCutCostsReputationNotTheClass() throws {
+        var f = try StandardFixture(leased: false)
+        f.runDays(4)
+        #expect(f.standing.classLevel == 1)
+        let before = f.standing.reputation
+        let plant = try #require(f.world.rooms.values.first { $0.definitionID == "electrical-room" })
+        try f.construction.apply(.demolishRoom(plant.id), to: &f.world)
+        f.engine.replanAfterConstruction(&f.world)
+        f.runDays(5)
+        print("[progression] power cut: reputation \(Int(before)) → \(Int(f.standing.reputation)), moved out \(f.world.market.movedOut)")
+        #expect(f.world.market.movedOut > 0)
+        #expect(f.standing.reputation < before - 10)
+        #expect(f.standing.classLevel == 1)
+    }
+
     /// Played, not set up: an empty class C demo tower fills through the market and earns
     /// class B on its own within two weeks.
     @Test func anEmptyTowerEarnsClassBByPlaying() throws {
