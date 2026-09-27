@@ -71,6 +71,11 @@ public enum Place: Codable, Hashable, Sendable {
     case travelling(legs: [Leg], destination: Destination)
 }
 
+/// What a person intends to do at `nextEventTick` when at rest.
+public enum Goal: String, Codable, Hashable, Sendable {
+    case work, home, outside
+}
+
 public enum Destination: Codable, Hashable, Sendable {
     case outside
     case room(RoomID, x: Double)
@@ -91,13 +96,15 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
     public var place: Place
     /// Tick of the next thing this person does (arrive, next schedule event).
     public var nextEventTick: Tick
+    /// What they do at `nextEventTick` when at rest (nil while travelling).
+    public var nextGoal: Goal?
     /// Seed for appearance and personal jitter.
     public var traits: UInt32
     /// Set when the last planned trip had no route (e.g. no stairs to the target floor).
     public var unreachable: Bool
 
     public init(id: PersonID, name: String, age: Int, role: PersonRole, scheduleID: String, buildingID: BuildingID,
-                homeRoom: RoomID?, workRoom: RoomID?, place: Place, nextEventTick: Tick, traits: UInt32) {
+                homeRoom: RoomID?, workRoom: RoomID?, place: Place, nextEventTick: Tick, nextGoal: Goal?, traits: UInt32) {
         self.id = id
         self.name = name
         self.age = age
@@ -108,6 +115,7 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
         self.workRoom = workRoom
         self.place = place
         self.nextEventTick = nextEventTick
+        self.nextGoal = nextGoal
         self.traits = traits
         self.unreachable = false
     }
@@ -135,7 +143,9 @@ public enum PersonMotion {
             return MotionSample(position: Vec2(fromX + (toX - fromX) * f, grid.y(ofFloor: floor)),
                                 direction: toX >= fromX ? 1 : -1, onStairs: false)
         case let .stairs(_, fromFloor, toFloor, leftX, rightX, start, end):
-            // Each storey has two flights: left→right to the half landing, then back.
+            // Each storey has two flights: from the floor landing (left) to the half landing
+            // (right), then back. Descending walks the same flights in reverse storey order,
+            // so both directions start on the left landing with a rightward flight.
             let f = fraction(tt, start, end)
             let floors = Double(abs(toFloor - fromFloor))
             let up = toFloor > fromFloor
@@ -143,9 +153,8 @@ public enum PersonMotion {
             let storey = min(floor(progress), max(floors - 1, 0))
             let within = progress - storey
             let y = grid.y(ofFloor: fromFloor) + (up ? 1 : -1) * progress * grid.floorHeight
-            let firstFlight = within < 0.5
-            // Going up, the first flight runs left→right; going down, reverse the order.
-            let rightward = up ? firstFlight : !firstFlight
+            let rightward = within < 0.5
+            let firstFlight = rightward
             let flightF = firstFlight ? within * 2 : (within - 0.5) * 2
             let x = rightward ? leftX + (rightX - leftX) * flightF : rightX - (rightX - leftX) * flightF
             return MotionSample(position: Vec2(x, y), direction: rightward ? 1 : -1, onStairs: true)
