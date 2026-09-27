@@ -24,6 +24,9 @@ Base/
   rooms.json         [RoomSpec]        — placeable rooms and shafts
   build-rules.json   BuildRules        — slab costs, cantilever, demolition refund
   blueprints.json    [Blueprint]       — scripted construction (dev tools, tests, later scenarios)
+  materials.json     { key: "#RRGGBB[AA]" } — colours used by furniture
+  furniture.json     [FurnitureDefinition] — vector furniture recipes
+  interiors.json     [InteriorLayout]  — how each room type is furnished
 ```
 
 ### CityDefinition
@@ -52,6 +55,17 @@ every definition automatically — a mod adding a room type needs no code.
 ### Blueprint (blueprints.json)
 `id, name, description, steps: [{ "floor": {level, start, count} } | { "room": {definition,
 start, count, lowest, highest} }]`. Columns are relative to the target building's footprint.
+
+### FurnitureDefinition (furniture.json)
+`id, name, width, height, parts: [{ shape: rect|ellipse|polygon|line, x, y, w, h | points,
+material ("key" or "$slot"), shade?, lineWidth?, opacity?, minDetail? }], variants?: [{slot: material}],
+minDetail?`. Coordinates are meters from the piece's bottom-left.
+
+### InteriorLayout (interiors.json)
+`room` (room definition id), `items: [{ furniture, anchor: left|right|center, offset,
+elevation?, flip?, minRoomWidth?, maxRoomWidth?, reserve? } | { repeat: { spacing, margin?,
+items: [{ furniture, offset, elevation?, flip? }] } }]`. Validation rejects unknown
+materials, furniture, slots and rooms.
 
 ## Planned (Phase 17)
 

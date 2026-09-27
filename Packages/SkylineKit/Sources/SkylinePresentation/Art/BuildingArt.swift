@@ -4,12 +4,17 @@ import SkylineCore
 /// Section drawing of a building's superstructure: storey shells, slabs, roofs with
 /// parapets, end façades with glazing, structural columns — then rooms via `RoomArt`.
 /// Foundations (raft, grade slab, walls) are drawn by `FoundationArt`.
+///
+/// Level of detail: above grade, the cutaway (shells, rooms, furniture) is drawn only from
+/// `cutawayDetail` px/m; below that an exterior curtain-wall façade stands in for it.
 enum BuildingArt {
     static let facadeThickness = 0.3
     static let columnWidth = 0.45
+    /// Raster density at which the exterior façade gives way to the cutaway interior.
+    public static let cutawayDetail = 6.0
 
     static func draw(into d: inout Drawing, building: Building, rooms: [Room], catalog: BuildCatalog?,
-                     grid: GridSpec, palette p: ArtPalette) {
+                     art: ArtCatalog, grid: GridSpec, palette p: ArtPalette) {
         let slab = grid.slabThickness
         func x(_ c: Int) -> Double { grid.x(ofColumn: c) }
 
@@ -25,17 +30,19 @@ enum BuildingArt {
                 var rng = SeededRandom(seed: UInt64(building.id.raw), stream: UInt64(bitPattern: Int64(level)) &+ 0x51AB)
                 FoundationArt.cutConcrete(into: &d, rect: Rect(minX: x0, minY: floorY - slab, maxX: x1, maxY: floorY), palette: p, rng: &rng)
             }
-            // Shell: bare concrete back wall, ambient occlusion at floor and ceiling.
-            let interior = Rect(minX: x0, minY: floorY, maxX: x1, maxY: ceilingY)
-            d.verticalGradient(interior, top: p.shellWall.shaded(0.9), bottom: p.shellWall.shaded(1.02))
-            d.verticalGradient(Rect(minX: x0, minY: ceilingY - 0.6, maxX: x1, maxY: ceilingY), top: RGBA(0, 0, 0, 0.3), bottom: RGBA(0, 0, 0, 0))
+            d.detailBand(min: isAboveGrade ? cutawayDetail : 0) { d in
+                // Shell: bare concrete back wall, ambient occlusion at floor and ceiling.
+                let interior = Rect(minX: x0, minY: floorY, maxX: x1, maxY: ceilingY)
+                d.verticalGradient(interior, top: p.shellWall.shaded(0.9), bottom: p.shellWall.shaded(1.02))
+                d.verticalGradient(Rect(minX: x0, minY: ceilingY - 0.6, maxX: x1, maxY: ceilingY), top: RGBA(0, 0, 0, 0.3), bottom: RGBA(0, 0, 0, 0))
 
-            // Structural columns on interior bay lines.
-            for c in plate.span.range.dropFirst() where grid.isBayLine(column: c) {
-                let cx = x(c)
-                d.horizontalGradient(Rect(minX: cx - columnWidth / 2, minY: floorY, maxX: cx + columnWidth / 2, maxY: ceilingY), stops: [
-                    GradientStop(0, p.concreteSurface.shaded(0.85)), GradientStop(0.5, p.concreteSurface.shaded(1.05)),
-                    GradientStop(1, p.concreteSurface.shaded(0.8))], minDetail: 3)
+                // Structural columns on interior bay lines.
+                for c in plate.span.range.dropFirst() where grid.isBayLine(column: c) {
+                    let cx = x(c)
+                    d.horizontalGradient(Rect(minX: cx - columnWidth / 2, minY: floorY, maxX: cx + columnWidth / 2, maxY: ceilingY), stops: [
+                        GradientStop(0, p.concreteSurface.shaded(0.85)), GradientStop(0.5, p.concreteSurface.shaded(1.05)),
+                        GradientStop(1, p.concreteSurface.shaded(0.8))], minDetail: 3)
+                }
             }
 
             // Roof over any part not covered by the plate above.
@@ -51,7 +58,10 @@ enum BuildingArt {
         // Rooms after all shells so they paint over them.
         for room in rooms {
             let spec = catalog?.spec(room.definitionID)
-            RoomArt.draw(into: &d, room: room, appearance: spec?.appearance ?? "default", building: building, grid: grid, palette: p)
+            d.detailBand(min: room.floors.lowest >= 0 ? cutawayDetail : 0) { d in
+                RoomArt.draw(into: &d, room: room, appearance: spec?.appearance ?? "default", layout: art.layouts[room.definitionID],
+                             art: art, building: building, grid: grid, palette: p)
+            }
         }
 
         // Basement storeys are closed by the retaining walls, which rooms must not cover.
@@ -68,8 +78,15 @@ enum BuildingArt {
         // End façades last: they cap rooms at the plate edges.
         for plate in building.floors where plate.level >= 0 {
             let floorY = grid.y(ofFloor: plate.level), ceilingY = grid.y(ofFloor: plate.level + 1) - slab
-            facade(into: &d, x: x(plate.span.start), inward: 1, floorY: floorY, ceilingY: ceilingY, palette: p)
-            facade(into: &d, x: x(plate.span.end), inward: -1, floorY: floorY, ceilingY: ceilingY, palette: p)
+            d.detailBand(min: cutawayDetail) { d in
+                facade(into: &d, x: x(plate.span.start), inward: 1, floorY: floorY, ceilingY: ceilingY, palette: p)
+                facade(into: &d, x: x(plate.span.end), inward: -1, floorY: floorY, ceilingY: ceilingY, palette: p)
+            }
+        }
+
+        // Exterior stand-in for the cutaway when zoomed out.
+        d.detailBand(max: cutawayDetail) { d in
+            ExteriorArt.draw(into: &d, building: building, grid: grid, palette: p)
         }
     }
 

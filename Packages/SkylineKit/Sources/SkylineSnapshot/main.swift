@@ -37,7 +37,8 @@ do {
         let engine = ConstructionEngine(catalog: catalog)
         for command in blueprint.commands(for: building) { try engine.apply(command, to: &game.world) }
     }
-    guard let composition = SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: catalog) else {
+    guard let composition = SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: catalog,
+                                                 art: library.artCatalog) else {
         fail("property missing")
     }
     var placement = preset.placement(for: composition, viewport: viewport)

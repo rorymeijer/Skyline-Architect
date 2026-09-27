@@ -21,6 +21,7 @@ Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomp
                 │                          │
 ┌───────────────┴──────────────────────────┴─────────────────────────┐
 │ SkylineContent: JSON definitions, validation, new-game factory      │
+│   (depends on Presentation for visual definition types, D-017)      │
 │ SkylinePersistence: versioned saves, migrations, save store          │
 ├─────────────────────────────────────────────────────────────────────┤
 │ SkylineCore: authoritative model (world→city→property→building),    │
@@ -116,7 +117,8 @@ packs merged by id — the engine never executes mod code. See MODDING.md.
 | `Drawing` (IR) | resolution-independent vector primitives with paints and per-item minimum-detail thresholds |
 | `DrawingIndex` | spatial bucket index: which items intersect a region |
 | `TilePyramid` / `TileSetPlanner` | which raster tiles (level, x, y) are needed for a view; LRU bookkeeping |
-| `ArtPalette` + `*Art` recipes | procedural, seeded, deterministic art (terrain, foundation, backdrop) |
+| `ArtPalette` + `*Art` recipes | procedural, seeded, deterministic art (terrain, foundation, backdrop, building, rooms, exterior façade) |
+| `ArtCatalog`, `FurnitureDefinition`, `InteriorLayout`, `LayoutResolver` | data-driven furniture and interiors (Phase 3) |
 | `SiteComposer` | model → layered `SiteComposition` |
 | `ArchitecturalGrid` | visible-range grid lines/labels with density-adaptive strides |
 

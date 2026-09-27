@@ -33,6 +33,27 @@ model ──SiteComposer──▶ SiteComposition (layers of Drawing IR, world m
 * **Tiles:** level L has 2·2^L px/m; a view picks the level matching zoom × backing
   scale. Old-level tiles stay visible until replacements finish (no pop-to-empty).
 
+## Furniture and interiors (Phase 3 — FUNCTIONAL, programmer art)
+
+* `furniture.json`: each piece is a list of vector parts (rect, ellipse, polygon, line) in
+  local meters with material keys from `materials.json`, optional vertical shading,
+  per-part detail thresholds and material variants (e.g. car colours, blankets).
+* `interiors.json`: per room type, items anchored left/right/center with offsets,
+  elevations (monitor on desk, art on wall), width conditions (`minRoomWidth`,
+  `maxRoomWidth`) and repeat groups (workstations, parked cars).
+* `LayoutResolver` (pure, deterministic) places items without overlaps; variants are
+  seeded per room and storey. `FurnitureArt` converts placements into drawing items.
+* Furniture defaults to `minDetail` 10 px/m: it disappears at massing zoom.
+
+## Exterior façade LOD (Phase 3)
+
+Drawing items carry a detail band `[minDetail, maxDetail)`. Above grade, the cutaway
+(shells, rooms, furniture, end walls) is drawn from `BuildingArt.cutawayDetail` = 6 px/m;
+below that an exterior curtain wall (glass with sky reflection, spandrel bands, mullions,
+glazed ground floor) replaces it. Because tiles choose detail from zoom × backing scale,
+the switch happens at ~5 pt/m on 1× displays and ~2.5 pt/m on Retina — a pixel-density
+based LOD, not a fixed zoom. Below-grade levels always stay in section.
+
 ## LOD bands (`DetailLevel`)
 
 | Band | Points per meter | Intended content (future phases) |
@@ -46,7 +67,7 @@ model ──SiteComposer──▶ SiteComposition (layers of Drawing IR, world m
 ## Known limitations (Phase 1)
 
 * All art is procedural programmer art with a deliberate art direction; it is **not**
-  production-quality. A later `ASSET_REQUIREMENTS.md` will list external art needs
-  (characters, furniture sprite sheets, façade materials).
+  production-quality. `ASSET_REQUIREMENTS.md` lists the external art a release needs
+  (characters, furniture close-ups, elevator cars, façade materials, effects).
 * No lighting model yet (day only; day/night lands in Phase 9/12).
 * No shaders yet; depth comes from gradients and contact darkening.

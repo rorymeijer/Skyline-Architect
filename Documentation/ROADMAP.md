@@ -34,7 +34,7 @@ shells, basements) with validation from data (build rules), demolition, undo for
 current session. Cost preview (not yet charged). Versioned local save/load + autosave
 skeleton, migration test harness. Room definitions from JSON.
 
-### Phase 3 — First furnished rooms
+### Phase 3 — First furnished rooms ✅ (2026-09-27)
 Procedural art pipeline expansion: façade, windows, doors, interior walls, furniture
 recipes (apartment: bed, sofa, kitchen, bath; office: desks, chairs, computers, meeting
 table, cabinets). Room interior composition from data (furniture layouts per room

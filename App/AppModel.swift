@@ -88,6 +88,7 @@ final class AppModel {
     var activeProperty: Property? { activePropertyID.flatMap { world?.properties[$0] } }
     var activeCity: City? { activeProperty.flatMap { world?.cities[$0.cityID] } }
     var catalog: BuildCatalog? { engine?.catalog }
+    var art: ArtCatalog { library?.artCatalog ?? .empty }
 
     // MARK: Game lifecycle
 
@@ -112,7 +113,7 @@ final class AppModel {
         sessionBuildCost = 0
         hasUnsavedChanges = false
         activeTool = nil
-        guard let composition = SiteComposer.compose(world: world, propertyID: activePropertyID, catalog: catalog) else {
+        guard let composition = SiteComposer.compose(world: world, propertyID: activePropertyID, catalog: catalog, art: art) else {
             loadError = "The starting property could not be composed."
             return
         }
@@ -223,7 +224,7 @@ final class AppModel {
         hasUnsavedChanges = true
         refreshUndoState()
         guard let scene else { return }
-        let composition = SiteComposer.recompose(scene.composition, world: newWorld, catalog: catalog)
+        let composition = SiteComposer.recompose(scene.composition, world: newWorld, catalog: catalog, art: art)
         scene.updateComposition(composition, dirty: plan.map { SiteComposer.dirtyRect(for: $0, grid: newWorld.grid) })
     }
 

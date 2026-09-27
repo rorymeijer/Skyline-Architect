@@ -18,7 +18,7 @@ let package = Package(
         .target(name: "SkylineCore"),
         .target(
             name: "SkylineContent",
-            dependencies: ["SkylineCore"],
+            dependencies: ["SkylineCore", "SkylinePresentation"],
             resources: [.copy("Resources/Base")]
         ),
         .target(name: "SkylinePresentation", dependencies: ["SkylineCore"]),

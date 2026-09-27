@@ -2,6 +2,24 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.3.0] — Phase 3: First furnished rooms
+
+### Added
+- **Data-driven furniture:** `materials.json` (60 materials), `furniture.json` (31 vector
+  recipes: workstation desk, monitor, office chair, filing cabinet, meeting set, whiteboard,
+  printer, doors, kitchen, kitchenette, fridge, double bed, nightstand lamp, sofa, TV unit,
+  bathroom pod, wardrobe, floor lamp, reception desk, lobby sofa, directory, bench, fire
+  extinguisher, plants, AHU, pump set, electrical panel, parked cars with colour variants …).
+- **Interior layouts** (`interiors.json`) for offices, studio apartments, lobbies, corridors,
+  mechanical rooms and parking; deterministic `LayoutResolver` (anchors, width conditions,
+  repeat groups, collision avoidance, seeded variants). Mods can add furniture/layouts.
+- **Exterior façade LOD:** curtain-wall façade below 6 px/m, furnished cutaway above,
+  via per-item detail bands (`DrawItem.maxDetail`).
+- `Documentation/ASSET_REQUIREMENTS.md`.
+
+### Fixed
+- Placeholder plant boxes no longer drawn in furnished mechanical rooms.
+
 ## [0.2.0] — Phase 2: Construction + saves
 
 ### Added

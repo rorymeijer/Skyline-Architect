@@ -55,14 +55,18 @@ public struct DrawItem: Hashable, Sendable {
     /// Minimum raster density (pixels per meter) at which this item is drawn.
     /// Fine detail (grain, rebar) sets this so it only appears when it can be seen.
     public var minDetail: Double
+    /// Raster density from which this item is no longer drawn (exclusive). Level-of-detail
+    /// stand-ins (e.g. an exterior façade replacing the cutaway interior) set this.
+    public var maxDetail: Double
     /// Bounds including stroke width.
     public let bounds: Rect
 
-    public init(shape: DrawShape, fill: Paint? = nil, stroke: Stroke? = nil, minDetail: Double = 0) {
+    public init(shape: DrawShape, fill: Paint? = nil, stroke: Stroke? = nil, minDetail: Double = 0, maxDetail: Double = .infinity) {
         self.shape = shape
         self.fill = fill
         self.stroke = stroke
         self.minDetail = minDetail
+        self.maxDetail = maxDetail
         let pad = (stroke?.width ?? 0) / 2
         self.bounds = shape.bounds.insetBy(dx: -pad, dy: -pad)
     }
@@ -79,6 +83,22 @@ public struct Drawing: Sendable {
     public var bounds: Rect { items.reduce(Rect.null) { $0.union($1.bounds) } }
 
     public mutating func add(_ item: DrawItem) { items.append(item) }
+
+    /// True if the item is drawn at `detail` pixels per meter.
+    public static func isVisible(_ item: DrawItem, at detail: Double) -> Bool {
+        item.minDetail <= detail && detail < item.maxDetail
+    }
+
+    /// Restricts everything added inside `body` to the detail band `[min, max)` (intersected
+    /// with each item's own band). Used for LOD alternatives.
+    public mutating func detailBand(min lo: Double = 0, max hi: Double = .infinity, _ body: (inout Drawing) -> Void) {
+        let start = items.count
+        body(&self)
+        for i in start..<items.count {
+            items[i].minDetail = Swift.max(items[i].minDetail, lo)
+            items[i].maxDetail = Swift.min(items[i].maxDetail, hi)
+        }
+    }
 
     /// Groups everything added inside `body` under a section name.
     public mutating func section(_ name: String, _ body: (inout Drawing) -> Void) {

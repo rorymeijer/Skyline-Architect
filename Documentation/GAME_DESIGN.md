@@ -97,3 +97,11 @@ apartment, mechanical, parking — each with width limits and allowed floors) an
 empty top floor, with a 40 % refund). A live ghost shows green with size and cost, or red
 with the reason. Undo/redo, quicksave, load and autosave work. Construction cost is shown
 but not yet charged; elevators have shafts but no cars; rooms have finishes but no furniture.
+
+## Phase 3 player experience (current)
+
+Every room the player places is furnished automatically from content layouts that adapt to
+the room's width: offices fill with workstations and gain a meeting table when wide enough,
+studios get a kitchenette or a full kitchen and (when wide) a bathroom, lobbies a reception
+desk, parking levels parked cars. Zoomed out, towers show a glass façade; zooming in reveals
+the furnished cutaway. People arrive in Phase 4.
