@@ -157,3 +157,36 @@ private func place(_ p: Person) -> String {
         try f.world.validateIntegrity()
     }
 }
+
+@Suite struct HighRiseTests {
+    /// The `demo-highrise` blueprint (used by the captures): one car for the whole tower,
+    /// so the morning rush builds real queues, and everyone still gets to work.
+    @Test func highRiseMorningQueuesAndArrivals() throws {
+        let library = try ContentLibrary.loadBase()
+        var game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: library)
+        let b = game.world.buildings(on: game.activePropertyID).first!
+        let construction = ConstructionEngine(catalog: library.buildCatalog)
+        for c in try #require(library.blueprint("demo-highrise")).commands(for: b) { try construction.apply(c, to: &game.world) }
+        var world = game.world
+        PopulationSync.sync(&world, catalog: library.buildCatalog, rules: library.simulationRules)
+        let engine = SimulationEngine(rules: library.simulationRules, catalog: library.buildCatalog)
+        let workers = world.people.values.filter { $0.role == .worker }.count
+        var peak = 0, longest: Tick = 0
+        while SimClock.secondOfDay(world.clock.tick) < 10 * 3600 + 1800 {
+            engine.advance(&world, by: 15)
+            var waiting = 0
+            for p in world.people {
+                if case let .waiting(_, _, since) = p.place { waiting += 1; longest = max(longest, world.clock.tick - since) }
+            }
+            peak = max(peak, waiting)
+        }
+        let atWork = world.people.values.filter { p in
+            if case let .room(r, _) = p.place { return r == p.workRoom } else { return false }
+        }.count
+        print("[highrise] workers=\(workers) atWork@10:30=\(atWork) peakWaiting=\(peak) longestWait=\(longest)s")
+        #expect(workers == 24 + 12 * 5)
+        #expect(peak >= 3)                          // arrivals spread over ±40 min; measured 4
+        #expect(atWork == workers)
+        try world.validateIntegrity()
+    }
+}

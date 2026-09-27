@@ -50,10 +50,11 @@ import SkylineCore
         let people = PeopleView.visible(world: w, propertyID: prop, time: 4, visible: view, zoom: 20)
         let rider = try #require(people.first { $0.id == ids[0] })
         #expect(abs(rider.position.y - (later[0].rect.minY + 0.08)) < 1e-9)
-        // Queue: earlier arrival stands nearest the doors.
+        // Queue: the first two stand at the doors, one each side, later ones further out.
         let first = try #require(people.first { $0.id == ids[2] }), second = try #require(people.first { $0.id == ids[1] })
-        #expect(first.position.x > second.position.x)
+        #expect(abs(first.position.x - (11.5 - 0.35)) < 1e-9 && abs(second.position.x - (11.5 + 0.35)) < 1e-9)
         #expect(first.position.y == 8.08)
+        #expect(PeopleView.queueOffset(4) == -(0.35 + 1.1))
         #expect(ElevatorView.visible(world: w, propertyID: prop, time: 4, visible: view, zoom: 2).isEmpty)
     }
 

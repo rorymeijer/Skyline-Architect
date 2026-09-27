@@ -114,9 +114,13 @@ public enum PeopleView {
     /// Walk-cycle stride: one frame per this many meters walked.
     static let metersPerFrame = 0.32
 
-    /// Queue layout at elevator landings (meters from the landing point).
-    static let queueStart = 1.9
-    static let queueSpacing = 0.55
+    /// Where the i-th person in an elevator queue stands, relative to the landing (doors'
+    /// centre): first two at the doors, then alternating outward.
+    static func queueOffset(_ i: Int) -> Double {
+        let rank = Double(i / 2)
+        let side: Double = i % 2 == 0 ? -1 : 1
+        return side * (0.35 + 0.55 * rank)
+    }
 
     /// Standing spots inside a car, around the shaft centre (two rows staggered).
     static func carSlot(_ i: Int) -> Double {
@@ -164,9 +168,8 @@ public enum PeopleView {
                 sprites.append(PersonSprite(id: p.id, position: pos, facing: s.direction, pose: .walking,
                                             frame: frame, look: PersonLook(traits: p.traits, role: p.role)))
             case let .waiting(ride, _, _):
-                // Queue beside the shaft, first in line nearest the doors.
-                let i = Double(queues[p.id] ?? 0)
-                let pos = Vec2(ride.x - queueStart - queueSpacing * i, grid.y(ofFloor: ride.fromFloor) + 0.08)
+                // Queue in front of the landing doors, spreading out to both sides.
+                let pos = Vec2(ride.x + queueOffset(queues[p.id] ?? 0), grid.y(ofFloor: ride.fromFloor) + 0.08)
                 guard area.contains(pos) else { continue }
                 sprites.append(PersonSprite(id: p.id, position: pos, facing: 1, pose: .standing, frame: 0,
                                             look: PersonLook(traits: p.traits, role: p.role)))

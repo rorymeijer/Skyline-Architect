@@ -58,7 +58,7 @@ final class ScreenshotDirector {
     let steps: [Step] = [
         Step(name: "01-morning-queues", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            model.applyBlueprint("demo-tower")
+            model.applyBlueprint("demo-highrise")
             model.advanceSimulation(toTimeOfDay: 7, minute: 40)
             model.advanceSimulation(ticks: model.ticksToBestMoment(within: 100 * 60, step: 10) { ScreenshotDirector.waiting(in: $0) })
             model.refreshSimulationSummary()
@@ -70,7 +70,7 @@ final class ScreenshotDirector {
             model.showDeveloperHUD = false
             model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3600, step: 5) { ScreenshotDirector.waiting(in: $0, floor: 0) })
             if let world = model.world, let car = world.elevators.values.first, let c = ScreenshotDirector.carCenter(car, in: world) {
-                scene.withController { $0.jump(center: Vec2(c.x - 1.5, 2.2), zoom: 42) }
+                scene.withController { $0.jump(center: Vec2(c.x, 2.2), zoom: 42) }
             }
             model.refreshSimulationSummary()
             let n = model.world.map { ScreenshotDirector.waiting(in: $0, floor: 0) } ?? 0
