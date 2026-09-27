@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-linux:
+    name: SkylineKit tests (Linux)
+    runs-on: ubuntu-24.04
+    container: swift:6.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - run: Scripts/test-package.sh
+
+  macos:
+    name: macOS build, tests, iPad build, screenshots
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_16*.app | sort -V | tail -1)"
+          xcodebuild -version
+      - name: Package tests
+        run: Scripts/test-package.sh
+      - name: Build macOS app
+        run: |
+          set -o pipefail
+          Scripts/build-app.sh 2>&1 | tee build-macos.log | grep -E "warning:|error:|\*\* BUILD"
+      - name: Build iPad (Simulator)
+        run: |
+          set -o pipefail
+          Scripts/build-app.sh --ipad 2>&1 | tee build-ipad.log | grep -E "warning:|error:|\*\* BUILD"
+      - name: Capture screenshots
+        run: |
+          if [ -x Scripts/capture-screenshots.sh ]; then Scripts/capture-screenshots.sh ci-output/screenshots; else echo "capture script not present yet"; fi
+      - name: Upload screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-screenshots
+          path: |
+            ci-output/
+            build-*.log
+          if-no-files-found: warn
