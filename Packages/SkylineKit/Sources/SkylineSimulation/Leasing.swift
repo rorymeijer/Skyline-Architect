@@ -8,6 +8,8 @@ public struct UnitAppraisal: Equatable, Sendable {
     public var access: Double
     public var noise: Double
     public var view: Double
+    /// Utilities supplied, cleanliness and condition of the unit (Phase 10).
+    public var services: Double
     public var total: Double
     /// Street-to-unit travel time used for `access` (seconds, incl. expected elevator waits).
     public var accessSeconds: Double
@@ -49,19 +51,39 @@ public enum Leasing {
         let accessScore = seconds.map { clamp(1 - ($0 - 30) / 270) } ?? 0
         let noiseScore = clamp(1 - noiseLevel(around: room, world: world, catalog: catalog))
         let viewScore = 0.2 + 0.8 * min(Double(max(room.floors.lowest, 0)) / 15, 1)
+        let service = engine.rules.facilities == nil ? nil
+            : Utilities.allocate(building: room.buildingID, world: world, catalog: engine.catalog, rules: engine.rules)
+        let servicesScore = servicesLevel(of: room, world: world, service: service)
+        let utilities = service?.minimum(room.id) ?? 1
         let w = type.weights
-        let sum = w.rent + w.access + w.noise + w.view
+        let ws = w.services ?? 0.25
+        let sum = w.rent + w.access + w.noise + w.view + ws
         // A unit nobody can reach is worthless whatever else it offers.
-        let total = seconds == nil ? 0 : (w.rent * rentScore + w.access * accessScore + w.noise * noiseScore + w.view * viewScore) / sum
+        let weighted = (w.rent * rentScore + w.access * accessScore + w.noise * noiseScore + w.view * viewScore
+                        + ws * servicesScore) / sum
+        // A unit without its utilities cannot be used, whatever else it offers.
+        let capped = min(weighted, 0.3 + 0.7 * utilities)
+        let total = seconds == nil ? 0 : capped
         let parts: [(DeclineReason, Double, Double)] = [(.tooExpensive, rentScore, w.rent), (.poorAccess, accessScore, w.access),
-                                                        (.tooNoisy, noiseScore, w.noise), (.poorView, viewScore, w.view)]
-        let weakest = seconds == nil ? .poorAccess : parts.filter { $0.2 > 0 }.min { $0.1 < $1.1 }?.0 ?? .poorAccess
+                                                        (.tooNoisy, noiseScore, w.noise), (.poorView, viewScore, w.view),
+                                                        (.poorServices, servicesScore, ws)]
+        let weakest = seconds == nil ? .poorAccess : capped < weighted ? .poorServices
+            : parts.filter { $0.2 > 0 }.min { $0.1 < $1.1 }?.0 ?? .poorAccess
         return UnitAppraisal(rentPerMonth: rent, rent: rentScore, access: accessScore, noise: noiseScore, view: viewScore,
-                             total: total, accessSeconds: seconds ?? .infinity, weakest: perModule > budget ? .tooExpensive : weakest,
+                             services: servicesScore, total: total, accessSeconds: seconds ?? .infinity, weakest: perModule > budget ? .tooExpensive : weakest,
                              affordable: perModule <= budget)
     }
 
     static func clamp(_ x: Double) -> Double { min(max(x, 0), 1) }
+
+    /// 60 % utilities supplied, 20 % cleanliness, 20 % condition. (The appraisal also caps
+    /// the total at 0.3 + 0.7 × the worst-served utility.)
+    static func servicesLevel(of room: Room, world: GameWorld, service: UtilityService?) -> Double {
+        guard let service else { return 1 }
+        let utilities = service.score(room.id)
+        let u = world.upkeep[room.id]
+        return 0.6 * utilities + 0.2 * (u?.cleanliness ?? 1) + 0.2 * (u?.condition ?? 1)
+    }
 
     /// Noise from neighbours: rooms touching side by side count fully, rooms directly above
     /// or below (overlapping columns) half.
@@ -206,6 +228,7 @@ extension SimulationEngine {
             }
         }
         if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
+            facilitiesDaily(at: now, world: &world)
             closeDay(at: now, world: &world)
             reviewTenants(at: now, world: &world)
         }

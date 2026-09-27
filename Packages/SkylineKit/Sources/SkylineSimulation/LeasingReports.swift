@@ -108,6 +108,7 @@ public struct LeasingSummary: Equatable, Sendable {
         case .poorAccess: "hard to reach"
         case .tooNoisy: "too noisy"
         case .poorView: "poor view"
+        case .poorServices: "poor services"
         }
     }
 }

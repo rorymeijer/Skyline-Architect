@@ -26,12 +26,15 @@ public struct TenantType: Codable, Hashable, Sendable {
         public var access: Double
         public var noise: Double
         public var view: Double
+        /// Utilities, cleanliness and condition (Phase 10; default 0.25 when absent).
+        public var services: Double?
 
-        public init(rent: Double, access: Double, noise: Double, view: Double) {
+        public init(rent: Double, access: Double, noise: Double, view: Double, services: Double? = nil) {
             self.rent = rent
             self.access = access
             self.noise = noise
             self.view = view
+            self.services = services
         }
     }
 

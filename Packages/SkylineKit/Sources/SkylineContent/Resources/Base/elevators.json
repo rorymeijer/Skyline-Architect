@@ -22,5 +22,17 @@
   "expectedWaitSeconds": 30,
   "stops": "ends",
   "patienceSeconds": 240
+ },
+ {
+  "room": "service-elevator",
+  "name": "Service elevator (staff only, 8 persons, 1.6 m/s)",
+  "capacity": 8,
+  "speed": 1.6,
+  "acceleration": 0.8,
+  "doorSeconds": 3,
+  "transferSeconds": 2,
+  "expectedWaitSeconds": 20,
+  "patienceSeconds": 600,
+  "serviceOnly": true
  }
 ]

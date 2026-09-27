@@ -33,6 +33,14 @@ public struct RoomSpec: Codable, Hashable, Sendable {
     public var noise: Double?
     /// Upkeep per module (per floor for shafts) per game day (Phase 9; nil = none).
     public var maintenancePerModulePerDay: Int?
+    /// Utility use per module per floor, by utility id (Phase 10; e.g. "electricity").
+    public var utilityDemand: [String: Double]?
+    /// Utility capacity per module of width, by utility id (equipment rooms, Phase 10).
+    public var utilitySupply: [String: Double]?
+    /// Floors above and below an equipment room that it can serve.
+    public var utilityRange: Int?
+    /// Condition lost per game day (0…1 scale; nil = no wear).
+    public var wearPerDay: Double?
     /// Vertical transport provided by a shaft (`"stairs"`; `"elevator"` from Phase 6).
     public var transport: String?
 

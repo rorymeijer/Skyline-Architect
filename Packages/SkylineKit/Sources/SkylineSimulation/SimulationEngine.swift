@@ -50,7 +50,8 @@ public struct SimulationEngine: Sendable {
     public func advance(_ world: inout GameWorld, by ticks: Tick) -> SimulationReport {
         var report = SimulationReport(ticks: ticks)
         var events = Events(target: world.clock.tick + ticks)
-        if navigation.refresh(world: world, catalog: catalog) || !ElevatorSync.isInSync(world, catalog: catalog, rules: rules) {
+        if navigation.refresh(world: world, catalog: catalog) || !ElevatorSync.isInSync(world, catalog: catalog, rules: rules)
+            || !FacilitiesManagement.isInSync(world) {
             replanAfterConstruction(&world)
         }
         if !rules.tenantTypes.isEmpty { events.push(world.market.nextTick, .market) }
@@ -68,6 +69,11 @@ public struct SimulationEngine: Sendable {
                 handleCar(id, at: tick, world: &world, events: &events, report: &report)
             case let .person(id):
                 guard var person = world.people[id], person.nextEventTick == tick else { continue }
+                if person.role.isStaff, !person.isQueuing {
+                    handleStaff(id, at: tick, world: &world, events: &events)
+                    report.eventsProcessed += 1
+                    continue
+                }
                 let outcome = handle(&person, at: tick, world: world, report: &report)
                 world.people.update(id) { $0 = person }
                 if person.nextEventTick > tick { events.push(person.nextEventTick, .person(id)) }
@@ -91,10 +97,11 @@ public struct SimulationEngine: Sendable {
     }
 
     private func handle(_ p: inout Person, at now: Tick, world: GameWorld, report: inout SimulationReport) -> Outcome {
-        guard let building = world.buildings[p.buildingID], let schedule = rules.schedule(p.scheduleID) else {
+        guard let building = world.buildings[p.buildingID] else {
             p.nextEventTick = now + SimClock.secondsPerDay
             return .none
         }
+        // Elevator mechanics first: they apply to everyone, with or without a schedule (staff).
         // End of the walking part of a trip: the bank assigns a car (walk over to its doors
         // if it is another shaft), then queue; or arrive.
         if case let .travelling(_, destination) = p.place {
@@ -113,6 +120,7 @@ public struct SimulationEngine: Sendable {
                 }
                 return joinQueue(&p, ride, destination, at: now, world: world)
             }
+            guard let schedule = rules.schedule(p.scheduleID) else { p.nextEventTick = now + 900; return .none }
             switch destination {
             case .outside: p.place = .outside
             case let .room(r, x): p.place = world.rooms.contains(r) ? .room(r, x: x) : .outside
@@ -124,12 +132,16 @@ public struct SimulationEngine: Sendable {
         if case let .waiting(ride, destination, _) = p.place {
             var q = p
             if startTrip(&q, from: Spot(floor: ride.fromFloor, x: ride.x), to: destination, building: building,
-                         world: world, now: now, elevators: false),
+                         world: world, now: now, stairsOnly: true),
                q.nextEventTick - now <= rules.maxStairsDetourSeconds {
                 p = q
                 return .abandoned(ride.shaft)
             }
             p.nextEventTick = .max                     // no sensible alternative: keep waiting
+            return .none
+        }
+        guard let schedule = rules.schedule(p.scheduleID) else {
+            p.nextEventTick = now + SimClock.secondsPerDay
             return .none
         }
         guard let goal = p.nextGoal else {
@@ -188,11 +200,13 @@ public struct SimulationEngine: Sendable {
 
     /// Plans and starts a trip (the walking part, plus a pending ride if the route uses an
     /// elevator). Returns false if there is no route; `p` is then unchanged.
+    /// `stairsOnly` excludes all elevators; otherwise staff may use service elevators too.
     func startTrip(_ p: inout Person, from: Spot, to destination: Destination, building: Building,
-                   world: GameWorld, now: Tick, elevators: Bool = true) -> Bool {
+                   world: GameWorld, now: Tick, stairsOnly: Bool = false) -> Bool {
+        let mode: RouteMode = stairsOnly ? .stairsOnly : p.role.isStaff ? .staff : .public
         guard let target = spot(of: destination, building: building, world: world),
               let trip = RoutePlanner.plan(from: from, to: target, building: building, world: world, navigation: navigation,
-                                           catalog: catalog, rules: rules, now: now, elevators: elevators),
+                                           catalog: catalog, rules: rules, now: now, mode: mode),
               let last = trip.legs.last else { return false }
         p.unreachable = false
         p.place = .travelling(legs: trip.legs, destination: destination)
@@ -218,6 +232,10 @@ public struct SimulationEngine: Sendable {
         p.pendingRide = nil
         p.unreachable = true
         p.nextGoal = nil
-        if let schedule = rules.schedule(p.scheduleID) { scheduleNext(&p, after: now, schedule: schedule) }
+        if let schedule = rules.schedule(p.scheduleID) {
+            scheduleNext(&p, after: now, schedule: schedule)
+        } else {
+            p.nextEventTick = now + 900                     // staff: look for work again later
+        }
     }
 }

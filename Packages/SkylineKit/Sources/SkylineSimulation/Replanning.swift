@@ -22,6 +22,7 @@ extension SimulationEngine {
     @discardableResult
     public func replanAfterConstruction(_ world: inout GameWorld) -> ReplanReport {
         ElevatorSync.sync(&world, catalog: catalog, rules: rules)
+        FacilitiesManagement.sync(&world)
         navigation.refresh(world: world, catalog: catalog)
         var report = ReplanReport()
         let now = world.clock.tick
@@ -37,7 +38,8 @@ extension SimulationEngine {
                 continue
             case let .travelling(legs, d):
                 let remaining = legs.filter { $0.end > now }
-                let rideOK = person.pendingRide.map { graph.elevatorServes($0.shaft, $0.fromFloor, $0.toFloor) } ?? true
+                let mode: RouteMode = person.role.isStaff ? .staff : .public
+                let rideOK = person.pendingRide.map { graph.elevatorServes($0.shaft, $0.fromFloor, $0.toFloor, mode: mode) } ?? true
                 guard !rideOK || !remaining.allSatisfy({ Self.isValid($0, in: graph) }) else { continue }
                 position = currentSpot(legs, at: now, grid: world.grid)
                 destination = d

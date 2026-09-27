@@ -96,7 +96,7 @@
     "room": {
      "definition": "parking",
      "start": 0,
-     "count": 12,
+     "count": 9,
      "lowest": -1,
      "highest": -1
     }
@@ -112,7 +112,7 @@
    },
    {
     "room": {
-     "definition": "corridor",
+     "definition": "electrical-room",
      "start": 27,
      "count": 5,
      "lowest": -1,
@@ -405,6 +405,15 @@
      "count": 7,
      "lowest": 8,
      "highest": 8
+    }
+   },
+   {
+    "room": {
+     "definition": "telecom-room",
+     "start": 9,
+     "count": 3,
+     "lowest": -1,
+     "highest": -1
     }
    }
   ]
@@ -590,7 +599,7 @@
     "room": {
      "definition": "parking",
      "start": 0,
-     "count": 12,
+     "count": 9,
      "lowest": -1,
      "highest": -1
     }
@@ -606,7 +615,7 @@
    },
    {
     "room": {
-     "definition": "corridor",
+     "definition": "electrical-room",
      "start": 27,
      "count": 5,
      "lowest": -1,
@@ -1115,6 +1124,15 @@
      "count": 9,
      "lowest": 20,
      "highest": 20
+    }
+   },
+   {
+    "room": {
+     "definition": "telecom-room",
+     "start": 9,
+     "count": 3,
+     "lowest": -1,
+     "highest": -1
     }
    }
   ]
@@ -1485,7 +1503,7 @@
     "room": {
      "definition": "parking",
      "start": 16,
-     "count": 16,
+     "count": 8,
      "lowest": -1,
      "highest": -1
     }
@@ -1503,7 +1521,7 @@
     "room": {
      "definition": "sky-lobby",
      "start": 16,
-     "count": 16,
+     "count": 8,
      "lowest": 21,
      "highest": 21
     }
@@ -2028,6 +2046,51 @@
      "count": 6,
      "lowest": 40,
      "highest": 40
+    }
+   },
+   {
+    "room": {
+     "definition": "electrical-room",
+     "start": 24,
+     "count": 4,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "telecom-room",
+     "start": 28,
+     "count": 4,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "mechanical",
+     "start": 13,
+     "count": 3,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "mechanical",
+     "start": 24,
+     "count": 8,
+     "lowest": 21,
+     "highest": 21
+    }
+   },
+   {
+    "room": {
+     "definition": "electrical-room",
+     "start": 10,
+     "count": 3,
+     "lowest": 21,
+     "highest": 21
     }
    }
   ]

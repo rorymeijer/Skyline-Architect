@@ -13,7 +13,12 @@
   "lowestLevel": 0,
   "highestLevel": 0,
   "noise": 0.2,
-  "maintenancePerModulePerDay": 4
+  "maintenancePerModulePerDay": 4,
+  "utilityDemand": {
+   "electricity": 1,
+   "hvac": 1
+  },
+  "wearPerDay": 0.01
  },
  {
   "id": "sky-lobby",
@@ -28,7 +33,12 @@
   "costPerModule": 1100,
   "lowestLevel": 1,
   "noise": 0.15,
-  "maintenancePerModulePerDay": 4
+  "maintenancePerModulePerDay": 4,
+  "utilityDemand": {
+   "electricity": 1,
+   "hvac": 1
+  },
+  "wearPerDay": 0.01
  },
  {
   "id": "corridor",
@@ -42,7 +52,11 @@
   "maxFloors": 1,
   "costPerModule": 300,
   "noise": 0.05,
-  "maintenancePerModulePerDay": 1
+  "maintenancePerModulePerDay": 1,
+  "utilityDemand": {
+   "electricity": 0.3
+  },
+  "wearPerDay": 0.006
  },
  {
   "id": "stairs",
@@ -72,7 +86,10 @@
   "costPerModule": 4500,
   "transport": "elevator",
   "noise": 0.25,
-  "maintenancePerModulePerDay": 12
+  "maintenancePerModulePerDay": 12,
+  "utilityDemand": {
+   "electricity": 2
+  }
  },
  {
   "id": "elevator-express",
@@ -87,7 +104,28 @@
   "costPerModule": 7500,
   "transport": "elevator",
   "noise": 0.3,
-  "maintenancePerModulePerDay": 18
+  "maintenancePerModulePerDay": 18,
+  "utilityDemand": {
+   "electricity": 3
+  }
+ },
+ {
+  "id": "service-elevator",
+  "name": "Service Elevator",
+  "category": "circulation",
+  "kind": "shaft",
+  "appearance": "elevatorShaft",
+  "minWidth": 3,
+  "maxWidth": 3,
+  "minFloors": 2,
+  "maxFloors": 400,
+  "costPerModule": 3800,
+  "noise": 0.2,
+  "maintenancePerModulePerDay": 8,
+  "transport": "elevator",
+  "utilityDemand": {
+   "electricity": 1.5
+  }
  },
  {
   "id": "office-small",
@@ -103,7 +141,14 @@
   "lowestLevel": 1,
   "noise": 0.1,
   "rentPerModule": 380,
-  "maintenancePerModulePerDay": 6
+  "maintenancePerModulePerDay": 6,
+  "utilityDemand": {
+   "electricity": 3,
+   "hvac": 2,
+   "water": 0.5,
+   "data": 2
+  },
+  "wearPerDay": 0.012
  },
  {
   "id": "apartment-studio",
@@ -119,7 +164,14 @@
   "lowestLevel": 1,
   "noise": 0.05,
   "rentPerModule": 210,
-  "maintenancePerModulePerDay": 5
+  "maintenancePerModulePerDay": 5,
+  "utilityDemand": {
+   "electricity": 2,
+   "hvac": 1.5,
+   "water": 2,
+   "data": 1
+  },
+  "wearPerDay": 0.01
  },
  {
   "id": "mechanical",
@@ -127,13 +179,57 @@
   "category": "infrastructure",
   "kind": "room",
   "appearance": "mechanical",
-  "minWidth": 4,
+  "minWidth": 3,
   "maxWidth": 12,
   "minFloors": 1,
   "maxFloors": 1,
   "costPerModule": 2000,
   "noise": 0.8,
-  "maintenancePerModulePerDay": 8
+  "maintenancePerModulePerDay": 8,
+  "wearPerDay": 0.035,
+  "utilitySupply": {
+   "hvac": 70,
+   "water": 40
+  },
+  "utilityRange": 20
+ },
+ {
+  "id": "electrical-room",
+  "name": "Electrical Room",
+  "category": "infrastructure",
+  "kind": "room",
+  "appearance": "electrical",
+  "minWidth": 3,
+  "maxWidth": 12,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 5200,
+  "noise": 0.3,
+  "maintenancePerModulePerDay": 10,
+  "utilitySupply": {
+   "electricity": 120
+  },
+  "utilityRange": 25,
+  "wearPerDay": 0.03
+ },
+ {
+  "id": "telecom-room",
+  "name": "Telecom Room",
+  "category": "infrastructure",
+  "kind": "room",
+  "appearance": "telecom",
+  "minWidth": 3,
+  "maxWidth": 8,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 4800,
+  "noise": 0.15,
+  "maintenancePerModulePerDay": 8,
+  "utilitySupply": {
+   "data": 150
+  },
+  "utilityRange": 45,
+  "wearPerDay": 0.02
  },
  {
   "id": "parking",
@@ -148,6 +244,10 @@
   "costPerModule": 800,
   "highestLevel": -1,
   "noise": 0.35,
-  "maintenancePerModulePerDay": 3
+  "maintenancePerModulePerDay": 3,
+  "utilityDemand": {
+   "electricity": 0.5
+  },
+  "wearPerDay": 0.005
  }
 ]

@@ -40,7 +40,7 @@ private func place(_ p: Person) -> String {
 @Suite struct ElevatorDispatchTests {
     @Test func carsAreCreatedForShaftsAndFollowDemolition() throws {
         var f = try SimFixture()
-        #expect(f.world.elevators.isEmpty)
+        #expect(f.world.elevators.count == 1)                 // created by the fixture's sync
         f.engine.advance(&f.world, by: 1)
         let shaft = try #require(f.world.rooms.values.first { $0.definitionID == "elevator-shaft" })
         #expect(f.world.elevators.values.map(\.id) == [shaft.id])

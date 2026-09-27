@@ -213,18 +213,30 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(save.world.buildings.values.allSatisfy { $0.rentLevel == 1 })
     }
 
-    /// Golden fixture v6 (ledger, rent level). Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV6`.
+    /// Golden fixture v6 (ledger, rent level). Frozen since format 7: daily totals and decline
+    /// counts gain a column; upkeep is created on the next simulation step.
     @Test func goldenFixtureV6StillLoads() throws {
-        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v6.skylinesave")
-            try SaveCodec.encode(makeElevatorSave()).write(to: source)
-            return
-        }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v6.skylinesave")), availablePacks: basePacks)
         #expect(save.world.ledger.journal.contains { $0.category == .grant })
         #expect(save.world.ledger.cash == save.world.ledger.journal.reduce(0) { $0 + $1.amount })
+        #expect(save.world.tenants.count == 15)
+        #expect(save.world.ledger.days.allSatisfy { $0.amounts.count == LedgerCategory.allCases.count })
+        #expect(save.world.market.declined.count == DeclineReason.allCases.count)
+        #expect(save.world.upkeep.isEmpty)
+    }
+
+    /// Golden fixture v7 (upkeep, facilities). Regenerate only deliberately:
+    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV7`.
+    @Test func goldenFixtureV7StillLoads() throws {
+        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
+            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v7.skylinesave")
+            try SaveCodec.encode(makeElevatorSave()).write(to: source)
+            return
+        }
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v7.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.upkeep.count == save.world.rooms.count)
         #expect(save.world.tenants.count == 15)
     }
 

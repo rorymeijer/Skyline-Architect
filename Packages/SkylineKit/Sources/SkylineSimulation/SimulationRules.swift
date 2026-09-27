@@ -75,10 +75,12 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
     /// Typical patience at a landing before taking the stairs (default 150 s; personal
     /// variation ±50 %).
     public var patienceSeconds: Double?
+    /// Staff only (service elevator, Phase 10): tenants and visitors never board.
+    public var serviceOnly: Bool?
 
     public init(room: String, name: String, capacity: Int, speed: Double, acceleration: Double,
                 doorSeconds: Tick, transferSeconds: Tick, expectedWaitSeconds: Double,
-                stops: String? = nil, patienceSeconds: Double? = nil) {
+                stops: String? = nil, patienceSeconds: Double? = nil, serviceOnly: Bool? = nil) {
         self.room = room
         self.name = name
         self.capacity = capacity
@@ -89,6 +91,7 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
         self.expectedWaitSeconds = expectedWaitSeconds
         self.stops = stops
         self.patienceSeconds = patienceSeconds
+        self.serviceOnly = serviceOnly
     }
 
     /// Floors of a shaft spanning `floors` where cars stop.
@@ -155,6 +158,67 @@ public struct EconomyRules: Codable, Hashable, Sendable {
     }
 }
 
+/// Utilities, upkeep and staff rules (`facilities.json`, Phase 10).
+public struct FacilitiesRules: Codable, Hashable, Sendable {
+    public struct Utility: Codable, Hashable, Sendable {
+        public var id: String
+        public var name: String
+    }
+
+    public var utilities: [Utility]
+    public var janitorWagePerDay: Int
+    public var technicianWagePerDay: Int
+    /// Cleanliness lost per person belonging to a room, per day.
+    public var dirtPerPersonPerDay: Double
+    /// Cleanliness lost per day by shared rooms (lobbies, corridors).
+    public var circulationDirtPerDay: Double
+    /// Job thresholds: clean below, repair below (equipment earlier), equipment fails below.
+    public var cleanBelow: Double
+    public var repairBelow: Double
+    public var equipmentRepairBelow: Double
+    public var failureBelow: Double
+    public var cleanMinutes: Int
+    public var repairMinutes: Int
+    /// Staff shift, "HH:MM".
+    public var shiftStart: String
+    public var shiftEnd: String
+
+    public init(utilities: [Utility], janitorWagePerDay: Int, technicianWagePerDay: Int, dirtPerPersonPerDay: Double,
+                circulationDirtPerDay: Double, cleanBelow: Double, repairBelow: Double, equipmentRepairBelow: Double,
+                failureBelow: Double, cleanMinutes: Int, repairMinutes: Int, shiftStart: String, shiftEnd: String) {
+        self.utilities = utilities
+        self.janitorWagePerDay = janitorWagePerDay
+        self.technicianWagePerDay = technicianWagePerDay
+        self.dirtPerPersonPerDay = dirtPerPersonPerDay
+        self.circulationDirtPerDay = circulationDirtPerDay
+        self.cleanBelow = cleanBelow
+        self.repairBelow = repairBelow
+        self.equipmentRepairBelow = equipmentRepairBelow
+        self.failureBelow = failureBelow
+        self.cleanMinutes = cleanMinutes
+        self.repairMinutes = repairMinutes
+        self.shiftStart = shiftStart
+        self.shiftEnd = shiftEnd
+    }
+
+    var shift: (start: Tick, end: Tick)? {
+        guard let a = Schedule.Event(at: shiftStart, jitterMinutes: 0, goal: .work).secondOfDay,
+              let b = Schedule.Event(at: shiftEnd, jitterMinutes: 0, goal: .work).secondOfDay, a < b else { return nil }
+        return (a, b)
+    }
+
+    public var problems: [String] {
+        var p: [String] = []
+        if utilities.isEmpty || Set(utilities.map(\.id)).count != utilities.count { p.append("facilities: utilities must be unique and not empty") }
+        if janitorWagePerDay < 0 || technicianWagePerDay < 0 { p.append("facilities: wages must be ≥ 0") }
+        for v in [dirtPerPersonPerDay, circulationDirtPerDay, cleanBelow, repairBelow, equipmentRepairBelow, failureBelow]
+        where !(0...1).contains(v) { p.append("facilities: rates and thresholds must be 0…1") }
+        if cleanMinutes < 1 || repairMinutes < 1 { p.append("facilities: job durations must be ≥ 1 minute") }
+        if shift == nil { p.append("facilities: shiftStart must be a time before shiftEnd") }
+        return p
+    }
+}
+
 /// Everything the simulation needs from content, plus movement constants.
 public struct SimulationRules: Sendable {
     public let schedules: [Schedule]
@@ -162,6 +226,7 @@ public struct SimulationRules: Sendable {
     public let elevators: [ElevatorSpec]
     public let tenantTypes: [TenantType]
     public let economy: EconomyRules?
+    public let facilities: FacilitiesRules?
     /// Walking speed in meters per game second.
     public var walkSpeed = 1.3
     /// Game seconds to climb or descend one storey by stairs.
@@ -173,12 +238,13 @@ public struct SimulationRules: Sendable {
     public var maxStairsDetourSeconds: Tick = 300
 
     public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenantTypes: [TenantType] = [],
-                economy: EconomyRules? = nil) {
+                economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil) {
         self.schedules = schedules
         self.names = names
         self.elevators = elevators
         self.tenantTypes = tenantTypes
         self.economy = economy
+        self.facilities = facilities
     }
 
     public func tenantType(_ id: String) -> TenantType? { tenantTypes.first { $0.id == id } }
