@@ -11,12 +11,13 @@ public struct LitRoom: Hashable, Sendable {
 /// the scene is multiplied with, and which rooms glow at night. Pure presentation — the
 /// simulation does not depend on it. Full lighting (light sources, grading) is Phase 12.
 public enum DayNight {
-    /// 0 (night) … 1 (day): sunrise 05:30–07:30, sunset 18:30–20:30, smoothed.
+    /// 0 (night) … 1 (day): sunrise 04:45–06:15, sunset 19:00–21:00, smoothed (a summer
+    /// day, so the game's 06:00 start is light).
     public static func daylight(secondOfDay s: Double) -> Double {
         func smooth(_ x: Double) -> Double { let t = min(max(x, 0), 1); return t * t * (3 - 2 * t) }
         let h = s / 3600
-        if h < 12 { return smooth((h - 5.5) / 2) }
-        return 1 - smooth((h - 18.5) / 2)
+        if h < 12 { return smooth((h - 4.75) / 1.5) }
+        return 1 - smooth((h - 19) / 2)
     }
 
     public static func daylight(atTick t: Double) -> Double {

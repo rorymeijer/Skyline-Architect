@@ -212,3 +212,21 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Decision:** Room `occupancy` moved into tenant types; `PopulationSync` only ends leases of demolished units and adopts people of older saves into tenants. Tests and the developer menu use `Leasing.fillAll`.
 - **Reason:** Replaces the Phase 4 stand-in (D-021) as planned instead of layering on it; keeps old saves playable without inventing data (adoption is based on who is already there).
 - **Consequences:** A new building starts empty and fills over the first game days.
+
+## D-031 — Money moves only through the ledger; construction is settled by the history
+- **Date:** 2026-09-27
+- **Decision:** Every change of cash is a posted `Transaction` with category and attribution. Construction is charged in `ConstructionHistory` (not in `ConstructionEngine`): perform posts the plan cost, undo posts its exact reversal, redo charges again; insufficient cash refuses the command before the world changes.
+- **Alternatives:** Charging inside `ConstructionEngine.apply` (undo would then pay the inverse command's price, e.g. a demolition refund instead of the full cost).
+- **Reason:** Keeps construction commands pure and exactly invertible (rule 16) while making undo financially neutral; traceability is pillar 3.
+- **Consequences:** Commands applied directly through the engine (tests, fixtures) are free; the app always goes through the history.
+
+## D-032 — One game day bills one rent month
+- **Date:** 2026-09-27
+- **Decision:** Rents are quoted monthly but collected in full at each daily closing (`rentDaysPerMonth: 1` in content).
+- **Reason:** A game day lasts an hour at 1×; monthly billing would make income invisible for 30 hours of play. The factor is data, so scenarios can choose otherwise.
+- **Consequences:** Costs are daily amounts sized against that income; balancing continues with Phase 10 costs.
+
+## D-033 — Day/night is presentation only (for now)
+- **Date:** 2026-09-27
+- **Decision:** Daylight, ambient tint and lit rooms are computed in Presentation from the clock and people's places; the simulation does not depend on light.
+- **Reason:** Delivers the M1 visual requirement cheaply; energy use and light sources belong to Phase 12, where lighting becomes simulation input.

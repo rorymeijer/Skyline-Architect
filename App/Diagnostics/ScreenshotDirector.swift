@@ -76,6 +76,7 @@ final class ScreenshotDirector {
         },
         Step(name: "03-first-rent", grid: false) { model, scene in
             model.borrow()
+            model.advanceSimulation(toTimeOfDay: 12, minute: 0)
             model.advanceSimulation(toTimeOfDay: 6, minute: 5)            // day 2, after the first closing
             model.refreshSimulationSummary()
             let e = model.economy
@@ -84,7 +85,7 @@ final class ScreenshotDirector {
         },
         Step(name: "04-dusk", grid: false) { model, scene in
             model.showEconomyPanel = false
-            model.advanceSimulation(toTimeOfDay: 19, minute: 40)
+            model.advanceSimulation(toTimeOfDay: 20, minute: 10)
             model.refreshSimulationSummary()
             return "\(model.clockText): dusk — ambient light \(Int(DayNight.daylight(atTick: Double(model.world?.clock.tick ?? 0)) * 100)) %, lights coming on."
         },

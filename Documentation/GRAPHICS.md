@@ -71,3 +71,12 @@ based LOD, not a fixed zoom. Below-grade levels always stay in section.
   (characters, furniture close-ups, elevator cars, façade materials, effects).
 * No lighting model yet (day only; day/night lands in Phase 9/12).
 * No shaders yet; depth comes from gradients and contact darkening.
+
+## Day/night (Phase 9, basic) — FUNCTIONAL
+
+`DayNight` (Presentation) gives daylight 0…1 from the time of day (sunrise 04:45–06:15,
+sunset 19:00–21:00), an ambient multiply colour (white → warm at dusk → blue night) and the
+rooms lit from inside (occupied rooms fully, lobbies/corridors dimly). The app draws a
+screen-sized multiply sprite over the world and additive warm quads over lit rooms; UI and
+labels stay untinted. Purely presentational — the simulation never reads it. Full lighting
+(light sources, window emission, grading, energy) is Phase 12.

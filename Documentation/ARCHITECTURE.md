@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Phase 8 (2026-09-27). This document describes what exists and the intended evolution.
+Status: Phase 9 (2026-09-27). This document describes what exists and the intended evolution.
 Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomplete) or
 **PLANNED** (design only).
 
@@ -142,7 +142,7 @@ packs merged by id — the engine never executes mod code. See MODDING.md.
 * Sky is a screen-space gradient sprite.
 * `RenderDiagnostics` is published to the SwiftUI HUD at 4 Hz, never per frame.
 
-## 5b. Simulation & navigation (SkylineSimulation) — FUNCTIONAL (Phases 4–8)
+## 5b. Simulation & navigation (SkylineSimulation) — FUNCTIONAL (Phases 4–9)
 
 `SimulationEngine` (value type) advances the world event by event; `NavigationService`
 (a shared, internally locked cache owned by the engine) holds per-building
@@ -153,7 +153,9 @@ also keeps one `ElevatorCar` per elevator shaft). Cars and people share one even
 (D-025); the app draws cars with `ElevatorView` → `ElevatorLayer`. Banks are derived from
 adjacency (D-027); `ElevatorTraffic` feeds the traffic overlay and the bank panel. Tenants
 and the rental market (`Leasing`, an hourly event in the same queue) are described in
-TENANTS.md; `UnitReport` / `LeasingSummary` feed the inspector and leasing panel.
+TENANTS.md; `UnitReport` / `LeasingSummary` feed the inspector and leasing panel. Money
+(ECONOMY.md): the `Ledger` lives in Core; construction is settled by `ConstructionHistory`
+(D-031), daily closing runs with the 06:00 market step, `EconomySummary` feeds the panel.
 
 ## 6. Concurrency model
 

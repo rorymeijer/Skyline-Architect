@@ -8,9 +8,9 @@ import SkylineContent
         #expect(DayNight.daylight(secondOfDay: 3 * 3600) == 0)
         #expect(DayNight.daylight(secondOfDay: 12 * 3600) == 1)
         #expect(DayNight.daylight(secondOfDay: 23 * 3600) == 0)
-        let dawn = DayNight.daylight(secondOfDay: 6.5 * 3600), dusk = DayNight.daylight(secondOfDay: 19.5 * 3600)
+        let dawn = DayNight.daylight(secondOfDay: 5.5 * 3600), dusk = DayNight.daylight(secondOfDay: 20 * 3600)
         #expect(dawn > 0.3 && dawn < 0.7 && dusk > 0.3 && dusk < 0.7)
-        #expect(DayNight.daylight(atTick: 0) < DayNight.daylight(atTick: 3600))        // tick 0 is 06:00
+        #expect(DayNight.daylight(atTick: 0) > 0.9)                                    // tick 0 is 06:00: light
         #expect(DayNight.ambient(daylight: 1) == RGBA(1, 1, 1))
         #expect(DayNight.ambient(daylight: 0).b > DayNight.ambient(daylight: 0).r)      // blue night
     }
