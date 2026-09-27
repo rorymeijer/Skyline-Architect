@@ -42,6 +42,10 @@ final class AppModel {
     var unitReport: UnitReport?
     var leasing = LeasingSummary()
     var showLeasingPanel = false
+    /// Money (Phase 9, 4 Hz), economy panel, start menu, bankruptcy.
+    var economy = EconomySummary()
+    var showEconomyPanel = false
+    var showMainMenu = false
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 
@@ -50,8 +54,6 @@ final class AppModel {
     private(set) var diagnostics = RenderDiagnostics()
 
     private(set) var activeTool: ConstructionTool?
-    /// Sum of construction costs this session. Not charged: the economy arrives in Phase 9.
-    private(set) var sessionBuildCost = 0
     private(set) var canUndo = false
     private(set) var canRedo = false
     private(set) var lastSaveDescription: String?
@@ -61,10 +63,6 @@ final class AppModel {
     @ObservationIgnored private(set) var library: ContentLibrary?
     @ObservationIgnored private var engine: ConstructionEngine?
     @ObservationIgnored private var history = ConstructionHistory()
-    /// Costs of the commands on the undo / redo stacks, so undo and redo keep the session
-    /// total consistent.
-    @ObservationIgnored private var undoCosts: [Int] = []
-    @ObservationIgnored private var redoCosts: [Int] = []
     @ObservationIgnored private(set) var saveStore: SaveStore
     @ObservationIgnored var hasUnsavedChanges = false
     @ObservationIgnored private var autosaveTimer: Timer?
@@ -92,11 +90,15 @@ final class AppModel {
         } catch {
             loadError = "\(error)"
         }
+        // The player starts at the main menu (the new game waits paused behind it).
+        showMainMenu = true
+        setSpeed(.paused)
         #if DEBUG
         if let config = ScreenshotDirector.Configuration(arguments: arguments), let scene {
             // Captures must never touch the player's real saves.
             saveStore = SaveStore(directory: config.directory.appendingPathComponent("saves", isDirectory: true))
             showDeveloperHUD = true
+            showMainMenu = false
             let director = ScreenshotDirector(configuration: config, model: self)
             screenshotDirector = director
             scene.onReady = { [weak director] in director?.start() }
@@ -135,15 +137,13 @@ final class AppModel {
         simulation?.replanAfterConstruction(&world)     // also creates elevator cars
         self.world = world
         self.activePropertyID = activePropertyID
+        showMainMenu = false
         let property = world.properties[activePropertyID]
         propertyName = property?.name ?? "—"
         cityName = property.flatMap { world.cities[$0.cityID]?.name } ?? "—"
         refreshSimulationSummary()
         history.clear()
-        undoCosts.removeAll()
-        redoCosts.removeAll()
         refreshUndoState()
-        sessionBuildCost = 0
         hasUnsavedChanges = false
         activeTool = nil
         guard let composition = SiteComposer.compose(world: world, propertyID: activePropertyID, catalog: catalog, art: art) else {
@@ -186,6 +186,12 @@ final class AppModel {
         }
         scene.onCommit = { [weak self] command in self?.perform(command) }
         scene.onSelect = { [weak self] cell in self?.selectRoom(at: cell) }
+        scene.lightingProvider = { [weak self] visible in
+            guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return (1, []) }
+            let t = Double(world.clock.tick) + self.host.fraction
+            return (DayNight.daylight(atTick: t),
+                    DayNight.litRooms(world: world, propertyID: property, catalog: catalog, time: t, visible: visible))
+        }
         if let previous {
             scene.onReady = previous.onReady
             // Keep the camera where the player was looking.
@@ -223,7 +229,6 @@ final class AppModel {
         guard var world, let engine else { return false }
         do {
             let applied = try history.perform(command, engine: engine, world: &world)
-            record(cost: applied.plan.cost)
             commit(world, plan: applied.plan)
             return true
         } catch {
@@ -236,9 +241,6 @@ final class AppModel {
         guard var world, let engine else { return }
         do {
             if let applied = try history.undo(engine: engine, world: &world) {
-                let cost = undoCosts.popLast() ?? 0
-                sessionBuildCost -= cost
-                redoCosts.append(cost)
                 commit(world, plan: applied.plan)
             }
         } catch {
@@ -250,9 +252,6 @@ final class AppModel {
         guard var world, let engine else { return }
         do {
             if let applied = try history.redo(engine: engine, world: &world) {
-                let cost = redoCosts.popLast() ?? 0
-                sessionBuildCost += cost
-                undoCosts.append(cost)
                 commit(world, plan: applied.plan)
             }
         } catch {
@@ -265,20 +264,23 @@ final class AppModel {
         guard var world, let engine, let property = activePropertyID,
               let blueprint = library?.blueprint(id), let building = world.buildings(on: property).first else { return }
         do {
+            #if DEBUG
+            // Developer tool: grant whatever the blueprint costs beyond the cash at hand.
+            let cost = blueprint.commands(for: building).reduce(0) { sum, c in
+                sum + max((try? engine.validate(c, in: world).get().cost) ?? 0, 0)
+            }
+            if cost > world.ledger.cash {
+                world.ledger.post(Transaction(tick: world.clock.tick, amount: cost - world.ledger.cash, category: .grant,
+                                              detail: "Developer grant for blueprint \(id)"))
+            }
+            #endif
             for command in blueprint.commands(for: building) {
-                record(cost: try history.perform(command, engine: engine, world: &world).plan.cost)
+                try history.perform(command, engine: engine, world: &world)
             }
         } catch {
             alert = AppAlert(title: "Blueprint failed", message: "\(error)")
         }
         commit(world, plan: nil)
-    }
-
-    private func record(cost: Int) {
-        sessionBuildCost += cost
-        undoCosts.append(cost)
-        if undoCosts.count > history.limit { undoCosts.removeFirst(undoCosts.count - history.limit) }
-        redoCosts.removeAll()
     }
 
     /// Stores the new world and re-renders only what changed (`plan` nil = everything).
@@ -304,7 +306,7 @@ final class AppModel {
 
     // MARK: Saving
 
-    private var packReferences: [ContentPackReference] {
+    var packReferences: [ContentPackReference] {
         library.map { [ContentPackReference(id: $0.manifest.id, version: $0.manifest.version)] } ?? []
     }
 

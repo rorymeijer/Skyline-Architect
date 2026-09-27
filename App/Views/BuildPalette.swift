@@ -136,14 +136,15 @@ private struct PressableStyle: ButtonStyle {
     }
 }
 
-/// Session status: construction cost (not yet charged), save state, active-tool hint.
+/// Session status: cash, save state, active-tool hint.
 struct StatusPill: View {
     let model: AppModel
 
     var body: some View {
         HStack(spacing: 10) {
-            Label(Money.format(model.sessionBuildCost), systemImage: "building.2.crop.circle")
-                .help("Construction cost this session. Money is not charged until the economy arrives (Phase 9).")
+            Label(Money.format(model.economy.cash), systemImage: "banknote")
+                .foregroundStyle(model.economy.cash < 0 ? Color.red : Color.primary)
+                .help("Cash. Construction is paid immediately; rent and costs settle daily at 06:00 (⌥⌘M).")
             if let save = model.lastSaveDescription {
                 Text(save).foregroundStyle(.secondary)
             }

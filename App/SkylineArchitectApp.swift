@@ -65,6 +65,8 @@ struct GameCommands: Commands {
                 .keyboardShortcut("e", modifiers: [.command, .option])
             Button(model.showLeasingPanel ? "Hide Leasing" : "Show Leasing") { model.showLeasingPanel.toggle() }
                 .keyboardShortcut("l", modifiers: [.command, .option])
+            Button(model.showEconomyPanel ? "Hide Economy" : "Show Economy") { model.showEconomyPanel.toggle() }
+                .keyboardShortcut("m", modifiers: [.command, .option])
             #if DEBUG
             Button(model.showNavigationOverlay ? "Hide Navigation Overlay" : "Show Navigation Overlay") { model.toggleNavigationOverlay() }
                 .keyboardShortcut("n", modifiers: [.command, .option])

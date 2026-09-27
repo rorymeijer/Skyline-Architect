@@ -55,6 +55,9 @@ final class WorldScene: SKScene {
     /// World rectangle of the selected room, outlined on screen.
     var selectionRect: Rect? { didSet { overlayDirty = true } }
     private let selectionOutline = SKShapeNode()
+    /// Daylight (0…1) and lit rooms for the visible area; nil = always day.
+    var lightingProvider: ((Rect) -> (daylight: Double, rooms: [LitRoom]))?
+    private let dayNight = DayNightLayer()
     var onCommit: ((BuildCommand) -> Void)?
     private var placementAnchor: GridCell?
     /// Camera placement to use when first presented (nil = site overview).
@@ -115,6 +118,10 @@ final class WorldScene: SKScene {
         worldRoot.addChild(deep)
 
         worldRoot.addChild(tileLayer.node)
+        dayNight.tint.zPosition = 8
+        addChild(dayNight.tint)
+        dayNight.lights.zPosition = 9
+        worldRoot.addChild(dayNight.lights)
         elevatorLayer.node.zPosition = 4
         worldRoot.addChild(elevatorLayer.node)
         agentLayer.node.zPosition = 5
@@ -250,6 +257,8 @@ final class WorldScene: SKScene {
         }
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         elevatorLayer.update(carProvider?(camera.visibleRect, camera.zoom) ?? [])
+        let lighting = lightingProvider?(camera.visibleRect) ?? (1, [])
+        dayNight.update(daylight: lighting.daylight, rooms: lighting.rooms, viewport: size)
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
         navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
         trafficOverlay.update(traffic: trafficProvider?(), camera: camera)

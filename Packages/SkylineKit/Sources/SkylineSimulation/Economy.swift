@@ -70,3 +70,44 @@ extension SimulationEngine {
         if world.ledger.negativeDays >= economy.bankruptcyDays { world.ledger.bankrupt = true }
     }
 }
+
+/// What the economy panel shows (Phase 9). Pure data.
+public struct EconomySummary: Equatable, Sendable {
+    public var cash = 0
+    public var loans = 0
+    public var canBorrow = false
+    public var canRepay = false
+    public var loanStep = 0
+    /// The last completed daily closing and the last 7 days.
+    public var lastDay = DayTotals(day: 0)
+    public var week = DayTotals(day: 0)
+    public var rentLevel = 1.0
+    public var negativeDays = 0
+    public var bankruptcyDays = 7
+    public var bankrupt = false
+    /// Latest transactions, newest first ("D3 06:00  +1,234  Rent — Meridian Labs").
+    public var recent: [Transaction] = []
+
+    public init() {}
+
+    public static func make(world: GameWorld, rules: SimulationRules, building: BuildingID?, recent limit: Int = 10) -> EconomySummary {
+        var s = EconomySummary()
+        let ledger = world.ledger
+        s.cash = ledger.cash
+        s.loans = ledger.loans
+        if let e = rules.economy {
+            s.loanStep = e.loanStep
+            s.canBorrow = ledger.loans + e.loanStep <= e.maxLoans
+            s.canRepay = ledger.loans > 0 && ledger.cash >= min(e.loanStep, ledger.loans)
+            s.bankruptcyDays = e.bankruptcyDays
+        }
+        let today = SimClock.day(world.clock.tick)
+        s.lastDay = ledger.days.last(where: { $0.day == today }) ?? DayTotals(day: today)
+        s.week = ledger.totals(lastDays: 7)
+        s.rentLevel = building.flatMap { world.buildings[$0]?.rentLevel } ?? 1
+        s.negativeDays = ledger.negativeDays
+        s.bankrupt = ledger.bankrupt
+        s.recent = ledger.journal.suffix(limit).reversed()
+        return s
+    }
+}

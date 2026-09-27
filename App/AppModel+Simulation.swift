@@ -61,6 +61,7 @@ extension AppModel {
         if let simulation { navigationMetrics = simulation.navigation.metrics }
         banks = traffic()?.banks ?? []
         refreshLeasing()
+        refreshEconomy()
     }
 
     // MARK: Elevator banks

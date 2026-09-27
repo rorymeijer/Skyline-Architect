@@ -84,6 +84,10 @@ public enum PlacementPlanner {
             if let widthModules { parts.append("\(Int(Double(widthModules) * world.grid.moduleWidth)) m") }
             if let floors { parts.append("\(floors) floors") }
             parts.append(plan.cost < 0 ? "refund \(Money.format(-plan.cost))" : Money.format(plan.cost))
+            if plan.cost > world.ledger.cash {
+                return PlacementPreview(command: nil, rect: rect, isValid: false, isDemolition: demolition,
+                                        label: "\(name): not enough money (\(Money.format(plan.cost)), have \(Money.format(world.ledger.cash)))")
+            }
             return PlacementPreview(command: command, rect: rect, isValid: true, isDemolition: demolition, label: parts.joined(separator: " · "))
         case .failure(let error):
             return PlacementPreview(command: nil, rect: rect, isValid: false, isDemolition: demolition, label: "\(name): \(error)")

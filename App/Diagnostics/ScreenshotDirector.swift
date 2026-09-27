@@ -55,75 +55,68 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
+    /// Phase 9 = milestone M1: the captures walk the First Playable checklist.
     let steps: [Step] = [
-        Step(name: "01-vacant-tower", grid: false) { model, scene in
-            model.setSpeed(.paused)  // captures advance time explicitly
-            model.applyBlueprint("demo-tower")
+        Step(name: "01-main-menu", grid: false) { model, scene in
             model.showDeveloperHUD = false
-            model.showLeasingPanel = true
+            model.showMainMenu = true
+            scene.apply(preset: .overview)
+            return "Launch: main menu (no saves yet, so no Continue)."
+        },
+        Step(name: "02-build-and-pay", grid: false) { model, scene in
+            model.startFromMenu()
+            model.setSpeed(.paused)  // captures advance time explicitly
+            let before = model.world?.ledger.cash ?? 0
+            model.applyBlueprint("demo-tower")
+            model.showEconomyPanel = true
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            return "New demo tower at \(model.clockText): \(model.leasing.units) rentable units, \(model.leasing.leased) let, nobody inside."
+            let after = model.world?.ledger.cash ?? 0
+            return "New game, demo tower built through construction commands: cash \(before) → \(after) (paid \(before - after))."
         },
-        Step(name: "02-first-tenants", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 20, minute: 0)
+        Step(name: "03-first-rent", grid: false) { model, scene in
+            model.borrow()
+            model.advanceSimulation(toTimeOfDay: 6, minute: 5)            // day 2, after the first closing
             model.refreshSimulationSummary()
-            let m = model.leasing.market
-            return "\(model.clockText): \(model.leasing.leased)/\(model.leasing.units) let after \(m.prospects) prospects " +
-                "(\(m.signed) signed); rent roll \(model.leasing.rentRoll)/month."
+            let e = model.economy
+            return "\(model.clockText): first daily closing — rent \(e.lastDay.amount(.rent)), maintenance \(e.lastDay.amount(.maintenance)), " +
+                "utilities \(e.lastDay.amount(.utilities)), interest \(e.lastDay.amount(.interest)); \(model.leasing.leased)/\(model.leasing.units) let; loan \(e.loans)."
         },
-        Step(name: "03-inspector-tenant", grid: false) { model, scene in
-            model.showLeasingPanel = false
-            guard let world = model.world, let tenant = world.tenants.values.first(where: { t in
-                model.simulation?.rules.tenantType(t.typeID)?.kind == "business" }) ?? world.tenants.values.first,
-                  let room = world.rooms[tenant.room] else { return "no tenant yet" }
-            model.selectRoom(at: ScreenshotDirector.cell(of: room))
-            return "\(model.clockText): inspector for \(tenant.name) (\(tenant.typeID)), rent \(tenant.rent)/month."
-        },
-        Step(name: "04-inspector-vacant", grid: false) { model, scene in
-            guard let world = model.world, let simulation = model.simulation else { return "no world" }
-            let vacant = Leasing.vacantUnits(world, catalog: simulation.catalog)
-            guard let room = vacant.min(by: { a, b in
-                let sa = UnitReport.make(room: a, world: world, engine: simulation)?.interest.first?.appraisal.total ?? 0
-                let sb = UnitReport.make(room: b, world: world, engine: simulation)?.interest.first?.appraisal.total ?? 0
-                return (sa, a.id) < (sb, b.id)
-            }) else { return "no vacant unit left at \(model.clockText)" }
-            model.selectRoom(at: ScreenshotDirector.cell(of: room))
-            let r = model.unitReport
-            return "\(model.clockText): vacant \(r?.title ?? "") on \(r?.floor ?? "") — " +
-                (r?.interest.map { "\($0.typeName) \(Int($0.appraisal.total * 100))% \($0.wouldSign ? "would sign" : LeasingSummary.describe($0.appraisal.weakest))" }
-                    .joined(separator: ", ") ?? "")
-        },
-        Step(name: "05-mixed-schedules", grid: false) { model, scene in
-            model.selectRoom(at: nil)
-            model.showDeveloperHUD = true
-            model.advanceSimulation(toTimeOfDay: 7, minute: 20)       // day 2
-            model.advanceSimulation(ticks: SimClock.secondsPerDay)    // day 3
-            model.advanceSimulation(ticks: model.ticksToBestMoment(within: 3 * 3600, step: 60) { ScreenshotDirector.travelling(in: $0) })
+        Step(name: "04-dusk", grid: false) { model, scene in
+            model.showEconomyPanel = false
+            model.advanceSimulation(toTimeOfDay: 19, minute: 40)
             model.refreshSimulationSummary()
-            let types = Dictionary(grouping: model.world?.tenants.values ?? [], by: \.typeID).map { "\($0.key) \($0.value.count)" }.sorted()
-            return "\(model.clockText): \(model.population.travelling) on the move; tenants: " + types.joined(separator: ", ")
+            return "\(model.clockText): dusk — ambient light \(Int(DayNight.daylight(atTick: Double(model.world?.clock.tick ?? 0)) * 100)) %, lights coming on."
         },
-        Step(name: "06-leasing-week", grid: false) { model, scene in
-            model.showDeveloperHUD = false
-            model.showLeasingPanel = true
-            model.advanceSimulation(toTimeOfDay: 9, minute: 0)
-            model.advanceSimulation(ticks: 4 * SimClock.secondsPerDay)  // day 7
+        Step(name: "05-night", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 23, minute: 0)
             model.refreshSimulationSummary()
-            let s = model.leasing, m = s.market
-            return "\(model.clockText): \(s.leased)/\(s.units) let, avg satisfaction \(Int(s.averageSatisfaction * 100))%, " +
-                "prospects \(m.prospects), signed \(m.signed), moved out \(m.movedOut), declines " +
-                DeclineReason.allCases.map { "\($0.rawValue) \(m.declines($0))" }.joined(separator: " ")
+            return "\(model.clockText): night — occupied rooms lit, lobbies dim; \(model.population.inRooms) people inside."
         },
-        Step(name: "07-save-load-roundtrip", grid: false) { model, scene in
-            model.showLeasingPanel = false
-            let before = model.world
-            let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
-            let loaded = model.load(slot: "capture-roundtrip")
-            let identical = before != nil && before == model.world
+        Step(name: "06-economy-week", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 7, minute: 0)
+            model.advanceSimulation(ticks: 5 * SimClock.secondsPerDay)     // day 7
+            model.showEconomyPanel = true
             model.refreshSimulationSummary()
-            scene.apply(preset: .building)
-            return "Saved and reloaded with \(model.population.total) people: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical)"
+            let e = model.economy
+            return "\(model.clockText): cash \(e.cash), week income \(e.week.income), expenses \(e.week.expenses), loans \(e.loans)."
+        },
+        Step(name: "07-menu-continue", grid: false) { model, scene in
+            model.showEconomyPanel = false
+            let saved = model.save(title: "M1 walkthrough")
+            model.startFromMenu()
+            model.setSpeed(.paused)
+            model.showMainMenu = true
+            return "Saved (\(saved)), started over, back at the main menu: Continue offers \(model.latestSave?.metadata?.title ?? "nothing")."
+        },
+        Step(name: "08-continued", grid: false) { model, scene in
+            let expected = try? model.saveStore.load(slot: model.latestSave?.slot ?? "", availablePacks: model.packReferences)
+            model.continueLatest()
+            model.setSpeed(.paused)
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
+            return "Continued at \(model.clockText) with cash \(model.economy.cash) and \(model.leasing.leased) tenants; " +
+                "matches the save: \(expected.map { $0.world == model.world } ?? false)."
         },
     ]
 
