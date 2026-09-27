@@ -1,9 +1,10 @@
 # Simulation
 
-Status: **FUNCTIONAL (Phases 4–10)** — clock, speeds, people with schedules, tenants and a
+Status: **FUNCTIONAL (Phases 4–11)** — clock, speeds, people with schedules, tenants and a
 rental market (TENANTS.md), navigation graph with stair transfers and elevators, route
 cache, re-planning after construction, elevator cars, banks and dispatch strategies,
-patience, economy (ECONOMY.md), utilities, upkeep and staff (FACILITIES.md). PLANNED: needs.
+patience, economy (ECONOMY.md), utilities, upkeep and staff (FACILITIES.md), reputation and
+building classes (PROGRESSION.md). PLANNED: needs.
 
 Code: `Packages/SkylineKit/Sources/SkylineSimulation` (logic) and `SkylineCore/People.swift`
 (saved state).
@@ -37,7 +38,8 @@ advance(world, n):
   heap ← market, cars and people with nextEventTick ≤ target   (order: tick, market, cars, people, id)
   while pop (tick, who):
     market     → hourly prospects sign or decline; 06:00: upkeep, jobs, wages (FACILITIES.md),
-                 daily closing (ECONOMY.md), tenant reviews/move-outs (TENANTS.md)
+                 daily closing (ECONOMY.md), tenant reviews/move-outs (TENANTS.md),
+                 reputation and promotion (PROGRESSION.md); prospects scale with reputation
     staff      → arrive / start or finish a job / claim the next / go home (FACILITIES.md)
     car        → collective control step (ELEVATORS.md): alight, board, move or idle
     arrival with pendingRide → bank assigns a car (walk to its doors if another shaft);

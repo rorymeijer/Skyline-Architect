@@ -1,6 +1,6 @@
 # Save Format
 
-Status: **FUNCTIONAL** (Phases 2–10). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
+Status: **FUNCTIONAL** (Phases 2–11). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
 
 ## Versions
 
@@ -8,20 +8,21 @@ Status: **FUNCTIONAL** (Phases 2–10). Implemented in `Packages/SkylineKit/Sour
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 8 | 0.11 | Buildings gain `standing` (`classLevel`, `reputation`, `promotions`); world gains `unlocks` (`all` / `byClass`) | v7→v8 adds `standing: {classLevel: 0, reputation: 50, promotions: []}` and `unlocks: "all"` (older games stay sandbox-like) |
 | 7 | 0.10 | World gains `upkeep` (per room: condition, cleanliness) and `facilities` (jobs, counters); people may be `janitor` / `technician` with a `job`; ledger category `wages` and decline reason `poorServices` (count arrays grow by one) | v6→v7 adds empty `upkeep` (created as new on the next step) and `facilities`, pads daily totals and decline counts |
 | 6 | 0.9 | World gains `ledger` (cash, loans, journal, daily totals, negativeDays, bankrupt); buildings gain `rentLevel` | v5→v6 adds an empty ledger (older games have no money history) and `rentLevel: 1` |
 | 5 | 0.8 | World gains `tenants` and `market` (next step, counters, declines per reason, log); people gain optional `tenantID` | v4→v5 adds `tenants: []` and a market whose next step is the next full hour; on load the population sync adopts existing people into one tenant per room |
 | 4 | 0.7 | Cars gain `strategy` (`collective` / `zoning` / `destination`) and `stats` (boardings, totalWait, maxWait, abandoned, stops, day, hourly[24]); rides may carry `assigned` | v3→v4 adds `strategy: "collective"` and zeroed `stats` to every car |
 | 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1` … `save-v6` (frozen) and `save-v7.skylinesave` (upkeep).
+Golden fixtures: `save-v1` … `save-v7` (frozen) and `save-v8.skylinesave` (standing, standard game).
 
-## Envelope (format version 7)
+## Envelope (format version 8)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 7,
+  "formatVersion": 8,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
     "contentPacks": [{ "id": "base", "version": "0.1.0" }],
@@ -30,7 +31,9 @@ Golden fixtures: `save-v1` … `save-v6` (frozen) and `save-v7.skylinesave` (upk
       "grid": { … },
       "ids": { "next": 57 },
       "cities": [ … ], "properties": [ … ],
-      "buildings": [ { "id": 3, "footprint": …, "foundation": …, "floors": [ { "level": 0, "span": … } ] } ],
+      "buildings": [ { "id": 3, "footprint": …, "foundation": …, "floors": [ { "level": 0, "span": … } ],
+                       "rentLevel": 1, "standing": { "classLevel": 1, "reputation": 61.25, "promotions": [259200] } } ],
+      "unlocks": "byClass",
       "rooms": [ { "id": 4, "buildingID": 3, "definitionID": "office-small", "columns": …, "floors": … } ],
       "clock": { "tick": 8400 },
       "people": [ { "id": 41, "name": "…", "role": "worker", "scheduleID": "office-worker",

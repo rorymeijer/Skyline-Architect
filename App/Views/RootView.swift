@@ -75,15 +75,13 @@ struct ChromeOverlay: View {
             .padding(.top, 60)
             .padding(.trailing, 12)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            SimulationControls(model: model)
+                .padding(.top, 12)
+                .frame(maxWidth: .infinity, alignment: .top)
             VStack(spacing: 8) {
-                SimulationControls(model: model)
                 if let notice = model.promotionNotice {
                     PromotionBanner(text: notice) { model.promotionNotice = nil }
                 }
-            }
-            .padding(.top, 12)
-            .frame(maxWidth: .infinity, alignment: .top)
-            VStack(spacing: 8) {
                 StatusPill(model: model)
                 BuildPalette(model: model)
             }

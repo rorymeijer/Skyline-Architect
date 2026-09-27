@@ -243,3 +243,18 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Decision:** Staff are `Person`s with roles janitor/technician and a `JobAssignment`; their behaviour is event-driven like everyone's, and they route with mode `staff` (service elevators allowed). Tenants route `public`; impatient people `stairsOnly`. The mode is part of the route cache key.
 - **Reason:** One movement system (queues, cars, re-planning) for everybody; service elevators are a data flag, not a new transport type.
 - **Consequences:** Queue mechanics had to stop assuming everyone has a schedule (fixed in this phase).
+
+## D-036 — Building classes only rise; unlocks are checked at placement
+- **Date:** 2026-09-27
+- **Decision:**
+  - Buildings are promoted one class at a time when they meet every requirement of the next class, and are never demoted. Reputation keeps moving and drives demand.
+  - Room-type and height locks are validated in `ConstructionEngine` for new placements only. Restore commands (undo/redo) are exempt.
+  - The unlock mode belongs to the world, set by the start: sandbox or standard.
+- **Alternatives:** A class that follows reputation up and down (unlocked rooms would become illegal, or undo would break); gating in the UI only.
+- **Reason:**
+  - Unlocks must stay stable, and every command needs an exact, always-valid inverse (rule 16).
+  - Gating in the engine keeps the rule authoritative whatever the input device.
+- **Consequences:**
+  - A badly run building keeps its class but loses tenants through lower demand.
+  - Old saves load as sandbox games.
+

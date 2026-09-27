@@ -66,6 +66,13 @@ failureBelow, cleanMinutes, repairMinutes, shiftStart, shiftEnd`. Rooms may set
 `wearPerDay`. Elevator specs may set `serviceOnly: true` (staff only). Tenant weights may
 set `services`. See FACILITIES.md.
 
+### Progression (progression.json, rooms.json, tenants.json, starts.json)
+`progression.json`: `reputation {dailyAdjustment, weights {satisfaction, services, waits,
+occupancy}, goodWaitSeconds, badWaitSeconds, moveOutPenalty, demandAtZero, demandAtHundred}`
+and ordered `classes [{id, name, population, reputation, requiredRooms, maxFloor?}]`. Rooms
+may set `unlockClass` (class index), tenant types `minClass`; starts set `mode`
+(`sandbox` | `standard`). See PROGRESSION.md.
+
 ### TenantType (tenants.json)
 `id, name, kind ("household" | "business"), rooms [room ids with rentPerModule], role,
 members {fixed | perModule}, schedules [schedule ids of that role], budgetPerModule,

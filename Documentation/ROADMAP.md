@@ -90,7 +90,11 @@ later.
 Abstracted distribution (electricity, water, HVAC, waste, internet) with capacity,
 equipment rooms, failures; wear, cleanliness, repair jobs with staff who travel.
 
-### Phase 11 — Progression / reputation
+### Phase 11 — Progression / reputation ✅ (2026-09-27)
+Delivered: reputation (daily assessment, demand), building classes C/B/A/Prime with requirements,
+unlocks of room types, height and tenant types by class in the new standard game (sandbox keeps
+everything), standing panel, promotion banner, locked tools. Scenario goals follow in Phase 16.
+
 Levels + reputation unlocking systems in order of simulation complexity.
 
 ### Phase 12 — Full day/night + lighting

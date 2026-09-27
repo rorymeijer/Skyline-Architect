@@ -113,12 +113,15 @@ final class ScreenshotDirector {
         },
         Step(name: "07-reputation-falls", grid: false) { model, scene in
             let before = model.progression.reputation
-            model.adjustRentLevel(by: 0.6)
-            model.advanceSimulation(ticks: 6 * SimClock.secondsPerDay)
+            // Neglect: the electrical room is demolished, so no unit has power.
+            let plant = model.world?.rooms.values.first { $0.definitionID == "electrical-room" }
+            let cut = plant.map { model.perform(.demolishRoom($0.id)) } ?? false
+            model.advanceSimulation(ticks: 5 * SimClock.secondsPerDay)
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            return "\(model.clockText), rent level \(String(format: "%.1f", model.economy.rentLevel)): reputation \(Int(before)) → " +
-                "\(Int(model.progression.reputation)), moved out \(model.leasing.market.movedOut); still \(model.progression.className)."
+            return "\(model.clockText), electrical room demolished (\(cut)): reputation \(Int(before)) → " +
+                "\(Int(model.progression.reputation)), moved out \(model.leasing.market.movedOut), let \(model.leasing.leased)/\(model.leasing.units); " +
+                "still \(model.progression.className)."
         },
         Step(name: "08-save-load-roundtrip", grid: false) { model, scene in
             let before = model.world
