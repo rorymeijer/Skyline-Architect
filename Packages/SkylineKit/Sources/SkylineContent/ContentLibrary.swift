@@ -1,5 +1,6 @@
 import Foundation
 import SkylineCore
+import SkylinePresentation
 
 public struct ContentError: Error, CustomStringConvertible, Equatable {
     public var pack: String
@@ -24,6 +25,7 @@ public struct ContentLibrary: Sendable {
     public private(set) var orderedStarts: [StartDefinition] = []
     public private(set) var orderedRooms: [RoomSpec] = []
     public private(set) var orderedBlueprints: [Blueprint] = []
+    public private(set) var artCatalog = ArtCatalog.empty
     public private(set) var buildRules = BuildRules(slabCostPerModule: 0, basementSlabCostPerModule: 0, maxCantileverModules: 0, demolitionRefund: 0)
     private var cityIndex: [String: Int] = [:]
     private var plotIndex: [String: Int] = [:]
@@ -63,6 +65,11 @@ public struct ContentLibrary: Sendable {
             try library.register(rules: rules)
         }
         try library.register(rooms: list("rooms"), blueprints: list("blueprints"))
+        var materials: [String: String] = [:]
+        if let file = manifest.files["materials"] {
+            materials = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
+        }
+        try library.register(materials: materials, furniture: list("furniture"), interiors: list("interiors"))
         return library
     }
 
@@ -139,6 +146,26 @@ public struct ContentLibrary: Sendable {
             }
             orderedBlueprints.append(bp)
         }
+    }
+
+    /// Registers visual content; every material, furniture and room reference must resolve.
+    mutating func register(materials raw: [String: String], furniture: [FurnitureDefinition], interiors: [InteriorLayout]) throws {
+        var materials: [String: RGBA] = [:]
+        for key in raw.keys.sorted() {
+            guard let color = ArtCatalog.parseColor(raw[key]!) else {
+                throw ContentError(pack: manifest.id, file: manifest.files["materials"] ?? "materials", message: "Material '\(key)': invalid colour '\(raw[key]!)'")
+            }
+            materials[key] = color
+        }
+        var problems = ArtCatalog.validate(materials: materials, furniture: furniture, layouts: interiors)
+        var seen = Set<String>()
+        for def in furniture where !seen.insert(def.id).inserted { problems.append("duplicate furniture id '\(def.id)'") }
+        let roomIDs = Set(orderedRooms.map(\.id))
+        for layout in interiors where !roomIDs.contains(layout.room) { problems.append("layout for unknown room '\(layout.room)'") }
+        if let first = problems.first {
+            throw ContentError(pack: manifest.id, file: "furniture/interiors", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
+        }
+        artCatalog = ArtCatalog(materials: materials, furniture: furniture, layouts: interiors)
     }
 
     private static func decode<T: Decodable>(_ url: URL, pack: String, file: String) throws -> T {

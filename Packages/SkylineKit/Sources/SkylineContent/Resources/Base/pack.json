@@ -9,6 +9,9 @@
     "starts": "starts.json",
     "rooms": "rooms.json",
     "buildRules": "build-rules.json",
-    "blueprints": "blueprints.json"
+    "blueprints": "blueprints.json",
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "interiors": "interiors.json"
   }
 }
