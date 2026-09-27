@@ -41,7 +41,7 @@ table, cabinets). Room interior composition from data (furniture layouts per roo
 definition). LOD: exterior façade when zoomed out, cutaway interiors when zoomed in.
 Asset Requirements document for art that procedural generation cannot reach.
 
-### Phase 4 — Basic people simulation
+### Phase 4 — Basic people simulation ✅ (2026-09-27)
 Simulation clock (fixed tick, pause/1×/2×/4×/10× by running more ticks, never by
 scaling dt), `SimulationHost`, agents with identity/needs/schedule skeleton, spawn at
 lobby, walk on floors, enter/leave rooms. Render snapshots + interpolation, agent

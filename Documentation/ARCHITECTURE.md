@@ -13,9 +13,9 @@ Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomp
 └───────────────▲──────────────────────────▲─────────────────────────┘
                 │ reads                    │ reads (snapshots)
 ┌───────────────┴──────────────┐  ┌────────┴──────────────────────────┐
-│ SkylinePresentation          │  │ (PLANNED) SkylineSimulation        │
-│ camera · LOD · culling ·     │  │ clock · agents · elevators ·       │
-│ drawing IR · procedural art ·│  │ economy — owns mutation of world   │
+│ SkylinePresentation          │  │ SkylineSimulation (Phase 4)        │
+│ camera · LOD · culling ·     │  │ clock · people · schedules ·       │
+│ drawing IR · procedural art ·│  │ routes — owns mutation of people   │
 │ scene composition · tiles    │  └────────┬──────────────────────────┘
 └───────────────┬──────────────┘           │
                 │                          │

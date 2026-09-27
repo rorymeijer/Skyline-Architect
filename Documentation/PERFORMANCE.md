@@ -38,6 +38,12 @@ camera center · cursor cell. Screenshot capture writes the same values into
 | 2026-09-27 | 0.3.0 (1) Debug | GitHub macos-15 runner, 1×, 60 Hz | furnished tower, 36 pt/m | 60 fps, scene update 0.10 ms, 9 tiles shown, ~13 ms/tile avg, 188 nodes, 171 MB |
 | 2026-09-27 | 0.3.0 (1) Debug | same | façade LOD, 3.2 pt/m | 60 fps, 0.10 ms update, 8 tiles shown, 95 nodes, 147 MB |
 
+| 2026-09-27 | 0.4.0 (1) Debug | GitHub macos-15 runner, 1×, 60 Hz | 38 people, morning rush, 10.4 pt/m | 59 fps, scene update 0.26 ms, simulation 0.25 ms/frame, 14 people drawn |
+
+Observations (Phase 4): the event-driven simulation costs ~0.1–0.3 ms per frame for 38
+people; people are drawn as pooled sprites with cached figure textures. Scale test with
+thousands of people is scheduled with the navigation work (Phase 5) and Phase 19.
+
 Observations (Phase 3): furniture adds items per tile but tiles stay off the main thread;
 the façade LOD keeps far-zoom tiles cheap. Observations: raster time per tile roughly doubled with interiors (more items per tile) but
 stays off the main thread; scene update stays well under 1 ms. Memory grows with the tile cache (budget 96 tiles × up to 1 MB); budget
