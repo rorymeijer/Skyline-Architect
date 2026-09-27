@@ -2,6 +2,23 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.10.0] — Phase 10: Utilities + maintenance
+
+### Added
+- **Utilities** (electricity, water, climate, data) supplied by equipment rooms with
+  capacity and floor range; new electrical and telecom rooms; equipment can fail.
+- **Upkeep**: wear and cleanliness per room; cleaning and repair jobs.
+- **Staff**: janitors and technicians, hired per building, paid daily, working a
+  07:00–19:00 shift; they travel to jobs by stairs and elevators, including new
+  staff-only **service elevators**.
+- **Tenants care**: services criterion in appraisals; units without a utility are unusable.
+- **UI**: Facilities panel (⌥⌘F), services overlay (⌥⌘U), utilities and upkeep in the
+  inspector, staff coveralls.
+- **Save format 7** (+ migration, golden fixture).
+
+### Fixed
+- People without a daily schedule (staff) now go through elevator queues correctly.
+
 ## [0.9.0] — Phase 9: Economy + basic day/night → M1 First Playable
 
 ### Added

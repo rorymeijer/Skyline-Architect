@@ -161,3 +161,13 @@ utilities and loan interest are paid at the same time, all listed line by line i
 Economy panel. The player can borrow, repay and set the building's rent level — higher rents
 earn more per tenant but scare off prospects. Evenings darken, occupied homes light up at
 night. Seven days in the red end the game.
+
+## Phase 10 player experience (current)
+
+Buildings now need plant: electrical, mechanical and telecom rooms supply power, water,
+climate and data to the floors within their reach, up to their capacity. Rooms get dirty
+and wear out; equipment that wears out fails and cuts the supply. The player hires
+janitors and technicians (paid daily) who come in every morning, walk and ride to the
+most urgent jobs — service elevators keep them out of the tenants' cars — and fix things.
+Tenants notice: units with missing utilities are unusable and dirty, worn units lose
+tenants. The services overlay shows at a glance where the building is failing.

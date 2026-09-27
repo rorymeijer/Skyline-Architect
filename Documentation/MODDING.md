@@ -58,6 +58,14 @@ every definition automatically — a mod adding a room type needs no code.
 utilitiesPerPersonPerDay, elevatorCarPerDay, rentDaysPerMonth`. Rooms may set
 `maintenancePerModulePerDay`; starts may set `startingCash`. See ECONOMY.md.
 
+### Facilities (facilities.json, rooms.json, elevators.json)
+`facilities.json`: `utilities [{id, name}], janitorWagePerDay, technicianWagePerDay,
+dirtPerPersonPerDay, circulationDirtPerDay, cleanBelow, repairBelow, equipmentRepairBelow,
+failureBelow, cleanMinutes, repairMinutes, shiftStart, shiftEnd`. Rooms may set
+`utilityDemand {utility: perModule}`, `utilitySupply {utility: perModule}`, `utilityRange`,
+`wearPerDay`. Elevator specs may set `serviceOnly: true` (staff only). Tenant weights may
+set `services`. See FACILITIES.md.
+
 ### TenantType (tenants.json)
 `id, name, kind ("household" | "business"), rooms [room ids with rentPerModule], role,
 members {fixed | perModule}, schedules [schedule ids of that role], budgetPerModule,
