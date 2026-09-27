@@ -88,7 +88,7 @@ final class ScreenshotDirector {
                 scene.withController { $0.jump(center: Vec2(p.x + 2, p.y + 2), zoom: 30) }
             }
             model.refreshSimulationSummary()
-            return "Day 2 \(model.clockText): a person crossing the floor-21 sky lobby from the express shuttle to the upper bank."
+            return "\(model.clockText): a person crossing the floor-21 sky lobby from the express shuttle to the upper bank."
         },
         Step(name: "04-lobby-queues", grid: false) { model, scene in
             model.advanceSimulation(ticks: model.ticksToBestMoment(within: 60 * 60, step: 5) { ScreenshotDirector.waiting(in: $0, floor: 0) })
@@ -111,12 +111,14 @@ final class ScreenshotDirector {
         Step(name: "06-bank-statistics", grid: false) { model, scene in
             model.showDeveloperHUD = false
             model.showBanksPanel = true
-            model.advanceSimulation(toTimeOfDay: 20, minute: 0)
+            model.advanceSimulation(toTimeOfDay: 18, minute: 5)
             model.refreshSimulationSummary()
+            scene.apply(preset: .building)
             let lines = model.banks.map { b in
-                "\(b.name): \(b.stats.boardings) boardings, avg \(Int(b.stats.averageWait.rounded())) s, max \(b.stats.maxWait) s, \(b.stats.abandoned) took stairs"
+                "\(b.name): \(b.stats.boardings) boardings, avg \(Int(b.stats.averageWait.rounded())) s, max \(b.stats.maxWait) s, " +
+                    "\(b.passengersLastHour) pax 17–18 h, \(b.stats.abandoned) took stairs"
             }
-            return "Day's statistics at \(model.clockText): " + lines.joined(separator: "; ")
+            return "Statistics since the start at \(model.clockText): " + lines.joined(separator: "; ")
         },
         Step(name: "07-save-load-roundtrip", grid: false) { model, scene in
             model.showBanksPanel = false

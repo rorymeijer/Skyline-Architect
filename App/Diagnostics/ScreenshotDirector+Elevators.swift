@@ -34,7 +34,8 @@ extension ScreenshotDirector {
         let now = world.clock.tick
         for p in world.people {
             guard p.pendingRide != nil, case let .travelling(legs, _) = p.place,
-                  let leg = legs.first(where: { now < $0.end }), case .walk(floor, _, _, _, _) = leg,
+                  let leg = legs.first(where: { now < $0.end }), case .walk(floor, _, _, let start, let end) = leg,
+                  end > start + 3, now > start + 1, now + 1 < end,          // mid-walk, not at a door
                   let s = PersonMotion.sample(legs, at: Double(now), grid: world.grid) else { continue }
             return s.position
         }

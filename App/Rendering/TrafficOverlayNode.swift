@@ -31,18 +31,38 @@ final class TrafficOverlayNode: SKNode {
                 : SKColor(red: 0.90, green: 0.30, blue: 0.25, alpha: 0.95)
             Self.setText(node, "\(q.count) · \(q.longestWait)s", fill: color, textColor: .white)
         }
-        layout(&loads, count: traffic.cars.count) { node, i in
+        // Car loads only when cabs are drawn large enough to tell apart.
+        let showLoads = camera.zoom >= Self.minLoadZoom
+        layout(&loads, count: showLoads ? traffic.cars.count : 0) { node, i in
             let c = traffic.cars[i]
             node.position = camera.worldToScreen(c.position + Vec2(0, 0.5)).cgPoint
             Self.setText(node, "\(c.load)/\(c.capacity)", fill: SKColor(white: 0.08, alpha: 0.8), textColor: .white)
         }
+        var placed: [CGRect] = []
+        let ceiling = CGFloat(camera.viewportSize.y) - Self.topInset
         layout(&labels, count: traffic.banks.count) { node, i in
             let b = traffic.banks[i]
-            node.position = camera.worldToScreen(b.position + Vec2(0, 12 / camera.zoom)).cgPoint
             Self.setText(node, "Bank \(b.name) · \(b.strategy.rawValue) · avg \(Int(b.stats.averageWait.rounded())) s",
                          fill: SKColor(red: 0.12, green: 0.30, blue: 0.45, alpha: 0.9), textColor: .white)
+            // Keep labels below the top chrome and clear of each other (stack upward, then
+            // downward when there is no room above).
+            var p = camera.worldToScreen(b.position + Vec2(0, 12 / camera.zoom)).cgPoint
+            p.y = min(p.y, ceiling)
+            let width = (node.childNode(withName: "text") as? SKLabelNode).map { $0.frame.width + 12 } ?? 80
+            func frame(_ p: CGPoint) -> CGRect { CGRect(x: p.x - width / 2, y: p.y - 9, width: width, height: 18) }
+            var step: CGFloat = 20
+            while placed.contains(where: { $0.intersects(frame(p)) }) {
+                if p.y + step > ceiling { step = -abs(step) }
+                p.y += step
+            }
+            placed.append(frame(p))
+            node.position = p
         }
     }
+
+    static let minLoadZoom = 8.0
+    /// Height kept free for the clock / speed controls at the top of the window.
+    static let topInset: CGFloat = 64
 
     private func layout(_ pool: inout [SKNode], count: Int, _ configure: (SKNode, Int) -> Void) {
         while pool.count < count { pool.append(makeTag()) }
