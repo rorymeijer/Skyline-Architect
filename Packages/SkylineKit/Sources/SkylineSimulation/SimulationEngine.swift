@@ -7,12 +7,21 @@ public struct SimulationReport: Equatable, Sendable {
     public var unreachable = 0
 }
 
-/// Advances the world in whole ticks, processing person events in (tick, id) order.
+/// Who an event belongs to. At equal ticks cars act before people (then by id), so a car
+/// arriving and a person arriving at the same tick resolve in a fixed order.
+enum EventTarget: Comparable {
+    case car(RoomID)
+    case person(PersonID)
+}
+
+/// Advances the world in whole ticks, processing car and person events in (tick, target)
+/// order.
 ///
 /// Event-driven: people are only touched when something happens to them (arrival, next
-/// schedule event); movement between events is analytic (`PersonMotion`). The event queue
-/// is rebuilt per call from `nextEventTick`, so it is never stale and never saved. The result
-/// after N ticks is identical however the N ticks are batched (tested).
+/// schedule event), cars when they arrive or their doors close; movement between events is
+/// analytic (`PersonMotion`, `ElevatorMotion`). The event queue is rebuilt per call from
+/// `nextEventTick`, so it is never stale and never saved. The result after N ticks is
+/// identical however the N ticks are batched (tested).
 public struct SimulationEngine: Sendable {
     public let rules: SimulationRules
     public let catalog: BuildCatalog
@@ -25,22 +34,43 @@ public struct SimulationEngine: Sendable {
         self.navigation = navigation
     }
 
+    /// Pending events of one `advance` call.
+    struct Events {
+        let target: Tick
+        var heap = MinHeap<(Tick, EventTarget)> { $0.0 == $1.0 ? $0.1 < $1.1 : $0.0 < $1.0 }
+
+        mutating func push(_ tick: Tick, _ who: EventTarget) {
+            if tick <= target { heap.push((tick, who)) }
+        }
+    }
+
     @discardableResult
     public func advance(_ world: inout GameWorld, by ticks: Tick) -> SimulationReport {
         var report = SimulationReport(ticks: ticks)
-        let target = world.clock.tick + ticks
-        if navigation.refresh(world: world, catalog: catalog) { replanAfterConstruction(&world) }
-        var queue = MinHeap<(Tick, PersonID)> { $0.0 == $1.0 ? $0.1 < $1.1 : $0.0 < $1.0 }
-        for p in world.people where p.nextEventTick <= target { queue.push((p.nextEventTick, p.id)) }
-        while let (tick, id) = queue.popMin() {
-            guard var person = world.people[id], person.nextEventTick == tick else { continue }
-            world.clock.tick = max(world.clock.tick, tick)
-            handle(&person, at: tick, world: world, report: &report)
-            report.eventsProcessed += 1
-            world.people.update(id) { $0 = person }
-            if person.nextEventTick <= target && person.nextEventTick > tick { queue.push((person.nextEventTick, id)) }
+        var events = Events(target: world.clock.tick + ticks)
+        if navigation.refresh(world: world, catalog: catalog) || !ElevatorSync.isInSync(world, catalog: catalog, rules: rules) {
+            replanAfterConstruction(&world)
         }
-        world.clock.tick = target
+        for car in world.elevators { events.push(car.nextEventTick, .car(car.id)) }
+        for p in world.people { events.push(p.nextEventTick, .person(p.id)) }
+        while let (tick, who) = events.heap.popMin() {
+            world.clock.tick = max(world.clock.tick, tick)
+            switch who {
+            case let .car(id):
+                guard world.elevators[id]?.nextEventTick == tick else { continue }
+                handleCar(id, at: tick, world: &world, events: &events, report: &report)
+            case let .person(id):
+                guard var person = world.people[id], person.nextEventTick == tick else { continue }
+                handle(&person, at: tick, world: world, report: &report)
+                world.people.update(id) { $0 = person }
+                if person.nextEventTick > tick { events.push(person.nextEventTick, .person(id)) }
+                if case let .waiting(ride, _, since) = person.place, since == tick {
+                    wakeCar(ride.shaft, at: tick, world: &world, events: &events)
+                }
+            }
+            report.eventsProcessed += 1
+        }
+        world.clock.tick = events.target
         return report
     }
 
@@ -49,8 +79,14 @@ public struct SimulationEngine: Sendable {
             p.nextEventTick = now + SimClock.secondsPerDay
             return
         }
-        // Arrival at the end of a trip.
+        // End of the walking part of a trip: queue for the elevator, or arrive.
         if case let .travelling(_, destination) = p.place {
+            if let ride = p.pendingRide {
+                p.pendingRide = nil
+                p.place = .waiting(ride, destination: destination, since: now)
+                p.nextEventTick = .max                 // the car moves them on
+                return
+            }
             switch destination {
             case .outside: p.place = .outside
             case let .room(r, x): p.place = world.rooms.contains(r) ? .room(r, x: x) : .outside
@@ -64,18 +100,14 @@ public struct SimulationEngine: Sendable {
         }
         // Resolve the goal to a destination.
         let destination: Destination
-        let target: Spot
         switch goal {
         case .outside:
-            guard let street = RoutePlanner.street(of: building, rules: rules) else { return scheduleNext(&p, after: now, schedule: schedule) }
             destination = .outside
-            target = street
         case .work, .home:
             guard let roomID = goal == .work ? p.workRoom : p.homeRoom, let room = world.rooms[roomID] else {
                 return scheduleNext(&p, after: now, schedule: schedule)
             }
-            target = RoutePlanner.standingSpot(in: room, traits: p.traits, grid: world.grid)
-            destination = .room(roomID, x: target.x)
+            destination = .room(roomID, x: RoutePlanner.standingSpot(in: room, traits: p.traits, grid: world.grid).x)
         }
         // Where are they now?
         let origin: Spot?
@@ -86,21 +118,38 @@ public struct SimulationEngine: Sendable {
         case let .room(r, x):
             if case let .room(dr, _) = destination, dr == r { return scheduleNext(&p, after: now, schedule: schedule) }
             origin = world.rooms[r].map { Spot(floor: $0.floors.lowest, x: x) }
-        case .travelling:
+        case .travelling, .waiting, .riding:
             origin = nil
         }
-        guard let from = origin,
-              let legs = RoutePlanner.plan(from: from, to: target, building: building, world: world, navigation: navigation,
-                                                 catalog: catalog, rules: rules, now: now),
-              let last = legs.last else {
+        guard let from = origin, startTrip(&p, from: from, to: destination, building: building, world: world, now: now) else {
             p.unreachable = true
             report.unreachable += 1
             return scheduleNext(&p, after: now, schedule: schedule)
         }
+    }
+
+    /// Where a destination is on the building's walking surfaces.
+    func spot(of destination: Destination, building: Building, world: GameWorld) -> Spot? {
+        switch destination {
+        case .outside: RoutePlanner.street(of: building, rules: rules)
+        case let .room(r, x): world.rooms[r].map { Spot(floor: $0.floors.lowest, x: x) }
+        }
+    }
+
+    /// Plans and starts a trip (the walking part, plus a pending ride if the route uses an
+    /// elevator). Returns false if there is no route; `p` is then unchanged.
+    func startTrip(_ p: inout Person, from: Spot, to destination: Destination, building: Building,
+                   world: GameWorld, now: Tick) -> Bool {
+        guard let target = spot(of: destination, building: building, world: world),
+              let trip = RoutePlanner.plan(from: from, to: target, building: building, world: world, navigation: navigation,
+                                           catalog: catalog, rules: rules, now: now),
+              let last = trip.legs.last else { return false }
         p.unreachable = false
-        p.place = .travelling(legs: legs, destination: destination)
+        p.place = .travelling(legs: trip.legs, destination: destination)
+        p.pendingRide = trip.ride
         p.nextGoal = nil
         p.nextEventTick = last.end
+        return true
     }
 
     func scheduleNext(_ p: inout Person, after now: Tick, schedule: Schedule) {
@@ -111,5 +160,14 @@ public struct SimulationEngine: Sendable {
             p.nextGoal = nil
             p.nextEventTick = now + SimClock.secondsPerDay
         }
+    }
+
+    /// Someone with no way to continue leaves the building and resumes their schedule.
+    func strand(_ p: inout Person, at now: Tick) {
+        p.place = .outside
+        p.pendingRide = nil
+        p.unreachable = true
+        p.nextGoal = nil
+        if let schedule = rules.schedule(p.scheduleID) { scheduleNext(&p, after: now, schedule: schedule) }
     }
 }

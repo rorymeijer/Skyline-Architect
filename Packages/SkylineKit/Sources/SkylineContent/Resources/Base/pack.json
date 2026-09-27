@@ -14,6 +14,7 @@
     "furniture": "furniture.json",
     "interiors": "interiors.json",
     "schedules": "schedules.json",
-    "names": "names.json"
+    "names": "names.json",
+    "elevators": "elevators.json"
   }
 }

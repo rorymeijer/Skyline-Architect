@@ -67,8 +67,13 @@ public enum Place: Codable, Hashable, Sendable {
     case outside
     /// Inside a room, standing/sitting at `x`.
     case room(RoomID, x: Double)
-    /// On a trip; `legs` are contiguous in time and `destination` is reached at the last leg's end.
+    /// On a trip; `legs` are contiguous in time and `destination` is reached at the last leg's
+    /// end — unless the person has a `pendingRide`, which starts there.
     case travelling(legs: [Leg], destination: Destination)
+    /// Queuing at an elevator landing since `since` (queue order: since, then id).
+    case waiting(Ride, destination: Destination, since: Tick)
+    /// Inside an elevator car (listed in the car's passengers).
+    case riding(Ride, destination: Destination)
 }
 
 /// What a person intends to do at `nextEventTick` when at rest.
@@ -102,6 +107,8 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
     public var traits: UInt32
     /// Set when the last planned trip had no route (e.g. no stairs to the target floor).
     public var unreachable: Bool
+    /// Elevator ride that starts when the current walking legs end (Phase 6).
+    public var pendingRide: Ride?
 
     public init(id: PersonID, name: String, age: Int, role: PersonRole, scheduleID: String, buildingID: BuildingID,
                 homeRoom: RoomID?, workRoom: RoomID?, place: Place, nextEventTick: Tick, nextGoal: Goal?, traits: UInt32) {
@@ -118,6 +125,7 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
         self.nextGoal = nextGoal
         self.traits = traits
         self.unreachable = false
+        self.pendingRide = nil
     }
 
     /// The room this person belongs to by role.

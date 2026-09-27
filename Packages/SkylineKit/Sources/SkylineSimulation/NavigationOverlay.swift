@@ -14,6 +14,8 @@ public struct NavigationOverlay: Equatable, Sendable {
     public var walkLinks: [Segment] = []
     /// Storey links through stair shafts.
     public var stairLinks: [Segment] = []
+    /// Storey links through elevator shafts (car nodes).
+    public var elevatorLinks: [Segment] = []
     public var portals: [Vec2] = []
     /// Remaining route of each traveller (at most `maxRoutes`), as polylines.
     public var routes: [[Vec2]] = []
@@ -35,12 +37,28 @@ public struct NavigationOverlay: Equatable, Sendable {
                 switch edge.kind {
                 case .walk: overlay.walkLinks.append(segment)
                 case .stairs: overlay.stairLinks.append(segment)
+                case .ride: overlay.elevatorLinks.append(segment)
+                case .board, .alight: break          // landing and car share a position
                 }
             }
         }
         for person in world.people where person.buildingID == graph.buildingID && overlay.routes.count < maxRoutes {
-            guard case let .travelling(legs, _) = person.place else { continue }
             var line: [Vec2] = []
+            switch person.place {
+            case let .waiting(ride, _, _):
+                overlay.routes.append([point(ride.fromFloor, ride.x), point(ride.toFloor, ride.x)])
+                continue
+            case let .riding(ride, _):
+                if let car = world.elevators[ride.shaft] {
+                    overlay.routes.append([Vec2(ride.x, ElevatorMotion.y(of: car, at: now, grid: grid) + lift), point(ride.toFloor, ride.x)])
+                }
+                continue
+            case .outside, .room:
+                continue
+            case .travelling:
+                break
+            }
+            guard case let .travelling(legs, _) = person.place else { continue }
             if let here = PersonMotion.sample(legs, at: now, grid: grid) {
                 line.append(Vec2(here.position.x, here.position.y + lift))
             }
@@ -54,6 +72,10 @@ public struct NavigationOverlay: Equatable, Sendable {
                     line.append(point(toFloor, mid))
                     line.append(point(toFloor, leftX))
                 }
+            }
+            if let ride = person.pendingRide {
+                line.append(point(ride.fromFloor, ride.x))
+                line.append(point(ride.toFloor, ride.x))
             }
             if line.count > 1 { overlay.routes.append(line) }
         }

@@ -11,6 +11,7 @@ public enum PopulationSync {
         var removed = 0
         // People whose anchor room is gone leave immediately.
         for person in world.people.values where person.anchorRoom.map({ !world.rooms.contains($0) }) ?? true {
+            leaveCar(person.id, &world)
             world.people.remove(person.id)
             removed += 1
         }
@@ -20,8 +21,12 @@ public enum PopulationSync {
             switch p.place {
             case .room(let r, _) where !world.rooms.contains(r):
                 p.place = .outside
-            case .travelling(_, .room(let r, _)) where !world.rooms.contains(r):
+            case .travelling(_, .room(let r, _)) where !world.rooms.contains(r),
+                 .waiting(_, .room(let r, _), _) where !world.rooms.contains(r),
+                 .riding(_, .room(let r, _)) where !world.rooms.contains(r):
+                leaveCar(p.id, &world)
                 p.place = .outside
+                p.pendingRide = nil
                 p.nextGoal = p.anchorRoom != nil ? (p.role == .worker ? .work : .home) : nil
                 p.nextEventTick = now
             default:
@@ -68,5 +73,10 @@ public enum PopulationSync {
             }
         }
         return (added, removed)
+    }
+
+    private static func leaveCar(_ person: PersonID, _ world: inout GameWorld) {
+        guard case let .riding(ride, _)? = world.people[person]?.place else { return }
+        world.elevators.update(ride.shaft) { $0.passengers.removeAll { $0 == person } }
     }
 }

@@ -70,6 +70,8 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public internal(set) var rooms = EntityStore<Room>()
     /// Simulated people (Phase 4). Mutated only by the simulation.
     public var people = EntityStore<Person>()
+    /// Elevator cars, one per elevator shaft (Phase 6). Mutated only by the simulation.
+    public var elevators = EntityStore<ElevatorCar>()
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()
