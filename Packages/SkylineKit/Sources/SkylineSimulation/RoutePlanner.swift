@@ -7,9 +7,8 @@ struct Spot: Equatable {
     var x: Double
 }
 
-/// Minimal Phase 4 routing inside one building: street ↔ entrance on the ground floor,
-/// walking along floors, one stairwell between floors. Phase 5 replaces this with a
-/// hierarchical navigation graph (transfers, elevators, cached routes, invalidation).
+/// Trip planning inside one building: street ↔ entrance on the ground floor, walking along
+/// floors, vertical transport found through the `NavigationGraph` (via `NavigationService`).
 enum RoutePlanner {
     /// Ground-floor entrance (left end of the ground plate).
     static func entrance(of building: Building) -> Spot? {
@@ -29,41 +28,69 @@ enum RoutePlanner {
         return Spot(floor: room.floors.lowest, x: x1 > x0 ? x0 + (x1 - x0) * f : (x0 + x1) / 2)
     }
 
-    /// Legs from `from` to `to` starting at `now`, or nil if unreachable.
-    static func plan(from: Spot, to: Spot, building: Building, world: GameWorld, catalog: BuildCatalog,
-                     rules: SimulationRules, now: Tick) -> [Leg]? {
+    /// Legs from `from` to `to` starting at `now`, or nil if unreachable. Same-floor trips are
+    /// one walk; otherwise the navigation graph supplies the portal sequence (stairs, transfers).
+    static func plan(from: Spot, to: Spot, building: Building, world: GameWorld, navigation: NavigationService,
+                     catalog: BuildCatalog, rules: SimulationRules, now: Tick) -> [Leg]? {
+        if from.floor == to.floor {
+            return legs([.walk(floor: from.floor, from: from.x, to: to.x)], rules: rules, now: now)
+                ?? [.walk(floor: from.floor, fromX: from.x, toX: to.x, start: now, end: now + 1)]
+        }
+        guard let (graph, path) = navigation.path(from: from, to: to, building: building, world: world,
+                                                  catalog: catalog, rules: rules) else { return nil }
+        return legs(segments(from: from, to: to, path: path, graph: graph), rules: rules, now: now)
+    }
+
+    enum Segment: Equatable {
+        case walk(floor: Int, from: Double, to: Double)
+        case stairs(shaft: RoomID, fromFloor: Int, toFloor: Int, leftX: Double, rightX: Double)
+    }
+
+    /// Walk to the first portal, follow the portals, walk to the target. Consecutive walks on
+    /// a floor and consecutive storeys on one shaft merge into single segments.
+    static func segments(from: Spot, to: Spot, path: [Int], graph: NavigationGraph) -> [Segment] {
+        var out: [Segment] = []
+        func add(_ s: Segment) {
+            switch (out.last, s) {
+            case let (.walk(f0, a, _)?, .walk(f1, _, b)) where f0 == f1:
+                out[out.count - 1] = .walk(floor: f0, from: a, to: b)
+            case let (.stairs(s0, lo, _, l, r)?, .stairs(s1, _, hi, _, _)) where s0 == s1:
+                out[out.count - 1] = .stairs(shaft: s0, fromFloor: lo, toFloor: hi, leftX: l, rightX: r)
+            default:
+                out.append(s)
+            }
+        }
+        var here = from
+        for index in path {
+            let portal = graph.portals[index]
+            if portal.floor == here.floor {
+                add(.walk(floor: here.floor, from: here.x, to: portal.x))
+            } else if let shaft = graph.shaft(portal.shaft) {
+                add(.stairs(shaft: shaft.id, fromFloor: here.floor, toFloor: portal.floor, leftX: shaft.leftX, rightX: shaft.rightX))
+            }
+            here = Spot(floor: portal.floor, x: portal.x)
+        }
+        add(.walk(floor: to.floor, from: here.x, to: to.x))
+        return out
+    }
+
+    /// Timed legs for segments; walks shorter than 1 cm are dropped. Nil if nothing remains.
+    static func legs(_ segments: [Segment], rules: SimulationRules, now: Tick) -> [Leg]? {
         var legs: [Leg] = []
         var t = now
-        func walk(_ floor: Int, _ a: Double, _ b: Double) {
-            guard abs(b - a) > 0.01 else { return }
-            let d = Tick((abs(b - a) / rules.walkSpeed).rounded(.up))
-            legs.append(.walk(floor: floor, fromX: a, toX: b, start: t, end: t + max(d, 1)))
-            t += max(d, 1)
+        for segment in segments {
+            switch segment {
+            case let .walk(floor, a, b):
+                guard abs(b - a) > 0.01 else { continue }
+                let d = max(Tick((abs(b - a) / rules.walkSpeed).rounded(.up)), 1)
+                legs.append(.walk(floor: floor, fromX: a, toX: b, start: t, end: t + d))
+                t += d
+            case let .stairs(shaft, f0, f1, l, r):
+                let d = Tick(abs(f1 - f0)) * rules.stairsSecondsPerFloor
+                legs.append(.stairs(shaft: shaft, fromFloor: f0, toFloor: f1, leftX: l, rightX: r, start: t, end: t + d))
+                t += d
+            }
         }
-        if from.floor == to.floor {
-            walk(from.floor, from.x, to.x)
-            return legs.isEmpty ? [.walk(floor: from.floor, fromX: from.x, toX: to.x, start: now, end: now + 1)] : legs
-        }
-        // Stairwells serving both floors; nearest overall wins (ties: lower id).
-        let candidates = world.rooms(in: building.id).filter { room in
-            catalog.spec(room.definitionID)?.transport == "stairs"
-                && room.floors.contains(from.floor) && room.floors.contains(to.floor)
-        }
-        let grid = world.grid
-        guard let shaft = candidates.min(by: { a, b in
-            let ca = grid.x(ofColumn: a.columns.start), cb = grid.x(ofColumn: b.columns.start)
-            let da = abs(ca - from.x) + abs(ca - to.x), db = abs(cb - from.x) + abs(cb - to.x)
-            return da == db ? a.id < b.id : da < db
-        }) else { return nil }
-        let landing = 1.1
-        let leftX = grid.x(ofColumn: shaft.columns.start) + landing
-        let rightX = grid.x(ofColumn: shaft.columns.end) - landing
-        walk(from.floor, from.x, leftX)
-        let duration = Tick(abs(to.floor - from.floor)) * rules.stairsSecondsPerFloor
-        legs.append(.stairs(shaft: shaft.id, fromFloor: from.floor, toFloor: to.floor, leftX: leftX, rightX: rightX,
-                            start: t, end: t + duration))
-        t += duration
-        walk(to.floor, leftX, to.x)
-        return legs
+        return legs.isEmpty ? nil : legs
     }
 }
