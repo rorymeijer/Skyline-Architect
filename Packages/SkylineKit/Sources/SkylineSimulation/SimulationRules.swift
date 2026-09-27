@@ -39,10 +39,15 @@ public struct Schedule: Codable, Hashable, Sendable {
 public struct NamePool: Codable, Hashable, Sendable {
     public var first: [String]
     public var last: [String]
+    /// Business names are "<word> <suffix>" (Phase 8; optional for older packs).
+    public var businessWords: [String]?
+    public var businessSuffixes: [String]?
 
-    public init(first: [String], last: [String]) {
+    public init(first: [String], last: [String], businessWords: [String]? = nil, businessSuffixes: [String]? = nil) {
         self.first = first
         self.last = last
+        self.businessWords = businessWords
+        self.businessSuffixes = businessSuffixes
     }
 }
 
@@ -118,6 +123,7 @@ public struct SimulationRules: Sendable {
     public let schedules: [Schedule]
     public let names: NamePool
     public let elevators: [ElevatorSpec]
+    public let tenantTypes: [TenantType]
     /// Walking speed in meters per game second.
     public var walkSpeed = 1.3
     /// Game seconds to climb or descend one storey by stairs.
@@ -128,10 +134,18 @@ public struct SimulationRules: Sendable {
     /// takes at most this long (seconds); otherwise they keep waiting.
     public var maxStairsDetourSeconds: Tick = 300
 
-    public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = []) {
+    public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenantTypes: [TenantType] = []) {
         self.schedules = schedules
         self.names = names
         self.elevators = elevators
+        self.tenantTypes = tenantTypes
+    }
+
+    public func tenantType(_ id: String) -> TenantType? { tenantTypes.first { $0.id == id } }
+
+    /// Tenant types that may rent a room type, in content order.
+    public func tenantTypes(for roomDefinition: String) -> [TenantType] {
+        tenantTypes.filter { $0.rooms.contains(roomDefinition) }
     }
 
     public func schedule(_ id: String) -> Schedule? { schedules.first { $0.id == id } }

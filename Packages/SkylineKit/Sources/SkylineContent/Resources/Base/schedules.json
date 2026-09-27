@@ -40,5 +40,99 @@
     "goal": "home"
    }
   ]
+ },
+ {
+  "id": "office-early",
+  "role": "worker",
+  "events": [
+   {
+    "at": "07:30",
+    "jitterMinutes": 20,
+    "goal": "work"
+   },
+   {
+    "at": "11:45",
+    "jitterMinutes": 15,
+    "goal": "outside"
+   },
+   {
+    "at": "12:30",
+    "jitterMinutes": 10,
+    "goal": "work"
+   },
+   {
+    "at": "16:15",
+    "jitterMinutes": 20,
+    "goal": "outside"
+   }
+  ]
+ },
+ {
+  "id": "office-late",
+  "role": "worker",
+  "events": [
+   {
+    "at": "10:00",
+    "jitterMinutes": 30,
+    "goal": "work"
+   },
+   {
+    "at": "13:30",
+    "jitterMinutes": 20,
+    "goal": "outside"
+   },
+   {
+    "at": "14:15",
+    "jitterMinutes": 15,
+    "goal": "work"
+   },
+   {
+    "at": "19:00",
+    "jitterMinutes": 40,
+    "goal": "outside"
+   }
+  ]
+ },
+ {
+  "id": "resident-late",
+  "role": "resident",
+  "events": [
+   {
+    "at": "08:40",
+    "jitterMinutes": 25,
+    "goal": "outside"
+   },
+   {
+    "at": "19:40",
+    "jitterMinutes": 60,
+    "goal": "home"
+   }
+  ]
+ },
+ {
+  "id": "resident-retired",
+  "role": "resident",
+  "events": [
+   {
+    "at": "10:00",
+    "jitterMinutes": 45,
+    "goal": "outside"
+   },
+   {
+    "at": "12:00",
+    "jitterMinutes": 30,
+    "goal": "home"
+   },
+   {
+    "at": "15:00",
+    "jitterMinutes": 40,
+    "goal": "outside"
+   },
+   {
+    "at": "17:00",
+    "jitterMinutes": 30,
+    "goal": "home"
+   }
+  ]
  }
 ]

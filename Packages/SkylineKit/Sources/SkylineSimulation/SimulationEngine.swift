@@ -7,9 +7,11 @@ public struct SimulationReport: Equatable, Sendable {
     public var unreachable = 0
 }
 
-/// Who an event belongs to. At equal ticks cars act before people (then by id), so a car
+/// Who an event belongs to. At equal ticks the market acts first, then cars, then people
+/// (then by id), so a car
 /// arriving and a person arriving at the same tick resolve in a fixed order.
 enum EventTarget: Comparable {
+    case market
     case car(RoomID)
     case person(PersonID)
 }
@@ -51,11 +53,16 @@ public struct SimulationEngine: Sendable {
         if navigation.refresh(world: world, catalog: catalog) || !ElevatorSync.isInSync(world, catalog: catalog, rules: rules) {
             replanAfterConstruction(&world)
         }
+        if !rules.tenantTypes.isEmpty { events.push(world.market.nextTick, .market) }
         for car in world.elevators { events.push(car.nextEventTick, .car(car.id)) }
         for p in world.people { events.push(p.nextEventTick, .person(p.id)) }
         while let (tick, who) = events.heap.popMin() {
             world.clock.tick = max(world.clock.tick, tick)
             switch who {
+            case .market:
+                guard world.market.nextTick == tick else { continue }
+                for id in runMarket(at: tick, world: &world) { events.push(world.people[id]!.nextEventTick, .person(id)) }
+                events.push(world.market.nextTick, .market)
             case let .car(id):
                 guard world.elevators[id]?.nextEventTick == tick else { continue }
                 handleCar(id, at: tick, world: &world, events: &events, report: &report)

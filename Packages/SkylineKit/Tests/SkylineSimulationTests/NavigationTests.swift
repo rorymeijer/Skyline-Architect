@@ -28,6 +28,7 @@ struct TransferFixture {
             offices.append(try Self.place(construction, "office-small", ColumnSpan(start: x0 + 4, count: 10), level...level, in: b, world: &f.world))
         }
         PopulationSync.sync(&f.world, catalog: f.library.buildCatalog, rules: f.library.simulationRules)
+        Leasing.fillAll(&f.world, catalog: f.library.buildCatalog, rules: f.library.simulationRules)
     }
 
     static func place(_ c: ConstructionEngine, _ definition: String, _ columns: ColumnSpan, _ floors: ClosedRange<Int>,
@@ -228,6 +229,7 @@ private func stairs(_ legs: [Leg]) -> [(RoomID, Int, Int)] {
             }
         }
         PopulationSync.sync(&f.world, catalog: f.library.buildCatalog, rules: f.library.simulationRules)
+        Leasing.fillAll(&f.world, catalog: f.library.buildCatalog, rules: f.library.simulationRules)
         let workers = f.count { $0.role == .worker }
         #expect(workers == 2 * 3 * (floors - 1))
 

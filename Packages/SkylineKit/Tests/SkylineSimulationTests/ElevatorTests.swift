@@ -139,6 +139,7 @@ private func place(_ p: Person) -> String {
             }
         }
         PopulationSync.sync(&f.world, catalog: f.library.buildCatalog, rules: f.library.simulationRules)
+        Leasing.fillAll(&f.world, catalog: f.library.buildCatalog, rules: f.library.simulationRules)
         let workers = f.count { $0.role == .worker }
         let capacity = f.library.simulationRules.elevators[0].capacity
         let clock = ContinuousClock()
@@ -169,6 +170,7 @@ private func place(_ p: Person) -> String {
         for c in try #require(library.blueprint("demo-highrise")).commands(for: b) { try construction.apply(c, to: &game.world) }
         var world = game.world
         PopulationSync.sync(&world, catalog: library.buildCatalog, rules: library.simulationRules)
+        Leasing.fillAll(&world, catalog: library.buildCatalog, rules: library.simulationRules)
         let engine = SimulationEngine(rules: library.simulationRules, catalog: library.buildCatalog)
         let workers = world.people.values.filter { $0.role == .worker }.count
         var peak = 0, longest: Tick = 0

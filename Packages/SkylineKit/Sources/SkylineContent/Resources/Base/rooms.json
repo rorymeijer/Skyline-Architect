@@ -11,7 +11,8 @@
   "maxFloors": 1,
   "costPerModule": 900,
   "lowestLevel": 0,
-  "highestLevel": 0
+  "highestLevel": 0,
+  "noise": 0.2
  },
  {
   "id": "sky-lobby",
@@ -24,7 +25,8 @@
   "minFloors": 1,
   "maxFloors": 1,
   "costPerModule": 1100,
-  "lowestLevel": 1
+  "lowestLevel": 1,
+  "noise": 0.15
  },
  {
   "id": "corridor",
@@ -36,7 +38,8 @@
   "maxWidth": 48,
   "minFloors": 1,
   "maxFloors": 1,
-  "costPerModule": 300
+  "costPerModule": 300,
+  "noise": 0.05
  },
  {
   "id": "stairs",
@@ -49,7 +52,8 @@
   "minFloors": 2,
   "maxFloors": 400,
   "costPerModule": 1500,
-  "transport": "stairs"
+  "transport": "stairs",
+  "noise": 0.1
  },
  {
   "id": "elevator-shaft",
@@ -62,7 +66,8 @@
   "minFloors": 2,
   "maxFloors": 400,
   "costPerModule": 4500,
-  "transport": "elevator"
+  "transport": "elevator",
+  "noise": 0.25
  },
  {
   "id": "elevator-express",
@@ -75,7 +80,8 @@
   "minFloors": 2,
   "maxFloors": 400,
   "costPerModule": 7500,
-  "transport": "elevator"
+  "transport": "elevator",
+  "noise": 0.3
  },
  {
   "id": "office-small",
@@ -89,10 +95,8 @@
   "maxFloors": 1,
   "costPerModule": 1200,
   "lowestLevel": 1,
-  "occupancy": {
-   "role": "worker",
-   "perModule": 0.3
-  }
+  "noise": 0.1,
+  "rentPerModule": 380
  },
  {
   "id": "apartment-studio",
@@ -106,10 +110,8 @@
   "maxFloors": 1,
   "costPerModule": 1400,
   "lowestLevel": 1,
-  "occupancy": {
-   "role": "resident",
-   "fixed": 2
-  }
+  "noise": 0.05,
+  "rentPerModule": 210
  },
  {
   "id": "mechanical",
@@ -121,7 +123,8 @@
   "maxWidth": 12,
   "minFloors": 1,
   "maxFloors": 1,
-  "costPerModule": 2000
+  "costPerModule": 2000,
+  "noise": 0.8
  },
  {
   "id": "parking",
@@ -134,6 +137,7 @@
   "minFloors": 1,
   "maxFloors": 1,
   "costPerModule": 800,
-  "highestLevel": -1
+  "highestLevel": -1,
+  "noise": 0.35
  }
 ]

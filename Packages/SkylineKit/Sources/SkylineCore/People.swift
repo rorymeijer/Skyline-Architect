@@ -109,6 +109,8 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
     public var unreachable: Bool
     /// Elevator ride that starts when the current walking legs end (Phase 6).
     public var pendingRide: Ride?
+    /// The household or business this person belongs to (Phase 8).
+    public var tenantID: TenantID?
 
     public init(id: PersonID, name: String, age: Int, role: PersonRole, scheduleID: String, buildingID: BuildingID,
                 homeRoom: RoomID?, workRoom: RoomID?, place: Place, nextEventTick: Tick, nextGoal: Goal?, traits: UInt32) {
@@ -126,6 +128,7 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
         self.traits = traits
         self.unreachable = false
         self.pendingRide = nil
+        self.tenantID = nil
     }
 
     /// The room this person belongs to by role.

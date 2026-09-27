@@ -23,6 +23,7 @@ struct SkyFixture {
         let rules = override?(library.simulationRules) ?? library.simulationRules
         engine = SimulationEngine(rules: rules, catalog: library.buildCatalog)
         PopulationSync.sync(&world, catalog: library.buildCatalog, rules: rules)
+        Leasing.fillAll(&world, catalog: library.buildCatalog, rules: rules)
         engine.replanAfterConstruction(&world)
         for bank in ElevatorBanks.banks(in: world, rules: rules) {
             ElevatorBanks.setStrategy(strategy, bank: bank.id, in: &world, rules: rules)
@@ -144,7 +145,7 @@ struct SkyFixture {
                 var s = schedule
                 if s.role == .worker { s.events[0].jitterMinutes = 5 }
                 return s
-            }, names: rules.names, elevators: rules.elevators)
+            }, names: rules.names, elevators: rules.elevators, tenantTypes: rules.tenantTypes)
         }
         func stopsPerBoarding(_ strategy: DispatchStrategy) throws -> (Double, CarStats) {
             var f = try SkyFixture(strategy: strategy, rules: sharpPeak)
@@ -168,7 +169,7 @@ struct SkyFixture {
                 var s = spec
                 s.patienceSeconds = 10
                 return s
-            })
+            }, tenantTypes: rules.tenantTypes)
         }
         let workers = f.count { $0.role == .worker }
         _ = try f.morning()

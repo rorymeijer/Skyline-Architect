@@ -23,6 +23,7 @@ func makeLivingSave() throws -> SaveGame {
     let lib = try ContentLibrary.loadBase()
     var save = try makeDemoSave()
     PopulationSync.sync(&save.world, catalog: lib.buildCatalog, rules: lib.simulationRules)
+    Leasing.fillAll(&save.world, catalog: lib.buildCatalog, rules: lib.simulationRules)
     let engine = SimulationEngine(rules: lib.simulationRules, catalog: lib.buildCatalog)
     engine.advance(&save.world, by: 2 * 3600)
     while !save.world.people.values.contains(where: { if case .travelling = $0.place { true } else { false } }) {
@@ -38,6 +39,7 @@ func makeElevatorSave() throws -> SaveGame {
     let lib = try ContentLibrary.loadBase()
     var save = try makeDemoSave()
     PopulationSync.sync(&save.world, catalog: lib.buildCatalog, rules: lib.simulationRules)
+    Leasing.fillAll(&save.world, catalog: lib.buildCatalog, rules: lib.simulationRules)
     let engine = SimulationEngine(rules: lib.simulationRules, catalog: lib.buildCatalog)
     engine.advance(&save.world, by: 2 * 3600)
     func busy(_ w: GameWorld) -> Bool {
@@ -182,19 +184,36 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(save.world.people.values.contains { if case .riding = $0.place { true } else { false } })
     }
 
-    /// Golden fixture v4 (strategies and statistics). Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV4`.
+    /// Golden fixture v4 (strategies and statistics). Frozen since format 5: it loads with no
+    /// tenants; the population sync then adopts its people into one tenant per room.
     @Test func goldenFixtureV4StillLoads() throws {
+        let lib = try ContentLibrary.loadBase()
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        var save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v4.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.elevators.count == 1)
+        #expect(save.world.elevators.values.allSatisfy { $0.stats.boardings > 0 })
+        #expect(save.world.people.values.contains { if case .waiting = $0.place { true } else { false } })
+        #expect(save.world.tenants.isEmpty)
+        #expect(save.world.market.nextTick > save.world.clock.tick)
+        PopulationSync.sync(&save.world, catalog: lib.buildCatalog, rules: lib.simulationRules)
+        #expect(save.world.tenants.count == 15)                        // 8 offices + 7 studios
+        #expect(save.world.people.values.allSatisfy { $0.tenantID != nil })
+        try save.world.validateIntegrity()
+    }
+
+    /// Golden fixture v5 (tenants and market). Regenerate only deliberately:
+    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV5`.
+    @Test func goldenFixtureV5StillLoads() throws {
         if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v4.skylinesave")
+            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v5.skylinesave")
             try SaveCodec.encode(makeElevatorSave()).write(to: source)
             return
         }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
-        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v4.skylinesave")), availablePacks: basePacks)
-        #expect(save.world.elevators.count == 1)
-        #expect(save.world.elevators.values.allSatisfy { $0.stats.boardings > 0 })
-        #expect(save.world.people.values.contains { if case .waiting = $0.place { true } else { false } })
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v5.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.tenants.count == 15)
+        #expect(save.world.people.values.allSatisfy { $0.tenantID != nil })
+        #expect(save.world.market.prospects > 0)
     }
 
     @Test func elevatorWorldRoundTrips() throws {

@@ -56,6 +56,21 @@ extension GameWorld {
                 throw WorldIntegrityError.danglingReference("person \(person.id) → room \(room)")
             }
         }
+        var leased = Set<RoomID>()
+        for tenant in tenants {
+            maxID = max(maxID, tenant.id.raw)
+            guard let room = rooms[tenant.room], room.buildingID == tenant.buildingID else {
+                throw WorldIntegrityError.danglingReference("tenant \(tenant.id) → room \(tenant.room)")
+            }
+            guard leased.insert(tenant.room).inserted else {
+                throw WorldIntegrityError.danglingReference("room \(tenant.room) leased twice")
+            }
+        }
+        for person in people {
+            if let t = person.tenantID, !tenants.contains(t) {
+                throw WorldIntegrityError.danglingReference("person \(person.id) → tenant \(t)")
+            }
+        }
         for car in elevators {
             guard let shaft = rooms[car.id], shaft.buildingID == car.buildingID, shaft.floors.contains(car.floor) else {
                 throw WorldIntegrityError.danglingReference("elevator \(car.id) → shaft")
