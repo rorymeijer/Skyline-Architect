@@ -58,6 +58,10 @@ struct GameCommands: Commands {
                 .keyboardShortcut("g", modifiers: [.command, .option])
             Button(model.showDeveloperHUD ? "Hide Developer HUD" : "Show Developer HUD") { model.showDeveloperHUD.toggle() }
                 .keyboardShortcut("d", modifiers: [.command, .option])
+            #if DEBUG
+            Button(model.showNavigationOverlay ? "Hide Navigation Overlay" : "Show Navigation Overlay") { model.toggleNavigationOverlay() }
+                .keyboardShortcut("n", modifiers: [.command, .option])
+            #endif
             Divider()
             Button("Zoom In") { model.zoom(by: 1.5) }
                 .keyboardShortcut("=", modifiers: .command)

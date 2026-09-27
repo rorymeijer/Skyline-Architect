@@ -1,10 +1,12 @@
 import SwiftUI
+import SkylineSimulation
 
 /// Developer diagnostics overlay (Debug builds by default; ⌥⌘D). Updated at 4 Hz.
 struct DevHUDView: View {
     let diagnostics: RenderDiagnostics
     var population = PopulationSummary()
     var simulationMs = 0.0
+    var navigation = NavigationMetrics()
 
     var body: some View {
         let d = diagnostics
@@ -20,6 +22,10 @@ struct DevHUDView: View {
             row("Memory", String(format: "%.0f MB", d.memoryMB))
             row("People", "\(d.agentsRendered) drawn · \(population.total) simulated")
             row("Simulation", String(format: "%.2f ms/frame", simulationMs))
+            row("Paths", String(format: "%d queries · %.0f%% cached · %d failed", navigation.queries,
+                                navigation.hitRate * 100, navigation.failures))
+            row("Nav graph", "\(navigation.portals) portals · \(navigation.edges) links · \(navigation.graphBuilds) builds")
+            row("Unreachable", "\(population.unreachable) people")
             Divider()
             row("Zoom", String(format: "%.2f pt/m", d.zoom) + " · " + d.detailLevel)
             row("Center", String(format: "%.1f m, %.1f m", d.centerX, d.centerY))
@@ -29,7 +35,7 @@ struct DevHUDView: View {
         }
         .font(.system(size: 11, design: .monospaced))
         .padding(10)
-        .frame(width: 330, alignment: .leading)
+        .frame(width: 360, alignment: .leading)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
         .environment(\.colorScheme, .dark)
     }

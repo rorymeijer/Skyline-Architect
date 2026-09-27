@@ -58,6 +58,26 @@ extension AppModel {
         let tick = world.clock.tick
         clockText = "Day \(SimClock.day(tick) + 1) · \(SimClock.timeString(tick))"
         population = PopulationSummary(world)
+        if let simulation { navigationMetrics = simulation.navigation.metrics }
+    }
+
+    // MARK: Navigation overlay (developer)
+
+    func toggleNavigationOverlay() { showNavigationOverlay.toggle() }
+
+    /// Graph and active routes of the buildings on the active property, or nil when hidden.
+    func navigationOverlay() -> NavigationOverlay? {
+        guard showNavigationOverlay, let world, let property = activePropertyID, let simulation else { return nil }
+        var merged = NavigationOverlay()
+        for building in world.buildings(on: property) {
+            let graph = simulation.navigation.graph(for: building, world: world, catalog: simulation.catalog, rules: simulation.rules)
+            let o = NavigationOverlay.make(graph: graph, world: world, now: Double(world.clock.tick) + host.fraction)
+            merged.walkLinks += o.walkLinks
+            merged.stairLinks += o.stairLinks
+            merged.portals += o.portals
+            merged.routes += o.routes
+        }
+        return merged
     }
 }
 

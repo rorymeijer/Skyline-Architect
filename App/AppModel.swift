@@ -29,6 +29,9 @@ final class AppModel {
     internal(set) var speed: GameSpeed = .normal
     internal(set) var clockText = "Day 1 · 06:00"
     internal(set) var population = PopulationSummary()
+    internal(set) var navigationMetrics = NavigationMetrics()
+    /// Developer navigation overlay (Debug builds, ⌥⌘N).
+    internal(set) var showNavigationOverlay = false
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 
@@ -157,6 +160,9 @@ final class AppModel {
             guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return [] }
             return RoomLabels.build(world: world, propertyID: property, catalog: catalog, visible: visible, zoom: zoom)
         }
+        #if DEBUG
+        scene.navigationProvider = { [weak self] in self?.navigationOverlay() }
+        #endif
         scene.onCommit = { [weak self] command in self?.perform(command) }
         if let previous {
             scene.onReady = previous.onReady
@@ -252,10 +258,13 @@ final class AppModel {
     }
 
     /// Stores the new world and re-renders only what changed (`plan` nil = everything).
-    /// The population follows the rooms (occupants appear for new rooms, leave demolished ones).
+    /// The population follows the rooms (occupants appear for new rooms, leave demolished ones)
+    /// and trips follow the structure.
     private func commit(_ newWorld: GameWorld, plan: ConstructionPlan?) {
         var newWorld = newWorld
         if let library { PopulationSync.sync(&newWorld, catalog: library.buildCatalog, rules: library.simulationRules) }
+        // Trips through removed stairs are re-planned now, so even a paused game is consistent.
+        simulation?.replanAfterConstruction(&newWorld)
         world = newWorld
         hasUnsavedChanges = true
         refreshUndoState()

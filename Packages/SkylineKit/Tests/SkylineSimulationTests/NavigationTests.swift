@@ -254,3 +254,18 @@ private func stairs(_ legs: [Leg]) -> [(RoomID, Int, Int)] {
         #expect(m.hitRate > 0.3)
     }
 }
+
+@Suite struct NavigationOverlayTests {
+    @Test func overlayShowsGraphAndActiveRoutes() throws {
+        var t = try TransferFixture()
+        func travelling() -> Int { t.f.count { if case .travelling = $0.place { true } else { false } } }
+        while travelling() < 3 && t.f.world.clock.tick < 6 * 3600 { t.f.engine.advance(&t.f.world, by: 30) }
+        let graph = t.f.engine.navigation.graph(for: t.building, world: t.f.world, catalog: t.f.library.buildCatalog,
+                                                rules: t.f.library.simulationRules)
+        let overlay = NavigationOverlay.make(graph: graph, world: t.f.world, now: Double(t.f.world.clock.tick))
+        #expect(overlay.portals.count == graph.portals.count)
+        #expect(overlay.walkLinks.count + overlay.stairLinks.count == graph.edgeCount / 2)
+        #expect(travelling() >= 3)
+        #expect(overlay.routes.count == travelling())
+    }
+}
