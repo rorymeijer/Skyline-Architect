@@ -6,9 +6,9 @@
       "centerX" : 24,
       "centerY" : 363.33333333333337,
       "detailLevel" : "Skyline",
-      "fps" : 59.98815233991209,
-      "frameTimeMs" : 16.66995833333355,
-      "memoryMB" : 194.609375,
+      "fps" : 60.271873235695104,
+      "frameTimeMs" : 16.591486979166348,
+      "memoryMB" : 191.796875,
       "nodeCount" : 143,
       "sceneSections" : {
         "cars" : 0,
@@ -17,12 +17,12 @@
         "overlays" : 0,
         "people" : 0,
         "sim" : 0,
-        "tiles" : 0.1,
+        "tiles" : 0.2,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.26603333333620566,
+      "sceneUpdateMs" : 0.3412317708253454,
       "tileLevel" : 0,
-      "tileRasterMs" : 6.783641608495384,
+      "tileRasterMs" : 7.9798968944035344,
       "tilesCached" : 30,
       "tilesPending" : 0,
       "tilesRasterized" : 34,
@@ -37,7 +37,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0460259914398193
+    "waitSeconds" : 1.0398049354553223
   },
   {
     "diagnostics" : {
@@ -46,9 +46,9 @@
       "centerX" : 22,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.95355597863661,
-      "frameTimeMs" : 16.679577777777393,
-      "memoryMB" : 184.59375,
+      "fps" : 59.76525205081789,
+      "frameTimeMs" : 16.73213055555607,
+      "memoryMB" : 182.09375,
       "nodeCount" : 175,
       "sceneSections" : {
         "cars" : 0.1,
@@ -60,9 +60,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.31790277777759,
+      "sceneUpdateMs" : 0.37776111111043065,
       "tileLevel" : 2,
-      "tileRasterMs" : 7.796372357700558,
+      "tileRasterMs" : 10.207352754704472,
       "tilesCached" : 30,
       "tilesPending" : 0,
       "tilesRasterized" : 40,
@@ -77,7 +77,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.056056022644043
+    "waitSeconds" : 1.086277961730957
   },
   {
     "diagnostics" : {
@@ -86,23 +86,23 @@
       "centerX" : 28,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 60.00135003037568,
-      "frameTimeMs" : 16.666291666666666,
-      "memoryMB" : 168.8125,
+      "fps" : 60.223863392212735,
+      "frameTimeMs" : 16.60471354166404,
+      "memoryMB" : 164.5625,
       "nodeCount" : 59,
       "sceneSections" : {
         "cars" : 0,
         "fire" : 0,
-        "light" : 0,
+        "light" : 0.1,
         "overlays" : 0,
         "people" : 0,
         "sim" : 0,
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.21706770833418432,
+      "sceneUpdateMs" : 0.34244791667603636,
       "tileLevel" : 2,
-      "tileRasterMs" : 6.033350000001292,
+      "tileRasterMs" : 6.848150000007536,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -113,36 +113,36 @@
     },
     "file" : "03-estate-two-cities.png",
     "grid" : false,
-    "note" : "Day 3 · 12:00: a plot bought in Saltmere (after a scripted $1M grant). Each city has its own weather (B3); the overview splits the last 24 h into buildings and estate money (B6). Port Calder: Clear 23°; Saltmere: Clear 26°. Last 24 h $43,684 = buildings $43,684 + estate $0.",
+    "note" : "Day 1 · 17:00: a plot bought in Saltmere (after a scripted $1M grant). Each city has its own weather (B3); the overview splits the last 24 h into buildings and estate money (B6). Port Calder: Clear 21°; Saltmere: Rain 21°. Last 24 h $1,968,700 = buildings −$1,081,300 + estate $3,050,000.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0487040281295776
+    "waitSeconds" : 1.031209945678711
   },
   {
     "diagnostics" : {
-      "agentsRendered" : 24,
+      "agentsRendered" : 14,
       "backingScale" : 1,
       "centerX" : 24,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 59.90572835214948,
-      "frameTimeMs" : 16.692894444444544,
-      "memoryMB" : 171.96875,
-      "nodeCount" : 114,
+      "fps" : 59.989821726918905,
+      "frameTimeMs" : 16.66949444444299,
+      "memoryMB" : 168.359375,
+      "nodeCount" : 104,
       "sceneSections" : {
-        "cars" : 0,
+        "cars" : 0.1,
         "fire" : 0,
         "light" : 0.2,
         "overlays" : 0,
         "people" : 0.1,
         "sim" : 0,
         "tiles" : 0.1,
-        "weather" : 0
+        "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.439661111111415,
+      "sceneUpdateMs" : 0.5007361111059557,
       "tileLevel" : 2,
-      "tileRasterMs" : 6.30086944444391,
+      "tileRasterMs" : 7.337463888889792,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -157,7 +157,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0612800121307373
+    "waitSeconds" : 1.0965819358825684
   },
   {
     "diagnostics" : {
@@ -166,23 +166,23 @@
       "centerX" : 24,
       "centerY" : 190,
       "detailLevel" : "Skyline",
-      "fps" : 59.99889002053401,
-      "frameTimeMs" : 16.66697500000017,
-      "memoryMB" : 203.03125,
-      "nodeCount" : 160,
+      "fps" : 60.21958507139378,
+      "frameTimeMs" : 16.60589322916195,
+      "memoryMB" : 199.453125,
+      "nodeCount" : 156,
       "sceneSections" : {
         "cars" : 0,
         "fire" : 0,
-        "light" : 0.2,
+        "light" : 0.3,
         "overlays" : 0,
         "people" : 0,
         "sim" : 0,
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.43393611111165836,
+      "sceneUpdateMs" : 0.5000078124979268,
       "tileLevel" : 0,
-      "tileRasterMs" : 4.956774691359451,
+      "tileRasterMs" : 6.8301944444455245,
       "tilesCached" : 27,
       "tilesPending" : 0,
       "tilesRasterized" : 27,
@@ -197,7 +197,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0923629999160767
+    "waitSeconds" : 1.0181450843811035
   },
   {
     "diagnostics" : {
@@ -206,23 +206,23 @@
       "centerX" : 24,
       "centerY" : 120,
       "detailLevel" : "Skyline",
-      "fps" : 58.99637940448385,
-      "frameTimeMs" : 16.9501927083342,
-      "memoryMB" : 219.09375,
-      "nodeCount" : 172,
+      "fps" : 60.22224832549105,
+      "frameTimeMs" : 16.605158854169133,
+      "memoryMB" : 217.90625,
+      "nodeCount" : 168,
       "sceneSections" : {
         "cars" : 0,
         "fire" : 0,
-        "light" : 0.3,
+        "light" : 0.4,
         "overlays" : 0,
         "people" : 0,
         "sim" : 0,
         "tiles" : 0.1,
-        "weather" : 0
+        "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.43648437499932413,
+      "sceneUpdateMs" : 0.7143229166750587,
       "tileLevel" : 0,
-      "tileRasterMs" : 4.956774691359451,
+      "tileRasterMs" : 6.8301944444455245,
       "tilesCached" : 27,
       "tilesPending" : 0,
       "tilesRasterized" : 27,
@@ -233,11 +233,11 @@
     },
     "file" : "06-city-evening.png",
     "grid" : false,
-    "note" : "Day 3 · 21:30: the city's windows all lit (activity 100 %).",
+    "note" : "Day 1 · 21:30: the city's windows all lit (activity 100 %).",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.1631309986114502
+    "waitSeconds" : 1.0928080081939697
   },
   {
     "diagnostics" : {
@@ -246,10 +246,10 @@
       "centerX" : 24,
       "centerY" : 120,
       "detailLevel" : "Skyline",
-      "fps" : 60.00396588712334,
-      "frameTimeMs" : 16.665565104165836,
-      "memoryMB" : 218.109375,
-      "nodeCount" : 172,
+      "fps" : 59.7771898649473,
+      "frameTimeMs" : 16.728789062504745,
+      "memoryMB" : 216.90625,
+      "nodeCount" : 168,
       "sceneSections" : {
         "cars" : 0,
         "fire" : 0,
@@ -258,11 +258,11 @@
         "people" : 0,
         "sim" : 0,
         "tiles" : 0.1,
-        "weather" : 0
+        "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.43966145833174153,
+      "sceneUpdateMs" : 0.47713281250949535,
       "tileLevel" : 0,
-      "tileRasterMs" : 4.956774691359451,
+      "tileRasterMs" : 6.8301944444455245,
       "tilesCached" : 27,
       "tilesPending" : 0,
       "tilesRasterized" : 27,
@@ -273,10 +273,10 @@
     },
     "file" : "07-city-small-hours.png",
     "grid" : false,
-    "note" : "Day 4 · 03:00: most city windows out, street lamps still on (activity 40 %; B8).",
+    "note" : "Day 2 · 03:00: most city windows out, street lamps still on (activity 40 %; B8).",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.1458899974822998
+    "waitSeconds" : 1.0825740098953247
   }
 ]
