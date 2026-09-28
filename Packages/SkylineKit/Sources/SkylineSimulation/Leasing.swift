@@ -217,6 +217,7 @@ extension SimulationEngine {
             closeDay(at: now, world: &world)
             let moveOuts = reviewTenants(at: now, world: &world)
             standingDaily(at: now, moveOuts: moveOuts, world: &world)
+            scenarioDaily(at: now, world: &world)
             advanceWeather(&world)
         }
         world.market.nextTick = now + 3600

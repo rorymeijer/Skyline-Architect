@@ -108,6 +108,8 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var weather: WeatherState?
     /// Fires in progress and the incident log (Phase 14).
     public var incidents = IncidentState()
+    /// The scenario being played (Phase 16; nil = free play).
+    public var scenario: ScenarioState?
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()
