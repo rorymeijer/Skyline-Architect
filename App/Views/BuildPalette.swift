@@ -8,6 +8,18 @@ struct BuildPalette: View {
     let model: AppModel
 
     var body: some View {
+        // Mods can add any number of room types: when the tools do not fit the window, the
+        // palette scrolls sideways instead of running off the screen.
+        ViewThatFits(in: .horizontal) {
+            tools
+            ScrollView(.horizontal, showsIndicators: false) { tools }
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+        }
+        .padding(.horizontal, 12)
+        .environment(\.colorScheme, .dark)
+    }
+
+    private var tools: some View {
         HStack(spacing: 2) {
             floorButton
             divider
@@ -20,7 +32,6 @@ struct BuildPalette: View {
         .padding(.vertical, 5)
         .background(RoundedRectangle(cornerRadius: 14).fill(Color.black.opacity(0.6)))
         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.white.opacity(0.12)))
-        .environment(\.colorScheme, .dark)
     }
 
     private var floorButton: some View {
