@@ -54,6 +54,7 @@ public struct SimulationEngine: Sendable {
             || !FacilitiesManagement.isInSync(world) {
             replanAfterConstruction(&world)
         }
+        startWeatherIfNeeded(&world)
         if !rules.tenantTypes.isEmpty { events.push(world.market.nextTick, .market) }
         for car in world.elevators { events.push(car.nextEventTick, .car(car.id)) }
         for p in world.people { events.push(p.nextEventTick, .person(p.id)) }

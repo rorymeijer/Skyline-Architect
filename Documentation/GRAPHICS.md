@@ -72,6 +72,15 @@ based LOD, not a fixed zoom. Below-grade levels always stay in section.
 * No lighting model yet (day only; day/night lands in Phase 9/12).
 * No shaders yet; depth comes from gradients and contact darkening.
 
+## Weather (Phase 13) — FUNCTIONAL
+
+* The weather grade adjusts the day grade (clouds, fog, heat).
+* A fog veil and a lightning flash sit in screen space.
+* Rain and snow are screen-space particle emitters.
+* Snow cover on roofs and the street, and wet paving, are drawn in world space.
+
+See WEATHER.md.
+
 ## Day/night and lighting (Phase 12) — FUNCTIONAL
 
 Phase 12 adds:

@@ -104,7 +104,14 @@ street lamps). Player lighting policies and real falloff/shadows later.
 
 Interior light sources, window emission, sunrise/sunset grading, energy link.
 
-### Phase 13 — Weather
+### Phase 13 — Weather ✅ (2026-09-28)
+Delivered:
+- seasons and daily weather with a forecast;
+- effects on prospects, wear, dirt and heating/cooling costs;
+- grade, fog, rain/snow, lightning, snow cover, wet paving, weather chip.
+
+Later: hourly weather, seasonal daylight, wind.
+
 Rain, storms, snow, heat, fog; visuals + effects on energy, visitors, maintenance.
 
 ### Phase 14 — Events & emergencies (incl. fire)

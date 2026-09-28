@@ -269,3 +269,17 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Metering hourly is an approximation of the integral (within one hour of occupancy change).
   - The emission layer's tiles are redrawn where construction changes the silhouette.
 
+## D-038 — Daily weather as saved state, drawn from the seed; visuals derived
+- **Date:** 2026-09-28
+- **Decision:**
+  - The simulation keeps `WeatherState` (yesterday, today, forecast, temperature) and advances it at the 06:00 closing with a pure draw from the city seed, the day and the previous kind.
+  - Effects are content multipliers.
+  - The renderer derives the look (grade, fog, particles, snow cover, lightning) from the state and the game time.
+- **Alternatives:** Hourly weather (more state, more events); weather only as visuals; storing the whole year up front.
+- **Reason:**
+  - One change per day matches the daily economy (bills, wear, reviews) and gives the player a forecast to plan with.
+  - Saving three kinds keeps the format small, and determinism holds (rule 7).
+- **Consequences:**
+  - Particles run in real time and are not reproducible; they are decoration.
+  - Lightning is deterministic in game time.
+

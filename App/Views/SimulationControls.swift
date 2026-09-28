@@ -16,6 +16,16 @@ struct SimulationControls: View {
                 }
             }
             Rectangle().fill(Color.white.opacity(0.2)).frame(width: 1, height: 18)
+            if let w = model.weather {
+                HStack(spacing: 5) {
+                    Image(systemName: w.symbol).symbolRenderingMode(.multicolor)
+                    Text("\(w.name) \(w.temperature)°").font(.system(size: 11, weight: .medium))
+                    Image(systemName: "arrow.right").font(.system(size: 8)).foregroundStyle(.secondary)
+                    Image(systemName: w.tomorrowSymbol).font(.system(size: 10)).foregroundStyle(.secondary)
+                }
+                .help("\(w.season): \(w.name), \(w.temperature) °C" + (w.effects.isEmpty ? "" : " — \(w.effects)") + ". Tomorrow: \(w.tomorrowName).")
+                Rectangle().fill(Color.white.opacity(0.2)).frame(width: 1, height: 18)
+            }
             Label("\(model.population.inRooms + model.population.travelling) in · \(model.population.outside) out",
                   systemImage: "person.2.fill")
                 .font(.system(size: 11, weight: .medium))

@@ -1,6 +1,6 @@
 # Save Format
 
-Status: **FUNCTIONAL** (Phases 2–12). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
+Status: **FUNCTIONAL** (Phases 2–13). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
 
 ## Versions
 
@@ -8,6 +8,7 @@ Status: **FUNCTIONAL** (Phases 2–12). Implemented in `Packages/SkylineKit/Sour
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 10 | 0.13 | World may carry `weather` (`day`, `yesterday`, `today`, `tomorrow`, `temperature`) | v9→v10: nothing to add — the simulation starts the weather on the current day at its next step |
 | 9 | 0.12 | Buildings gain `lightingKWh` (lighting energy since the last closing) | v8→v9 adds `lightingKWh: 0` |
 | 8 | 0.11 | Buildings gain `standing` (`classLevel`, `reputation`, `promotions`); world gains `unlocks` (`all` / `byClass`) | v7→v8 adds `standing: {classLevel: 0, reputation: 50, promotions: []}` and `unlocks: "all"` (older games stay sandbox-like) |
 | 7 | 0.10 | World gains `upkeep` (per room: condition, cleanliness) and `facilities` (jobs, counters); people may be `janitor` / `technician` with a `job`; ledger category `wages` and decline reason `poorServices` (count arrays grow by one) | v6→v7 adds empty `upkeep` (created as new on the next step) and `facilities`, pads daily totals and decline counts |
@@ -16,14 +17,14 @@ Status: **FUNCTIONAL** (Phases 2–12). Implemented in `Packages/SkylineKit/Sour
 | 4 | 0.7 | Cars gain `strategy` (`collective` / `zoning` / `destination`) and `stats` (boardings, totalWait, maxWait, abandoned, stops, day, hourly[24]); rides may carry `assigned` | v3→v4 adds `strategy: "collective"` and zeroed `stats` to every car |
 | 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1` … `save-v8` (frozen) and `save-v9.skylinesave` (lighting meter).
+Golden fixtures: `save-v1` … `save-v9` (frozen) and `save-v10.skylinesave` (weather).
 
-## Envelope (format version 9)
+## Envelope (format version 10)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 9,
+  "formatVersion": 10,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
     "contentPacks": [{ "id": "base", "version": "0.1.0" }],
@@ -36,6 +37,7 @@ Golden fixtures: `save-v1` … `save-v8` (frozen) and `save-v9.skylinesave` (lig
                        "rentLevel": 1, "standing": { "classLevel": 1, "reputation": 61.25, "promotions": [259200] },
                        "lightingKWh": 12.5 } ],
       "unlocks": "byClass",
+      "weather": { "day": 3, "yesterday": "rain", "today": "storm", "tomorrow": "overcast", "temperature": 17 },
       "rooms": [ { "id": 4, "buildingID": 3, "definitionID": "office-small", "columns": …, "floors": … } ],
       "clock": { "tick": 8400 },
       "people": [ { "id": 41, "name": "…", "role": "worker", "scheduleID": "office-worker",

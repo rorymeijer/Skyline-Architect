@@ -207,7 +207,7 @@ extension SimulationEngine {
         let seed = world.cities.values.first?.seed ?? 1
         let hour = now / 3600
         meterLighting(at: now, world: &world)
-        let demand = Progression.demandMultiplier(world: world, engine: self)
+        let demand = Progression.demandMultiplier(world: world, engine: self) * (weatherKind(world)?.effects.demand ?? 1)
         for (i, type) in rules.tenantTypes.enumerated() {
             var rng = SeededRandom(seed: seed, stream: hour &* 64 &+ UInt64(i))
             guard rng.unit() < type.prospectsPerDay * demand / 24 else { continue }
@@ -239,6 +239,7 @@ extension SimulationEngine {
             closeDay(at: now, world: &world)
             let moveOuts = reviewTenants(at: now, world: &world)
             standingDaily(at: now, moveOuts: moveOuts, world: &world)
+            advanceWeather(&world)
         }
         world.market.nextTick = now + 3600
         return added

@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Phase 12 (2026-09-28). This document describes what exists and the intended evolution.
+Status: Phase 13 (2026-09-28). This document describes what exists and the intended evolution.
 Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomplete) or
 **PLANNED** (design only).
 
@@ -164,6 +164,9 @@ Simulation (`Progression`, daily after the tenant reviews); classes never drop (
 Lighting (LIGHTING.md): `Lighting.level` in Core feeds both the simulation's hourly energy
 meter and Presentation's `DayNight`; static night lights are the composition's `emission`
 layer, drawn by the app as an additive tile layer with building silhouettes cleared (D-037).
+Weather (WEATHER.md): kinds, rules and the saved `WeatherState` live in Core; the simulation
+advances it at the closing and applies content multipliers; Presentation derives the look
+(`WeatherView`), the app draws it (`WeatherLayer`) (D-038).
 
 ## 6. Concurrency model
 
