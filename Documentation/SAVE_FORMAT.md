@@ -1,6 +1,6 @@
 # Save Format
 
-Status: **FUNCTIONAL** (Phases 2–13). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
+Status: **FUNCTIONAL** (Phases 2–15). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
 
 ## Versions
 
@@ -8,6 +8,7 @@ Status: **FUNCTIONAL** (Phases 2–13). Implemented in `Packages/SkylineKit/Sour
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 12 | 0.15 | Cities gain `economy` (`rent`, `construction`, `demand`); properties may carry `plotID`; ledger category `land` (daily totals grow by one) | v11→v12 adds a default economy and pads daily totals; on load `Estate.adoptLegacy` matches properties to plots and applies the content market |
 | 11 | 0.14 | World gains `incidents` (`log` of incidents, `fires` in progress with burning rooms and intensities, `nextID`) | v10→v11 adds an empty incident state |
 | 10 | 0.13 | World may carry `weather` (`day`, `yesterday`, `today`, `tomorrow`, `temperature`) | v9→v10: nothing to add — the simulation starts the weather on the current day at its next step |
 | 9 | 0.12 | Buildings gain `lightingKWh` (lighting energy since the last closing) | v8→v9 adds `lightingKWh: 0` |
@@ -18,14 +19,14 @@ Status: **FUNCTIONAL** (Phases 2–13). Implemented in `Packages/SkylineKit/Sour
 | 4 | 0.7 | Cars gain `strategy` (`collective` / `zoning` / `destination`) and `stats` (boardings, totalWait, maxWait, abandoned, stops, day, hourly[24]); rides may carry `assigned` | v3→v4 adds `strategy: "collective"` and zeroed `stats` to every car |
 | 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1` … `save-v10` (frozen) and `save-v11.skylinesave` (a fire in progress).
+Golden fixtures: `save-v1` … `save-v11` (frozen) and `save-v12.skylinesave` (two cities, a bought plot).
 
-## Envelope (format version 11)
+## Envelope (format version 12)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 10,
+  "formatVersion": 12,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
     "contentPacks": [{ "id": "base", "version": "0.1.0" }],

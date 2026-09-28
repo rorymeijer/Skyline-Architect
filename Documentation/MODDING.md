@@ -66,6 +66,12 @@ failureBelow, cleanMinutes, repairMinutes, shiftStart, shiftEnd`. Rooms may set
 `wearPerDay`. Elevator specs may set `serviceOnly: true` (staff only). Tenant weights may
 set `services`. See FACILITIES.md.
 
+### Cities and plots (cities.json, plots.json)
+Cities may set `economy {rent, construction, demand}` (multipliers, 0…5). Plots may set
+`price` and `foundation {buildingName, footprintOffsetModules, footprintModules,
+basementFloors, pileDepthMeters, pileSpacingModules}`; a plot with a price is for sale and
+needs a foundation that fits its frontage and basement limit. See ESTATE.md.
+
 ### Events (events.json, rooms.json)
 `fire {ignitionPerRoomPerDay, wornBelow, wornMultiplier, equipmentMultiplier,
 protectedIgnitionFactor, stepSeconds, startIntensity, growthPerStep, spreadAbove,

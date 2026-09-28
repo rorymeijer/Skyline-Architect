@@ -247,3 +247,19 @@ electrical plant (the tower goes dark until it is repaired), and frost bursts pi
 
 The incidents panel keeps the record.
 
+## Phase 15 player experience (current)
+
+The Quay Street tower is no longer the whole game. The estate panel lists land for sale
+in three cities:
+
+* **Port Calder:** another corner lot in the home city.
+* **Harrowgate:** the inland capital, where rents are high, building is dear, tenants
+  are plentiful and granite lies just under the street.
+* **Saltmere:** a quiet harbour town on the marsh, with cheap land and cheap building but
+  fewer and poorer tenants.
+
+Buying a plot takes the money (or a loan) and moves the view there: a new street, a
+different skyline, different ground in the cut-away. Each city has its own tenants, and
+every tower keeps running while the player looks at another. The estate panel shows how
+each property is doing and takes the player back with one click.
+
