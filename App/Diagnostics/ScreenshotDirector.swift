@@ -57,66 +57,60 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // iCloud Drive cannot be used by an unsigned CI build: the sync runs against a local
-    // folder standing in for the app's iCloud container (`syncFolderOverride`), through the
-    // same calls as the saves panel. "The iPad" is simulated by this script writing saves
-    // straight into that folder. Step 06 shows what the real iCloud lookup returns on CI.
+    // Scale captures (Phase 19): the generated stress tower (developer tool, every unit let
+    // at once) rendered and simulated in the real app; notes carry the simulation time of
+    // the last frame and the render diagnostics are in the report.
     let steps: [Step] = [
-        Step(name: "01-saves-local", grid: false) { model, scene in
+        Step(name: "01-stress-overview", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            model.showDeveloperHUD = false
-            model.applyBlueprint("demo-tower")
+            model.showDeveloperHUD = true
+            model.loadStressTower(zones: 10)
             model.advanceSimulation(toTimeOfDay: 10)
-            model.autosaveIfNeeded()
-            model.save(slot: "Quay Street", title: "Quay Street Tower")
-            model.save(slot: SaveStore.quicksaveSlot, title: "Quay Street Tower")
-            model.openSavesPanel()
-            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 8) }
-            let slots: [String] = model.availableSaves().map(\.slot)
-            return "Saves panel, iCloud Drive off: \(slots); \(model.syncStatus)"
-        },
-        Step(name: "02-sync-on", grid: false) { model, scene in
-            model.setSyncEnabled(true)
-            let cloud: [String] = ScreenshotDirector.cloudSlots(model)
-            return "iCloud Drive on (stand-in folder): \(model.syncStatus); cloud holds \(cloud)"
-        },
-        Step(name: "03-from-other-device", grid: false) { model, scene in
-            let written: Bool = ScreenshotDirector.writeFromOtherDevice(model, slot: "iPad Quay", title: "Quay Street — played on iPad", hours: 30)
-            model.syncSaves()
-            let slots: [String] = model.availableSaves().map(\.slot)
-            return "A save from the other device (written by the script: \(written)) arrived: \(model.syncStatus); saves \(slots)"
-        },
-        Step(name: "04-conflict", grid: false) { model, scene in
-            // Both edits happen before either device syncs: the iPad's version reaches the
-            // cloud first, then this device saves (and syncs) its own.
-            let written: Bool = ScreenshotDirector.writeFromOtherDevice(model, slot: "Quay Street", title: "Quay Street Tower (edited on iPad)", hours: 5)
-            model.advanceSimulation(ticks: 2 * 3600)
-            model.save(slot: "Quay Street", title: "Quay Street Tower")
-            let conflicts: [String] = model.syncConflicts
-            return "Both devices changed \"Quay Street\" (iPad copy written: \(written)): \(model.syncStatus); conflict copies \(conflicts)"
-        },
-        Step(name: "05-loaded-conflict-copy", grid: false) { model, scene in
-            guard let copy = model.syncConflicts.first else { return "no conflict copy" }
-            let expected = ScreenshotDirector.otherDeviceWorlds["Quay Street"]
-            let loaded: Bool = model.load(slot: copy)
-            model.showLoadSheet = false
             model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(22, 16), zoom: 8) }
-            let identical: Bool = expected != nil && expected == model.world
-            return "Loaded the conflict copy \"\(copy)\": loaded=\(loaded), identical to the iPad's version=\(identical), \(model.clockText)"
+            model.scene?.withController { $0.jump(center: Vec2(41, 420), zoom: 0.75) }
+            return "Stress tower: \(ScreenshotDirector.scale(model)); \(model.clockText)"
         },
-        Step(name: "06-icloud-unavailable", grid: false) { model, scene in
-            let standIn = model.syncFolderOverride
-            model.syncFolderOverride = nil
-            model.openSavesPanel()
-            let status: String = model.syncStatus
-            model.syncFolderOverride = standIn
-            return "The real iCloud container lookup on this unsigned CI build: \(status)"
+        Step(name: "02-morning-rush", grid: false) { model, scene in
+            model.advanceSimulation(ticks: SimClock.secondsPerDay)
+            model.advanceSimulation(toTimeOfDay: 8, minute: 20)
+            model.refreshSimulationSummary()
+            model.scene?.withController { $0.jump(center: Vec2(41, 88), zoom: 9) }
+            return "\(model.clockText), sky lobby 21 and zone 2 at rush hour; last step \(String(format: "%.1f", model.lastSimulationMs)) ms; \(ScreenshotDirector.scale(model))"
         },
-        Step(name: "07-delete-propagates", grid: false) { model, scene in
-            model.deleteSave(slot: "iPad Quay")
-            let cloud: [String] = ScreenshotDirector.cloudSlots(model)
-            return "Deleted \"iPad Quay\" here: \(model.syncStatus); cloud now holds \(cloud)"
+        Step(name: "03-sky-lobby", grid: false) { model, scene in
+            model.advanceSimulation(ticks: 90)
+            model.refreshSimulationSummary()
+            model.scene?.withController { $0.jump(center: Vec2(40, 86), zoom: 24) }
+            let waiting: Int = ScreenshotDirector.waiting(in: model.world ?? GameWorld())
+            return "\(model.clockText), close-up of the sky lobby on floor 21: \(waiting) people waiting in the tower"
+        },
+        Step(name: "04-upper-zones", grid: false) { model, scene in
+            model.scene?.withController { $0.jump(center: Vec2(41, 780), zoom: 3) }
+            return "Upper zones (floors 170–210) zoomed out: façade level of detail; \(ScreenshotDirector.scale(model))"
+        },
+        Step(name: "05-night", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 22)
+            model.refreshSimulationSummary()
+            model.scene?.withController { $0.jump(center: Vec2(41, 420), zoom: 0.75) }
+            return "\(model.clockText): 211 floors at night (lit homes, dark offices); \(ScreenshotDirector.scale(model))"
+        },
+        Step(name: "06-400-floors", grid: false) { model, scene in
+            model.loadStressTower(zones: 19)
+            model.advanceSimulation(toTimeOfDay: 10)
+            model.refreshSimulationSummary()
+            model.scene?.withController { $0.jump(center: Vec2(55, 790), zoom: 0.4) }
+            return "400-floor stress tower: \(ScreenshotDirector.scale(model)); last step \(String(format: "%.1f", model.lastSimulationMs)) ms"
+        },
+        Step(name: "07-save-load", grid: false) { model, scene in
+            let before = model.world
+            let t0 = Date()
+            let saved: Bool = model.save(slot: "capture-roundtrip", title: "Stress round trip")
+            let t1 = Date()
+            let loaded: Bool = model.load(slot: "capture-roundtrip")
+            let t2 = Date()
+            let identical: Bool = before != nil && before == model.world
+            let ms = String(format: "save %.0f ms, load %.0f ms", t1.timeIntervalSince(t0) * 1000, t2.timeIntervalSince(t1) * 1000)
+            return "400-floor tower saved and reloaded: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical) (\(ms), Debug build, incl. scene rebuild)"
         },
     ]
 

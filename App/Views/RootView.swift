@@ -127,7 +127,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · \(mode) · Phase 18")
+            Text("\(model.cityName) · \(mode) · Phase 19")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

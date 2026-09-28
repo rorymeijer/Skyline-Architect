@@ -57,6 +57,8 @@ struct GameCommands: Commands {
             Button("Developer: Build Demo Tower") { model.applyBlueprint("demo-tower") }
             Button("Developer: Lease All Vacant Units") { model.leaseAllVacant() }
             Button("Developer: Start a Fire") { model.igniteFirstOffice() }
+            Button("Developer: Load Stress Tower (211 floors)") { model.loadStressTower(zones: 10) }
+            Button("Developer: Load Stress Tower (400 floors)") { model.loadStressTower(zones: 19) }
             #endif
         }
         CommandGroup(after: .toolbar) {
