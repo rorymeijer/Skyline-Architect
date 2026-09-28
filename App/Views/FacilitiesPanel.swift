@@ -35,6 +35,8 @@ struct FacilitiesPanel: View {
             Text("Wages \(Money.format(s.wagesPerDay)) / day · shift 07:00–19:00").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
             Text(String(format: "Average cleanliness %.0f %% · condition %.0f %%", s.averageCleanliness * 100, s.averageCondition * 100))
                 .font(.caption.monospacedDigit())
+            Text(String(format: "Lighting %.1f kW now · %.0f kWh since the last closing", model.lightingKW, model.lightingKWhToday))
+                .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
         }
         .padding(12)
         .frame(width: 330, alignment: .leading)

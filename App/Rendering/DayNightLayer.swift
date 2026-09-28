@@ -1,16 +1,18 @@
+import CoreGraphics
 import SpriteKit
 import SkylineCore
 import SkylinePresentation
 
-/// Basic day/night (Phase 9): a screen-sized multiply tint over the world and additive warm
-/// light over rooms that are lit from inside. Pure view of `DayNight` data.
+/// Day/night (Phases 9, 12): a screen-sized multiply grade (vertical gradient) over the
+/// world, additive coloured light over lit rooms or their window panes, and the opacity of
+/// the static emission tiles (city windows, street lamps). Pure view of `DayNight` data.
 final class DayNightLayer {
     /// Scene child (screen space), above the world, below overlays.
     let tint = SKSpriteNode(color: .white, size: .zero)
     /// World child: lit rooms.
     let lights = SKNode()
     private var pool: [SKSpriteNode] = []
-    private static let lamp = SKColor(red: 1.0, green: 0.82, blue: 0.52, alpha: 1)
+    private var gradeKey: [Int] = []
 
     init() {
         tint.anchorPoint = .zero
@@ -18,13 +20,16 @@ final class DayNightLayer {
         tint.isHidden = true
     }
 
-    func update(daylight: Double, rooms: [LitRoom], viewport: CGSize) {
+    /// `emission` is the node of the emission tile layer, faded in with the darkness.
+    func update(grade: Grade, darkness: Double, rooms: [LitRoom], viewport: CGSize, emission: SKNode) {
         tint.size = viewport
-        tint.isHidden = daylight >= 0.999
-        let c = DayNight.ambient(daylight: daylight)
-        tint.color = SKColor(red: c.r, green: c.g, blue: c.b, alpha: 1)
+        let plain = grade.top == RGBA(1, 1, 1) && grade.bottom == RGBA(1, 1, 1)
+        tint.isHidden = plain
+        if !plain { applyGrade(grade) }
+        emission.alpha = CGFloat(min(max(darkness * 1.1 - 0.05, 0), 1))
+        emission.isHidden = emission.alpha < 0.01
         while pool.count < rooms.count {
-            let s = SKSpriteNode(color: Self.lamp, size: .zero)
+            let s = SKSpriteNode(color: .white, size: .zero)
             s.anchorPoint = .zero
             s.blendMode = .add
             lights.addChild(s)
@@ -32,11 +37,35 @@ final class DayNightLayer {
         }
         for (i, sprite) in pool.enumerated() {
             guard i < rooms.count else { sprite.isHidden = true; continue }
-            let r = rooms[i].rect
+            let room = rooms[i], r = room.rect
+            let pane = r.height < 3                                    // window panes: no inset, brighter
             sprite.isHidden = false
-            sprite.position = CGPoint(x: r.minX + 0.1, y: r.minY)
-            sprite.size = CGSize(width: max(r.width - 0.2, 0), height: max(r.height - 0.45, 0))
-            sprite.alpha = CGFloat(0.42 * rooms[i].intensity)
+            sprite.color = SKColor(red: room.color.r, green: room.color.g, blue: room.color.b, alpha: 1)
+            sprite.position = CGPoint(x: r.minX + (pane ? 0 : 0.1), y: r.minY)
+            sprite.size = CGSize(width: max(r.width - (pane ? 0 : 0.2), 0), height: max(r.height - (pane ? 0 : 0.45), 0))
+            sprite.alpha = CGFloat((pane ? 0.75 : 0.42) * room.intensity)
         }
+    }
+
+    /// Rebuilds the gradient texture only when the grade visibly changes.
+    private func applyGrade(_ g: Grade) {
+        let key = [g.top.r, g.top.g, g.top.b, g.bottom.r, g.bottom.g, g.bottom.b].map { Int(($0 * 200).rounded()) }
+        guard key != gradeKey else { return }
+        gradeKey = key
+        let height = 64
+        guard let ctx = CGContext(data: nil, width: 1, height: height, bitsPerComponent: 8, bytesPerRow: 0,
+                                  space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return }
+        for y in 0..<height {
+            let t = Double(y) / Double(height - 1)                     // 0 = bottom (horizon), 1 = top
+            let c = g.bottom.mixed(with: g.top, t)
+            ctx.setFillColor(red: c.r, green: c.g, blue: c.b, alpha: 1)
+            ctx.fill(CGRect(x: 0, y: y, width: 1, height: 1))
+        }
+        guard let image = ctx.makeImage() else { return }
+        let texture = SKTexture(cgImage: image)
+        texture.filteringMode = .linear
+        tint.texture = texture
+        tint.color = .white
+        tint.colorBlendFactor = 0
     }
 }

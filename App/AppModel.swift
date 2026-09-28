@@ -54,6 +54,11 @@ final class AppModel {
     var progression = ProgressionSummary()
     var showProgressPanel = false
     var promotionNotice: String?
+    /// Served electricity per room (Phase 12, 4 Hz): lights need power.
+    @ObservationIgnored var electricityServed: [RoomID: Double] = [:]
+    /// Current lighting load and today's metered energy of the active property (4 Hz).
+    var lightingKW = 0.0
+    var lightingKWhToday = 0.0
     @ObservationIgnored var seenPromotions: Int?
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
@@ -199,11 +204,13 @@ final class AppModel {
         scene.onCommit = { [weak self] command in self?.perform(command) }
         scene.onSelect = { [weak self] cell in self?.selectRoom(at: cell) }
         scene.servicesProvider = { [weak self] in self?.serviceMarks() }
-        scene.lightingProvider = { [weak self] visible in
-            guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return (1, []) }
+        scene.lightingProvider = { [weak self] visible, zoom in
+            let day = Grade(top: RGBA(1, 1, 1), bottom: RGBA(1, 1, 1))
+            guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return (day, 0, []) }
             let t = Double(world.clock.tick) + self.host.fraction
-            return (DayNight.daylight(atTick: t),
-                    DayNight.litRooms(world: world, propertyID: property, catalog: catalog, time: t, visible: visible))
+            return (DayNight.grade(atTick: t), 1 - DayNight.daylight(atTick: t),
+                    DayNight.litRooms(world: world, propertyID: property, catalog: catalog, time: t, visible: visible, zoom: zoom,
+                                      power: self.electricityServed))
         }
         if let previous {
             scene.onReady = previous.onReady

@@ -28,6 +28,9 @@ public struct SiteComposition: Sendable {
     public let plot: Plot
     public let site: CompositionLayer
     public internal(set) var buildings: CompositionLayer
+    /// Night lights of the site (city and neighbour windows, street lamps; Phase 12). Not
+    /// part of `layers`: the renderer adds it separately, scaled by darkness.
+    public let emission: CompositionLayer
     public let sky: SkyGradient
     /// Region covered by static art; tiles outside it are never requested.
     public internal(set) var extent: Rect
@@ -78,20 +81,22 @@ public enum SiteComposer {
         let extent = Rect(minX: midX - terrainHalfWidth, minY: groundBottom, maxX: midX + terrainHalfWidth, maxY: 200)
 
         var d = Drawing()
+        var lights = Drawing()
         d.section("backdrop") {
-            BackdropArt.draw(into: &$0, span: (midX - backdropHalfWidth)...(midX + backdropHalfWidth), focusX: midX + 180, palette: p, seed: city.seed)
+            BackdropArt.draw(into: &$0, lights: &lights, span: (midX - backdropHalfWidth)...(midX + backdropHalfWidth), focusX: midX + 180,
+                             palette: p, seed: city.seed)
         }
         d.section("neighbors") { d in
             let leftRoom = frontX0 - siteX0, rightRoom = siteX1 - frontX1
             var rng = SeededRandom(seed: city.seed, stream: UInt64(propertyID.raw))
             if leftRoom >= 12 {
                 let floors = Double(rng.int(in: 5..<8))
-                NeighborArt.draw(into: &d, rect: Rect(minX: siteX0 + 3, minY: 0, maxX: frontX0 - 2.5, maxY: floors * grid.floorHeight + 0.6),
+                NeighborArt.draw(into: &d, lights: &lights, rect: Rect(minX: siteX0 + 3, minY: 0, maxX: frontX0 - 2.5, maxY: floors * grid.floorHeight + 0.6),
                                  style: .masonry, grid: grid, palette: p, seed: city.seed &+ 1)
             }
             if rightRoom >= 12 {
                 let floors = Double(rng.int(in: 9..<14))
-                NeighborArt.draw(into: &d, rect: Rect(minX: frontX1 + 2.5, minY: 0, maxX: siteX1 - 3, maxY: floors * grid.floorHeight + 1.2),
+                NeighborArt.draw(into: &d, lights: &lights, rect: Rect(minX: frontX1 + 2.5, minY: 0, maxX: siteX1 - 3, maxY: floors * grid.floorHeight + 1.2),
                                  style: .glass, grid: grid, palette: p, seed: city.seed &+ 2)
             }
         }
@@ -105,6 +110,8 @@ public enum SiteComposer {
                 d.fill(Rect(minX: x - 0.04, minY: 0, maxX: x + 0.04, maxY: 1.0), p.surveyStake)
                 d.fill(Rect(minX: x - 0.05, minY: 0.85, maxX: x + 0.05, maxY: 1.05), p.surveyCap)
             }
+            NightArt.streetLamps(site: &d, lights: &lights, at: NightArt.lampPositions(span: (midX - 600)...(midX + 600), keepClear: frontX0...frontX1),
+                                 palette: p)
         }
         let siteLayer = CompositionLayer(name: "site", drawing: d)
         let siteExtent = extent.union(d.bounds)
@@ -112,6 +119,7 @@ public enum SiteComposer {
         var composition = SiteComposition(
             propertyID: propertyID, grid: grid, plot: plot, site: siteLayer,
             buildings: CompositionLayer(name: "buildings", drawing: Drawing()),
+            emission: CompositionLayer(name: "emission", drawing: lights),
             sky: .day(p), extent: siteExtent, siteExtent: siteExtent,
             siteRect: Rect(minX: siteX0, minY: groundBottom, maxX: siteX1, maxY: 0),
             frontageRect: Rect(minX: frontX0, minY: -maxBasementDepth, maxX: frontX1, maxY: 0),
