@@ -2,5 +2,9 @@
   "slabCostPerModule": 1800,
   "basementSlabCostPerModule": 3200,
   "maxCantileverModules": 0,
-  "demolitionRefund": 0.4
+  "demolitionRefund": 0.4,
+  "foundationCostPerModule": 6000,
+  "excavationCostPerModule": 4000,
+  "pileCostPerMeter": 150,
+  "storeysPerPileMeter": 2
 }

@@ -22,4 +22,20 @@ import SkylineCore
         #expect(throws: ConstructionError.overhang(max: 0)) { try engine.apply(.buildFloor(building: b.id, level: 2, span: ground), to: &game.world) }
         try engine.apply(.buildFloor(building: b.id, level: 2, span: narrower), to: &game.world)   // setbacks and straight walls are fine
     }
+
+    /// Every base blueprint builds on the default start; the 40-storey skytower first
+    /// lengthens the piles (20 m carry 40 storeys, level 40 is the 41st).
+    @Test func baseBlueprintsBuildWithinThePileLimit() throws {
+        let lib = try ContentLibrary.loadBase()
+        #expect(lib.buildRules.storeysPerPileMeter == 2)
+        for bp in lib.orderedBlueprints {
+            var game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: lib)
+            let building = try #require(game.world.buildings(on: game.activePropertyID).first)
+            let engine = ConstructionEngine(catalog: lib.buildCatalog)
+            for c in bp.commands(for: building) { try engine.apply(c, to: &game.world) }
+            let b = try #require(game.world.buildings[building.id])
+            let top = try #require(b.builtLevels?.highest)
+            #expect(top <= lib.buildRules.highestLevel(for: b.foundation)!, "\(bp.id)")
+        }
+    }
 }

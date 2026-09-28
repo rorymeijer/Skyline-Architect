@@ -1142,6 +1142,7 @@
   "name": "Demonstration Sky Tower",
   "description": "42 storeys: a bank of three elevators serves B1–20, an express shuttle runs from G to the sky lobby on floor 21, and a bank of two serves 21–40. Used for Phase 7 captures and tests.",
   "steps": [
+    { "foundation": { "pileDepth": 22 } },
    {
     "floor": {
      "level": -1,

@@ -6,7 +6,7 @@ import Testing
 struct ConstructionFixture {
     var world: GameWorld
     let building: BuildingID
-    let engine: ConstructionEngine
+    var engine: ConstructionEngine
 
     static let catalog = BuildCatalog(
         rules: BuildRules(slabCostPerModule: 100, basementSlabCostPerModule: 200, maxCantileverModules: 2, demolitionRefund: 0.5),
