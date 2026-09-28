@@ -51,17 +51,18 @@ struct ScenarioBrowserView: View {
                             } else {
                                 Text("All at once, at a daily closing.").font(.caption).foregroundStyle(.secondary)
                             }
-                            Spacer(minLength: 4)
                             HStack {
                                 MenuButton(title: "Back", subtitle: nil) { model.showScenarioBrowser = false }
                                 MenuButton(title: "Start \(s.name)", subtitle: nil) { model.startScenario(s.id) }
                             }
                         }
                         .frame(width: 340, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
             .padding(28)
+            .fixedSize(horizontal: false, vertical: true)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
         }
         .environment(\.colorScheme, .dark)

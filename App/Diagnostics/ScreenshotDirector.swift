@@ -122,7 +122,7 @@ final class ScreenshotDirector {
             let loaded = model.load(slot: "capture-roundtrip")
             model.showScenarioPanel = true
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(20, 16), zoom: 9) }
+            scene.withController { $0.jump(center: Vec2(20, 12), zoom: 8) }
             return "Crown Prestige saved and reloaded mid-scenario: saved=\(saved) loaded=\(loaded) worldIdentical=\(before != nil && before == model.world); " + ScreenshotDirector.objectives(model)
         },
     ]

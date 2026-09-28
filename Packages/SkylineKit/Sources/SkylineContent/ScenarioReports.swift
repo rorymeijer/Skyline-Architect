@@ -76,7 +76,7 @@ public struct ScenarioSummary: Equatable, Sendable {
         case .buildingClass:
             library.buildingClasses.indices.contains(Int(value)) ? library.buildingClasses[Int(value)].name : "\(Int(value))"
         case .averageWait: "\(Int(value.rounded())) s"
-        case .population, .occupiedUnits, .reputation, .properties: "\(Int(value.rounded()))"
+        case .population, .occupiedUnits, .reputation, .properties: Money.grouped(Int(value.rounded()))
         }
     }
 }

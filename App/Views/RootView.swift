@@ -118,7 +118,7 @@ struct TitleBadge: View {
     let model: AppModel
 
     private var mode: String {
-        if let scenario = model.scenario { return "Scenario: " + scenario.name }
+        if model.scenario != nil { return "Scenario" }
         return model.progression.byClass ? "Standard" : "Sandbox"
     }
 
