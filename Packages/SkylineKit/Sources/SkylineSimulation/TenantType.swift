@@ -83,7 +83,8 @@ public struct TenantType: Codable, Hashable, Sendable {
     public func problems(schedules known: [Schedule], rooms roomIDs: Set<String>) -> [String] {
         var p: [String] = []
         if !["household", "business"].contains(kind) { p.append("tenant '\(id)': kind must be household or business") }
-        if rooms.isEmpty || !rooms.allSatisfy(roomIDs.contains) { p.append("tenant '\(id)': unknown or missing room types") }
+        if rooms.isEmpty { p.append("tenant '\(id)': no room types") }
+        for r in rooms where !roomIDs.contains(r) { p.append("tenant '\(id)': unknown room type '\(r)'") }
         if members.fixed == nil && (members.perModule ?? 0) <= 0 { p.append("tenant '\(id)': members need 'fixed' or a positive 'perModule'") }
         if schedules.isEmpty { p.append("tenant '\(id)': no schedules") }
         for s in schedules {

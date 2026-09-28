@@ -11,13 +11,22 @@ public struct ContentPackManifest: Codable, Sendable, Hashable {
     public var formatVersion: Int
     /// Definition kind → file name relative to the pack folder.
     public var files: [String: String]
+    /// One line for the mod manager (Phase 17).
+    public var description: String?
+    public var author: String?
+    /// Packs (other than base) that must be loaded before this one.
+    public var requires: [String]?
 
-    public init(id: String, name: String, version: String, formatVersion: Int, files: [String: String]) {
+    public init(id: String, name: String, version: String, formatVersion: Int, files: [String: String],
+                description: String? = nil, author: String? = nil, requires: [String]? = nil) {
         self.id = id
         self.name = name
         self.version = version
         self.formatVersion = formatVersion
         self.files = files
+        self.description = description
+        self.author = author
+        self.requires = requires
     }
 }
 
@@ -26,6 +35,14 @@ public enum BaseContent {
     public static var packURL: URL {
         guard let url = Bundle.module.url(forResource: "Base", withExtension: nil) else {
             fatalError("Base content pack missing from SkylineContent bundle")
+        }
+        return url
+    }
+
+    /// Example mods shipped with the game (Phase 17); the mod manager can install them.
+    public static var examplesURL: URL {
+        guard let url = Bundle.module.url(forResource: "Examples", withExtension: nil) else {
+            fatalError("Example mods missing from SkylineContent bundle")
         }
         return url
     }

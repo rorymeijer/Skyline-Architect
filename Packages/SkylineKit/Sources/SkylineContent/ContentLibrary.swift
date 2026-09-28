@@ -20,7 +20,10 @@ public struct ContentError: Error, CustomStringConvertible, Equatable {
 /// All loaded, validated content definitions, keyed by id. Lookup order of the
 /// `ordered*` arrays is file order, so iteration is deterministic.
 public struct ContentLibrary: Sendable {
+    /// The first (base) pack's manifest; content errors of a merged library name it.
     public private(set) var manifest: ContentPackManifest
+    /// Every pack in the library, base first, in load order (Phase 17; saves record them).
+    public internal(set) var packs: [ContentPackManifest] = []
     public private(set) var orderedCities: [CityDefinition] = []
     public private(set) var orderedPlots: [PlotDefinition] = []
     public private(set) var orderedStarts: [StartDefinition] = []
@@ -53,57 +56,24 @@ public struct ContentLibrary: Sendable {
         try load(packAt: BaseContent.packURL)
     }
 
-    /// Loads and validates a pack folder. Any error rejects the whole pack.
+    /// Loads and validates a single pack folder. Any error rejects the whole pack.
     public static func load(packAt url: URL) throws -> ContentLibrary {
-        let manifest: ContentPackManifest = try decode(url.appendingPathComponent("pack.json"), pack: url.lastPathComponent, file: "pack.json")
-        guard manifest.formatVersion == ContentPackManifest.supportedFormatVersion else {
-            throw ContentError(pack: manifest.id, file: "pack.json",
-                               message: "Unsupported formatVersion \(manifest.formatVersion) (engine supports \(ContentPackManifest.supportedFormatVersion))")
-        }
-        func list<T: Decodable>(_ kind: String) throws -> [T] {
-            guard let file = manifest.files[kind] else { return [] }
-            return try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
-        }
-        var library = ContentLibrary(manifest: manifest)
-        try library.register(cities: list("cities"), plots: list("plots"), starts: list("starts"))
-        if let file = manifest.files["buildRules"] {
-            let rules: BuildRules = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
-            try library.register(rules: rules)
-        }
-        try library.register(rooms: list("rooms"), blueprints: list("blueprints"))
-        var materials: [String: String] = [:]
-        if let file = manifest.files["materials"] {
-            materials = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
-        }
-        try library.register(materials: materials, furniture: list("furniture"), interiors: list("interiors"))
-        var names = NamePool(first: [], last: [])
-        if let file = manifest.files["names"] {
-            names = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
-        }
-        var economy: EconomyRules?
-        if let file = manifest.files["economy"] {
-            economy = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
-        }
-        var facilities: FacilitiesRules?
-        if let file = manifest.files["facilities"] {
-            facilities = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
-        }
-        var progression: ProgressionDefinition?
-        if let file = manifest.files["progression"] {
-            progression = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
-        }
-        var weather: WeatherRules?
-        if let file = manifest.files["weather"] {
-            weather = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
-        }
-        var events: EventRules?
-        if let file = manifest.files["events"] {
-            events = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
-        }
-        try library.register(schedules: list("schedules"), names: names, elevators: list("elevators"), tenants: list("tenants"),
-                             economy: economy, facilities: facilities, progression: progression, weather: weather,
-                             events: events)
-        try library.register(scenarios: list("scenarios"))
+        try build(ContentPack.read(at: url))
+    }
+
+    /// Validates a (possibly merged) pack and builds the library from it. Errors name the
+    /// pack's manifest id.
+    public static func build(_ pack: ContentPack, packs: [ContentPackManifest]? = nil) throws -> ContentLibrary {
+        var library = ContentLibrary(manifest: pack.manifest)
+        library.packs = packs ?? [pack.manifest]
+        try library.register(cities: pack.cities, plots: pack.plots, starts: pack.starts)
+        if let rules = pack.buildRules { try library.register(rules: rules) }
+        try library.register(rooms: pack.rooms, blueprints: pack.blueprints)
+        try library.register(materials: pack.materials, furniture: pack.furniture, interiors: pack.interiors)
+        try library.register(schedules: pack.schedules, names: pack.names ?? NamePool(first: [], last: []), elevators: pack.elevators,
+                             tenants: pack.tenants, economy: pack.economy, facilities: pack.facilities, progression: pack.progression,
+                             weather: pack.weather, events: pack.events)
+        try library.register(scenarios: pack.scenarios)
         return library
     }
 
@@ -274,15 +244,5 @@ public struct ContentLibrary: Sendable {
                                           facilities: facilities, progression: progression?.reputation, weather: weather,
                                           events: events)
         buildingClasses = progression?.classes ?? []
-    }
-
-    private static func decode<T: Decodable>(_ url: URL, pack: String, file: String) throws -> T {
-        let data: Data
-        do { data = try Data(contentsOf: url) } catch {
-            throw ContentError(pack: pack, file: file, message: "Cannot read file: \(error.localizedDescription)")
-        }
-        do { return try JSONDecoder().decode(T.self, from: data) } catch {
-            throw ContentError(pack: pack, file: file, message: "Invalid JSON: \(error)")
-        }
     }
 }
