@@ -67,14 +67,14 @@ final class ScreenshotDirector {
             model.leaseAllVacant()
             model.advanceSimulation(toTimeOfDay: 10)
             model.showMainMenu = true
-            scene.withController { $0.jump(center: Vec2(24, 256), zoom: 0.9) }
+            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
             return "Main menu over the live city at 10:00; clouds drift behind the skyline."
         },
         Step(name: "02-clouds-fair", grid: false) { model, scene in
             model.showMainMenu = false
             ScreenshotDirector.force("clear", 21, model: model)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(24, 256), zoom: 0.9) }
+            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
             let n: Int = ScreenshotDirector.cloudCount(model)
             return "\(model.clockText), clear weather (set by the script): \(n) fair-weather clouds in view."
         },
@@ -89,21 +89,20 @@ final class ScreenshotDirector {
             ScreenshotDirector.force("clear", 18, model: model)
             model.advanceSimulation(toTimeOfDay: 19, minute: 30)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(24, 256), zoom: 0.9) }
+            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
             return "\(model.clockText): dusk, clouds dimmed with the light."
         },
         Step(name: "05-panels", grid: false) { model, scene in
             model.advanceSimulation(ticks: SimClock.secondsPerDay)
             model.advanceSimulation(toTimeOfDay: 11)
             model.showEconomyPanel = true
-            model.showProgressPanel = true
+            model.promotionNotice = nil
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 9) }
-            return "\(model.clockText): panels share one card style and a named close button (VoiceOver)."
+            return "\(model.clockText): the economy panel in the shared card style (five recent lines; named close button for VoiceOver)."
         },
         Step(name: "06-inspector", grid: false) { model, scene in
             model.showEconomyPanel = false
-            model.showProgressPanel = false
             if let office = ScreenshotDirector.office(model, index: 2) { model.selectRoom(at: ScreenshotDirector.cell(of: office)) }
             model.showFacilitiesPanel = true
             model.refreshSimulationSummary()
@@ -115,7 +114,7 @@ final class ScreenshotDirector {
             model.showFacilitiesPanel = false
             model.advanceSimulation(toTimeOfDay: 22)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(24, 256), zoom: 0.9) }
+            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
             return "\(model.clockText): night; clouds as dark shapes against the sky."
         },
     ]
