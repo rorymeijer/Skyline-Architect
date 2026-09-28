@@ -45,6 +45,8 @@ public struct RoomSpec: Codable, Hashable, Sendable {
     public var transport: String?
     /// Building class index needed to place it in a standard game (Phase 11; nil = 0).
     public var unlockClass: Int?
+    /// How the room is lit (Phase 12; nil = no lights, e.g. shafts).
+    public var lighting: LightingSpec?
 
     public init(id: String, name: String, category: String, kind: RoomKind, appearance: String,
                 minWidth: Int, maxWidth: Int, minFloors: Int, maxFloors: Int,

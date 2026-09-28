@@ -60,6 +60,11 @@ extension GameWorld {
     public mutating func setStanding(_ standing: Standing, building: BuildingID) {
         buildings.update(building) { $0.standing = standing }
     }
+
+    /// Sets a building's lighting energy since the last closing (the simulation, Phase 12).
+    public mutating func setLightingEnergy(_ kWh: Double, building: BuildingID) {
+        buildings.update(building) { $0.lightingKWh = kWh }
+    }
 }
 
 extension BuildCatalog {

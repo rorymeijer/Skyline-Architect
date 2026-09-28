@@ -1,6 +1,6 @@
 [
  {
-  "id": "lobby",
+  "id": "lobby", "lighting": { "color": "#FFE3B5", "occupied": 1.0, "empty": 0.6, "wattsPerModule": 9 },
   "name": "Lobby",
   "category": "circulation",
   "kind": "room",
@@ -21,7 +21,7 @@
   "wearPerDay": 0.01
  },
  {
-  "id": "sky-lobby", "unlockClass": 2,
+  "id": "sky-lobby", "lighting": { "color": "#FFE3B5", "occupied": 1.0, "empty": 0.6, "wattsPerModule": 9 }, "unlockClass": 2,
   "name": "Sky Lobby",
   "category": "circulation",
   "kind": "room",
@@ -41,7 +41,7 @@
   "wearPerDay": 0.01
  },
  {
-  "id": "corridor",
+  "id": "corridor", "lighting": { "color": "#FFE9C4", "occupied": 1.0, "empty": 0.45, "wattsPerModule": 5 },
   "name": "Corridor",
   "category": "circulation",
   "kind": "room",
@@ -128,7 +128,7 @@
   }
  },
  {
-  "id": "office-small",
+  "id": "office-small", "lighting": { "color": "#EAF1FF", "occupied": 1.0, "empty": 0.0, "wattsPerModule": 11 },
   "name": "Small Office",
   "category": "office",
   "kind": "room",
@@ -151,7 +151,7 @@
   "wearPerDay": 0.012
  },
  {
-  "id": "apartment-studio",
+  "id": "apartment-studio", "lighting": { "color": "#FFC47E", "occupied": 1.0, "empty": 0.0, "wattsPerModule": 7, "quietHours": { "from": "22:30", "to": "06:15", "level": 0.06, "spreadMinutes": 90 } },
   "name": "Studio Apartment",
   "category": "residential",
   "kind": "room",
@@ -174,7 +174,7 @@
   "wearPerDay": 0.01
  },
  {
-  "id": "mechanical",
+  "id": "mechanical", "lighting": { "color": "#DCE7FF", "occupied": 1.0, "empty": 0.15, "wattsPerModule": 3 },
   "name": "Mechanical Room",
   "category": "infrastructure",
   "kind": "room",
@@ -194,7 +194,7 @@
   "utilityRange": 20
  },
  {
-  "id": "electrical-room",
+  "id": "electrical-room", "lighting": { "color": "#DCE7FF", "occupied": 1.0, "empty": 0.15, "wattsPerModule": 3 },
   "name": "Electrical Room",
   "category": "infrastructure",
   "kind": "room",
@@ -213,7 +213,7 @@
   "wearPerDay": 0.03
  },
  {
-  "id": "telecom-room",
+  "id": "telecom-room", "lighting": { "color": "#CFE0FF", "occupied": 1.0, "empty": 0.2, "wattsPerModule": 3 },
   "name": "Telecom Room",
   "category": "infrastructure",
   "kind": "room",
@@ -232,7 +232,7 @@
   "wearPerDay": 0.02
  },
  {
-  "id": "parking",
+  "id": "parking", "lighting": { "color": "#DDE6FF", "occupied": 1.0, "empty": 0.5, "wattsPerModule": 3 },
   "name": "Parking Level",
   "category": "infrastructure",
   "kind": "room",

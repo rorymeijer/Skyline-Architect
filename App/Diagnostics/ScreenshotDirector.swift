@@ -56,81 +56,72 @@ final class ScreenshotDirector {
     private var started = false
 
     let steps: [Step] = [
-        Step(name: "01-main-menu", grid: false) { model, scene in
+        Step(name: "01-noon", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
-            model.showMainMenu = true
-            return "Main menu: New Game (standard, unlocks by building class) and New Sandbox (everything unlocked)."
-        },
-        Step(name: "02-standard-start", grid: false) { model, scene in
-            model.startFromMenu()
-            model.setSpeed(.paused)
-            model.showProgressPanel = true
-            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first {
-                // A new game builds a new scene: move its camera, not the old one's.
-                model.scene?.withController { $0.jump(center: Vec2(Double(b.footprint.start) + 16, 8), zoom: 14) }
-            }
-            model.refreshSimulationSummary()
-            let p = model.progression
-            return "Standard game: \(p.className), reputation \(Int(p.reputation)), floors up to \(p.maxFloor.map(String.init) ?? "∞"); " +
-                "locked: \(p.lockedRooms.keys.sorted().joined(separator: ", "))."
-        },
-        Step(name: "03-class-c-tower", grid: false) { model, scene in
             model.applyBlueprint("demo-tower")
+            model.leaseAllVacant()
+            model.advanceSimulation(toTimeOfDay: 12)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            return "Demo tower built in class C: " + ScreenshotDirector.requirements(model.progression) + "."
+            scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
+            return "\(model.clockText): daylight, no grade; lighting load \(String(format: "%.1f", model.lightingKW)) kW (offices busy)."
         },
-        Step(name: "04-first-tenants", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 2 * SimClock.secondsPerDay + 4 * 3600)
+        Step(name: "02-golden-hour", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 18, minute: 40)
             model.refreshSimulationSummary()
-            let p = model.progression
-            return "\(model.clockText): \(model.leasing.leased)/\(model.leasing.units) units let, reputation \(Int(p.reputation)); " +
-                ScreenshotDirector.requirements(p) + "."
+            return "\(model.clockText): golden hour — warm grade before sunset."
         },
-        Step(name: "05-promotion", grid: false) { model, scene in
-            var days = 0
-            while model.progression.classLevel == 0 && days < 12 {
-                model.advanceSimulation(toTimeOfDay: 6, minute: 5)
-                model.refreshSimulationSummary()
-                days += 1
-            }
-            model.advanceSimulation(toTimeOfDay: 9)
+        Step(name: "03-sunset", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 20, minute: 0)
             model.refreshSimulationSummary()
-            return "\(model.clockText): \(model.progression.className) after \(days) more closing(s); banner: \(model.promotionNotice ?? "none")."
+            scene.withController { $0.jump(center: Vec2(22, 22), zoom: 6) }
+            return "\(model.clockText): sunset — amber horizon, homes and neighbours light up, street lamps on."
         },
-        Step(name: "06-taller-than-class-c", grid: false) { model, scene in
-            model.promotionNotice = nil
-            var built: [Int] = []
-            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
-               let top = b.builtLevels?.highest, let span = b.plate(at: top)?.span {
-                for level in (top + 1)...13 where model.perform(.buildFloor(building: b.id, level: level, span: span)) { built.append(level) }
-            }
+        Step(name: "04-evening-close-up", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 21, minute: 30)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 30), zoom: 11.5) }
-            return "Floors built after the promotion: \(built.map(String.init).joined(separator: ", ")) (floor 13 needs class B); " +
-                "limit now floor \(model.progression.maxFloor.map(String.init) ?? "∞")."
+            scene.withController { $0.jump(center: Vec2(22, 26), zoom: 30) }
+            return "\(model.clockText): warm home light, empty offices dark, lobby and corridors dimmed; \(String(format: "%.1f", model.lightingKW)) kW."
         },
-        Step(name: "07-reputation-falls", grid: false) { model, scene in
-            let before = model.progression.reputation
-            // Neglect: the electrical room is demolished, so no unit has power.
+        Step(name: "05-night-skyline", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 22, minute: 15)
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(40, 45), zoom: 2.4) }
+            return "\(model.clockText): zoomed out — lit rooms as window panes on the façade, city windows, street lamps."
+        },
+        Step(name: "06-small-hours", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 2, minute: 30)
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
+            return "\(model.clockText): homes asleep (dimmed, staggered from 22:30), circulation and plant stay on; \(String(format: "%.1f", model.lightingKW)) kW."
+        },
+        Step(name: "07-sunrise", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 5, minute: 25)
+            model.refreshSimulationSummary()
+            return "\(model.clockText): sunrise — rose grade, homes waking up."
+        },
+        Step(name: "08-lighting-bill", grid: false) { model, scene in
+            let metered = model.lightingKWhToday
+            model.advanceSimulation(toTimeOfDay: 6, minute: 5)
+            model.showEconomyPanel = true
+            model.refreshSimulationSummary()
+            model.promotionNotice = nil        // the sandbox tower was promoted overnight; not this capture's subject
+            let line = model.world?.ledger.journal.last { $0.detail.hasPrefix("Lighting") }
+            return "\(model.clockText): closing billed \(line.map { "\($0.detail): \($0.amount)" } ?? "no lighting line") " +
+                "(meter read \(Int(metered)) kWh at 05:25)."
+        },
+        Step(name: "09-power-cut", grid: false) { model, scene in
+            model.showEconomyPanel = false
+            model.advanceSimulation(toTimeOfDay: 21, minute: 0)
+            model.refreshSimulationSummary()
+            let before = model.lightingKW
             let plant = model.world?.rooms.values.first { $0.definitionID == "electrical-room" }
             let cut = plant.map { model.perform(.demolishRoom($0.id)) } ?? false
-            model.advanceSimulation(ticks: 5 * SimClock.secondsPerDay)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            return "\(model.clockText), electrical room demolished (\(cut)): reputation \(Int(before)) → " +
-                "\(Int(model.progression.reputation)), moved out \(model.leasing.market.movedOut), let \(model.leasing.leased)/\(model.leasing.units); " +
-                "still \(model.progression.className)."
-        },
-        Step(name: "08-save-load-roundtrip", grid: false) { model, scene in
-            let before = model.world
-            let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
-            let loaded = model.load(slot: "capture-roundtrip")
-            let identical = before != nil && before == model.world
-            model.refreshSimulationSummary()
-            return "Saved and reloaded with class and reputation: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical), " +
-                "\(model.progression.className) \(Int(model.progression.reputation))"
+            model.promotionNotice = nil
+            scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
+            return "\(model.clockText): electrical room demolished (\(cut)) — the tower goes dark: \(String(format: "%.1f", before)) → " +
+                "\(String(format: "%.2f", model.lightingKW)) kW; neighbours and street lamps stay lit."
         },
     ]
 

@@ -5,7 +5,10 @@ import SkylineCore
 enum BackdropArt {
     /// Buildings are drawn at reduced scale (they stand kilometres behind the plot in an
     /// orthographic view, so true scale would make them look adjacent).
-    static func draw(into d: inout Drawing, span: ClosedRange<Double>, focusX: Double, palette p: ArtPalette, seed: UInt64) {
+    /// `lights` receives the windows that glow at night (the emission layer, Phase 12).
+    /// Lit windows inside `avoid` (the neighbours standing in front) are left out.
+    static func draw(into d: inout Drawing, lights: inout Drawing, avoid: [Rect] = [], span: ClosedRange<Double>, focusX: Double,
+                     palette p: ArtPalette, seed: UInt64) {
         var rng = SeededRandom(seed: seed, stream: 0xBAC)
         let width = span.upperBound - span.lowerBound
         for (band, color, heightScale) in [(0, p.backdropFar, 1.3), (1, p.backdropNear, 1.0)] {
@@ -37,6 +40,10 @@ enum BackdropArt {
                         fy += 1.6
                     }
                 }
+                if abs(x - focusX) < 1600 {
+                    NightArt.cityWindows(into: &lights, building: r, share: band == 1 ? 0.3 : 0.14, avoid: avoid,
+                                         seed: seed ^ UInt64(bitPattern: Int64((x * 10).rounded())) ^ UInt64(band))
+                }
                 x += w + rng.double(in: 0..<3)
             }
         }
@@ -51,8 +58,9 @@ enum BackdropArt {
 enum NeighborArt {
     enum Style { case masonry, glass }
 
-    static func draw(into d: inout Drawing, rect: Rect, style: Style, grid: GridSpec, palette p: ArtPalette, seed: UInt64) {
+    static func draw(into d: inout Drawing, lights: inout Drawing, rect: Rect, style: Style, grid: GridSpec, palette p: ArtPalette, seed: UInt64) {
         var rng = SeededRandom(seed: seed, stream: 0x4E)
+        var night = SeededRandom(seed: seed, stream: 0x416)
         let floors = Int(rect.height / grid.floorHeight)
         switch style {
         case .masonry:
@@ -70,6 +78,7 @@ enum NeighborArt {
                     let win = Rect(minX: wx, minY: fy + 1.1, maxX: wx + bayW * 0.44, maxY: fy + 3.1)
                     guard win.maxY < rect.maxY - 0.8 else { continue }
                     d.fill(win, p.neighborWindow.shaded(rng.double(in: 0.9..<1.15)), minDetail: 1.5)
+                    if night.chance(0.35) { lights.fill(win, NightArt.windowColor(&night)) }
                     d.fill(Rect(minX: win.minX - 0.1, minY: win.minY - 0.15, maxX: win.maxX + 0.1, maxY: win.minY),
                            p.neighborStone, minDetail: 6)
                     d.fill(Rect(minX: win.center.x - 0.03, minY: win.minY, maxX: win.center.x + 0.03, maxY: win.maxY),
@@ -82,6 +91,14 @@ enum NeighborArt {
             for f in 0..<floors {
                 let fy = Double(f) * grid.floorHeight
                 d.fill(Rect(minX: rect.minX, minY: fy, maxX: rect.maxX, maxY: fy + 0.9), p.neighborMullion.shaded(0.85), minDetail: 1.5)
+                guard fy + grid.floorHeight < rect.maxY - 1 else { continue }
+                var wx = rect.minX
+                while wx + 1.5 <= rect.maxX {
+                    if night.chance(0.3) {
+                        lights.fill(Rect(minX: wx + 0.08, minY: fy + 0.95, maxX: wx + 1.42, maxY: fy + grid.floorHeight - 0.1), NightArt.windowColor(&night))
+                    }
+                    wx += 1.5
+                }
             }
             var mx = rect.minX
             while mx <= rect.maxX {

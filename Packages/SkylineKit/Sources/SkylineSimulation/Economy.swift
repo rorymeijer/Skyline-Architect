@@ -61,6 +61,13 @@ extension SimulationEngine {
                                               detail: "Utilities — \(people) people, \(cars) elevator cars, \(building.name)",
                                               building: building.id))
             }
+            let kWh = world.buildings[building.id]?.lightingKWh ?? 0
+            let lighting = Int((kWh * (economy.lightingPricePerKWh ?? 0)).rounded())
+            if lighting > 0 {
+                world.ledger.post(Transaction(tick: now, amount: -lighting, category: .utilities,
+                                              detail: "Lighting — \(Int(kWh.rounded())) kWh, \(building.name)", building: building.id))
+            }
+            world.setLightingEnergy(0, building: building.id)
         }
         let interest = Int((Double(world.ledger.loans) * economy.loanInterestRate / 365).rounded())
         if interest > 0 {

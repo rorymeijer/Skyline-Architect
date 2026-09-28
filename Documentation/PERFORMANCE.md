@@ -49,6 +49,12 @@ camera center · cursor cell. Screenshot capture writes the same values into
 | 2026-09-27 | 0.7.0 package, release | Linux cloud container | 60-floor tower (bank of 2 + stairs), 354 workers, 06:00–11:00 | 20 ms for 5 game hours (call assignment included); peak 15 waiting |
 | 2026-09-27 | same | same | demo-skytower (3 banks, 6 cars, 175 workers), morning per strategy | all strategies: avg waits 19–20 s; see ELEVATORS.md |
 
+Observations (Phase 12): the emission layer is static and adds at most 48 cached tiles,
+rasterized only while it is dark (14,440 items in the drawing, spatially indexed). In the final
+CI run (36380170316), all nine captures ran at 59.6–60.4 fps. An earlier run measured 52 fps
+for the 22:15 skyline view while its emission tiles were still rendering. The hourly lighting meter is one utility allocation per building per game hour.
+The 4 Hz app refresh adds one allocation for the power map.
+
 Observations (Phase 11): the daily assessment is one utility allocation and one bank scan per
 building per game day. The app's 4 Hz standing summary adds one more allocation per refresh,
 next to the facilities summary; the full test suite still runs in about 3 s (debug, 209 tests).

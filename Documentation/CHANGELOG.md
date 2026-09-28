@@ -2,6 +2,21 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.12.0] — Phase 12: Full day/night + lighting
+
+### Added
+- **Lighting model** per room type (colour, occupied/empty level, watts, quiet hours) in
+  `rooms.json`; homes switch off one by one from 22:30; lights need electricity.
+- **Energy**: lighting load metered hourly and billed at the daily closing
+  (`Lighting — N kWh`); load and today's meter in the facilities panel.
+- **Rendering**: colour grading through the day (rose sunrise, golden hour, amber sunset,
+  blue night), coloured room light, façade window panes when zoomed out, city and
+  neighbour windows at night, street lamps.
+- **Save format 9** (+ migration, golden fixture).
+
+### Fixed
+- City lights never shine through the tower or the neighbours.
+
 ## [0.11.0] — Phase 11: Progression / reputation
 
 ### Added

@@ -135,9 +135,12 @@ public struct EconomyRules: Codable, Hashable, Sendable {
     /// Monthly rents are collected at each daily closing as rent / rentDaysPerMonth. The base
     /// content uses 1: time is compressed so that one game day bills one rent month.
     public var rentDaysPerMonth: Int
+    /// Price of the lighting energy used in one game day, per kWh (Phase 12; nil = free).
+    /// Like rent it is a month's worth per day (D-032).
+    public var lightingPricePerKWh: Double?
 
     public init(loanStep: Int, maxLoans: Int, loanInterestRate: Double, bankruptcyDays: Int,
-                utilitiesPerPersonPerDay: Int, elevatorCarPerDay: Int, rentDaysPerMonth: Int) {
+                utilitiesPerPersonPerDay: Int, elevatorCarPerDay: Int, rentDaysPerMonth: Int, lightingPricePerKWh: Double? = nil) {
         self.loanStep = loanStep
         self.maxLoans = maxLoans
         self.loanInterestRate = loanInterestRate
@@ -145,6 +148,7 @@ public struct EconomyRules: Codable, Hashable, Sendable {
         self.utilitiesPerPersonPerDay = utilitiesPerPersonPerDay
         self.elevatorCarPerDay = elevatorCarPerDay
         self.rentDaysPerMonth = rentDaysPerMonth
+        self.lightingPricePerKWh = lightingPricePerKWh
     }
 
     public var problems: [String] {
@@ -154,6 +158,7 @@ public struct EconomyRules: Codable, Hashable, Sendable {
         if bankruptcyDays < 1 { p.append("economy: bankruptcyDays must be ≥ 1") }
         if utilitiesPerPersonPerDay < 0 || elevatorCarPerDay < 0 { p.append("economy: daily costs must be ≥ 0") }
         if rentDaysPerMonth < 1 { p.append("economy: rentDaysPerMonth must be ≥ 1") }
+        if (lightingPricePerKWh ?? 0) < 0 { p.append("economy: lightingPricePerKWh must be ≥ 0") }
         return p
     }
 }

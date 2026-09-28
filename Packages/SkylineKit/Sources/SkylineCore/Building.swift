@@ -57,6 +57,8 @@ public struct Building: Codable, Hashable, Sendable, Identifiable {
     public var rentLevel: Double = 1
     /// Reputation and class (Phase 11).
     public var standing = Standing()
+    /// Lighting energy used since the last daily closing, kWh (Phase 12; simulation-owned).
+    public var lightingKWh = 0.0
 
     public init(id: BuildingID, propertyID: PropertyID, name: String, footprint: ColumnSpan,
                 foundation: Foundation, floors: [FloorPlate] = []) {

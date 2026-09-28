@@ -15,6 +15,8 @@ final class WorldScene: SKScene {
     private let palette: ArtPalette
     private let worldRoot = SKNode()
     private let tileLayer: TileLayer
+    /// Night lights of the site, added over the graded scene (Phase 12).
+    private let emissionLayer: TileLayer
     private let gridOverlay: GridOverlayNode
     private let roomLabelLayer = RoomLabelLayer()
     private let placementOverlay: PlacementOverlayNode
@@ -56,7 +58,8 @@ final class WorldScene: SKScene {
     var selectionRect: Rect? { didSet { overlayDirty = true } }
     private let selectionOutline = SKShapeNode()
     /// Daylight (0…1) and lit rooms for the visible area; nil = always day.
-    var lightingProvider: ((Rect) -> (daylight: Double, rooms: [LitRoom]))?
+    /// Grade, darkness and lit rooms for the visible rect at a zoom (Phase 12).
+    var lightingProvider: ((Rect, Double) -> (grade: Grade, darkness: Double, rooms: [LitRoom]))?
     private let dayNight = DayNightLayer()
     /// Services overlay marks (nil = hidden). Asked every frame.
     var servicesProvider: (() -> [ServiceMark]?)?
@@ -86,6 +89,7 @@ final class WorldScene: SKScene {
                                limits: .standard(bounds: composition.cameraBounds))
         controller = CameraController(camera: initial)
         tileLayer = TileLayer(composition: composition)
+        emissionLayer = TileLayer(composition: composition, budget: 48, blendMode: .add, clearsOccluders: true) { [$0.emission] }
         gridOverlay = GridOverlayNode(palette: palette)
         placementOverlay = PlacementOverlayNode(palette: palette)
         super.init(size: CGSize(width: 1440, height: 900))
@@ -125,6 +129,9 @@ final class WorldScene: SKScene {
         addChild(dayNight.tint)
         dayNight.lights.zPosition = 9
         worldRoot.addChild(dayNight.lights)
+        emissionLayer.node.zPosition = 9
+        emissionLayer.node.isHidden = true
+        worldRoot.addChild(emissionLayer.node)
         elevatorLayer.node.zPosition = 4
         worldRoot.addChild(elevatorLayer.node)
         agentLayer.node.zPosition = 5
@@ -152,6 +159,7 @@ final class WorldScene: SKScene {
     func updateComposition(_ c: SiteComposition, dirty: Rect?) {
         composition = c
         tileLayer.replace(composition: c, dirty: dirty)
+        emissionLayer.replace(composition: c, dirty: dirty)   // building silhouettes moved
         overlayDirty = true
     }
 
@@ -213,7 +221,10 @@ final class WorldScene: SKScene {
     }
 
     /// True when the camera is at rest and every wanted tile is displayed.
-    var isSettled: Bool { !controller.isAnimating && tileLayer.isComplete && tileLayer.pendingCount == 0 }
+    var isSettled: Bool {
+        !controller.isAnimating && tileLayer.isComplete && tileLayer.pendingCount == 0
+            && (emissionLayer.node.isHidden || (emissionLayer.isComplete && emissionLayer.pendingCount == 0))
+    }
 
     var currentDiagnostics: RenderDiagnostics { lastDiagnostics }
 
@@ -262,8 +273,12 @@ final class WorldScene: SKScene {
         }
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         elevatorLayer.update(carProvider?(camera.visibleRect, camera.zoom) ?? [])
-        let lighting = lightingProvider?(camera.visibleRect) ?? (daylight: 1, rooms: [])
-        dayNight.update(daylight: lighting.daylight, rooms: lighting.rooms, viewport: size)
+        let lighting = lightingProvider?(camera.visibleRect, camera.zoom)
+            ?? (grade: Grade.day, darkness: 0, rooms: [])
+        if lighting.darkness > 0.02 {
+            emissionLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
+        }
+        dayNight.update(grade: lighting.grade, darkness: lighting.darkness, rooms: lighting.rooms, viewport: size, emission: emissionLayer.node)
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
         navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
         trafficOverlay.update(traffic: trafficProvider?(), camera: camera)

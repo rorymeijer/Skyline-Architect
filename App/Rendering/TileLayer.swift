@@ -24,6 +24,12 @@ final class TileLayer {
     private var generation = 0
     private let queue = DispatchQueue(label: "skyline.tiles", qos: .userInitiated, attributes: .concurrent)
     private let maxInFlight = 4
+    /// Which layers of the composition this tile layer shows (Phase 12: the emission layer
+    /// gets its own additive tile layer).
+    private let select: @Sendable (SiteComposition) -> [CompositionLayer]
+    private let blendMode: SKBlendMode
+    /// Clear the composition's building silhouettes from the tiles (emission layer).
+    private let clearsOccluders: Bool
 
     // Diagnostics.
     private(set) var lastPlan = TilePlan(level: 0, wanted: [])
@@ -37,8 +43,13 @@ final class TileLayer {
     /// or known to be empty.
     private(set) var isComplete = false
 
-    init(composition: SiteComposition, pyramid: TilePyramid = TilePyramid(), budget: Int = 96) {
+    init(composition: SiteComposition, pyramid: TilePyramid = TilePyramid(), budget: Int = 96,
+         blendMode: SKBlendMode = .alpha, clearsOccluders: Bool = false,
+         select: @escaping @Sendable (SiteComposition) -> [CompositionLayer] = { $0.layers }) {
         self.composition = composition
+        self.select = select
+        self.blendMode = blendMode
+        self.clearsOccluders = clearsOccluders
         planner = TileSetPlanner(pyramid: pyramid, budget: budget)
     }
 
@@ -99,10 +110,12 @@ final class TileLayer {
         let rect = pyramid.rect(for: key)
         let ppm = pyramid.pixelsPerMeter(level: key.level)
         let composition = self.composition
+        let layers = select(composition)
+        let clearing = clearsOccluders ? composition.occluders : []
         let generation = self.generation
         queue.async { [weak self] in
             let start = CACurrentMediaTime()
-            let image = DrawingRasterizer.rasterize(composition, rect: rect, pixelsPerMeter: ppm, tilePixels: pyramid.tilePixels)
+            let image = DrawingRasterizer.rasterize(composition, layers: layers, clearing: clearing, rect: rect, pixelsPerMeter: ppm, tilePixels: pyramid.tilePixels)
             let ms = (CACurrentMediaTime() - start) * 1000
             DispatchQueue.main.async {
                 self?.finish(key, rect: rect, image: image, ms: ms, generation: generation)
@@ -133,6 +146,7 @@ final class TileLayer {
             return
         }
         let sprite = SKSpriteNode(texture: texture)
+        sprite.blendMode = blendMode
         sprite.anchorPoint = .zero
         sprite.position = CGPoint(x: rect.minX, y: rect.minY)
         sprite.size = CGSize(width: rect.width, height: rect.height)

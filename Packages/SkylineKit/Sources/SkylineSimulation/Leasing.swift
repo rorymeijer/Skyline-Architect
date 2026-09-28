@@ -206,6 +206,7 @@ extension SimulationEngine {
         var added: [PersonID] = []
         let seed = world.cities.values.first?.seed ?? 1
         let hour = now / 3600
+        meterLighting(at: now, world: &world)
         let demand = Progression.demandMultiplier(world: world, engine: self)
         for (i, type) in rules.tenantTypes.enumerated() {
             var rng = SeededRandom(seed: seed, stream: hour &* 64 &+ UInt64(i))

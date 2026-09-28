@@ -1,53 +1,51 @@
 # Development Status
 
-_Last updated: 2026-09-27 (Phase 11)_
+_Last updated: 2026-09-28 (Phase 12)_
 
 ## Current phase
-**Phase 11 — Progression / reputation: COMPLETE** (awaiting approval to continue with
-Phase 12).
+**Phase 12 — Full day/night + lighting: COMPLETE** (awaiting approval to continue with
+Phase 13).
 
-## Quality gates (Phase 11)
+## Quality gates (Phase 12)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36347268108 |
-| Automated tests pass | ✅ | 210 tests (Linux + macOS), including: unlock modes; locked rooms and height refused until the class allows them; sandbox allows everything; premium tenants wait for the class; reputation formula; move-out penalty; demand multiplier; promotion needs every requirement; classes never drop; an empty tower earns class B by playing; a power cut costs reputation but not the class; summary; content validation; save v7→v8 + v8 fixture |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36380170316 |
+| Automated tests pass | ✅ | 221 tests (Linux + macOS). They cover:<br>• lighting levels, quiet hours and staggering<br>• content lights every room and no shaft<br>• load follows the day; the closing bills the meter<br>• no power, no light; metering is batch-independent<br>• coloured lit rooms, panes when zoomed out, grade<br>• emission layer deterministic; buildings occlude city lights<br>• save v8→v9 and the v9 fixture |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-11/` |
-| Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | PROGRESSION.md (new), SIMULATION, SAVE_FORMAT v8, MODDING, ARCHITECTURE, DECISIONS D-036, PERFORMANCE, CHANGELOG 0.11.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | banner overlap and a reputation-fall step that did not fall: fixed, recaptured |
+| Feature demonstrable | ✅ | 9 captures in `Development/Screenshots/Phase-12/` |
+| Obvious runtime errors fixed | ✅ | captures settle, exit 0, 60 fps |
+| Documentation updated | ✅ | LIGHTING.md (new), GRAPHICS, SIMULATION, SAVE_FORMAT v9, MODDING, ARCHITECTURE, DECISIONS D-037, PERFORMANCE, CHANGELOG 0.12.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | City lights shining through the tower and a crowded bill capture: fixed, recaptured |
 | Known issues recorded | ✅ | below |
 
 ## Completed
-- Phases 0–10 (merged: rorymeijer/Skyline-Architect#1 … #10). M1 “First Playable” was reached in Phase 9.
-- Phase 11 (FUNCTIONAL):
-  - Reputation per building, assessed each morning; it drives demand.
-  - Building classes C/B/A/Prime with population, reputation and room requirements. Promotions only; classes never drop.
-  - Standard game: room types, height and premium tenant types unlock by class. The sandbox keeps everything unlocked.
-  - UI: Standing panel (⌥⌘P), promotion banner, locked build tools, class in the status pill, New Game / New Sandbox.
-  - Save format 8.
+- Phases 0–11 (merged: rorymeijer/Skyline-Architect#1 … #11).
+- Phase 12 (FUNCTIONAL):
+  - Lighting model per room type (content), shared by the simulation and the renderer; lights need electricity.
+  - Hourly energy meter billed at the closing.
+  - Colour grading; coloured room light; façade window panes when zoomed out.
+  - Night emission layer: city windows, neighbour windows, street lamps.
+  - Save format 9.
 
 ## In progress
-- Nothing. Waiting for approval to continue (Phase 12 — full day/night + lighting).
+- Nothing. Waiting for approval to continue (Phase 13 — weather).
 
 ## Known bugs / unverified
 - No human play test yet; iPad never launched.
-- Balancing, first pass:
-  - An emptied building settles near reputation 50 (neutral satisfaction without tenants; the move-out penalty lasts one day).
-  - The demo tower reaches class B on day 3.
-  - Class A/Prime thresholds are not yet played through (only unit-tested for gating).
-- Raising the rent level barely moves the reputation of existing tenants (they keep their rent; only asking rents change).
-- The standing is tracked for the first building of the property only in the UI.
+- Lighting energy is small next to rent (about $130/day vs $45k/day); balancing is still open. There is no player lighting policy yet.
+- Plant rooms keep 15–20 % light without power (they have no electricity demand in the content).
+- City lights are static per game, and the lamp glow is flat programmer art.
+- Balancing notes from Phase 11 still apply (reputation floor near 50, fast class B).
 
 ## Technical debt
-- Assessment and summary each run a utility allocation: once per day in the simulation, and at 4 Hz in the UI.
-- Per-step O(rooms) checks (structure signature, elevator sync, facilities sync). Simulation on the main thread.
+- Utility allocation now runs in the hourly meter, the daily assessment and the 4 Hz UI refresh (facilities, power map, lighting load). Cache per structure/upkeep change if profiles show it.
+- Simulation on the main thread.
 
-## Next tasks (Phase 12 — Full day/night + lighting)
-1. Window emission on façades at far zoom; light sources as data (room lighting profiles).
-2. Lighting energy use feeding the electricity utility and the ledger.
-3. Street and sky lighting through dusk and night; per-room schedules for lights.
-4. Captures across a full day; docs.
+## Next tasks (Phase 13 — Weather)
+1. Weather states as content (clear, overcast, rain, storm, snow, heat, fog), with deterministic daily and hourly changes from the city seed.
+2. Visual: sky and grade per weather, rain streaks, fog, wet paving reflections.
+3. Simulation hooks (data-driven): heat and cold raise the energy load; storms and snow add wear and cleaning jobs; rain shifts arrivals and departures.
+4. Captures across weather types; docs.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,

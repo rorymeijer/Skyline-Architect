@@ -222,6 +222,10 @@ public struct ContentLibrary: Sendable {
             }
             if room.utilitySupply != nil, (room.utilityRange ?? 0) < 0 { problems.append("room '\(room.id)': utilityRange must be ≥ 0") }
             if let w = room.wearPerDay, !(0...1).contains(w) { problems.append("room '\(room.id)': wearPerDay must be 0…1") }
+            if let l = room.lighting {
+                problems += l.problems.map { "room '\(room.id)': \($0)" }
+                if ArtCatalog.parseColor(l.color) == nil { problems.append("room '\(room.id)': invalid lighting colour '\(l.color)'") }
+            }
         }
         let roomIDs = Set(orderedRooms.map(\.id))
         problems += progression?.problems(rooms: roomIDs) ?? []

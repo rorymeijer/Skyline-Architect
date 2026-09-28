@@ -10,11 +10,13 @@ enum DrawingRasterizer {
     /// `tilePixels + 2 * bleed` pixels. The bleed border repeats neighbouring content so
     /// linear filtering never samples transparent edges (no seams between tiles).
     /// Returns nil when no item touches the tile.
-    static func rasterize(_ c: SiteComposition, rect: Rect, pixelsPerMeter ppm: Double,
-                          tilePixels: Int, bleed: Int = 1) -> CGImage? {
+    /// `clearing`: world rects made transparent after drawing (building silhouettes in the
+    /// emission layer, Phase 12).
+    static func rasterize(_ c: SiteComposition, layers: [CompositionLayer]? = nil, clearing: [Rect] = [], rect: Rect,
+                          pixelsPerMeter ppm: Double, tilePixels: Int, bleed: Int = 1) -> CGImage? {
         let bleedMeters = Double(bleed) / ppm
         let area = rect.insetBy(dx: -bleedMeters, dy: -bleedMeters)
-        let items = c.items(in: area, detail: ppm)
+        let items = layers.map { $0.flatMap { $0.items(in: area, detail: ppm) } } ?? c.items(in: area, detail: ppm)
         guard !items.isEmpty else { return nil }
         let size = tilePixels + 2 * bleed
         guard let ctx = CGContext(data: nil, width: size, height: size, bitsPerComponent: 8, bytesPerRow: 0,
@@ -26,6 +28,9 @@ enum DrawingRasterizer {
         ctx.scaleBy(x: CGFloat(ppm), y: CGFloat(ppm))
         ctx.translateBy(x: CGFloat(-area.minX), y: CGFloat(-area.minY))
         for item in items { draw(item, in: ctx) }
+        for r in clearing where r.intersects(area) {
+            ctx.clear(CGRect(x: r.minX, y: r.minY, width: r.width, height: r.height))
+        }
         return ctx.makeImage()
     }
 

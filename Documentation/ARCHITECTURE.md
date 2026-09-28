@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Phase 11 (2026-09-27). This document describes what exists and the intended evolution.
+Status: Phase 12 (2026-09-28). This document describes what exists and the intended evolution.
 Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomplete) or
 **PLANNED** (design only).
 
@@ -161,6 +161,9 @@ staff are people with jobs routed in `staff` mode (D-035).
 Progression (PROGRESSION.md): `Standing` per building and `BuildingClass` definitions live in
 Core so `ConstructionEngine` can enforce unlocks; assessment, promotion and demand are in
 Simulation (`Progression`, daily after the tenant reviews); classes never drop (D-036).
+Lighting (LIGHTING.md): `Lighting.level` in Core feeds both the simulation's hourly energy
+meter and Presentation's `DayNight`; static night lights are the composition's `emission`
+layer, drawn by the app as an additive tile layer with building silhouettes cleared (D-037).
 
 ## 6. Concurrency model
 
