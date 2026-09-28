@@ -115,7 +115,7 @@ struct MainMenuView: View {
                             model.continueLatest()
                         }
                     }
-                    MenuButton(title: "New Game", subtitle: "Quay Street, Port Calder · unlock rooms and height by building class") {
+                    MenuButton(title: "New Game", subtitle: "Quay Street, Port Calder · rooms unlock by class") {
                         model.startFromMenu()
                     }
                     MenuButton(title: "New Sandbox", subtitle: "Everything unlocked from the start") {
