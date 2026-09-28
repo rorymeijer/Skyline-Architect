@@ -4,9 +4,10 @@ import SkylineCore
 /// Game speed. Faster speeds run more fixed ticks per real second; the tick length never
 /// changes, so outcomes do not depend on the speed (SIMULATION.md).
 public enum GameSpeed: Int, CaseIterable, Sendable, Codable {
-    case paused = 0, normal = 1, double = 2, quadruple = 4, fastest = 10
+    case paused = 0, normal = 1, double = 2, quadruple = 4, fast = 10, faster = 30, fastest = 60
 
-    /// Game seconds per real second at 1×: one game hour takes 150 real seconds.
+    /// Game seconds per real second at 1×: one game hour takes 150 real seconds, so a game
+    /// day takes 6 real minutes at 10×, 2 at 30× and 1 at 60× (0.20.4).
     public static let baseTicksPerSecond = 24.0
 
     public var ticksPerSecond: Double { Double(rawValue) * Self.baseTicksPerSecond }

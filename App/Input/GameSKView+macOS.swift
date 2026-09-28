@@ -10,7 +10,7 @@ import SkylinePresentation
 ///   ⌘/⌥ + scroll zooms.
 /// - Mouse: wheel zooms smoothly toward the cursor; left/right/middle drag pans with inertia.
 /// - Keyboard: WASD / arrows pan, Q/E or −/= zoom, G toggles the grid, F floor tool,
-///   X demolish tool, Esc cancels the tool, Space pauses, 1–4 set 1×/2×/4×/10×.
+///   X demolish tool, Esc cancels the tool, Space pauses, 1–6 set 1×/2×/4×/10×/30×/60×.
 /// - With a construction tool active, left-drag places (right/middle drag still pans).
 final class GameSKView: SKView {
     var onToggleGrid: (() -> Void)?
@@ -150,7 +150,7 @@ final class GameSKView: SKView {
     private enum Key {
         static let a: UInt16 = 0, s: UInt16 = 1, d: UInt16 = 2, f: UInt16 = 3, g: UInt16 = 5, x: UInt16 = 7
         static let q: UInt16 = 12, w: UInt16 = 13, e: UInt16 = 14, escape: UInt16 = 53, space: UInt16 = 49
-        static let digits: [UInt16: String] = [18: "speed1", 19: "speed2", 20: "speed3", 21: "speed4"]
+        static let digits: [UInt16: String] = [18: "speed1", 19: "speed2", 20: "speed3", 21: "speed4", 23: "speed5", 22: "speed6"]
         static let equals: UInt16 = 24, minus: UInt16 = 27
         static let left: UInt16 = 123, right: UInt16 = 124, down: UInt16 = 125, up: UInt16 = 126
         static let movement: Set<UInt16> = [a, s, d, w, q, e, equals, minus, left, right, down, up]

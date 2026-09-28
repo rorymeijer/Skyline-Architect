@@ -1,7 +1,7 @@
 import SwiftUI
 import SkylineSimulation
 
-/// Clock, game speed and population (top center). Space pauses, 1–4 pick a speed.
+/// Clock, game speed and population (top center). Space pauses, 1–6 pick a speed.
 struct SimulationControls: View {
     let model: AppModel
 
