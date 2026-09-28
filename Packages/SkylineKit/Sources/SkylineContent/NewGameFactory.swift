@@ -35,6 +35,9 @@ public enum NewGameFactory {
                 footprint: ColumnSpan(start: f.footprintOffsetModules, count: f.footprintModules),
                 foundation: Foundation(basementFloors: f.basementFloors, pileDepth: f.pileDepthMeters, pileSpacing: f.pileSpacingModules))
         }
+        if let weather = library.simulationRules.weather {
+            world.weather = Weather.initial(seed: Weather.seed(of: world), rules: weather)
+        }
         if let cash = start.startingCash, cash > 0 {
             world.ledger.post(Transaction(tick: 0, amount: cash, category: .grant, detail: "Starting capital"))
         }

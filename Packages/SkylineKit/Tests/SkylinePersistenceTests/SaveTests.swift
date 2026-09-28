@@ -248,19 +248,29 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(save.world.buildings.values.allSatisfy { $0.lightingKWh == 0 })
     }
 
-    /// Golden fixture v9 (lighting meter). Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV9`.
+    /// Golden fixture v9 (lighting meter). Frozen since format 10: loads without weather
+    /// (the simulation starts it on the next step).
     @Test func goldenFixtureV9StillLoads() throws {
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v9.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.buildings.values[0].lightingKWh == 12.5)
+        #expect(save.world.tenants.count == 15)
+        #expect(save.world.weather == nil)
+    }
+
+    /// Golden fixture v10 (weather). Regenerate only deliberately:
+    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV10`.
+    @Test func goldenFixtureV10StillLoads() throws {
         if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
             var save = try makeElevatorSave()
-            save.world.setLightingEnergy(12.5, building: save.world.buildings.values[0].id)
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v9.skylinesave")
+            save.world.weather = WeatherState(day: 3, yesterday: "rain", today: "storm", tomorrow: "overcast", temperature: 17)
+            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v10.skylinesave")
             try SaveCodec.encode(save).write(to: source)
             return
         }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
-        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v9.skylinesave")), availablePacks: basePacks)
-        #expect(save.world.buildings.values[0].lightingKWh == 12.5)
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v10.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.weather == WeatherState(day: 3, yesterday: "rain", today: "storm", tomorrow: "overcast", temperature: 17))
         #expect(save.world.tenants.count == 15)
     }
 

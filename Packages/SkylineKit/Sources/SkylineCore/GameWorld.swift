@@ -84,6 +84,8 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var facilities = FacilitiesState()
     /// Whether rooms and height are gated by building class (Phase 11; set by the start).
     public var unlocks = UnlockMode.all
+    /// Today's weather and the forecast (Phase 13; nil until the simulation starts it).
+    public var weather: WeatherState?
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()

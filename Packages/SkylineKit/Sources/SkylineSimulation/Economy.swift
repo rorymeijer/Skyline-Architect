@@ -55,10 +55,13 @@ extension SimulationEngine {
             }
             let people = world.people.values.filter { $0.buildingID == building.id }.count
             let cars = world.elevators.values.filter { $0.buildingID == building.id }.count
-            let utilities = people * economy.utilitiesPerPersonPerDay + cars * economy.elevatorCarPerDay
+            // Heating and cooling (Phase 13): the bill grows with the distance from comfort.
+            let climate = energyFactor(world)
+            let utilities = Int((Double(people * economy.utilitiesPerPersonPerDay + cars * economy.elevatorCarPerDay) * climate).rounded())
             if utilities > 0 {
+                let weather = world.weather.map { String(format: ", %.0f °C ×%.2f", $0.temperature, climate) } ?? ""
                 world.ledger.post(Transaction(tick: now, amount: -utilities, category: .utilities,
-                                              detail: "Utilities — \(people) people, \(cars) elevator cars, \(building.name)",
+                                              detail: "Utilities — \(people) people, \(cars) elevator cars\(weather), \(building.name)",
                                               building: building.id))
             }
             let kWh = world.buildings[building.id]?.lightingKWh ?? 0
