@@ -13,13 +13,14 @@ enum NightArt {
     }
 
     /// Random lit windows on a distant building (reduced scale: 1.6 m floor bands).
-    static func cityWindows(into d: inout Drawing, building r: Rect, share: Double, seed: UInt64) {
+    static func cityWindows(into d: inout Drawing, building r: Rect, share: Double, avoid: [Rect] = [], seed: UInt64) {
         var rng = SeededRandom(seed: seed, stream: 0x3317)
         var y = 1.8
         while y < r.maxY - 1 {
             var x = r.minX + 0.5
             while x + 0.8 < r.maxX - 0.4 {
-                if rng.chance(share) { d.fill(Rect(minX: x, minY: y, maxX: x + 0.8, maxY: y + 0.55), windowColor(&rng)) }
+                let window = Rect(minX: x, minY: y, maxX: x + 0.8, maxY: y + 0.55)
+                if rng.chance(share), !avoid.contains(where: { $0.intersects(window) }) { d.fill(window, windowColor(&rng)) }
                 x += 1.2
             }
             y += 1.6

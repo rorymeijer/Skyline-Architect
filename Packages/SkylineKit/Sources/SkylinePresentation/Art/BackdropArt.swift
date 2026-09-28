@@ -6,7 +6,9 @@ enum BackdropArt {
     /// Buildings are drawn at reduced scale (they stand kilometres behind the plot in an
     /// orthographic view, so true scale would make them look adjacent).
     /// `lights` receives the windows that glow at night (the emission layer, Phase 12).
-    static func draw(into d: inout Drawing, lights: inout Drawing, span: ClosedRange<Double>, focusX: Double, palette p: ArtPalette, seed: UInt64) {
+    /// Lit windows inside `avoid` (the neighbours standing in front) are left out.
+    static func draw(into d: inout Drawing, lights: inout Drawing, avoid: [Rect] = [], span: ClosedRange<Double>, focusX: Double,
+                     palette p: ArtPalette, seed: UInt64) {
         var rng = SeededRandom(seed: seed, stream: 0xBAC)
         let width = span.upperBound - span.lowerBound
         for (band, color, heightScale) in [(0, p.backdropFar, 1.3), (1, p.backdropNear, 1.0)] {
@@ -39,7 +41,7 @@ enum BackdropArt {
                     }
                 }
                 if abs(x - focusX) < 1600 {
-                    NightArt.cityWindows(into: &lights, building: r, share: band == 1 ? 0.3 : 0.14,
+                    NightArt.cityWindows(into: &lights, building: r, share: band == 1 ? 0.3 : 0.14, avoid: avoid,
                                          seed: seed ^ UInt64(bitPattern: Int64((x * 10).rounded())) ^ UInt64(band))
                 }
                 x += w + rng.double(in: 0..<3)

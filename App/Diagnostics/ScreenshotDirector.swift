@@ -114,6 +114,7 @@ final class ScreenshotDirector {
             model.showEconomyPanel = false
             model.showFacilitiesPanel = false
             model.advanceSimulation(toTimeOfDay: 21, minute: 0)
+            model.refreshSimulationSummary()
             let before = model.lightingKW
             let plant = model.world?.rooms.values.first { $0.definitionID == "electrical-room" }
             let cut = plant.map { model.perform(.demolishRoom($0.id)) } ?? false

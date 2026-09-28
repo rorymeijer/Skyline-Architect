@@ -67,6 +67,7 @@ import SkylineContent
         #expect(a.emission.drawing.items.count > 500)                                  // city windows, neighbours, lamps
         #expect(a.emission.drawing.items == b.emission.drawing.items)                  // deterministic
         #expect(!a.layers.contains { $0.name == "emission" })                          // drawn separately
+        #expect(a.occluders.isEmpty)                                                     // nothing built yet
         let frontage = a.frontageRect
         let lamps = NightArt.lampPositions(span: -300...300, keepClear: frontage.minX...frontage.maxX)
         #expect(!lamps.isEmpty && lamps.allSatisfy { $0 < frontage.minX || $0 > frontage.maxX })
@@ -83,4 +84,25 @@ import SkylineContent
                                                             engine: ConstructionEngine(catalog: lib.buildCatalog)))
         #expect(!preview.isValid && preview.label.contains("not enough money"))
     }
+
+    /// Built storeys hide the city lights behind them; the neighbours hide the city windows
+    /// behind them already in the drawing.
+    @Test func buildingsOccludeCityLights() throws {
+        let lib = try ContentLibrary.loadBase()
+        var game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: lib)
+        let b = game.world.buildings(on: game.activePropertyID).first!
+        for c in lib.blueprint("demo-tower")!.commands(for: b) { try ConstructionEngine(catalog: lib.buildCatalog).apply(c, to: &game.world) }
+        let c = try #require(SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog))
+        let tower = try #require(c.superstructureRect)
+        #expect(c.occluders.count == 9 && c.occluders.allSatisfy { tower.insetBy(dx: -1, dy: -1).contains($0) })
+        let neighbors = c.site.drawing.sections.filter { $0.0 == "neighbors" }.flatMap { c.site.drawing.items[$0.1] }.map(\.shape.bounds)
+        let hull = neighbors.reduce(nil as Rect?) { acc, r in acc.map { $0.union(r) } ?? r }!
+        let city = c.emission.drawing.items.filter {                                     // distant windows (reduced scale)
+            if case .rect = $0.shape { return $0.shape.bounds.height < 0.6 } else { return false }
+        }
+        #expect(!city.isEmpty)
+        let behindNeighbours = city.filter { w in neighbors.contains { $0.width > 5 && $0.height > 10 && $0.intersects(w.shape.bounds) } }
+        #expect(behindNeighbours.isEmpty, "\(hull)")
+    }
 }
+

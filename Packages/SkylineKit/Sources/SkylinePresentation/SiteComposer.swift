@@ -31,6 +31,9 @@ public struct SiteComposition: Sendable {
     /// Night lights of the site (city and neighbour windows, street lamps; Phase 12). Not
     /// part of `layers`: the renderer adds it separately, scaled by darkness.
     public let emission: CompositionLayer
+    /// Silhouettes of the property's buildings: emission (city lights behind them) is
+    /// cleared there, so distant windows never shine through the tower.
+    public internal(set) var occluders: [Rect] = []
     public let sky: SkyGradient
     /// Region covered by static art; tiles outside it are never requested.
     public internal(set) var extent: Rect
@@ -82,22 +85,28 @@ public enum SiteComposer {
 
         var d = Drawing()
         var lights = Drawing()
-        d.section("backdrop") {
-            BackdropArt.draw(into: &$0, lights: &lights, span: (midX - backdropHalfWidth)...(midX + backdropHalfWidth), focusX: midX + 180,
-                             palette: p, seed: city.seed)
-        }
-        d.section("neighbors") { d in
+        // Neighbours stand in front of the city: their rects are known first so that
+        // distant lit windows behind them are left out.
+        var neighbors: [(Rect, NeighborArt.Style, UInt64)] = []
+        do {
             let leftRoom = frontX0 - siteX0, rightRoom = siteX1 - frontX1
             var rng = SeededRandom(seed: city.seed, stream: UInt64(propertyID.raw))
             if leftRoom >= 12 {
                 let floors = Double(rng.int(in: 5..<8))
-                NeighborArt.draw(into: &d, lights: &lights, rect: Rect(minX: siteX0 + 3, minY: 0, maxX: frontX0 - 2.5, maxY: floors * grid.floorHeight + 0.6),
-                                 style: .masonry, grid: grid, palette: p, seed: city.seed &+ 1)
+                neighbors.append((Rect(minX: siteX0 + 3, minY: 0, maxX: frontX0 - 2.5, maxY: floors * grid.floorHeight + 0.6), .masonry, city.seed &+ 1))
             }
             if rightRoom >= 12 {
                 let floors = Double(rng.int(in: 9..<14))
-                NeighborArt.draw(into: &d, lights: &lights, rect: Rect(minX: frontX1 + 2.5, minY: 0, maxX: siteX1 - 3, maxY: floors * grid.floorHeight + 1.2),
-                                 style: .glass, grid: grid, palette: p, seed: city.seed &+ 2)
+                neighbors.append((Rect(minX: frontX1 + 2.5, minY: 0, maxX: siteX1 - 3, maxY: floors * grid.floorHeight + 1.2), .glass, city.seed &+ 2))
+            }
+        }
+        d.section("backdrop") {
+            BackdropArt.draw(into: &$0, lights: &lights, avoid: neighbors.map(\.0), span: (midX - backdropHalfWidth)...(midX + backdropHalfWidth),
+                             focusX: midX + 180, palette: p, seed: city.seed)
+        }
+        d.section("neighbors") { d in
+            for (rect, style, seed) in neighbors {
+                NeighborArt.draw(into: &d, lights: &lights, rect: rect, style: style, grid: grid, palette: p, seed: seed)
             }
         }
         d.section("terrain") {
@@ -143,6 +152,9 @@ public enum SiteComposer {
         }
         var out = c
         out.buildings = CompositionLayer(name: "buildings", drawing: d)
+        out.occluders = buildings.flatMap(\.floors).filter { $0.level >= 0 }.map { plate in
+            grid.rect(columns: plate.span, floors: FloorSpan(lowest: plate.level, highest: plate.level)).insetBy(dx: -0.6, dy: -0.8)
+        }
         out.extent = c.siteExtent.union(d.bounds)
         out.foundationRect = buildings.map { b -> Rect in
             Rect(minX: grid.x(ofColumn: b.footprint.start) - 1, minY: -b.foundation.pileDepth - 1,

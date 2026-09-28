@@ -89,7 +89,7 @@ final class WorldScene: SKScene {
                                limits: .standard(bounds: composition.cameraBounds))
         controller = CameraController(camera: initial)
         tileLayer = TileLayer(composition: composition)
-        emissionLayer = TileLayer(composition: composition, budget: 48, blendMode: .add) { [$0.emission] }
+        emissionLayer = TileLayer(composition: composition, budget: 48, blendMode: .add, clearsOccluders: true) { [$0.emission] }
         gridOverlay = GridOverlayNode(palette: palette)
         placementOverlay = PlacementOverlayNode(palette: palette)
         super.init(size: CGSize(width: 1440, height: 900))
@@ -159,7 +159,7 @@ final class WorldScene: SKScene {
     func updateComposition(_ c: SiteComposition, dirty: Rect?) {
         composition = c
         tileLayer.replace(composition: c, dirty: dirty)
-        emissionLayer.retain(composition: c)                  // the emission layer is static
+        emissionLayer.replace(composition: c, dirty: dirty)   // building silhouettes moved
         overlayDirty = true
     }
 

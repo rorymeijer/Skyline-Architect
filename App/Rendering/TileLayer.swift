@@ -28,6 +28,8 @@ final class TileLayer {
     /// gets its own additive tile layer).
     private let select: @Sendable (SiteComposition) -> [CompositionLayer]
     private let blendMode: SKBlendMode
+    /// Clear the composition's building silhouettes from the tiles (emission layer).
+    private let clearsOccluders: Bool
 
     // Diagnostics.
     private(set) var lastPlan = TilePlan(level: 0, wanted: [])
@@ -42,10 +44,12 @@ final class TileLayer {
     private(set) var isComplete = false
 
     init(composition: SiteComposition, pyramid: TilePyramid = TilePyramid(), budget: Int = 96,
-         blendMode: SKBlendMode = .alpha, select: @escaping @Sendable (SiteComposition) -> [CompositionLayer] = { $0.layers }) {
+         blendMode: SKBlendMode = .alpha, clearsOccluders: Bool = false,
+         select: @escaping @Sendable (SiteComposition) -> [CompositionLayer] = { $0.layers }) {
         self.composition = composition
         self.select = select
         self.blendMode = blendMode
+        self.clearsOccluders = clearsOccluders
         planner = TileSetPlanner(pyramid: pyramid, budget: budget)
     }
 
@@ -68,9 +72,6 @@ final class TileLayer {
         }
         emptyKeys = emptyKeys.filter { !affected($0) }
     }
-
-    /// Swaps in a new composition whose shown layers did not change (no tile is redrawn).
-    func retain(composition: SiteComposition) { self.composition = composition }
 
     func update(visible: Rect, zoom: Double, backingScale: Double) {
         let plan = planner.plan(visible: visible, screenPixelsPerMeter: zoom * backingScale, content: composition.extent)
@@ -110,10 +111,11 @@ final class TileLayer {
         let ppm = pyramid.pixelsPerMeter(level: key.level)
         let composition = self.composition
         let layers = select(composition)
+        let clearing = clearsOccluders ? composition.occluders : []
         let generation = self.generation
         queue.async { [weak self] in
             let start = CACurrentMediaTime()
-            let image = DrawingRasterizer.rasterize(composition, layers: layers, rect: rect, pixelsPerMeter: ppm, tilePixels: pyramid.tilePixels)
+            let image = DrawingRasterizer.rasterize(composition, layers: layers, clearing: clearing, rect: rect, pixelsPerMeter: ppm, tilePixels: pyramid.tilePixels)
             let ms = (CACurrentMediaTime() - start) * 1000
             DispatchQueue.main.async {
                 self?.finish(key, rect: rect, image: image, ms: ms, generation: generation)
