@@ -37,7 +37,7 @@ struct GameCommands: Commands {
         CommandGroup(replacing: .saveItem) {
             Button("Save") { model.save() }
                 .keyboardShortcut("s", modifiers: .command)
-            Button("Load Game…") { model.showLoadSheet = true }
+            Button("Load Game…") { model.openSavesPanel() }
                 .keyboardShortcut("o", modifiers: .command)
         }
         CommandGroup(replacing: .undoRedo) {
