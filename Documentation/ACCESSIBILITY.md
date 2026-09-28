@@ -23,4 +23,4 @@ Status:
 | Reduce Motion | No full-screen lightning flashes. Rain, snow and clouds keep moving: they are slow and carry the weather. | `Rendering/Motion.swift`, `WeatherLayer` |
 
 **Keyboard.** Every panel and overlay has a menu command with a shortcut (View menu:
-⌥⌘E/L/K/I/P/M/F/O/T/U/G). Space pauses and 1–4 set the speed.
+⌥⌘E/L/K/I/P/M/F/O/T/U/G). Space pauses and 1–6 set the speed.

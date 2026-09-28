@@ -1,7 +1,7 @@
 import SwiftUI
 import SkylineSimulation
 
-/// Developer diagnostics overlay (Debug builds by default; ⌥⌘D). Updated at 4 Hz.
+/// Developer diagnostics overlay, shown only with ⌥⌘D. Updated at 4 Hz.
 struct DevHUDView: View {
     let diagnostics: RenderDiagnostics
     var population = PopulationSummary()

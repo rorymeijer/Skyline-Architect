@@ -226,7 +226,7 @@ See SAVE_FORMAT.md.
 ## 9. Diagnostics & capture
 
 * Developer HUD (FPS, frame time, update time, tiles, raster time, nodes, memory, zoom,
-  LOD, cursor cell). Visible by default in Debug builds, toggle ⌥⌘D.
+  LOD, cursor cell). Hidden by default; only the shortcut ⌥⌘D shows it (no menu item).
 * Screenshot capture mode: `--capture-screenshots <dir>` drives deterministic camera
   presets, waits for tiles to finish, writes PNGs (+ `capture-report.json`), exits.
   Used by CI. Debug-only code path (`#if DEBUG`).

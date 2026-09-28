@@ -2,6 +2,14 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.20.4] — Faster time, hidden developer HUD
+
+### Changed
+- **Faster speeds**: 30× (a game day in 2 real minutes) and 60× (in 1 minute) join 1×, 2×,
+  4× and 10×; keys 5 and 6. 10× stays a day in 6 minutes.
+- **Developer HUD** is hidden by default, also in Debug builds, and has no menu item: only
+  ⌥⌘D shows it.
+
 ## [0.20.3] — Flats for sale
 
 ### Added

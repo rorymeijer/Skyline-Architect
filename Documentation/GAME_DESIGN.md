@@ -114,7 +114,7 @@ Rooms come alive: offices get workers (0.3 per metre of width) and studios two r
 each. A day starts at 06:00; residents leave for work in the morning and return in the
 evening, office workers arrive around 08:15, go out for lunch and leave around 17:15 — all
 walking in from the street, through the entrance and up the stairwell. The clock runs at
-1× (a day ≈ 60 real minutes) up to 10×; Space pauses. Floors without stairs are
+1× (a day ≈ 60 real minutes) up to 60× (a day in one real minute); Space pauses. Floors without stairs are
 unreachable and reported. No money, needs or elevators yet.
 
 ## Phase 5 player experience (current)
