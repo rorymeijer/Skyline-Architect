@@ -1,48 +1,61 @@
 # Development Status
 
-_Last updated: 2026-09-28 (Phase 13)_
+_Last updated: 2026-09-28 (Phase 14)_
 
 ## Current phase
-**Phase 13 — Weather: COMPLETE** (awaiting approval to continue with Phase 14).
+**Phase 14 — Events & emergencies: COMPLETE** (awaiting approval to continue with Phase 15).
 
-## Quality gates (Phase 13)
+## Quality gates (Phase 14)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36384182661 |
-| Automated tests pass | ✅ | 233 tests (Linux + macOS). They cover:<br>• generation: seasons cycle from summer; kinds only in their seasons; the forecast comes true; deterministic per seed; all kinds occur<br>• the world's weather follows the days, and older games start weather on their day<br>• storms keep prospects away; temperature scales the utilities bill (×1.48 at 35 °C, ×1.60 at −1 °C); storms wear and dirty the building<br>• look: transition after 06:00, snow cover rules, deterministic lightning, grade and lights<br>• roofs and street segments<br>• save v9→v10 and the v10 fixture |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36388937901 |
+| Automated tests pass | ✅ | 242 tests (Linux + macOS); see the list below |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 9 captures in `Development/Screenshots/Phase-13/` (weather in 02–07 set by the script, labelled) |
-| Obvious runtime errors fixed | ✅ | captures settle, exit 0, 60 fps |
-| Documentation updated | ✅ | WEATHER.md (new), GRAPHICS, SIMULATION, SAVE_FORMAT v10, MODDING, ARCHITECTURE, DECISIONS D-038, CHANGELOG 0.13.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | Washed-out storm flash and invisible snow cover: fixed, recaptured |
+| Feature demonstrable | ✅ | 9 captures in `Development/Screenshots/Phase-14/` (fires started with the developer tool, storm set — labelled) |
+| Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
+| Documentation updated | ✅ | EMERGENCIES.md (new), GRAPHICS, SIMULATION, SAVE_FORMAT v11, MODDING, ARCHITECTURE, DECISIONS D-039, CHANGELOG 0.14.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | Evacuation shot too late, no storm damage in time, and saved after the fire: fixed and recaptured. One app build failure (missing import): fixed. |
 | Known issues recorded | ✅ | below |
 
+The Phase 14 tests cover:
+
+* **Evacuation:** everybody leaves by the stairs, with no elevator boardings, and nobody goes in.
+* **Unprotected fire:** it burns until the brigade arrives, and brings the repair bill, repair jobs, reputation loss and people returning.
+* **Sprinklers:** a covered fire is out in 4 min instead of 45 min.
+* **Determinism:** fires are deterministic and batch-independent.
+* **Ignition odds:** worn rooms and plant ignite more often; sprinklers halve the odds; shafts never ignite.
+* **Weather incidents:** storm damage; a power outage fails the plant and turns the lights off.
+* **Visuals:** flames, fire engines, soot, sprinkler flags.
+* **Saves:** v10→v11 migration and the v11 fixture with a fire in progress.
+
 ## Completed
-- Phases 0–12 (merged: rorymeijer/Skyline-Architect#1 … #12).
-- Phase 13 (FUNCTIONAL):
-  - Seasons and seven weather kinds (content), drawn each morning with a forecast.
-  - Effects on prospects, wear, dirt and heating/cooling.
-  - Visuals: grade, fog, rain and snow, lightning, snow cover, wet paving; weather chip.
-  - Save format 10.
+- Phases 0–13 (merged: rorymeijer/Skyline-Architect#1 … #13).
+- Phase 14 (FUNCTIONAL):
+  - **Fire:** ignition; growth and spread; sprinklers from a new fire control room; the fire brigade; stairs-only evacuation with nobody entering during the fire; damage, repairs, lost tenants and reputation loss.
+  - **Weather incidents:** storm damage, power outages, burst pipes.
+  - **UI:** alert with Show, incidents panel, fire visuals.
+  - **Save format 11.**
 
 ## In progress
-- Nothing. Waiting for approval to continue (Phase 14 — events and emergencies, including fire).
+- Nothing. Waiting for approval to continue (Phase 15 — multiple properties and cities).
 
 ## Known bugs / unverified
 - No human play test yet; iPad never launched.
-- Weather changes once a day; day length ignores the season; no wind.
-- Particles are screen-space programmer art, and snow cover is drawn exaggerated for readability.
-- Balancing: lighting costs small, reputation floor near 50, fast class B (earlier phases).
+- The fire brigade and smoke are abstract: the engine parks at the kerb, and smoke does not move between floors or through the stairs.
+- Nobody is ever harmed (by design).
+- Fire and incident rates are first-pass balancing (one unprotected office fire costs about $20k).
+- The capture script sets fires and weather; natural ignition is rare and was only unit-tested.
+- Earlier balancing notes still apply (lighting costs, reputation floor, fast class B).
 
 ## Technical debt
-- Utility allocation runs in several places per refresh (see Phase 12).
+- `FireSafety.protectedRooms` and utility allocation are recomputed often (hourly ignition, fire steps, 4 Hz UI). Cache per structure/upkeep change if profiles show it.
 - Simulation on the main thread.
 
-## Next tasks (Phase 14 — Events & emergencies)
-1. Event system as content: triggers (weather, wear, time, reputation) and outcomes (damage, cost, reputation). Deterministic.
-2. Fire: ignition chance from wear and equipment; spread through rooms and floors; evacuation over stairs (shared navigation); damage and repair; fire safety rooms and staff.
-3. Storm damage and power outages tied to the Phase 13 weather.
-4. Notifications/alerts UI; captures; docs.
+## Next tasks (Phase 15 — Multiple properties & cities)
+1. Several properties per city and more cities as content, each with plots, geology and economic variables (rents, costs, demand).
+2. A property switcher and overview; buying land.
+3. The simulation runs all properties (shared clock); the ledger attributes per property.
+4. Captures and docs.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,
