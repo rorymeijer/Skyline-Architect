@@ -403,3 +403,24 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - The daily closing is a visible hitch of a few frames at 10× on very large towers.
   - Revisit threading when real play at larger scale shows it, together with incremental utility allocation.
 
+## D-045 — Polish stays procedural; the icon is generated from code
+- **Date:** 2026-09-28
+- **Decision:**
+  - The app icon is drawn by `IconArt` in the drawing IR and rendered by a script into the asset catalog.
+  - Clouds are a deterministic presentation function of city seed, game time and weather.
+  - UI chrome stays plain SwiftUI (no AppKit-backed containers), so captures show exactly what the window shows.
+  - The version stays 0.20.0 rather than 1.0.
+- **Alternatives:**
+  - A hand-painted icon.
+  - Particle clouds.
+  - Scroll views for long panels.
+  - Calling this 1.0.
+- **Reason:**
+  - The rules forbid copied assets. Code-drawn art is original, reproducible and matches the game's look.
+  - Deterministic clouds keep captures and tests stable.
+  - A scroll view vanished from captures before (Phase 17).
+  - No human has played the game yet, and iCloud, the iPad and real Macs are unverified: 1.0 would overclaim (rule 10).
+- **Consequences:**
+  - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
+  - Tall panel stacks can exceed small windows (a known issue).
+
