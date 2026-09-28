@@ -57,6 +57,7 @@ public struct SimulationEngine: Sendable {
             replanAfterConstruction(&world)
         }
         startWeatherIfNeeded(&world)
+        var amenities = AmenityDirectory(world: world, rules: rules)
         if !rules.tenantTypes.isEmpty { events.push(world.market.nextTick, .market) }
         if let next = world.incidents.fires.map(\.nextStep).min() { events.push(next, .fires) }
         for car in world.elevators { events.push(car.nextEventTick, .car(car.id)) }
@@ -67,6 +68,7 @@ public struct SimulationEngine: Sendable {
             case .market:
                 guard world.market.nextTick == tick else { continue }
                 for id in runMarket(at: tick, world: &world) { events.push(world.people[id]!.nextEventTick, .person(id)) }
+                amenities = AmenityDirectory(world: world, rules: rules)          // leases may have changed
                 checkWeatherIncidents(at: tick, world: &world)
                 checkIgnition(at: tick, world: &world, events: &events)
                 events.push(world.market.nextTick, .market)
@@ -88,12 +90,18 @@ public struct SimulationEngine: Sendable {
                     report.eventsProcessed += 1
                     continue
                 }
-                let outcome = handle(&person, at: tick, world: world, report: &report)
+                if person.role == .visitor, !person.isQueuing {
+                    handleVisitor(id, at: tick, world: &world, events: &events, directory: amenities)
+                    report.eventsProcessed += 1
+                    continue
+                }
+                let outcome = handle(&person, at: tick, world: world, amenities: amenities, report: &report)
                 world.people.update(id) { $0 = person }
                 if person.nextEventTick > tick { events.push(person.nextEventTick, .person(id)) }
                 switch outcome {
                 case let .joinedQueue(car): wakeCar(car, at: tick, world: &world, events: &events)
                 case let .abandoned(car): world.elevators.update(car) { $0.stats.abandoned += 1 }
+                case let .visited(room): recordVisit(room, fromStreet: false, at: tick, world: &world, directory: amenities)
                 case .none: break
                 }
             }
@@ -108,9 +116,12 @@ public struct SimulationEngine: Sendable {
         case none
         case joinedQueue(RoomID)
         case abandoned(RoomID)
+        /// Arrived at an amenity as a customer (0.22).
+        case visited(RoomID)
     }
 
-    private func handle(_ p: inout Person, at now: Tick, world: GameWorld, report: inout SimulationReport) -> Outcome {
+    private func handle(_ p: inout Person, at now: Tick, world: GameWorld, amenities: AmenityDirectory,
+                        report: inout SimulationReport) -> Outcome {
         guard let building = world.buildings[p.buildingID] else {
             p.nextEventTick = now + SimClock.secondsPerDay
             return .none
@@ -140,6 +151,7 @@ public struct SimulationEngine: Sendable {
             case let .room(r, x): p.place = world.rooms.contains(r) ? .room(r, x: x) : .outside
             }
             scheduleNext(&p, after: now, schedule: schedule)
+            if case let .room(r, _) = p.place, r != p.anchorRoom, amenities.venue(r) != nil { return .visited(r) }
             return .none
         }
         // Patience ran out at a landing: take the stairs if that is a reasonable walk.
@@ -173,6 +185,18 @@ public struct SimulationEngine: Sendable {
                 return .none
             }
             destination = .room(roomID, x: RoutePlanner.standingSpot(in: room, traits: p.traits, grid: world.grid).x)
+        case .lunch, .leisure, .visit:
+            // An amenity of the building if one has room for them; else lunch is eaten out
+            // and free time spent where they are.
+            if goal != .visit, let venue = amenities.pick(goal == .lunch ? .lunch : .leisure, for: p, building: building.id, now: now),
+               let room = world.rooms[venue.room] {
+                destination = .room(venue.room, x: RoutePlanner.standingSpot(in: room, traits: p.traits, grid: world.grid).x)
+            } else if goal == .lunch {
+                destination = .outside
+            } else {
+                scheduleNext(&p, after: now, schedule: schedule)
+                return .none
+            }
         }
         // Where are they now?
         let origin: Spot?

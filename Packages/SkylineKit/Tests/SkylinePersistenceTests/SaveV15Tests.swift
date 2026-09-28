@@ -23,14 +23,8 @@ import SkylineSimulation
         return save
     }
 
-    /// Golden fixture v15. Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV15`.
+    /// Golden fixture v15. Frozen since format 16: daily totals gain the turnover column.
     @Test func goldenFixtureV15StillLoads() throws {
-        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v15.skylinesave")
-            try SaveCodec.encode(makeSalesSave()).write(to: source)
-            return
-        }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v15.skylinesave")), availablePacks: basePacks)
         #expect(save.world.rooms.values.filter { $0.tenure == .owned }.count == 1)
@@ -38,6 +32,8 @@ import SkylineSimulation
         let owner = try #require(save.world.tenants.values.first { $0.isOwner })
         #expect((owner.purchasePrice ?? 0) > 0 && save.world.rooms[owner.room]?.tenure == .owned)
         #expect(save.world.ledger.journal.contains { $0.category == .sales && $0.amount == owner.purchasePrice })
+        #expect(save.world.ledger.days.allSatisfy { $0.amounts.count == LedgerCategory.allCases.count })
+        #expect(save.world.people.values.allSatisfy { $0.role != .visitor } && save.world.tenants.values.allSatisfy { $0.sales == nil })
     }
 
     @Test func salesSaveRoundTrips() throws {

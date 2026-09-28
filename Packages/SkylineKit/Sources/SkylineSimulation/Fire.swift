@@ -127,6 +127,12 @@ extension SimulationEngine {
             case let .room(r, x): p.place = world.rooms.contains(r) ? .room(r, x: x) : .outside
             }
         }
+        if p.role == .visitor, p.place == .outside {                   // visitors go home
+            p.nextGoal = nil
+            p.nextEventTick = .max
+            world.people.update(id) { $0 = p }
+            return
+        }
         switch p.place {
         case let .room(r, x):
             let spot = world.rooms[r].map { Spot(floor: $0.floors.lowest, x: x) }

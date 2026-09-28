@@ -49,6 +49,18 @@ where Value.ID: Hashable & Sendable {
         for j in i..<values.count { indexByID[values[j].id] = j }
         return removed
     }
+
+    /// Removes every value matching `predicate` in one pass (order of the rest preserved).
+    /// Returns how many were removed.
+    @discardableResult
+    public mutating func removeAll(where predicate: (Value) throws -> Bool) rethrows -> Int {
+        let before = values.count
+        try values.removeAll(where: predicate)
+        guard values.count != before else { return 0 }
+        indexByID.removeAll(keepingCapacity: true)
+        for (j, v) in values.enumerated() { indexByID[v.id] = j }
+        return before - values.count
+    }
 }
 
 extension EntityStore: Sequence {

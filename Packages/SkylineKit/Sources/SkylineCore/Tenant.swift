@@ -24,6 +24,8 @@ public struct Tenant: Codable, Hashable, Sendable, Identifiable {
     /// Consecutive daily reviews below the type's threshold; at 3 the tenant moves out
     /// (owners hold on longer, `EconomyRules.ownerPatience`).
     public var unhappyDays: Int
+    /// Amenity operators only (0.22): customers and takings since the last daily closing.
+    public var sales: AmenitySales?
 
     public var isOwner: Bool { purchasePrice != nil }
 
@@ -38,6 +40,36 @@ public struct Tenant: Codable, Hashable, Sendable, Identifiable {
         self.since = since
         self.satisfaction = satisfaction
         self.unhappyDays = 0
+    }
+}
+
+/// What an amenity took (0.22): customers and money since the last daily closing, and
+/// the totals of the previous day (for the UI).
+public struct AmenitySales: Codable, Hashable, Sendable {
+    public var visits = 0
+    /// Of `visits`, how many came from the street (not living or working in the building).
+    public var streetVisits = 0
+    public var takings = 0
+    public var lastVisits = 0
+    public var lastStreetVisits = 0
+    public var lastTakings = 0
+
+    public init() {}
+
+    public mutating func record(takings amount: Int, fromStreet: Bool) {
+        visits += 1
+        if fromStreet { streetVisits += 1 }
+        takings += amount
+    }
+
+    /// Closes the day: today's totals become yesterday's.
+    public mutating func closeDay() {
+        lastVisits = visits
+        lastStreetVisits = streetVisits
+        lastTakings = takings
+        visits = 0
+        streetVisits = 0
+        takings = 0
     }
 }
 

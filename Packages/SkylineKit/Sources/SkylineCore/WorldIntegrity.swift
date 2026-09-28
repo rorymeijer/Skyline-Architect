@@ -64,7 +64,7 @@ extension GameWorld {
             guard buildings.contains(person.buildingID) else {
                 throw WorldIntegrityError.danglingReference("person \(person.id) → building \(person.buildingID)")
             }
-            for room in [person.homeRoom, person.workRoom].compactMap({ $0 }) where !rooms.contains(room) {
+            for room in [person.homeRoom, person.workRoom, person.visit].compactMap({ $0 }) where !rooms.contains(room) {
                 throw WorldIntegrityError.danglingReference("person \(person.id) → room \(room)")
             }
         }
