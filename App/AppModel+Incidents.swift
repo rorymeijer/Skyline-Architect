@@ -1,5 +1,6 @@
 import Foundation
 import SkylineCore
+import SkylinePresentation
 import SkylineSimulation
 
 extension AppModel {
