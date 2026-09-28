@@ -72,6 +72,20 @@ based LOD, not a fixed zoom. Below-grade levels always stay in section.
 * No lighting model yet (day only; day/night lands in Phase 9/12).
 * No shaders yet; depth comes from gradients and contact darkening.
 
+## Fire (Phase 14) — FUNCTIONAL
+
+The fire visuals are drawn in world space, all derived from the saved fire state
+(`FireView`):
+
+* Burning rooms get an additive flame gradient rising from the floor, with a smoke gradient
+  gathering under the ceiling. Both are scaled by intensity and flicker deterministically
+  in game time.
+* Covered rooms show sprinkler spray.
+* A fire engine (simple shapes) parks at the kerb once the brigade has arrived.
+* Damaged rooms are darkened with soot until they are repaired.
+
+See EMERGENCIES.md.
+
 ## Weather (Phase 13) — FUNCTIONAL
 
 * The weather grade adjusts the day grade (clouds, fog, heat).

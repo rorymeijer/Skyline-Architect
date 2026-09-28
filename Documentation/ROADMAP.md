@@ -114,7 +114,18 @@ Later: hourly weather, seasonal daylight, wind.
 
 Rain, storms, snow, heat, fog; visuals + effects on energy, visitors, maintenance.
 
-### Phase 14 — Events & emergencies (incl. fire)
+### Phase 14 — Events & emergencies (incl. fire) ✅ (2026-09-28)
+Delivered:
+- fire: ignition, growth, spread, sprinklers from the fire control room;
+- the fire brigade (after a response time; abstract suppression, the engine parks at the kerb);
+- stairs-only evacuation with elevators blocked;
+- damage, repairs, lost tenants, reputation;
+- weather incidents (storm damage, power outages, burst pipes);
+- alerts and the incidents panel.
+
+Not yet: responders walking through the building, smoke spreading through the stairs,
+security and medical events.
+
 Data-driven events; fire origin/spread/smoke, alarms, evacuation via stairs, blocked
 elevators, suppression, responders using the shared navigation.
 

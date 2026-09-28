@@ -2,6 +2,28 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.14.0] — Phase 14: Events & emergencies
+
+### Added
+- **Fire**:
+  - rooms ignite rarely (worn rooms and plant more often);
+  - fires grow and spread to neighbouring rooms;
+  - the new **fire control room** sprinkles every room within ±15 floors;
+  - the fire brigade arrives after 16 minutes.
+- **Evacuation**:
+  - everybody leaves by the stairs only (no elevators) and nobody enters while it burns;
+  - afterwards people return as their schedules say.
+- **Aftermath**:
+  - repair bill and repair jobs;
+  - destroyed units lose their tenants;
+  - reputation −8;
+  - soot until repaired.
+- **Weather incidents**: storm damage, power outages (the electrical plant fails), burst
+  pipes in frost.
+- **UI**: fire alert with *Show*, incidents panel (⌥⌘I), flames, smoke, sprinkler spray,
+  fire engines, Debug "Start a Fire" tool.
+- **Save format 11** (+ migration, golden fixture).
+
 ## [0.13.0] — Phase 13: Weather
 
 ### Added

@@ -66,6 +66,16 @@ failureBelow, cleanMinutes, repairMinutes, shiftStart, shiftEnd`. Rooms may set
 `wearPerDay`. Elevator specs may set `serviceOnly: true` (staff only). Tenant weights may
 set `services`. See FACILITIES.md.
 
+### Events (events.json, rooms.json)
+`fire {ignitionPerRoomPerDay, wornBelow, wornMultiplier, equipmentMultiplier,
+protectedIgnitionFactor, stepSeconds, startIntensity, growthPerStep, spreadAbove,
+spreadChancePerStep, protectedSpreadFactor, sprinklerSuppressionPerStep,
+brigadeResponseMinutes, brigadeSuppressionPerStep, damagePerStep, destroyedBelow,
+repairCostPerModule, reputationPenalty}` and `incidents [{id, name, weather [kinds],
+maxTemperature?, chancePerDay, target ("room" | "supplies:<utility>"), condition, cleanliness,
+cost, reputation}]`. Rooms may set `fireProtection` (sprinkler range in floors). See
+EMERGENCIES.md.
+
 ### Weather (weather.json)
 `seasons [{id, name, temperature}], daysPerYear, startSeason, persistence, temperatureSpread,
 energyPerDegree, comfortTemperature, kinds [{id, name, symbol, weights {season: w},
