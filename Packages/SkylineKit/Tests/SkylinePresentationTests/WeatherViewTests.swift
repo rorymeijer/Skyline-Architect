@@ -55,7 +55,7 @@ import SkylineContent
         let top = game.world.grid.y(ofFloor: 9)
         #expect(roofs.contains { $0.minY == top })                                      // main roof
         #expect(roofs.count >= 2)                                                       // plus setbacks
-        #expect(roofs.allSatisfy { abs($0.height - 0.35) < 1e-9 })
+        #expect(roofs.allSatisfy { abs($0.height - 0.6) < 1e-9 })
         let fp = b.footprint, grid = game.world.grid
         let street = WeatherView.pavement(world: game.world, propertyID: game.activePropertyID, visible: Rect(minX: -200, minY: -10, maxX: 300, maxY: 50))
         #expect(street.count == 2)

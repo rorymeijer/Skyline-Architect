@@ -112,7 +112,8 @@ public enum WeatherView {
                     if above.end < plate.span.end { pieces.append(ColumnSpan(start: above.end, count: plate.span.end - above.end)) }
                 }
                 for p in pieces where p.count > 0 {
-                    out.append(Rect(minX: grid.x(ofColumn: p.start), minY: top, maxX: grid.x(ofColumn: p.end), maxY: top + 0.35))
+                    // Drawn thicker than real snow so it reads at building zoom.
+                    out.append(Rect(minX: grid.x(ofColumn: p.start) - 0.1, minY: top, maxX: grid.x(ofColumn: p.end) + 0.1, maxY: top + 0.6))
                 }
             }
         }

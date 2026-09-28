@@ -22,7 +22,7 @@ final class WeatherLayer {
     init() {
         configure(rain, texture: Self.streak(), lifetime: 1.1, speed: 1150, angle: -.pi / 2 - 0.12, alpha: 0.32, scale: 1)
         rain.particleRotation = -0.12
-        configure(snow, texture: Self.flake(), lifetime: 14, speed: 55, angle: -.pi / 2, alpha: 0.85, scale: 0.55)
+        configure(snow, texture: Self.flake(), lifetime: 14, speed: 55, angle: -.pi / 2, alpha: 0.85, scale: 0.75)
         snow.particleSpeedRange = 30
         snow.xAcceleration = 4
         snow.particleScaleRange = 0.35
@@ -75,7 +75,7 @@ final class WeatherLayer {
         fog.alpha = CGFloat(look.fog * 0.5)
         flash.size = viewport
         flash.isHidden = look.lightning < 0.01
-        flash.alpha = CGFloat(look.lightning * 0.45)
+        flash.alpha = CGFloat(look.lightning * 0.22)
 
         // Ground: snow lies on the street and on roofs; rain darkens the paving (never over
         // the cutaway building).
@@ -89,8 +89,8 @@ final class WeatherLayer {
             guard i < street.count else { pair.snow.isHidden = true; pair.wet.isHidden = true; continue }
             let x = street[i]
             pair.snow.isHidden = look.snowCover < 0.01
-            pair.snow.position = CGPoint(x: x.lowerBound, y: -0.02)
-            pair.snow.size = CGSize(width: x.upperBound - x.lowerBound, height: 0.14 * look.snowCover + 0.04)
+            pair.snow.position = CGPoint(x: x.lowerBound, y: -0.05)
+            pair.snow.size = CGSize(width: x.upperBound - x.lowerBound, height: 0.5 * look.snowCover + 0.1)
             pair.wet.isHidden = look.wet < 0.01
             pair.wet.position = CGPoint(x: x.lowerBound, y: -0.3)
             pair.wet.size = CGSize(width: x.upperBound - x.lowerBound, height: 0.3)
