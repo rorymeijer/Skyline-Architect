@@ -1,15 +1,22 @@
 # Development Status
 
-_Last updated: 2026-09-28 (0.21.1 — no pile height limit)_
+_Last updated: 2026-09-28 (0.22.0 — Phase B: amenities and visitors)_
 
 ## Current phase
-**Phase A — Extending foundations: COMPLETE on the branch.** A foundation panel widens the
-foundation, digs basement levels and lengthens the piles (D-051). Since 0.21.1 piles no longer limit the height in the base
-game (D-052): 500-storey towers must stay feasible. The palette icons for Electrical, Telecom and Express Elevator are fixed.
-Next, in the player's order: B (amenities and visitors), E (economy and facilities),
-C (scenarios). Each is a phase with its own PR.
+**Phase B — Amenities and visitors: COMPLETE on the branch.**
+- Six amenity rooms (shop, restaurant, fitness club, cinema, theatre, sky bar), each rented
+  by an operator.
+- Street visitors spawn hourly. Workers lunch and residents spend free time at amenities in
+  their own building.
+- The landlord gets a share of the takings at the closing (ledger category `turnover`).
+- Open amenities add appeal to the building's other units.
+- Save format 16. See AMENITIES.md and D-053.
+- Earlier: Phase A (foundations, 0.21.0) and 0.21.1 (no pile height limit, D-052).
 
-Evidence: 316 tests (0.21.1), CI run 36478216982, captures in `Development/Screenshots/Foundation-0.21/`.
+Next, in the player's order: E (economy and facilities), then C (scenarios). Each is a
+phase with its own PR.
+
+Evidence: 328 tests, CI run 36484523958, captures in `Development/Screenshots/Amenities-0.22/`.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |

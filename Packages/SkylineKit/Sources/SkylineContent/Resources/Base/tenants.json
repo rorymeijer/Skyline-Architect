@@ -1,6 +1,7 @@
 [
  {
-  "id": "consultancy", "minClass": 2,
+  "id": "consultancy",
+  "minClass": 2,
   "name": "Consultancy",
   "kind": "business",
   "rooms": [
@@ -25,7 +26,8 @@
   "prospectsPerDay": 3
  },
  {
-  "id": "design-studio", "minClass": 1,
+  "id": "design-studio",
+  "minClass": 1,
   "name": "Design studio",
   "kind": "business",
   "rooms": [
@@ -100,7 +102,8 @@
   "prospectsPerDay": 4
  },
  {
-  "id": "single-professional", "minClass": 1,
+  "id": "single-professional",
+  "minClass": 1,
   "name": "Single professional",
   "kind": "household",
   "rooms": [
@@ -147,6 +150,156 @@
   },
   "minScore": 0.7,
   "leaveBelow": 0.52,
+  "prospectsPerDay": 1.5
+ },
+ {
+  "id": "boutique",
+  "name": "Boutique",
+  "kind": "business",
+  "rooms": [
+   "shop"
+  ],
+  "role": "worker",
+  "members": {
+   "perModule": 0.2
+  },
+  "schedules": [
+   "shop-staff"
+  ],
+  "budgetPerModule": 440,
+  "weights": {
+   "rent": 0.35,
+   "access": 0.5,
+   "noise": 0.05,
+   "view": 0.1
+  },
+  "minScore": 0.55,
+  "leaveBelow": 0.4,
+  "prospectsPerDay": 2
+ },
+ {
+  "id": "bistro",
+  "name": "Bistro",
+  "kind": "business",
+  "rooms": [
+   "restaurant"
+  ],
+  "role": "worker",
+  "members": {
+   "perModule": 0.3
+  },
+  "schedules": [
+   "hospitality-staff"
+  ],
+  "budgetPerModule": 400,
+  "weights": {
+   "rent": 0.3,
+   "access": 0.45,
+   "noise": 0.05,
+   "view": 0.2
+  },
+  "minScore": 0.55,
+  "leaveBelow": 0.4,
+  "prospectsPerDay": 2
+ },
+ {
+  "id": "fitness-club",
+  "name": "Fitness club",
+  "kind": "business",
+  "rooms": [
+   "fitness"
+  ],
+  "role": "worker",
+  "members": {
+   "perModule": 0.15
+  },
+  "schedules": [
+   "early-staff"
+  ],
+  "budgetPerModule": 340,
+  "weights": {
+   "rent": 0.4,
+   "access": 0.45,
+   "noise": 0.05,
+   "view": 0.1
+  },
+  "minScore": 0.55,
+  "leaveBelow": 0.4,
+  "prospectsPerDay": 2
+ },
+ {
+  "id": "cinema-chain",
+  "name": "Cinema chain",
+  "kind": "business",
+  "rooms": [
+   "cinema"
+  ],
+  "role": "worker",
+  "members": {
+   "perModule": 0.12
+  },
+  "schedules": [
+   "hospitality-staff"
+  ],
+  "budgetPerModule": 280,
+  "weights": {
+   "rent": 0.4,
+   "access": 0.5,
+   "noise": 0.05,
+   "view": 0.05
+  },
+  "minScore": 0.55,
+  "leaveBelow": 0.4,
+  "prospectsPerDay": 1.5
+ },
+ {
+  "id": "theatre-company",
+  "name": "Theatre company",
+  "kind": "business",
+  "rooms": [
+   "theater"
+  ],
+  "role": "worker",
+  "members": {
+   "perModule": 0.12
+  },
+  "schedules": [
+   "hospitality-staff"
+  ],
+  "budgetPerModule": 260,
+  "weights": {
+   "rent": 0.4,
+   "access": 0.45,
+   "noise": 0.1,
+   "view": 0.05
+  },
+  "minScore": 0.55,
+  "leaveBelow": 0.4,
+  "prospectsPerDay": 1
+ },
+ {
+  "id": "sky-lounge",
+  "name": "Sky lounge",
+  "kind": "business",
+  "rooms": [
+   "sky-bar"
+  ],
+  "role": "worker",
+  "members": {
+   "perModule": 0.25
+  },
+  "schedules": [
+   "night-staff"
+  ],
+  "budgetPerModule": 520,
+  "weights": {
+   "rent": 0.25,
+   "access": 0.3,
+   "noise": 0.05,
+   "view": 0.4
+  },
+  "minScore": 0.55,
+  "leaveBelow": 0.4,
   "prospectsPerDay": 1.5
  }
 ]

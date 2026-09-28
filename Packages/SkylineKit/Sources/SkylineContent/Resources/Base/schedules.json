@@ -11,7 +11,8 @@
    {
     "at": "12:15",
     "jitterMinutes": 20,
-    "goal": "outside"
+    "goal": "lunch",
+    "chance": 0.6
    },
    {
     "at": "13:00",
@@ -38,6 +39,17 @@
     "at": "18:15",
     "jitterMinutes": 75,
     "goal": "home"
+   },
+   {
+    "at": "20:00",
+    "jitterMinutes": 30,
+    "goal": "leisure",
+    "chance": 0.35
+   },
+   {
+    "at": "22:15",
+    "jitterMinutes": 30,
+    "goal": "home"
    }
   ]
  },
@@ -53,7 +65,8 @@
    {
     "at": "11:45",
     "jitterMinutes": 15,
-    "goal": "outside"
+    "goal": "lunch",
+    "chance": 0.6
    },
    {
     "at": "12:30",
@@ -79,7 +92,8 @@
    {
     "at": "13:30",
     "jitterMinutes": 20,
-    "goal": "outside"
+    "goal": "lunch",
+    "chance": 0.6
    },
    {
     "at": "14:15",
@@ -105,6 +119,17 @@
    {
     "at": "19:40",
     "jitterMinutes": 60,
+    "goal": "home"
+   },
+   {
+    "at": "20:45",
+    "jitterMinutes": 20,
+    "goal": "leisure",
+    "chance": 0.4
+   },
+   {
+    "at": "23:00",
+    "jitterMinutes": 30,
     "goal": "home"
    }
   ]
@@ -132,6 +157,76 @@
     "at": "17:00",
     "jitterMinutes": 30,
     "goal": "home"
+   },
+   {
+    "at": "13:45",
+    "jitterMinutes": 20,
+    "goal": "leisure",
+    "chance": 0.4
+   }
+  ]
+ },
+ {
+  "id": "shop-staff",
+  "role": "worker",
+  "events": [
+   {
+    "at": "08:40",
+    "jitterMinutes": 15,
+    "goal": "work"
+   },
+   {
+    "at": "21:15",
+    "jitterMinutes": 15,
+    "goal": "outside"
+   }
+  ]
+ },
+ {
+  "id": "early-staff",
+  "role": "worker",
+  "events": [
+   {
+    "at": "06:40",
+    "jitterMinutes": 15,
+    "goal": "work"
+   },
+   {
+    "at": "21:15",
+    "jitterMinutes": 15,
+    "goal": "outside"
+   }
+  ]
+ },
+ {
+  "id": "hospitality-staff",
+  "role": "worker",
+  "events": [
+   {
+    "at": "10:30",
+    "jitterMinutes": 20,
+    "goal": "work"
+   },
+   {
+    "at": "23:40",
+    "jitterMinutes": 10,
+    "goal": "outside"
+   }
+  ]
+ },
+ {
+  "id": "night-staff",
+  "role": "worker",
+  "events": [
+   {
+    "at": "15:30",
+    "jitterMinutes": 20,
+    "goal": "work"
+   },
+   {
+    "at": "01:15",
+    "jitterMinutes": 10,
+    "goal": "outside"
    }
   ]
  }

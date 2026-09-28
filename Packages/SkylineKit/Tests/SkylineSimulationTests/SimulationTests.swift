@@ -9,14 +9,15 @@ struct SimFixture {
     let engine: SimulationEngine
     let building: BuildingID
 
-    /// `elevator: false` demolishes the demo tower's elevator shaft (stairs-only tests).
-    init(tower: Bool = true, elevator: Bool = true) throws {
+    /// `elevator: false` demolishes the demo tower's elevator shaft (stairs-only tests);
+    /// `blueprint` builds another base blueprint instead of the demo tower.
+    init(tower: Bool = true, elevator: Bool = true, blueprint: String = "demo-tower") throws {
         library = try ContentLibrary.loadBase()
         var game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: library)
         let b = game.world.buildings(on: game.activePropertyID).first!
         if tower {
             let construction = ConstructionEngine(catalog: library.buildCatalog)
-            for c in library.blueprint("demo-tower")!.commands(for: b) { try construction.apply(c, to: &game.world) }
+            for c in library.blueprint(blueprint)!.commands(for: b) { try construction.apply(c, to: &game.world) }
             if !elevator, let shaft = game.world.rooms.values.first(where: { $0.definitionID == "elevator-shaft" }) {
                 try construction.apply(.demolishRoom(shaft.id), to: &game.world)
             }

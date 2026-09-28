@@ -9,11 +9,15 @@ public struct Schedule: Codable, Hashable, Sendable {
         /// Personal variation, ± minutes (deterministic per person and day).
         public var jitterMinutes: Int
         public var goal: Goal
+        /// Lunch and leisure (0.22): the chance (0…1, per person and day) that they look for
+        /// an amenity at all. Otherwise lunch is eaten out and leisure skipped. nil = 1.
+        public var chance: Double?
 
-        public init(at: String, jitterMinutes: Int, goal: Goal) {
+        public init(at: String, jitterMinutes: Int, goal: Goal, chance: Double? = nil) {
             self.at = at
             self.jitterMinutes = jitterMinutes
             self.goal = goal
+            self.chance = chance
         }
 
         /// Seconds since midnight, or nil if `at` is malformed.
@@ -251,6 +255,9 @@ public struct SimulationRules: Sendable {
     public let weather: WeatherRules?
     /// Fire and incidents (Phase 14; nil = none).
     public let events: EventRules?
+    /// Amenity rooms (0.22), in content order.
+    public let amenities: [AmenitySpec]
+    private let amenityIndex: [String: Int]
     /// Walking speed in meters per game second.
     public var walkSpeed = 1.3
     /// Game seconds to climb or descend one storey by stairs.
@@ -263,7 +270,7 @@ public struct SimulationRules: Sendable {
 
     public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenantTypes: [TenantType] = [],
                 economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil, progression: ReputationRules? = nil,
-                weather: WeatherRules? = nil, events: EventRules? = nil) {
+                weather: WeatherRules? = nil, events: EventRules? = nil, amenities: [AmenitySpec] = []) {
         self.schedules = schedules
         self.names = names
         self.elevators = elevators
@@ -273,7 +280,14 @@ public struct SimulationRules: Sendable {
         self.progression = progression
         self.weather = weather
         self.events = events
+        self.amenities = amenities
+        var index: [String: Int] = [:]
+        for (i, a) in amenities.enumerated() where index[a.room] == nil { index[a.room] = i }
+        amenityIndex = index
     }
+
+    /// What an amenity room offers (nil = not an amenity).
+    public func amenity(for roomDefinition: String) -> AmenitySpec? { amenityIndex[roomDefinition].map { amenities[$0] } }
 
     public func tenantType(_ id: String) -> TenantType? { tenantTypes.first { $0.id == id } }
 
@@ -300,6 +314,10 @@ public struct SimulationRules: Sendable {
             for e in s.events {
                 if e.secondOfDay == nil { problems.append("schedule '\(s.id)': invalid time '\(e.at)'") }
                 if e.jitterMinutes < 0 || e.jitterMinutes > 180 { problems.append("schedule '\(s.id)': jitter out of range") }
+                if let c = e.chance, !(0...1).contains(c) || ![Goal.lunch, .leisure].contains(e.goal) {
+                    problems.append("schedule '\(s.id)': chance must be 0…1 and only on lunch or leisure")
+                }
+                if e.goal == .visit { problems.append("schedule '\(s.id)': 'visit' is for street visitors only") }
             }
         }
         for role in [PersonRole.worker, .resident] where !schedules.contains(where: { $0.role == role }) {
@@ -324,8 +342,14 @@ public struct SimulationRules: Sendable {
                 let second = min(max(Int64(base) + offset, 0), Int64(SimClock.secondsPerDay) - 1)
                 let absolute = dayStart + Tick(second)
                 guard absolute >= SimClock.startSecondOfDay else { continue }  // before the game began
+                // Not in the mood today: lunch is eaten out, leisure skipped (same draw as the jitter).
+                var goal = event.goal
+                if let chance = event.chance, rng.unit() >= chance {
+                    guard goal == .lunch else { continue }
+                    goal = .outside
+                }
                 let t = absolute - SimClock.startSecondOfDay
-                if t > tick, best == nil || t < best!.0 { best = (t, event.goal) }
+                if t > tick, best == nil || t < best!.0 { best = (t, goal) }
             }
             if best != nil { break }
         }

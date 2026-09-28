@@ -1,0 +1,121 @@
+[
+ {
+  "room": "shop",
+  "opens": "09:00",
+  "closes": "21:00",
+  "occasions": [
+   "lunch",
+   "leisure"
+  ],
+  "capacityPerModule": 0.8,
+  "stayMinutes": 20,
+  "spendPerVisit": 30,
+  "turnoverShare": 0.08,
+  "streetVisitorsPerModulePerHour": 0.35,
+  "busyHours": [
+   12,
+   13,
+   17,
+   18
+  ],
+  "appeal": 0.02
+ },
+ {
+  "room": "restaurant",
+  "opens": "11:00",
+  "closes": "23:00",
+  "occasions": [
+   "lunch",
+   "leisure"
+  ],
+  "capacityPerModule": 1.5,
+  "stayMinutes": 55,
+  "spendPerVisit": 32,
+  "turnoverShare": 0.07,
+  "streetVisitorsPerModulePerHour": 0.3,
+  "busyHours": [
+   12,
+   13,
+   19,
+   20
+  ],
+  "appeal": 0.03
+ },
+ {
+  "room": "fitness",
+  "opens": "07:00",
+  "closes": "21:00",
+  "occasions": [
+   "lunch",
+   "leisure"
+  ],
+  "capacityPerModule": 0.8,
+  "stayMinutes": 60,
+  "spendPerVisit": 12,
+  "turnoverShare": 0.1,
+  "streetVisitorsPerModulePerHour": 0.12,
+  "busyHours": [
+   7,
+   8,
+   18,
+   19
+  ],
+  "appeal": 0.03
+ },
+ {
+  "room": "cinema",
+  "opens": "13:00",
+  "closes": "23:30",
+  "occasions": [
+   "leisure"
+  ],
+  "capacityPerModule": 2.5,
+  "stayMinutes": 130,
+  "spendPerVisit": 18,
+  "turnoverShare": 0.08,
+  "streetVisitorsPerModulePerHour": 0.35,
+  "busyHours": [
+   19,
+   20,
+   21
+  ],
+  "appeal": 0.02
+ },
+ {
+  "room": "theater",
+  "opens": "18:00",
+  "closes": "23:00",
+  "occasions": [
+   "leisure"
+  ],
+  "capacityPerModule": 3,
+  "stayMinutes": 150,
+  "spendPerVisit": 45,
+  "turnoverShare": 0.06,
+  "streetVisitorsPerModulePerHour": 0.3,
+  "busyHours": [
+   19
+  ],
+  "appeal": 0.02
+ },
+ {
+  "room": "sky-bar",
+  "opens": "16:00",
+  "closes": "01:00",
+  "occasions": [
+   "leisure"
+  ],
+  "capacityPerModule": 1.2,
+  "stayMinutes": 75,
+  "spendPerVisit": 45,
+  "turnoverShare": 0.1,
+  "streetVisitorsPerModulePerHour": 0.25,
+  "busyHours": [
+   21,
+   22,
+   23
+  ],
+  "heightBonusPerFloor": 0.03,
+  "appeal": 0.02
+ }
+]

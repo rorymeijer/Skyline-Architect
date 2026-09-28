@@ -51,7 +51,8 @@ Status: **FUNCTIONAL (Phase 17)**. Implemented:
 
 * `cities`, `plots`, `starts`, `rooms`, `buildRules`, `blueprints`;
 * `materials`, `furniture`, `interiors`, `schedules`, `names`, `elevators`;
-* `tenants`, `economy`, `facilities`, `progression`, `weather`, `events`, `scenarios`.
+* `tenants`, `economy`, `facilities`, `progression`, `weather`, `events`, `scenarios`;
+* `amenities` (0.22, a list keyed by `room`).
 
 An unknown kind rejects the pack, which catches typos.
 
@@ -187,6 +188,15 @@ occupancy}, goodWaitSeconds, badWaitSeconds, moveOutPenalty, demandAtZero, deman
 and ordered `classes [{id, name, population, reputation, requiredRooms, maxFloor?}]`. Rooms
 may set `unlockClass` (class index), tenant types `minClass`; starts set `mode`
 (`sandbox` | `standard`). See PROGRESSION.md.
+
+### Amenities (amenities.json, 0.22)
+A list; entries replace by `room`. `room` (a rentable room id), `opens`, `closes` ("HH:MM";
+closing before opening means after midnight), `occasions` (`lunch`, `leisure`),
+`capacityPerModule`, `stayMinutes`, `spendPerVisit`, `turnoverShare` (0…1),
+`streetVisitorsPerModulePerHour`, optional `busyHours` [0…23], `heightBonusPerFloor`,
+`appeal`. The room needs an operator: a tenant type renting it. Schedules may use the goals
+`lunch` (an amenity, else out) and `leisure` (an amenity, else stay), with an optional
+`chance` (0…1). See AMENITIES.md.
 
 ### TenantType (tenants.json)
 `id, name, kind ("household" | "business"), rooms [room ids with rentPerModule], role,

@@ -54,6 +54,7 @@ struct UnitInspector: View {
             } else {
                 Text("Not rentable — shared space or services.").font(.caption).foregroundStyle(.secondary)
             }
+            if let a = report.amenity { AmenityDetails(info: a) }
             if !report.utilities.isEmpty {
                 Divider()
                 HStack(spacing: 8) {
@@ -105,6 +106,7 @@ struct LeasingPanel: View {
             Text("Prospects \(m.prospects) · signed \(m.signed) · moved out \(m.movedOut)").font(.caption.monospacedDigit())
             Text(DeclineReason.allCases.map { "\(LeasingSummary.describe($0)) \(m.declines($0))" }.joined(separator: " · "))
                 .font(.caption2).foregroundStyle(.secondary)
+            if summary.amenities.venues > 0 { AmenityTotals(summary: summary.amenities) }
             Divider()
             ForEach(Array(summary.recent.enumerated()), id: \.offset) { _, line in
                 Text(line).font(.caption2.monospacedDigit()).foregroundStyle(.secondary).lineLimit(1)

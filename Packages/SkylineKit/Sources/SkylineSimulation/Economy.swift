@@ -45,6 +45,7 @@ extension SimulationEngine {
                                           detail: (tenant.isOwner ? "Service charges — " : "Rent — ") + tenant.name,
                                           building: tenant.buildingID, room: tenant.room, tenant: tenant.id))
         }
+        postTurnover(at: now, world: &world)
         for building in world.buildings.values {
             let rooms = world.rooms(in: building.id)
             let upkeep = rooms.reduce(0) { sum, room in

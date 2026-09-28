@@ -10,6 +10,8 @@ public struct UnitAppraisal: Equatable, Sendable {
     public var view: Double
     /// Utilities supplied, cleanliness and condition of the unit (Phase 10).
     public var services: Double
+    /// Added for the building's open amenities (0.22; 0 for an amenity unit itself).
+    public var amenities: Double = 0
     public var total: Double
     /// Street-to-unit travel time used for `access` (seconds, incl. expected elevator waits).
     public var accessSeconds: Double
@@ -44,9 +46,10 @@ public enum Leasing {
 
     /// `services` may carry the buildings' utility allocations when many units are appraised
     /// at once (daily review, market hour); rooms and upkeep do not change in between, so the
-    /// result is identical to allocating per unit (Phase 19).
+    /// result is identical to allocating per unit (Phase 19). `appeal` likewise carries the
+    /// buildings' amenity appeal (`SimulationEngine.amenityAppeal`).
     public static func appraise(_ room: Room, for type: TenantType, world: GameWorld, engine: SimulationEngine,
-                                services: [BuildingID: UtilityService]? = nil) -> UnitAppraisal? {
+                                services: [BuildingID: UtilityService]? = nil, appeal: [BuildingID: Double]? = nil) -> UnitAppraisal? {
         let catalog = engine.catalog
         guard let rent = askingRent(room, world: world, catalog: catalog), let building = world.buildings[room.buildingID] else { return nil }
         let perModule = Double(rent) / Double(max(room.columns.count, 1))
@@ -70,14 +73,17 @@ public enum Leasing {
                         + ws * servicesScore) / sum
         // A unit without its utilities cannot be used, whatever else it offers.
         let capped = min(weighted, 0.3 + 0.7 * utilities)
-        let total = seconds == nil ? 0 : capped
+        // Open amenities make the building's other units nicer to live and work in (0.22).
+        let bonus = engine.rules.amenity(for: room.definitionID) != nil ? 0
+            : (appeal ?? engine.amenityAppeal(world))[room.buildingID] ?? 0
+        let total = seconds == nil ? 0 : min(capped + bonus, 1)
         let parts: [(DeclineReason, Double, Double)] = [(.tooExpensive, rentScore, w.rent), (.poorAccess, accessScore, w.access),
                                                         (.tooNoisy, noiseScore, w.noise), (.poorView, viewScore, w.view),
                                                         (.poorServices, servicesScore, ws)]
         let weakest = seconds == nil ? .poorAccess : capped < weighted ? .poorServices
             : parts.filter { $0.2 > 0 }.min { $0.1 < $1.1 }?.0 ?? .poorAccess
         return UnitAppraisal(rentPerMonth: rent, rent: rentScore, access: accessScore, noise: noiseScore, view: viewScore,
-                             services: servicesScore, total: total, accessSeconds: seconds ?? .infinity, weakest: perModule > budget ? .tooExpensive : weakest,
+                             services: servicesScore, amenities: bonus, total: total, accessSeconds: seconds ?? .infinity, weakest: perModule > budget ? .tooExpensive : weakest,
                              affordable: perModule <= budget)
     }
 
@@ -155,7 +161,11 @@ public enum Leasing {
         // Names are unique across the estate: the drawn one, else the next free one.
         let taken = Set(world.tenants.values.map(\.name))
         let name: String
-        if type.kind == "business", let words = rules.names.businessWords, let suffixes = rules.names.businessSuffixes,
+        if rules.amenity(for: room.definitionID) != nil, let words = rules.names.businessWords, !words.isEmpty,
+           let venue = catalog.spec(room.definitionID)?.name {
+            // Amenities are named after what they are (0.22): "Saltmarsh Restaurant".
+            name = uniqueName(start: rng.int(in: 0..<words.count), count: words.count, taken: taken) { words[$0] + " " + venue }
+        } else if type.kind == "business", let words = rules.names.businessWords, let suffixes = rules.names.businessSuffixes,
            !words.isEmpty, !suffixes.isEmpty {
             let count = words.count * suffixes.count
             name = uniqueName(start: rng.int(in: 0..<count), count: count, taken: taken) {
@@ -230,14 +240,17 @@ extension SimulationEngine {
     func runMarket(at now: Tick, world: inout GameWorld) -> [PersonID] {
         var added: [PersonID] = []
         let hour = now / 3600
+        purgeDepartedVisitors(&world)
         // Metering and signing change neither rooms nor upkeep: one allocation for the hour.
         let services = utilityServices(world, buildings: world.buildings.values.map(\.id))
+        let appeal = amenityAppeal(world)
         meterLighting(at: now, world: &world, services: services)
         // Each city has its own market (Phase 15): prospects come by per city, scaled by its
         // demand, the reputation of its buildings and the weather, and look at its units only.
         for city in world.cities.values {
-            added += runCityMarket(city, hour: hour, at: now, world: &world, services: services)
+            added += runCityMarket(city, hour: hour, at: now, world: &world, services: services, appeal: appeal)
         }
+        added += spawnVisitors(at: now, world: &world)
         if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
             facilitiesDaily(at: now, world: &world)
             closeDay(at: now, world: &world)
@@ -252,7 +265,7 @@ extension SimulationEngine {
 
     /// One city's hourly market step.
     private func runCityMarket(_ city: City, hour: Tick, at now: Tick, world: inout GameWorld,
-                               services: [BuildingID: UtilityService]) -> [PersonID] {
+                               services: [BuildingID: UtilityService], appeal: [BuildingID: Double]) -> [PersonID] {
         var added: [PersonID] = []
         let buildings = Set(world.buildings.values.filter { world.properties[$0.propertyID]?.cityID == city.id }.map(\.id))
         let demand = Progression.demandMultiplier(world: world, engine: self, buildings: buildings)
@@ -269,7 +282,7 @@ extension SimulationEngine {
                     && Leasing.takes($0, type: type)
             }
             let appraised = candidates.compactMap { room in
-                Leasing.appraise(room, for: type, world: world, engine: self, services: services).map { (room, $0) }
+                Leasing.appraise(room, for: type, world: world, engine: self, services: services, appeal: appeal).map { (room, $0) }
             }
             guard let best = appraised.filter({ $0.1.affordable }).min(by: { ($1.1.total, $0.0.id) < ($0.1.total, $1.0.id) })
                     ?? appraised.min(by: { ($1.1.total, $0.0.id) < ($0.1.total, $1.0.id) }) else {
@@ -306,9 +319,11 @@ extension SimulationEngine {
         var moveOuts: [BuildingID: Int] = [:]
         // Moving out removes tenants and people, never rooms or upkeep: allocate once.
         let services = utilityServices(world, buildings: world.buildings.values.map(\.id))
+        let appeal = amenityAppeal(world)                 // move-outs during the review count from tomorrow
         for tenant in world.tenants.values {
             guard let type = rules.tenantType(tenant.typeID), let room = world.rooms[tenant.room],
-                  let appraisal = Leasing.appraise(room, for: type, world: world, engine: self, services: services) else { continue }
+                  let appraisal = Leasing.appraise(room, for: type, world: world, engine: self, services: services,
+                                                   appeal: appeal) else { continue }
             var t = tenant
             t.satisfaction = 0.6 * t.satisfaction + 0.4 * appraisal.total
             t.unhappyDays = appraisal.total < type.leaveBelow ? t.unhappyDays + 1 : 0

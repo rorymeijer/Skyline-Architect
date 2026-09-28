@@ -29,7 +29,7 @@ struct SimulationControls: View {
             Label("\(model.population.inRooms + model.population.travelling) in · \(model.population.outside) out",
                   systemImage: "person.2.fill")
                 .font(.system(size: 11, weight: .medium))
-                .help("People in the building (in rooms or moving) and away. \(model.population.unreachable) cannot reach their room.")
+                .help("People in the building (in rooms or moving) and away; \(model.population.visitors) of them visitors. \(model.population.unreachable) cannot reach their room.")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)

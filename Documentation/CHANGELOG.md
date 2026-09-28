@@ -2,6 +2,30 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.22.0] — Phase B: Amenities and visitors
+
+### Added
+- **Six amenities** (palette group *Amenity*): Shop, Restaurant, Fitness Club, Cinema,
+  Theatre, and a Sky Bar from floor 15. Each has its own interior, opening hours and seats.
+  Each is rented by an operator (boutique, bistro, fitness club, cinema chain, theatre
+  company, sky lounge).
+- **Visitors from the street** come to open amenities, more in busy hours and in a
+  well-reputed building. A sky bar draws more the higher it is. They use the lobby and
+  elevators, stay a while and leave.
+- **The building's own people** lunch in the building (workers) and spend free time there
+  (residents) while the seats go round; otherwise they go out as before.
+- **Turnover share:** besides the rent, the landlord gets 6–10 % of each amenity's takings
+  at the 06:00 closing (ledger category *Turnover*).
+- **Appeal:** open amenities make the building's flats and offices more attractive.
+- The unit inspector shows an amenity's hours, seats, customers and takings; the leasing
+  panel shows the amenity totals.
+- `demo-plaza` blueprint (developer tools, captures): a leisure podium under offices and
+  apartments, with a sky bar on top.
+- Modding: `amenities.json`; schedule events `lunch` and `leisure` with `chance`.
+
+### Changed
+- Save format 16 (visitors, sales, turnover); older saves are migrated.
+
 ## [0.21.1] — No pile height limit
 
 ### Changed

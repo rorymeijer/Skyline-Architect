@@ -2828,17 +2828,2333 @@
    }
   ]
  },
-  { "id": "sprinkler-valves", "name": "Sprinkler valve set", "width": 1.2, "height": 2.2, "parts": [
-    { "shape": "rect", "x": 0.15, "y": 0, "w": 0.14, "h": 2.2, "material": "redSafety" },
-    { "shape": "rect", "x": 0.15, "y": 1.1, "w": 1.05, "h": 0.12, "material": "redSafety", "shade": 0.9 },
-    { "shape": "ellipse", "x": 0.45, "y": 0.95, "w": 0.4, "h": 0.4, "material": "redSafety", "shade": 0.8 },
-    { "shape": "rect", "x": 0.58, "y": 1.35, "w": 0.14, "h": 0.25, "material": "steel", "minDetail": 14 },
-    { "shape": "ellipse", "x": 0.5, "y": 1.58, "w": 0.3, "h": 0.08, "material": "metalDark", "minDetail": 14 },
-    { "shape": "rect", "x": 0.95, "y": 0, "w": 0.14, "h": 1.22, "material": "redSafety", "shade": 0.85 },
-    { "shape": "ellipse", "x": 0.88, "y": 1.5, "w": 0.28, "h": 0.28, "material": "chrome", "minDetail": 16 } ] },
-  { "id": "fire-panel", "name": "Fire alarm panel", "width": 0.7, "height": 0.9, "parts": [
-    { "shape": "rect", "x": 0, "y": 0, "w": 0.7, "h": 0.9, "material": "redSafety" },
-    { "shape": "rect", "x": 0.1, "y": 0.45, "w": 0.5, "h": 0.3, "material": "black", "minDetail": 12 },
-    { "shape": "ellipse", "x": 0.12, "y": 0.12, "w": 0.12, "h": 0.12, "material": "yellowSafety", "minDetail": 16 },
-    { "shape": "ellipse", "x": 0.3, "y": 0.12, "w": 0.12, "h": 0.12, "material": "chrome", "minDetail": 16 } ] }
+ {
+  "id": "sprinkler-valves",
+  "name": "Sprinkler valve set",
+  "width": 1.2,
+  "height": 2.2,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0.15,
+    "y": 0,
+    "w": 0.14,
+    "h": 2.2,
+    "material": "redSafety"
+   },
+   {
+    "shape": "rect",
+    "x": 0.15,
+    "y": 1.1,
+    "w": 1.05,
+    "h": 0.12,
+    "material": "redSafety",
+    "shade": 0.9
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.45,
+    "y": 0.95,
+    "w": 0.4,
+    "h": 0.4,
+    "material": "redSafety",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0.58,
+    "y": 1.35,
+    "w": 0.14,
+    "h": 0.25,
+    "material": "steel",
+    "minDetail": 14
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.5,
+    "y": 1.58,
+    "w": 0.3,
+    "h": 0.08,
+    "material": "metalDark",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.95,
+    "y": 0,
+    "w": 0.14,
+    "h": 1.22,
+    "material": "redSafety",
+    "shade": 0.85
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.88,
+    "y": 1.5,
+    "w": 0.28,
+    "h": 0.28,
+    "material": "chrome",
+    "minDetail": 16
+   }
+  ]
+ },
+ {
+  "id": "fire-panel",
+  "name": "Fire alarm panel",
+  "width": 0.7,
+  "height": 0.9,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 0.7,
+    "h": 0.9,
+    "material": "redSafety"
+   },
+   {
+    "shape": "rect",
+    "x": 0.1,
+    "y": 0.45,
+    "w": 0.5,
+    "h": 0.3,
+    "material": "black",
+    "minDetail": 12
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.12,
+    "y": 0.12,
+    "w": 0.12,
+    "h": 0.12,
+    "material": "yellowSafety",
+    "minDetail": 16
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.3,
+    "y": 0.12,
+    "w": 0.12,
+    "h": 0.12,
+    "material": "chrome",
+    "minDetail": 16
+   }
+  ]
+ },
+ {
+  "id": "clothing-rack",
+  "name": "Clothing rack",
+  "width": 1.4,
+  "height": 1.6,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 0,
+    "w": 0.05,
+    "h": 1.6,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 1.3,
+    "y": 0,
+    "w": 0.05,
+    "h": 1.6,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 0.0,
+    "y": 0,
+    "w": 0.35,
+    "h": 0.04,
+    "material": "metalDark"
+   },
+   {
+    "shape": "rect",
+    "x": 1.05,
+    "y": 0,
+    "w": 0.35,
+    "h": 0.04,
+    "material": "metalDark"
+   },
+   {
+    "shape": "rect",
+    "x": 0.02,
+    "y": 1.55,
+    "w": 1.36,
+    "h": 0.04,
+    "material": "chrome"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.23,
+      1.55
+     ],
+     [
+      0.23,
+      1.47
+     ]
+    ],
+    "material": "chrome",
+    "lineWidth": 0.012,
+    "minDetail": 20
+   },
+   {
+    "shape": "polygon",
+    "points": [
+     [
+      0.14,
+      1.47
+     ],
+     [
+      0.32,
+      1.47
+     ],
+     [
+      0.34,
+      0.78
+     ],
+     [
+      0.12000000000000001,
+      0.78
+     ]
+    ],
+    "material": "$a"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.44999999999999996,
+      1.55
+     ],
+     [
+      0.44999999999999996,
+      1.47
+     ]
+    ],
+    "material": "chrome",
+    "lineWidth": 0.012,
+    "minDetail": 20
+   },
+   {
+    "shape": "polygon",
+    "points": [
+     [
+      0.36,
+      1.47
+     ],
+     [
+      0.54,
+      1.47
+     ],
+     [
+      0.56,
+      0.8300000000000001
+     ],
+     [
+      0.33999999999999997,
+      0.8300000000000001
+     ]
+    ],
+    "material": "$b"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.6699999999999999,
+      1.55
+     ],
+     [
+      0.6699999999999999,
+      1.47
+     ]
+    ],
+    "material": "chrome",
+    "lineWidth": 0.012,
+    "minDetail": 20
+   },
+   {
+    "shape": "polygon",
+    "points": [
+     [
+      0.58,
+      1.47
+     ],
+     [
+      0.76,
+      1.47
+     ],
+     [
+      0.78,
+      0.78
+     ],
+     [
+      0.5599999999999999,
+      0.78
+     ]
+    ],
+    "material": "$c"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.89,
+      1.55
+     ],
+     [
+      0.89,
+      1.47
+     ]
+    ],
+    "material": "chrome",
+    "lineWidth": 0.012,
+    "minDetail": 20
+   },
+   {
+    "shape": "polygon",
+    "points": [
+     [
+      0.8,
+      1.47
+     ],
+     [
+      0.98,
+      1.47
+     ],
+     [
+      1.0,
+      0.8300000000000001
+     ],
+     [
+      0.78,
+      0.8300000000000001
+     ]
+    ],
+    "material": "$a"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      1.11,
+      1.55
+     ],
+     [
+      1.11,
+      1.47
+     ]
+    ],
+    "material": "chrome",
+    "lineWidth": 0.012,
+    "minDetail": 20
+   },
+   {
+    "shape": "polygon",
+    "points": [
+     [
+      1.02,
+      1.47
+     ],
+     [
+      1.2,
+      1.47
+     ],
+     [
+      1.22,
+      0.78
+     ],
+     [
+      1.0,
+      0.78
+     ]
+    ],
+    "material": "$b"
+   }
+  ],
+  "variants": [
+   {
+    "a": "fabricBlue",
+    "b": "linen",
+    "c": "artRed"
+   },
+   {
+    "a": "fabricGreen",
+    "b": "fabricWarm",
+    "c": "linen"
+   },
+   {
+    "a": "fabricCharcoal",
+    "b": "artOchre",
+    "c": "fabricTeal"
+   }
+  ]
+ },
+ {
+  "id": "shop-shelf",
+  "name": "Shop shelving",
+  "width": 1.2,
+  "height": 2.1,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 1.2,
+    "h": 2.1,
+    "material": "woodPale",
+    "shade": 0.85
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 0.05,
+    "w": 1.1,
+    "h": 2.0,
+    "material": "cabinetLight",
+    "shade": 0.9
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 0.1,
+    "w": 1.1,
+    "h": 0.04,
+    "material": "woodPale"
+   },
+   {
+    "shape": "rect",
+    "x": 0.1,
+    "y": 0.14,
+    "w": 0.16,
+    "h": 0.28,
+    "material": "$a",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.31,
+    "y": 0.14,
+    "w": 0.16,
+    "h": 0.34,
+    "material": "$b",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.52,
+    "y": 0.14,
+    "w": 0.16,
+    "h": 0.4,
+    "material": "$c",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.73,
+    "y": 0.14,
+    "w": 0.16,
+    "h": 0.28,
+    "material": "paperWhite",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.94,
+    "y": 0.14,
+    "w": 0.16,
+    "h": 0.34,
+    "material": "$a",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 0.6,
+    "w": 1.1,
+    "h": 0.04,
+    "material": "woodPale"
+   },
+   {
+    "shape": "rect",
+    "x": 0.1,
+    "y": 0.64,
+    "w": 0.16,
+    "h": 0.34,
+    "material": "$b",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.31,
+    "y": 0.64,
+    "w": 0.16,
+    "h": 0.4,
+    "material": "$c",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.52,
+    "y": 0.64,
+    "w": 0.16,
+    "h": 0.28,
+    "material": "paperWhite",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.73,
+    "y": 0.64,
+    "w": 0.16,
+    "h": 0.34,
+    "material": "$a",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.94,
+    "y": 0.64,
+    "w": 0.16,
+    "h": 0.4,
+    "material": "$a",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 1.1,
+    "w": 1.1,
+    "h": 0.04,
+    "material": "woodPale"
+   },
+   {
+    "shape": "rect",
+    "x": 0.1,
+    "y": 1.14,
+    "w": 0.16,
+    "h": 0.4,
+    "material": "$c",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.31,
+    "y": 1.14,
+    "w": 0.16,
+    "h": 0.28,
+    "material": "paperWhite",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.52,
+    "y": 1.14,
+    "w": 0.16,
+    "h": 0.34,
+    "material": "$a",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.73,
+    "y": 1.14,
+    "w": 0.16,
+    "h": 0.4,
+    "material": "$a",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.94,
+    "y": 1.14,
+    "w": 0.16,
+    "h": 0.28,
+    "material": "$b",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 1.6,
+    "w": 1.1,
+    "h": 0.04,
+    "material": "woodPale"
+   },
+   {
+    "shape": "rect",
+    "x": 0.1,
+    "y": 1.64,
+    "w": 0.16,
+    "h": 0.28,
+    "material": "paperWhite",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.31,
+    "y": 1.64,
+    "w": 0.16,
+    "h": 0.34,
+    "material": "$a",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.52,
+    "y": 1.64,
+    "w": 0.16,
+    "h": 0.4,
+    "material": "$a",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.73,
+    "y": 1.64,
+    "w": 0.16,
+    "h": 0.28,
+    "material": "$b",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.94,
+    "y": 1.64,
+    "w": 0.16,
+    "h": 0.34,
+    "material": "$c",
+    "minDetail": 14
+   }
+  ],
+  "variants": [
+   {
+    "a": "artOchre",
+    "b": "artBlue",
+    "c": "terracotta"
+   },
+   {
+    "a": "leafGreen",
+    "b": "artRed",
+    "c": "brass"
+   }
+  ]
+ },
+ {
+  "id": "shop-counter",
+  "name": "Shop counter",
+  "width": 1.8,
+  "height": 1.35,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 1.8,
+    "h": 1.0,
+    "material": "woodDark",
+    "shade": 0.85
+   },
+   {
+    "shape": "rect",
+    "x": -0.04,
+    "y": 1.0,
+    "w": 1.88,
+    "h": 0.06,
+    "material": "stoneLight"
+   },
+   {
+    "shape": "rect",
+    "x": 0.2,
+    "y": 0.3,
+    "w": 1.4,
+    "h": 0.05,
+    "material": "brass"
+   },
+   {
+    "shape": "rect",
+    "x": 1.2,
+    "y": 1.06,
+    "w": 0.36,
+    "h": 0.22,
+    "material": "plasticBlack",
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 1.24,
+    "y": 1.12,
+    "w": 0.28,
+    "h": 0.12,
+    "material": "screenGlow",
+    "shade": 0.5,
+    "minDetail": 14
+   },
+   {
+    "shape": "rect",
+    "x": 0.3,
+    "y": 1.06,
+    "w": 0.3,
+    "h": 0.14,
+    "material": "paperWhite",
+    "minDetail": 20
+   }
+  ]
+ },
+ {
+  "id": "dining-set",
+  "name": "Dining table with chairs",
+  "width": 1.9,
+  "height": 1.0,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0.02,
+    "y": 0.48,
+    "w": 0.08,
+    "h": 0.52,
+    "material": "woodDark",
+    "shade": 0.85
+   },
+   {
+    "shape": "rect",
+    "x": 0.02,
+    "y": 0.42,
+    "w": 0.42,
+    "h": 0.07,
+    "material": "woodDark"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.08,
+      0
+     ],
+     [
+      0.08,
+      0.42
+     ]
+    ],
+    "material": "woodDark",
+    "lineWidth": 0.035
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.4,
+      0
+     ],
+     [
+      0.4,
+      0.42
+     ]
+    ],
+    "material": "woodDark",
+    "lineWidth": 0.035
+   },
+   {
+    "shape": "rect",
+    "x": 1.8,
+    "y": 0.48,
+    "w": 0.08,
+    "h": 0.52,
+    "material": "woodDark",
+    "shade": 0.85
+   },
+   {
+    "shape": "rect",
+    "x": 1.46,
+    "y": 0.42,
+    "w": 0.42,
+    "h": 0.07,
+    "material": "woodDark"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      1.5,
+      0
+     ],
+     [
+      1.5,
+      0.42
+     ]
+    ],
+    "material": "woodDark",
+    "lineWidth": 0.035
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      1.82,
+      0
+     ],
+     [
+      1.82,
+      0.42
+     ]
+    ],
+    "material": "woodDark",
+    "lineWidth": 0.035
+   },
+   {
+    "shape": "rect",
+    "x": 0.93,
+    "y": 0,
+    "w": 0.06,
+    "h": 0.72,
+    "material": "metalDark"
+   },
+   {
+    "shape": "rect",
+    "x": 0.7,
+    "y": 0,
+    "w": 0.52,
+    "h": 0.03,
+    "material": "metalDark"
+   },
+   {
+    "shape": "rect",
+    "x": 0.45,
+    "y": 0.72,
+    "w": 1.02,
+    "h": 0.05,
+    "material": "linen"
+   },
+   {
+    "shape": "rect",
+    "x": 0.45,
+    "y": 0.6,
+    "w": 1.02,
+    "h": 0.12,
+    "material": "linen",
+    "shade": 0.9,
+    "opacity": 0.9
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.62,
+    "y": 0.77,
+    "w": 0.22,
+    "h": 0.04,
+    "material": "ceramic",
+    "minDetail": 20
+   },
+   {
+    "shape": "ellipse",
+    "x": 1.08,
+    "y": 0.77,
+    "w": 0.22,
+    "h": 0.04,
+    "material": "ceramic",
+    "minDetail": 20
+   },
+   {
+    "shape": "rect",
+    "x": 0.92,
+    "y": 0.77,
+    "w": 0.07,
+    "h": 0.2,
+    "material": "glassBlue",
+    "minDetail": 24
+   }
+  ]
+ },
+ {
+  "id": "pendant-lamp",
+  "name": "Pendant lamp",
+  "width": 0.44,
+  "height": 0.9,
+  "parts": [
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.22,
+      0.9
+     ],
+     [
+      0.22,
+      0.3
+     ]
+    ],
+    "material": "metalDark",
+    "lineWidth": 0.012,
+    "minDetail": 12
+   },
+   {
+    "shape": "polygon",
+    "points": [
+     [
+      0.02,
+      0
+     ],
+     [
+      0.42,
+      0
+     ],
+     [
+      0.3,
+      0.3
+     ],
+     [
+      0.14,
+      0.3
+     ]
+    ],
+    "material": "brass"
+   },
+   {
+    "shape": "rect",
+    "x": 0.08,
+    "y": -0.03,
+    "w": 0.28,
+    "h": 0.03,
+    "material": "lampGlow",
+    "minDetail": 12
+   }
+  ],
+  "minDetail": 8
+ },
+ {
+  "id": "back-bar",
+  "name": "Back bar with bottles",
+  "width": 2.6,
+  "height": 2.3,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0.9,
+    "w": 2.6,
+    "h": 1.4,
+    "material": "woodDark",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 0.95,
+    "w": 2.5,
+    "h": 1.3,
+    "material": "mirror",
+    "shade": 0.8,
+    "opacity": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 1.35,
+    "w": 2.5,
+    "h": 0.04,
+    "material": "woodOak"
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 1.8,
+    "w": 2.5,
+    "h": 0.04,
+    "material": "woodOak"
+   },
+   {
+    "shape": "rect",
+    "x": 0.12,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.32,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.52,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "glassBlue",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.72,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.92,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.12,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.32,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.52,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "glassBlue",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.72,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.92,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 2.12,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 2.32,
+    "y": 1.39,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.12,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.32,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.52,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "glassBlue",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.72,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.92,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.12,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.32,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.52,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "glassBlue",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.72,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 1.92,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 2.12,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleGreen",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 2.32,
+    "y": 1.84,
+    "w": 0.1,
+    "h": 0.3,
+    "material": "bottleAmber",
+    "minDetail": 16
+   }
+  ]
+ },
+ {
+  "id": "bar-counter",
+  "name": "Bar counter",
+  "width": 3.2,
+  "height": 1.15,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 3.2,
+    "h": 1.08,
+    "material": "woodDark",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0.1,
+    "y": 0.12,
+    "w": 3.0,
+    "h": 0.8,
+    "material": "woodOak",
+    "shade": 0.85,
+    "opacity": 0.6
+   },
+   {
+    "shape": "rect",
+    "x": -0.05,
+    "y": 1.08,
+    "w": 3.3,
+    "h": 0.07,
+    "material": "stoneDark"
+   },
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0.02,
+    "w": 3.2,
+    "h": 0.05,
+    "material": "brass"
+   },
+   {
+    "shape": "rect",
+    "x": 0.4,
+    "y": 1.15,
+    "w": 0.08,
+    "h": 0.22,
+    "material": "glassBlue",
+    "minDetail": 24
+   },
+   {
+    "shape": "rect",
+    "x": 2.2,
+    "y": 1.15,
+    "w": 0.14,
+    "h": 0.08,
+    "material": "ceramic",
+    "minDetail": 24
+   }
+  ]
+ },
+ {
+  "id": "bar-counter-stools",
+  "name": "Bar counter with stools",
+  "width": 3.2,
+  "height": 1.15,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0.3,
+    "w": 3.2,
+    "h": 0.78,
+    "material": "woodDark",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": -0.05,
+    "y": 1.08,
+    "w": 3.3,
+    "h": 0.07,
+    "material": "stoneDark"
+   },
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0.3,
+    "w": 3.2,
+    "h": 0.04,
+    "material": "neonTeal",
+    "minDetail": 12
+   },
+   {
+    "shape": "rect",
+    "x": 0.35,
+    "y": 0,
+    "w": 0.04,
+    "h": 0.72,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 0.2,
+    "y": 0,
+    "w": 0.34,
+    "h": 0.03,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 0.18,
+    "y": 0.72,
+    "w": 0.38,
+    "h": 0.08,
+    "material": "fabricMustard",
+    "shade": 0.85
+   },
+   {
+    "shape": "rect",
+    "x": 1.2,
+    "y": 0,
+    "w": 0.04,
+    "h": 0.72,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 1.05,
+    "y": 0,
+    "w": 0.34,
+    "h": 0.03,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 1.03,
+    "y": 0.72,
+    "w": 0.38,
+    "h": 0.08,
+    "material": "fabricMustard",
+    "shade": 0.85
+   },
+   {
+    "shape": "rect",
+    "x": 2.05,
+    "y": 0,
+    "w": 0.04,
+    "h": 0.72,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 1.9,
+    "y": 0,
+    "w": 0.34,
+    "h": 0.03,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 1.88,
+    "y": 0.72,
+    "w": 0.38,
+    "h": 0.08,
+    "material": "fabricMustard",
+    "shade": 0.85
+   },
+   {
+    "shape": "rect",
+    "x": 2.9,
+    "y": 0,
+    "w": 0.04,
+    "h": 0.72,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 2.75,
+    "y": 0,
+    "w": 0.34,
+    "h": 0.03,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 2.73,
+    "y": 0.72,
+    "w": 0.38,
+    "h": 0.08,
+    "material": "fabricMustard",
+    "shade": 0.85
+   },
+   {
+    "shape": "rect",
+    "x": 0.6,
+    "y": 1.15,
+    "w": 0.07,
+    "h": 0.2,
+    "material": "glassBlue",
+    "minDetail": 24
+   },
+   {
+    "shape": "rect",
+    "x": 2.3,
+    "y": 1.15,
+    "w": 0.07,
+    "h": 0.2,
+    "material": "bottleAmber",
+    "minDetail": 24
+   }
+  ]
+ },
+ {
+  "id": "lounge-set",
+  "name": "Lounge sofa and table",
+  "width": 2.4,
+  "height": 0.9,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0.1,
+    "w": 1.4,
+    "h": 0.34,
+    "material": "$s",
+    "shade": 0.85
+   },
+   {
+    "shape": "rect",
+    "x": 0.06,
+    "y": 0.42,
+    "w": 1.3,
+    "h": 0.45,
+    "material": "$s",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 0.05,
+    "h": 0.1,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 1.35,
+    "y": 0,
+    "w": 0.05,
+    "h": 0.1,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 1.65,
+    "y": 0.42,
+    "w": 0.7,
+    "h": 0.05,
+    "material": "stoneDark"
+   },
+   {
+    "shape": "rect",
+    "x": 1.97,
+    "y": 0,
+    "w": 0.06,
+    "h": 0.42,
+    "material": "chrome"
+   },
+   {
+    "shape": "rect",
+    "x": 1.8,
+    "y": 0.47,
+    "w": 0.08,
+    "h": 0.18,
+    "material": "glassBlue",
+    "minDetail": 24
+   },
+   {
+    "shape": "rect",
+    "x": 2.1,
+    "y": 0.47,
+    "w": 0.1,
+    "h": 0.12,
+    "material": "$s",
+    "minDetail": 24
+   }
+  ],
+  "variants": [
+   {
+    "s": "fabricTeal"
+   },
+   {
+    "s": "velvetRed"
+   },
+   {
+    "s": "fabricCharcoal"
+   }
+  ]
+ },
+ {
+  "id": "treadmill",
+  "name": "Treadmill",
+  "width": 1.9,
+  "height": 1.4,
+  "parts": [
+   {
+    "shape": "polygon",
+    "points": [
+     [
+      0,
+      0
+     ],
+     [
+      1.9,
+      0
+     ],
+     [
+      1.9,
+      0.18
+     ],
+     [
+      0.1,
+      0.25
+     ]
+    ],
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "rect",
+    "x": 0.15,
+    "y": 0.2,
+    "w": 1.5,
+    "h": 0.04,
+    "material": "metalDark"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      1.6,
+      0.2
+     ],
+     [
+      1.75,
+      1.2
+     ]
+    ],
+    "material": "metalLight",
+    "lineWidth": 0.05
+   },
+   {
+    "shape": "rect",
+    "x": 1.55,
+    "y": 1.18,
+    "w": 0.35,
+    "h": 0.2,
+    "material": "plasticBlack"
+   },
+   {
+    "shape": "rect",
+    "x": 1.6,
+    "y": 1.22,
+    "w": 0.25,
+    "h": 0.12,
+    "material": "screenGlow",
+    "shade": 0.5,
+    "minDetail": 16
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      1.3,
+      0.25
+     ],
+     [
+      1.62,
+      1.0
+     ]
+    ],
+    "material": "metalLight",
+    "lineWidth": 0.03
+   }
+  ]
+ },
+ {
+  "id": "exercise-bike",
+  "name": "Exercise bike",
+  "width": 1.2,
+  "height": 1.25,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 0,
+    "w": 1.1,
+    "h": 0.05,
+    "material": "metalDark"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.35,
+      0.05
+     ],
+     [
+      0.45,
+      0.75
+     ],
+     [
+      0.9,
+      0.55
+     ],
+     [
+      0.95,
+      1.05
+     ]
+    ],
+    "material": "metalLight",
+    "lineWidth": 0.05
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.6,
+    "y": 0.15,
+    "w": 0.4,
+    "h": 0.4,
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.72,
+    "y": 0.27,
+    "w": 0.16,
+    "h": 0.16,
+    "material": "metalLight",
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0.28,
+    "y": 0.75,
+    "w": 0.34,
+    "h": 0.07,
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "rect",
+    "x": 0.85,
+    "y": 1.05,
+    "w": 0.3,
+    "h": 0.06,
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "rect",
+    "x": 0.9,
+    "y": 0.9,
+    "w": 0.18,
+    "h": 0.1,
+    "material": "screenGlow",
+    "minDetail": 18
+   }
+  ]
+ },
+ {
+  "id": "weight-rack",
+  "name": "Dumbbell rack",
+  "width": 1.4,
+  "height": 1.3,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 0.06,
+    "h": 1.1,
+    "material": "metalDark"
+   },
+   {
+    "shape": "rect",
+    "x": 1.34,
+    "y": 0,
+    "w": 0.06,
+    "h": 1.1,
+    "material": "metalDark"
+   },
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0.45,
+    "w": 1.4,
+    "h": 0.04,
+    "material": "metalDark"
+   },
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0.95,
+    "w": 1.4,
+    "h": 0.04,
+    "material": "metalDark"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.08,
+    "y": 0.49,
+    "w": 0.18,
+    "h": 0.18,
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.3,
+    "y": 0.49,
+    "w": 0.18,
+    "h": 0.18,
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.52,
+    "y": 0.49,
+    "w": 0.18,
+    "h": 0.18,
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.74,
+    "y": 0.49,
+    "w": 0.18,
+    "h": 0.18,
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.96,
+    "y": 0.49,
+    "w": 0.18,
+    "h": 0.18,
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "ellipse",
+    "x": 1.1800000000000002,
+    "y": 0.49,
+    "w": 0.18,
+    "h": 0.18,
+    "material": "rubberBlack"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.1,
+    "y": 0.99,
+    "w": 0.14,
+    "h": 0.14,
+    "material": "$w"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.32,
+    "y": 0.99,
+    "w": 0.14,
+    "h": 0.14,
+    "material": "$w"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.54,
+    "y": 0.99,
+    "w": 0.14,
+    "h": 0.14,
+    "material": "$w"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.76,
+    "y": 0.99,
+    "w": 0.14,
+    "h": 0.14,
+    "material": "$w"
+   },
+   {
+    "shape": "ellipse",
+    "x": 0.98,
+    "y": 0.99,
+    "w": 0.14,
+    "h": 0.14,
+    "material": "$w"
+   },
+   {
+    "shape": "ellipse",
+    "x": 1.2000000000000002,
+    "y": 0.99,
+    "w": 0.14,
+    "h": 0.14,
+    "material": "$w"
+   }
+  ],
+  "variants": [
+   {
+    "w": "redSafety"
+   },
+   {
+    "w": "fabricBlue"
+   }
+  ]
+ },
+ {
+  "id": "mirror-panel",
+  "name": "Mirror wall",
+  "width": 2.4,
+  "height": 1.7,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 2.4,
+    "h": 1.7,
+    "material": "metalLight"
+   },
+   {
+    "shape": "rect",
+    "x": 0.04,
+    "y": 0.04,
+    "w": 2.32,
+    "h": 1.62,
+    "material": "mirror",
+    "shade": 0.75
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.4,
+      1.5
+     ],
+     [
+      1.0,
+      0.3
+     ]
+    ],
+    "material": "paperWhite",
+    "lineWidth": 0.02,
+    "minDetail": 20
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      1.5,
+      1.5
+     ],
+     [
+      1.8,
+      0.9
+     ]
+    ],
+    "material": "paperWhite",
+    "lineWidth": 0.015,
+    "minDetail": 20
+   }
+  ]
+ },
+ {
+  "id": "cinema-screen",
+  "name": "Cinema screen",
+  "width": 3.6,
+  "height": 2.1,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 3.6,
+    "h": 2.1,
+    "material": "black"
+   },
+   {
+    "shape": "rect",
+    "x": 0.1,
+    "y": 0.1,
+    "w": 3.4,
+    "h": 1.9,
+    "material": "screenSilver",
+    "shade": 0.75
+   },
+   {
+    "shape": "rect",
+    "x": 0.1,
+    "y": 0.1,
+    "w": 3.4,
+    "h": 1.9,
+    "material": "screenGlow",
+    "shade": 0.4,
+    "opacity": 0.35
+   },
+   {
+    "shape": "rect",
+    "x": -0.15,
+    "y": 0,
+    "w": 0.18,
+    "h": 2.1,
+    "material": "velvetRed",
+    "shade": 0.7
+   },
+   {
+    "shape": "rect",
+    "x": 3.57,
+    "y": 0,
+    "w": 0.18,
+    "h": 2.1,
+    "material": "velvetRed",
+    "shade": 0.7
+   }
+  ]
+ },
+ {
+  "id": "cinema-seats",
+  "name": "Row of cinema seats",
+  "width": 1.9,
+  "height": 1.05,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 1.9,
+    "h": 0.12,
+    "material": "black"
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 0.12,
+    "w": 0.56,
+    "h": 0.3,
+    "material": "$s",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0.08,
+    "y": 0.42,
+    "w": 0.5,
+    "h": 0.6,
+    "material": "$s",
+    "shade": 0.75
+   },
+   {
+    "shape": "rect",
+    "x": 0.02,
+    "y": 0.12,
+    "w": 0.05,
+    "h": 0.48,
+    "material": "black"
+   },
+   {
+    "shape": "rect",
+    "x": 0.67,
+    "y": 0.12,
+    "w": 0.56,
+    "h": 0.3,
+    "material": "$s",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0.7,
+    "y": 0.42,
+    "w": 0.5,
+    "h": 0.6,
+    "material": "$s",
+    "shade": 0.75
+   },
+   {
+    "shape": "rect",
+    "x": 0.64,
+    "y": 0.12,
+    "w": 0.05,
+    "h": 0.48,
+    "material": "black"
+   },
+   {
+    "shape": "rect",
+    "x": 1.29,
+    "y": 0.12,
+    "w": 0.56,
+    "h": 0.3,
+    "material": "$s",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 1.32,
+    "y": 0.42,
+    "w": 0.5,
+    "h": 0.6,
+    "material": "$s",
+    "shade": 0.75
+   },
+   {
+    "shape": "rect",
+    "x": 1.26,
+    "y": 0.12,
+    "w": 0.05,
+    "h": 0.48,
+    "material": "black"
+   },
+   {
+    "shape": "rect",
+    "x": 1.88,
+    "y": 0.12,
+    "w": 0.02,
+    "h": 0.48,
+    "material": "black"
+   }
+  ],
+  "variants": [
+   {
+    "s": "fabricBlue"
+   }
+  ]
+ },
+ {
+  "id": "stage",
+  "name": "Stage with curtains",
+  "width": 5.0,
+  "height": 2.9,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 5.0,
+    "h": 0.8,
+    "material": "stageWood",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0.8,
+    "w": 5.0,
+    "h": 0.05,
+    "material": "brass"
+   },
+   {
+    "shape": "rect",
+    "x": 0.3,
+    "y": 0.85,
+    "w": 4.4,
+    "h": 2.0,
+    "material": "black",
+    "opacity": 0.9
+   },
+   {
+    "shape": "rect",
+    "x": 0.3,
+    "y": 0.85,
+    "w": 4.4,
+    "h": 2.0,
+    "material": "stageWood",
+    "shade": 1.2,
+    "opacity": 0.25
+   },
+   {
+    "shape": "polygon",
+    "points": [
+     [
+      0,
+      0.85
+     ],
+     [
+      0.9,
+      0.85
+     ],
+     [
+      1.2,
+      2.6
+     ],
+     [
+      0,
+      2.85
+     ]
+    ],
+    "material": "velvetRed"
+   },
+   {
+    "shape": "polygon",
+    "points": [
+     [
+      5.0,
+      0.85
+     ],
+     [
+      4.1,
+      0.85
+     ],
+     [
+      3.8,
+      2.6
+     ],
+     [
+      5.0,
+      2.85
+     ]
+    ],
+    "material": "velvetRed"
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.3,
+      0.9
+     ],
+     [
+      0.4,
+      2.7
+     ]
+    ],
+    "material": "curtainRed",
+    "lineWidth": 0.03,
+    "minDetail": 16
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.5,
+      0.9
+     ],
+     [
+      0.65,
+      2.7
+     ]
+    ],
+    "material": "curtainRed",
+    "lineWidth": 0.03,
+    "minDetail": 16
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.7,
+      0.9
+     ],
+     [
+      0.9,
+      2.7
+     ]
+    ],
+    "material": "curtainRed",
+    "lineWidth": 0.03,
+    "minDetail": 16
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      0.9000000000000001,
+      0.9
+     ],
+     [
+      1.15,
+      2.7
+     ]
+    ],
+    "material": "curtainRed",
+    "lineWidth": 0.03,
+    "minDetail": 16
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      4.7,
+      0.9
+     ],
+     [
+      4.6,
+      2.7
+     ]
+    ],
+    "material": "curtainRed",
+    "lineWidth": 0.03,
+    "minDetail": 16
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      4.5,
+      0.9
+     ],
+     [
+      4.35,
+      2.7
+     ]
+    ],
+    "material": "curtainRed",
+    "lineWidth": 0.03,
+    "minDetail": 16
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      4.3,
+      0.9
+     ],
+     [
+      4.1,
+      2.7
+     ]
+    ],
+    "material": "curtainRed",
+    "lineWidth": 0.03,
+    "minDetail": 16
+   },
+   {
+    "shape": "line",
+    "points": [
+     [
+      4.1,
+      0.9
+     ],
+     [
+      3.8499999999999996,
+      2.7
+     ]
+    ],
+    "material": "curtainRed",
+    "lineWidth": 0.03,
+    "minDetail": 16
+   },
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 2.6,
+    "w": 5.0,
+    "h": 0.28,
+    "material": "velvetRed",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 2.58,
+    "w": 5.0,
+    "h": 0.04,
+    "material": "brass"
+   },
+   {
+    "shape": "ellipse",
+    "x": 2.3,
+    "y": 0.85,
+    "w": 0.4,
+    "h": 0.9,
+    "material": "lampGlow",
+    "minDetail": 20
+   }
+  ]
+ },
+ {
+  "id": "theater-seats",
+  "name": "Row of theatre seats",
+  "width": 1.9,
+  "height": 1.05,
+  "parts": [
+   {
+    "shape": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 1.9,
+    "h": 0.1,
+    "material": "woodDark"
+   },
+   {
+    "shape": "rect",
+    "x": 0.05,
+    "y": 0.12,
+    "w": 0.56,
+    "h": 0.3,
+    "material": "velvetRed",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0.08,
+    "y": 0.42,
+    "w": 0.5,
+    "h": 0.62,
+    "material": "velvetRed",
+    "shade": 0.75
+   },
+   {
+    "shape": "rect",
+    "x": 0.02,
+    "y": 0.12,
+    "w": 0.05,
+    "h": 0.48,
+    "material": "brass"
+   },
+   {
+    "shape": "rect",
+    "x": 0.67,
+    "y": 0.12,
+    "w": 0.56,
+    "h": 0.3,
+    "material": "velvetRed",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 0.7,
+    "y": 0.42,
+    "w": 0.5,
+    "h": 0.62,
+    "material": "velvetRed",
+    "shade": 0.75
+   },
+   {
+    "shape": "rect",
+    "x": 0.64,
+    "y": 0.12,
+    "w": 0.05,
+    "h": 0.48,
+    "material": "brass"
+   },
+   {
+    "shape": "rect",
+    "x": 1.29,
+    "y": 0.12,
+    "w": 0.56,
+    "h": 0.3,
+    "material": "velvetRed",
+    "shade": 0.8
+   },
+   {
+    "shape": "rect",
+    "x": 1.32,
+    "y": 0.42,
+    "w": 0.5,
+    "h": 0.62,
+    "material": "velvetRed",
+    "shade": 0.75
+   },
+   {
+    "shape": "rect",
+    "x": 1.26,
+    "y": 0.12,
+    "w": 0.05,
+    "h": 0.48,
+    "material": "brass"
+   },
+   {
+    "shape": "rect",
+    "x": 1.88,
+    "y": 0.12,
+    "w": 0.02,
+    "h": 0.48,
+    "material": "brass"
+   }
+  ]
+ }
 ]

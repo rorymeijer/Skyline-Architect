@@ -43,6 +43,8 @@ public enum PersonRole: String, Codable, Hashable, Sendable {
     case worker, resident
     /// Building staff (Phase 10), hired by the player: they clean or repair.
     case janitor, technician
+    /// Someone from the street who comes for one amenity and leaves again (0.22).
+    case visitor
 
     public var isStaff: Bool { self == .janitor || self == .technician }
     /// The job kind a staff role does.
@@ -85,6 +87,12 @@ public enum Place: Codable, Hashable, Sendable {
 /// What a person intends to do at `nextEventTick` when at rest.
 public enum Goal: String, Codable, Hashable, Sendable {
     case work, home, outside
+    /// Eat at an amenity of the building that serves lunch, else go out (0.22).
+    case lunch
+    /// Visit an amenity of the building that serves leisure, else stay where they are.
+    case leisure
+    /// A visitor heading for the amenity they came for.
+    case visit
 }
 
 public enum Destination: Codable, Hashable, Sendable {
@@ -119,6 +127,8 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
     public var tenantID: TenantID?
     /// Staff only (Phase 10): the job being travelled to or worked on.
     public var job: JobAssignment?
+    /// Visitors only (0.22): the amenity they came for.
+    public var visit: RoomID?
 
     public init(id: PersonID, name: String, age: Int, role: PersonRole, scheduleID: String, buildingID: BuildingID,
                 homeRoom: RoomID?, workRoom: RoomID?, place: Place, nextEventTick: Tick, nextGoal: Goal?, traits: UInt32) {
@@ -138,6 +148,7 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
         self.pendingRide = nil
         self.tenantID = nil
         self.job = nil
+        self.visit = nil
     }
 
     /// Waiting at a landing, or at the end of a walk that leads into a queue (elevator
@@ -149,7 +160,14 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
     }
 
     /// The room this person belongs to by role.
-    public var anchorRoom: RoomID? { role == .worker ? workRoom : role == .resident ? homeRoom : nil }
+    public var anchorRoom: RoomID? {
+        switch role {
+        case .worker: workRoom
+        case .resident: homeRoom
+        case .visitor: visit
+        case .janitor, .technician: nil
+        }
+    }
 }
 
 /// Exact position of a person on a trip at (fractional) time `t`, in world meters, plus the
