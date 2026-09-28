@@ -66,6 +66,7 @@ extension AppModel {
         refreshProgression()
         refreshWeather()
         refreshIncidents()
+        if showEstatePanel { refreshEstate() }
     }
 
     // MARK: Elevator banks

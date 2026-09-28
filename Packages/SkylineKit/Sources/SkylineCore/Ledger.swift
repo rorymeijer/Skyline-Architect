@@ -2,7 +2,7 @@ import Foundation
 
 /// What a transaction is for (Phase 9). Positive amounts are income, negative expenses.
 public enum LedgerCategory: String, Codable, CaseIterable, Hashable, Sendable {
-    case construction, demolition, rent, maintenance, utilities, loan, interest, grant, wages
+    case construction, demolition, rent, maintenance, utilities, loan, interest, grant, wages, land
 }
 
 /// One traceable money movement: when, how much, why and for whom.

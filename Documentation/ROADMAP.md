@@ -129,8 +129,15 @@ security and medical events.
 Data-driven events; fire origin/spread/smoke, alarms, evacuation via stairs, blocked
 elevators, suppression, responders using the shared navigation.
 
-### Phase 15 — Multiple properties & cities
-Property purchase, city selection, per-city economy variables, empire overview.
+### Phase 15 — Multiple properties & cities ✅ (2026-09-28)
+Delivered:
+- three cities with their own markets, ground and skylines;
+- plots for sale and land purchase;
+- a rental market per city;
+- switching properties while the whole estate runs;
+- an estate overview.
+
+Not yet: weather per city, selling land, several buildings per plot.
 
 ### Phase 16 — Scenarios
 Data-driven objectives, win/lose conditions, scenario browser.

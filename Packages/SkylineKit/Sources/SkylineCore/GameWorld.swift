@@ -14,12 +14,28 @@ public struct City: Codable, Hashable, Sendable, Identifiable {
     public var name: String
     /// Seed for procedural content of this city (backdrop skyline, etc.).
     public var seed: UInt64
+    /// Local market (Phase 15): multipliers on rents, construction costs and tenant demand.
+    public var economy: CityEconomy
 
-    public init(id: CityID, definitionID: String, name: String, seed: UInt64) {
+    public init(id: CityID, definitionID: String, name: String, seed: UInt64, economy: CityEconomy = CityEconomy()) {
         self.id = id
         self.definitionID = definitionID
         self.name = name
         self.seed = seed
+        self.economy = economy
+    }
+}
+
+/// How expensive and lively a city is (Phase 15; 1 = the base game's Port Calder).
+public struct CityEconomy: Codable, Hashable, Sendable {
+    public var rent: Double
+    public var construction: Double
+    public var demand: Double
+
+    public init(rent: Double = 1, construction: Double = 1, demand: Double = 1) {
+        self.rent = rent
+        self.construction = construction
+        self.demand = demand
     }
 }
 
@@ -29,12 +45,16 @@ public struct Property: Codable, Hashable, Sendable, Identifiable {
     public var cityID: CityID
     public var name: String
     public var plot: Plot
+    /// Content plot this property was bought as (Phase 15; nil for properties of older saves
+    /// until they are matched on load).
+    public var plotID: String?
 
-    public init(id: PropertyID, cityID: CityID, name: String, plot: Plot) {
+    public init(id: PropertyID, cityID: CityID, name: String, plot: Plot, plotID: String? = nil) {
         self.id = id
         self.cityID = cityID
         self.name = name
         self.plot = plot
+        self.plotID = plotID
     }
 }
 
@@ -97,17 +117,17 @@ public struct GameWorld: Codable, Sendable, Equatable {
     }
 
     @discardableResult
-    public mutating func addCity(definitionID: String, name: String, seed: UInt64) -> CityID {
+    public mutating func addCity(definitionID: String, name: String, seed: UInt64, economy: CityEconomy = CityEconomy()) -> CityID {
         let id: CityID = ids.make()
-        cities.insert(City(id: id, definitionID: definitionID, name: name, seed: seed))
+        cities.insert(City(id: id, definitionID: definitionID, name: name, seed: seed, economy: economy))
         return id
     }
 
     @discardableResult
-    public mutating func addProperty(cityID: CityID, name: String, plot: Plot) throws -> PropertyID {
+    public mutating func addProperty(cityID: CityID, name: String, plot: Plot, plotID: String? = nil) throws -> PropertyID {
         guard cities.contains(cityID) else { throw WorldError.unknownCity(cityID) }
         let id: PropertyID = ids.make()
-        properties.insert(Property(id: id, cityID: cityID, name: name, plot: plot))
+        properties.insert(Property(id: id, cityID: cityID, name: name, plot: plot, plotID: plotID))
         return id
     }
 
@@ -169,5 +189,19 @@ public struct GameWorld: Codable, Sendable, Equatable {
 
     public func properties(in cityID: CityID) -> [Property] {
         properties.filter { $0.cityID == cityID }
+    }
+
+    /// The city a building stands in.
+    public func city(of building: BuildingID) -> City? {
+        buildings[building].flatMap { properties[$0.propertyID] }.flatMap { cities[$0.cityID] }
+    }
+
+    /// Matches older properties to their content plot (Phase 15) and sets a city's market.
+    public mutating func setPlotID(_ plotID: String, property: PropertyID) {
+        properties.update(property) { $0.plotID = plotID }
+    }
+
+    public mutating func setEconomy(_ economy: CityEconomy, city: CityID) {
+        cities.update(city) { $0.economy = economy }
     }
 }

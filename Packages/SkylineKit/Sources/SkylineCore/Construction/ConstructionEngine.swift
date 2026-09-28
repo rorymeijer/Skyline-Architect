@@ -36,9 +36,16 @@ public struct ConstructionEngine: Sendable {
         }
     }
 
-    private func slabCost(level: Int, modules: Int) -> Int {
-        modules * (level < 0 ? catalog.rules.basementSlabCostPerModule : catalog.rules.slabCostPerModule)
+    private func slabCost(level: Int, modules: Int, factor: Double) -> Int {
+        Self.scaled(modules * (level < 0 ? catalog.rules.basementSlabCostPerModule : catalog.rules.slabCostPerModule), factor)
     }
+
+    /// Local construction prices (Phase 15): costs are scaled by the city's market.
+    private func costFactor(_ building: BuildingID, _ world: GameWorld) -> Double {
+        world.city(of: building)?.economy.construction ?? 1
+    }
+
+    static func scaled(_ cost: Int, _ factor: Double) -> Int { factor == 1 ? cost : Int((Double(cost) * factor).rounded()) }
 
     private func refund(_ cost: Int) -> Int { -Int((Double(cost) * catalog.rules.demolitionRefund).rounded()) }
 
@@ -67,7 +74,7 @@ public struct ConstructionEngine: Sendable {
             guard support.contains(merged) else { return .failure(.unsupported) }
         }
         let added = merged.count - (existing?.span.count ?? 0)
-        return .success(ConstructionPlan(cost: slabCost(level: level, modules: added), buildingID: b,
+        return .success(ConstructionPlan(cost: slabCost(level: level, modules: added, factor: costFactor(b, world)), buildingID: b,
                                          columns: merged, floors: FloorSpan(lowest: level, highest: level)))
     }
 
@@ -85,7 +92,7 @@ public struct ConstructionEngine: Sendable {
         // Floors carry the floor above; basements hang from the storey above them.
         let dependent = level >= 0 ? level + 1 : level - 1
         if building.plate(at: dependent) != nil { return .failure(.carriesFloorAbove) }
-        return .success(ConstructionPlan(cost: refund(slabCost(level: level, modules: plate.span.count)), buildingID: b,
+        return .success(ConstructionPlan(cost: refund(slabCost(level: level, modules: plate.span.count, factor: costFactor(b, world))), buildingID: b,
                                          columns: plate.span, floors: FloorSpan(lowest: level, highest: level)))
     }
 
@@ -111,13 +118,14 @@ public struct ConstructionEngine: Sendable {
         if let clash = world.rooms.first(where: { $0.buildingID == b && $0.overlaps(columns: columns, floors: floors) }) {
             return .failure(.overlaps(clash.id))
         }
-        return .success(ConstructionPlan(cost: spec.costPerModule * columns.count * floors.count, buildingID: b,
+        return .success(ConstructionPlan(cost: Self.scaled(spec.costPerModule * columns.count * floors.count, costFactor(b, world)), buildingID: b,
                                          columns: columns, floors: floors))
     }
 
     private func validateDemolishRoom(_ id: RoomID, _ world: GameWorld) -> Result<ConstructionPlan, ConstructionError> {
         guard let room = world.rooms[id] else { return .failure(.unknownRoom) }
-        let cost = (catalog.spec(room.definitionID)?.costPerModule ?? 0) * room.columns.count * room.floors.count
+        let cost = Self.scaled((catalog.spec(room.definitionID)?.costPerModule ?? 0) * room.columns.count * room.floors.count,
+                               costFactor(room.buildingID, world))
         return .success(ConstructionPlan(cost: refund(cost), buildingID: room.buildingID, columns: room.columns, floors: room.floors))
     }
 

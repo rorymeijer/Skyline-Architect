@@ -63,6 +63,9 @@ final class AppModel {
     var weather: WeatherSummary?
     /// Fires and incidents (Phase 14, 4 Hz), the incidents panel and the latest alert.
     var incidents = IncidentSummary()
+    /// Properties, cities and land for sale (Phase 15), and the estate panel.
+    var estate = EstateSummary()
+    var showEstatePanel = false
     var showIncidentsPanel = false
     var incidentNotice: String?
     @ObservationIgnored var seenIncidentID: Int?
@@ -154,10 +157,14 @@ final class AppModel {
         do { try startNewGame(startID: startID) } catch { alert = AppAlert(title: "Could not start a new game", message: "\(error)") }
     }
 
-    /// Replaces the world and builds a fresh scene for it.
-    private func install(world: GameWorld, activePropertyID: PropertyID) {
+    /// Replaces the world and builds a fresh scene for it (also used to switch to another
+    /// property, then without keeping the camera).
+    func install(world: GameWorld, activePropertyID: PropertyID, keepCamera: Bool = true) {
         var world = world
-        if let library { PopulationSync.sync(&world, catalog: library.buildCatalog, rules: library.simulationRules) }
+        if let library {
+            Estate.adoptLegacy(&world, library: library)
+            PopulationSync.sync(&world, catalog: library.buildCatalog, rules: library.simulationRules)
+        }
         simulation?.replanAfterConstruction(&world)     // also creates elevator cars
         self.world = world
         self.activePropertyID = activePropertyID
@@ -218,9 +225,9 @@ final class AppModel {
         installEnvironment(on: scene)
         if let previous {
             scene.onReady = previous.onReady
-            // Keep the camera where the player was looking.
+            // Keep the camera where the player was looking (not when changing property).
             let cam = previous.controller.camera
-            scene.initialPlacement = (cam.center, cam.zoom)
+            if keepCamera { scene.initialPlacement = (cam.center, cam.zoom) }
         }
         self.scene = scene
     }
@@ -289,9 +296,12 @@ final class AppModel {
               let blueprint = library?.blueprint(id), let building = world.buildings(on: property).first else { return }
         do {
             #if DEBUG
-            // Developer tool: grant whatever the blueprint costs beyond the cash at hand.
-            let cost = blueprint.commands(for: building).reduce(0) { sum, c in
-                sum + max((try? engine.validate(c, in: world).get().cost) ?? 0, 0)
+            // Developer tool: grant whatever the blueprint costs beyond the cash at hand
+            // (priced step by step on a copy, since later steps build on earlier ones).
+            var dryRun = world
+            var cost = 0
+            for c in blueprint.commands(for: building) {
+                cost += max((try? engine.apply(c, to: &dryRun).plan.cost) ?? 0, 0)
             }
             if cost > world.ledger.cash {
                 world.ledger.post(Transaction(tick: world.clock.tick, amount: cost - world.ledger.cash, category: .grant,

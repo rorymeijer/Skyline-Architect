@@ -31,7 +31,7 @@ public enum SaveError: Error, Equatable, CustomStringConvertible {
 /// an inconsistent save is rejected instead of silently corrupting a game.
 public enum SaveCodec {
     public static let format = "skyline-architect-save"
-    public static let currentVersion = 11
+    public static let currentVersion = 12
 
     /// Upgrades the `game` JSON object from version `key` to `key + 1`.
     public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
@@ -149,6 +149,27 @@ public enum SaveCodec {
         10: { game in
             guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v10 save without world") }
             if world["incidents"] == nil { world["incidents"] = ["log": [Any](), "fires": [Any](), "nextID": 1] as [String: Any] }
+            game["world"] = world
+        },
+        // v11 → v12 (Phase 15): cities gain a market (1 × everything; the content's values are
+        // applied on load by `Estate.adoptLegacy`, which also matches properties to plots), and
+        // the ledger a `land` category (daily totals grow by one).
+        11: { game in
+            guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v11 save without world") }
+            world["cities"] = (world["cities"] as? [[String: Any]] ?? []).map { c -> [String: Any] in
+                var c = c
+                if c["economy"] == nil { c["economy"] = ["rent": 1.0, "construction": 1.0, "demand": 1.0] }
+                return c
+            }
+            if var ledger = world["ledger"] as? [String: Any] {
+                ledger["days"] = (ledger["days"] as? [[String: Any]] ?? []).map { day -> [String: Any] in
+                    var d = day
+                    let amounts = d["amounts"] as? [Int] ?? []
+                    if amounts.count < 10 { d["amounts"] = amounts + [Int](repeating: 0, count: 10 - amounts.count) }
+                    return d
+                }
+                world["ledger"] = ledger
+            }
             game["world"] = world
         },
     ]

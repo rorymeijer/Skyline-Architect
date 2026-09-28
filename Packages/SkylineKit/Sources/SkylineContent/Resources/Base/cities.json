@@ -5,12 +5,97 @@
     "description": "A mid-sized harbour city on reclaimed estuary land: deep soft clay and sand over sandstone bedrock.",
     "seed": 7301,
     "geology": [
-      { "material": "paving", "thickness": 0.3 },
-      { "material": "topsoil", "thickness": 1.2 },
-      { "material": "clay", "thickness": 6.5 },
-      { "material": "sand", "thickness": 4.0 },
-      { "material": "gravel", "thickness": 5.0 },
-      { "material": "bedrock", "thickness": 1.0 }
+      {
+        "material": "paving",
+        "thickness": 0.3
+      },
+      {
+        "material": "topsoil",
+        "thickness": 1.2
+      },
+      {
+        "material": "clay",
+        "thickness": 6.5
+      },
+      {
+        "material": "sand",
+        "thickness": 4.0
+      },
+      {
+        "material": "gravel",
+        "thickness": 5.0
+      },
+      {
+        "material": "bedrock",
+        "thickness": 1.0
+      }
+    ],
+    "economy": {
+      "rent": 1,
+      "construction": 1,
+      "demand": 1
+    }
+  },
+  {
+    "id": "harrowgate",
+    "name": "Harrowgate",
+    "description": "The inland capital: old money, high rents, dear builders and granite close under the streets.",
+    "seed": 4411,
+    "economy": {
+      "rent": 1.35,
+      "construction": 1.25,
+      "demand": 1.15
+    },
+    "geology": [
+      {
+        "material": "paving",
+        "thickness": 0.3
+      },
+      {
+        "material": "topsoil",
+        "thickness": 0.8
+      },
+      {
+        "material": "gravel",
+        "thickness": 3.5
+      },
+      {
+        "material": "bedrock",
+        "thickness": 1.0
+      }
+    ]
+  },
+  {
+    "id": "saltmere",
+    "name": "Saltmere",
+    "description": "A quiet harbour town on marshland: cheap land and labour, few tenants, deep soft ground.",
+    "seed": 9127,
+    "economy": {
+      "rent": 0.75,
+      "construction": 0.8,
+      "demand": 0.85
+    },
+    "geology": [
+      {
+        "material": "paving",
+        "thickness": 0.3
+      },
+      {
+        "material": "topsoil",
+        "thickness": 1.5
+      },
+      {
+        "material": "clay",
+        "thickness": 12.0
+      },
+      {
+        "material": "sand",
+        "thickness": 6.0
+      },
+      {
+        "material": "bedrock",
+        "thickness": 1.0
+      }
     ]
   }
 ]

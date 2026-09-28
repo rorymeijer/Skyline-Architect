@@ -2,6 +2,19 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.15.0] — Phase 15: Multiple properties & cities
+
+### Added
+- **Cities**: Harrowgate (dear, busy, granite) and Saltmere (cheap, quiet, marsh) join Port
+  Calder, each with its own market (rent, construction, demand), ground and skyline.
+- **Land for sale**: plots with a price and a ready foundation; buying adds the city and
+  property (ledger category `land`).
+- **Markets per city**: prospects per city, scaled by its demand and reputation; rents and
+  construction costs follow the city.
+- **Estate panel** (⌥⌘K): all properties with their numbers, switching between them, land
+  for sale.
+- **Save format 12** (+ migration, legacy plot matching, golden fixture).
+
 ## [0.14.0] — Phase 14: Events & emergencies
 
 ### Added

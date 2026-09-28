@@ -299,3 +299,22 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Fire brigade suppression is abstract (the engine parks at the kerb).
   - Smoke is visual only.
 
+## D-040 — Cities carry their market in the save; one market per city
+- **Date:** 2026-09-28
+- **Decision:**
+  - A city's economy (rent, construction and demand multipliers) is copied from content into `City` when the city joins the estate.
+  - Construction and the market read it from the world.
+  - The rental market runs per city: its own random stream from the city seed, its own vacancies, and demand from its own buildings.
+  - Land purchases are ledger transactions (`land`), not construction commands.
+- **Alternatives:**
+  - Looking the city up in content at run time: Core and Simulation do not know content, and a content update would silently change running games.
+  - One global market choosing among all cities' units.
+  - Purchases as undoable commands.
+- **Reason:**
+  - Saves stay self-contained and deterministic.
+  - A tenant looking for an office in Harrowgate should not be offered Saltmere.
+  - Buying land is a financial decision like a loan, not an edit.
+- **Consequences:**
+  - A one-city game keeps exactly its earlier market draws.
+  - Older saves get their city market applied once on load (`Estate.adoptLegacy`).
+

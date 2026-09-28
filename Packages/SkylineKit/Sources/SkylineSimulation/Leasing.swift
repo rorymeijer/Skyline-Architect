@@ -31,12 +31,13 @@ public enum Leasing {
     }
 
     /// Monthly asking rent: base rent per module × width, +1 % per storey above ground, ×
-    /// the building's rent level (player setting, Phase 9).
+    /// the building's rent level (player setting, Phase 9) × the city's rent level (Phase 15).
     public static func askingRent(_ room: Room, world: GameWorld, catalog: BuildCatalog) -> Int? {
         guard let base = catalog.spec(room.definitionID)?.rentPerModule else { return nil }
         let premium = 1 + 0.01 * Double(max(room.floors.lowest, 0))
         let level = world.buildings[room.buildingID]?.rentLevel ?? 1
-        return Int((Double(base * room.columns.count) * premium * level).rounded())
+        let city = world.city(of: room.buildingID)?.economy.rent ?? 1
+        return Int((Double(base * room.columns.count) * premium * level * city).rounded())
     }
 
     // MARK: Appraisal
@@ -204,19 +205,39 @@ extension SimulationEngine {
     /// at 06:00 every tenant reviews its unit. Returns people added (their events need queuing).
     func runMarket(at now: Tick, world: inout GameWorld) -> [PersonID] {
         var added: [PersonID] = []
-        let seed = world.cities.values.first?.seed ?? 1
         let hour = now / 3600
         meterLighting(at: now, world: &world)
-        let demand = Progression.demandMultiplier(world: world, engine: self) * (weatherKind(world)?.effects.demand ?? 1)
+        // Each city has its own market (Phase 15): prospects come by per city, scaled by its
+        // demand, the reputation of its buildings and the weather, and look at its units only.
+        for city in world.cities.values {
+            added += runCityMarket(city, hour: hour, at: now, world: &world)
+        }
+        if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
+            facilitiesDaily(at: now, world: &world)
+            closeDay(at: now, world: &world)
+            let moveOuts = reviewTenants(at: now, world: &world)
+            standingDaily(at: now, moveOuts: moveOuts, world: &world)
+            advanceWeather(&world)
+        }
+        world.market.nextTick = now + 3600
+        return added
+    }
+
+    /// One city's hourly market step.
+    private func runCityMarket(_ city: City, hour: Tick, at now: Tick, world: inout GameWorld) -> [PersonID] {
+        var added: [PersonID] = []
+        let buildings = Set(world.buildings.values.filter { world.properties[$0.propertyID]?.cityID == city.id }.map(\.id))
+        let demand = Progression.demandMultiplier(world: world, engine: self, buildings: buildings)
+            * (weatherKind(world)?.effects.demand ?? 1) * city.economy.demand
         for (i, type) in rules.tenantTypes.enumerated() {
-            var rng = SeededRandom(seed: seed, stream: hour &* 64 &+ UInt64(i))
+            var rng = SeededRandom(seed: city.seed, stream: hour &* 64 &+ UInt64(i))
             guard rng.unit() < type.prospectsPerDay * demand / 24 else { continue }
             let needed = type.minClass ?? 0
-            // A type no building qualifies for yet does not come by at all.
-            if needed > 0, !world.buildings.values.contains(where: { world.unlockedClass(of: $0.id) >= needed }) { continue }
+            // A type no building of the city qualifies for yet does not come by at all.
+            if needed > 0, !buildings.contains(where: { world.unlockedClass(of: $0) >= needed }) { continue }
             world.market.prospects += 1
             let candidates = Leasing.vacantUnits(world, catalog: catalog).filter {
-                type.rooms.contains($0.definitionID) && needed <= world.unlockedClass(of: $0.buildingID)
+                buildings.contains($0.buildingID) && type.rooms.contains($0.definitionID) && needed <= world.unlockedClass(of: $0.buildingID)
             }
             let appraised = candidates.compactMap { room in Leasing.appraise(room, for: type, world: world, engine: self).map { (room, $0) } }
             guard let best = appraised.filter({ $0.1.affordable }).min(by: { ($1.1.total, $0.0.id) < ($0.1.total, $1.0.id) })
@@ -234,14 +255,6 @@ extension SimulationEngine {
                                                  reason: best.1.weakest, score: best.1.total))
             }
         }
-        if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
-            facilitiesDaily(at: now, world: &world)
-            closeDay(at: now, world: &world)
-            let moveOuts = reviewTenants(at: now, world: &world)
-            standingDaily(at: now, moveOuts: moveOuts, world: &world)
-            advanceWeather(&world)
-        }
-        world.market.nextTick = now + 3600
         return added
     }
 

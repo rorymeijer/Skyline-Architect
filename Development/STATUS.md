@@ -1,61 +1,62 @@
 # Development Status
 
-_Last updated: 2026-09-28 (Phase 14)_
+_Last updated: 2026-09-28 (Phase 15)_
 
 ## Current phase
-**Phase 14 — Events & emergencies: COMPLETE** (awaiting approval to continue with Phase 15).
+**Phase 15 — Multiple properties & cities: COMPLETE** (awaiting approval to continue with Phase 16).
 
-## Quality gates (Phase 14)
+## Quality gates (Phase 15)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36388937901 |
-| Automated tests pass | ✅ | 242 tests (Linux + macOS); see the list below |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36392926388 |
+| Automated tests pass | ✅ | 250 tests (Linux + macOS); see the list below |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 9 captures in `Development/Screenshots/Phase-14/` (fires started with the developer tool, storm set — labelled) |
+| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-15/` (towers built with the developer blueprint tool, one loan taken by the script — labelled) |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | EMERGENCIES.md (new), GRAPHICS, SIMULATION, SAVE_FORMAT v11, MODDING, ARCHITECTURE, DECISIONS D-039, CHANGELOG 0.14.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | Evacuation shot too late, no storm damage in time, and saved after the fire: fixed and recaptured. One app build failure (missing import): fixed. |
+| Documentation updated | ✅ | ESTATE.md (new), SIMULATION, SAVE_FORMAT v12, MODDING, ARCHITECTURE, DECISIONS D-040, CHANGELOG 0.15.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | Crown Yard too narrow for the demo tower, and the developer grant under-priced blueprints: both fixed and recaptured |
 | Known issues recorded | ✅ | below |
 
-The Phase 14 tests cover:
+The Phase 15 tests cover:
 
-* **Evacuation:** everybody leaves by the stairs, with no elevator boardings, and nobody goes in.
-* **Unprotected fire:** it burns until the brigade arrives, and brings the repair bill, repair jobs, reputation loss and people returning.
-* **Sprinklers:** a covered fire is out in 4 min instead of 45 min.
-* **Determinism:** fires are deterministic and batch-independent.
-* **Ignition odds:** worn rooms and plant ignite more often; sprinklers halve the odds; shafts never ignite.
-* **Weather incidents:** storm damage; a power outage fails the plant and turns the lights off.
-* **Visuals:** flames, fire engines, soot, sprinkler flags.
-* **Saves:** v10→v11 migration and the v11 fixture with a fire in progress.
+* **Offers:** the start plot is owned; the others are for sale with their city's market.
+* **Buying:** adds city, property, building with the plot's foundation and a `land` transaction; refused atomically without the cash.
+* **Buildability:** every plot for sale takes a floor, and the demo tower fits every plot of 32 m or more.
+* **City prices:** Harrowgate construction ×1.25 and asking rent ×1.35.
+* **City markets:** demo towers in two cities each lease their own units (15/15).
+* **Legacy saves:** older properties are matched to their plot and get the city's market.
+* **Saves:** v11→v12 migration, v11 frozen, and the v12 fixture with two cities.
 
 ## Completed
-- Phases 0–13 (merged: rorymeijer/Skyline-Architect#1 … #13).
-- Phase 14 (FUNCTIONAL):
-  - **Fire:** ignition; growth and spread; sprinklers from a new fire control room; the fire brigade; stairs-only evacuation with nobody entering during the fire; damage, repairs, lost tenants and reputation loss.
-  - **Weather incidents:** storm damage, power outages, burst pipes.
-  - **UI:** alert with Show, incidents panel, fire visuals.
-  - **Save format 11.**
+- Phases 0–14 (merged: rorymeijer/Skyline-Architect#1 … #14).
+- Phase 15 (FUNCTIONAL):
+  - **Cities:** Port Calder, Harrowgate and Saltmere, each with a market (rent, construction, demand), ground and skyline.
+  - **Land:** plots for sale with a price and a ready foundation; buying land (`Estate.buy`).
+  - **Economy:** construction costs and asking rents follow the city; a rental market per city.
+  - **UI:** estate panel (⌥⌘K) with holdings, *Go* and *Buy*; the simulation runs the whole estate.
+  - **Save format 12.**
 
 ## In progress
-- Nothing. Waiting for approval to continue (Phase 15 — multiple properties and cities).
+- Nothing. Waiting for approval to continue (Phase 16 — Scenarios).
 
 ## Known bugs / unverified
 - No human play test yet; iPad never launched.
-- The fire brigade and smoke are abstract: the engine parks at the kerb, and smoke does not move between floors or through the stairs.
-- Nobody is ever harmed (by design).
-- Fire and incident rates are first-pass balancing (one unprotected office fire costs about $20k).
-- The capture script sets fires and weather; natural ignition is rare and was only unit-tested.
-- Earlier balancing notes still apply (lighting costs, reputation floor, fast class B).
+- Weather is shared by the whole estate (drawn from the first city's seed).
+- Cash and loans are estate-wide; land cannot be sold; one building per plot.
+- The overview's 24-hour figure counts only money booked to buildings (not loans, interest or land).
+- City markets are first-pass balancing (Harrowgate earns most per tower; Saltmere's cheap land pays back slowly).
+- Earlier notes still apply (fire rates, lighting costs, reputation floor, fast class B).
 
 ## Technical debt
-- `FireSafety.protectedRooms` and utility allocation are recomputed often (hourly ignition, fire steps, 4 Hz UI). Cache per structure/upkeep change if profiles show it.
+- `FireSafety.protectedRooms` and utility allocation are recomputed often. Cache per structure/upkeep change if profiles show it.
+- Only the active property has a scene; switching rebuilds it (fine at three properties).
 - Simulation on the main thread.
 
-## Next tasks (Phase 15 — Multiple properties & cities)
-1. Several properties per city and more cities as content, each with plots, geology and economic variables (rents, costs, demand).
-2. A property switcher and overview; buying land.
-3. The simulation runs all properties (shared clock); the ledger attributes per property.
-4. Captures and docs.
+## Next tasks (Phase 16 — Scenarios)
+1. Scenario definitions as content: start (city, plot, cash, unlocks), objectives, win/lose conditions and a time limit.
+2. Objective evaluation in the simulation (population, elevator waits, profit, class), deterministic and tested.
+3. A scenario browser on the main menu and an objectives panel in game; a result screen.
+4. Save format bump for the active scenario; captures and docs.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,

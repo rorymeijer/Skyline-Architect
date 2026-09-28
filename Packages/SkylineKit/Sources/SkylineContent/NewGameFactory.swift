@@ -20,13 +20,13 @@ public enum NewGameFactory {
 
         var world = GameWorld(grid: .standard)
         world.unlocks = start.mode == .standard ? .byClass : .all
-        let cityID = world.addCity(definitionID: cityDef.id, name: cityDef.name, seed: cityDef.seed)
+        let cityID = world.addCity(definitionID: cityDef.id, name: cityDef.name, seed: cityDef.seed, economy: cityDef.economy ?? CityEconomy())
         let plot = Plot(
             frontage: ColumnSpan(start: 0, count: plotDef.frontageModules),
             maxBasementFloors: plotDef.maxBasementFloors,
             siteMargin: plotDef.siteMarginModules,
             strata: cityDef.geology)
-        let propertyID = try world.addProperty(cityID: cityID, name: start.propertyName, plot: plot)
+        let propertyID = try world.addProperty(cityID: cityID, name: start.propertyName, plot: plot, plotID: plotDef.id)
 
         if let f = start.startingFoundation {
             try world.addBuilding(

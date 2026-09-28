@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Phase 14 (2026-09-28). This document describes what exists and the intended evolution.
+Status: Phase 15 (2026-09-28). This document describes what exists and the intended evolution.
 Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomplete) or
 **PLANNED** (design only).
 
@@ -171,6 +171,10 @@ Emergencies (EMERGENCIES.md): `IncidentState` (log, fires in progress) lives in 
 are stepped as their own event target in the simulation queue; evacuation reuses trips with
 `stairsOnly` routing and a single hook in the person event loop; Presentation derives flames,
 soot and fire engines (`FireView`), the app draws them (`FireLayer`) (D-039).
+Estate (ESTATE.md): cities carry their market in the save; construction scales costs by the
+building's city, the rental market runs per city; buying land and legacy matching live in
+Content (`Estate`), which knows plots; the app shows one property at a time while the whole
+estate simulates (D-040).
 
 ## 6. Concurrency model
 
