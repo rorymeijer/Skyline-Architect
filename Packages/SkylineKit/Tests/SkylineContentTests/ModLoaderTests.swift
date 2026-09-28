@@ -59,6 +59,11 @@ import SkylineCore
         try engine.apply(.placeRoom(building: b.id, definition: "apartment-loft", columns: ColumnSpan(start: b.footprint.start, count: 10),
                                     floors: FloorSpan(lowest: 2, highest: 2)), to: &game.world)
         #expect(game.world.cities.values.first?.definitionID == "kestrel-bay")
+        // The mod's blueprint builds on its own plot.
+        var fresh = try NewGameFactory.make(scenarioID: "kestrel-lofts", library: lib)
+        let tower = try #require(fresh.world.buildings(on: fresh.activePropertyID).first)
+        for c in try #require(lib.blueprint("kestrel-lofts")).commands(for: tower) { try engine.apply(c, to: &fresh.world) }
+        #expect(fresh.world.rooms.values.filter { $0.definitionID == "apartment-loft" }.count == 2)
         try game.world.validateIntegrity()
     }
 

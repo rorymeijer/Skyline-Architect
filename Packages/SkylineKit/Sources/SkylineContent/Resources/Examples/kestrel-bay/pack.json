@@ -12,6 +12,7 @@
     "rooms": "rooms.json",
     "interiors": "interiors.json",
     "tenants": "tenants.json",
-    "scenarios": "scenarios.json"
+    "scenarios": "scenarios.json",
+    "blueprints": "blueprints.json"
   }
 }
