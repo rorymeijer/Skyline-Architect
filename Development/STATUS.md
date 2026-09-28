@@ -1,22 +1,15 @@
 # Development Status
 
-_Last updated: 2026-09-28 (0.20.3 — flats for sale)_
+_Last updated: 2026-09-28 (0.21.0 — Phase A: extending foundations)_
 
 ## Current phase
-**0.20.3 — Flats for sale: COMPLETE on the branch.**
-- A vacant flat can be offered for sale in the inspector (D-050). A household buys it for
-  the asking rent × 100, then pays a quarter of the rent as service charges.
-- Owners hold on three times as long as renters; sold flats stay privately owned.
-- Save format 15.
+**Phase A — Extending foundations: COMPLETE on the branch.** A foundation panel widens the
+foundation, digs basement levels and lengthens the piles; piles carry 2 storeys per meter
+(D-051). The palette icons for Electrical, Telecom and Express Elevator are fixed.
+Next, in the player's order: B (amenities and visitors), E (economy and facilities),
+C (scenarios). Each is a phase with its own PR.
 
-Evidence: 308 tests, CI run 36464379394, captures in `Development/Screenshots/Sales-0.20.3/`.
-The owners' labels were too long for a studio in the first run: shortened ("Rinaldi · owner").
-
-Earlier today, 0.20.2 (merged: rorymeijer/Skyline-Architect#22):
-- no overhangs;
-- shafts over rooms;
-- shaft heights;
-- unique tenant names.
+Evidence: 315 tests, CI run 36478216982, captures in `Development/Screenshots/Foundation-0.21/`.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |
