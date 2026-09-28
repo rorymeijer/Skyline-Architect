@@ -34,6 +34,37 @@ enum ElevatorSync {
             }
             world.elevators.remove(car.id)
         }
+        // A shortened shaft (resizeRoom): a car standing or heading outside it, or carrying
+        // people to floors it no longer serves, stops at the nearest served floor and lets
+        // everyone out to queue there; re-planning takes it from there. Its stats stay.
+        for shaft in shafts {
+            guard let car = world.elevators[shaft.id] else { continue }
+            let served = rules.elevator(for: shaft.definitionID)?.servedFloors(of: shaft.floors) ?? Array(shaft.floors.lowest...shaft.floors.highest)
+            var outside = !served.contains(car.floor)
+            if case let .moving(from, to, _, _, _, _) = car.motion { outside = outside || !served.contains(from) || !served.contains(to) }
+            let strandedRiders = car.passengers.contains { id in
+                guard case let .riding(ride, _)? = world.people[id]?.place else { return false }
+                return !served.contains(ride.toFloor)
+            }
+            guard outside || strandedRiders else { continue }
+            let y = ElevatorMotion.y(of: car, at: Double(now), grid: world.grid) / world.grid.floorHeight
+            let floor = served.min { (abs(Double($0) - y), $0) < (abs(Double($1) - y), $1) }!
+            for id in car.passengers {
+                world.people.update(id) { p in
+                    guard case let .riding(ride, destination) = p.place else { return }
+                    var here = ride
+                    here.fromFloor = floor
+                    p.place = .waiting(here, destination: destination, since: now)
+                }
+            }
+            world.elevators.update(shaft.id) { c in
+                c.floor = floor
+                c.direction = 0
+                c.motion = .idle
+                c.passengers = []
+                c.nextEventTick = now
+            }
+        }
         for shaft in shafts where !world.elevators.contains(shaft.id) {
             let served = rules.elevator(for: shaft.definitionID)?.servedFloors(of: shaft.floors) ?? [shaft.floors.lowest]
             let floor = served.min { (abs($0), $0) < (abs($1), $1) }!

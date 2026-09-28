@@ -112,6 +112,32 @@ private func place(_ p: Person) -> String {
         f.run(until: "10:30")
         #expect(f.count { $0.role == .worker && f.inAnchorRoom($0) } == 24)
     }
+
+    /// Shortening a shaft mid-rush keeps the car and its statistics; riders going to floors
+    /// it no longer serves get out at the nearest served floor and are re-planned.
+    @Test func shorteningAShaftKeepsTheCarAndStrandsNobody() throws {
+        var f = try SimFixture()
+        var guardSteps = 0
+        while !f.world.people.values.contains(where: { place($0) == "riding" }) && guardSteps < 20_000 {
+            f.engine.advance(&f.world, by: 1)
+            guardSteps += 1
+        }
+        let shaft = try #require(f.world.rooms.values.first { $0.definitionID == "elevator-shaft" })
+        let boardings = try #require(f.world.elevators[shaft.id]).stats.boardings
+        let short = FloorSpan(lowest: shaft.floors.lowest, highest: shaft.floors.lowest + 2)
+        try ConstructionEngine(catalog: f.library.buildCatalog).apply(.resizeRoom(shaft.id, floors: short), to: &f.world)
+        f.engine.replanAfterConstruction(&f.world)
+        let car = try #require(f.world.elevators[shaft.id])
+        #expect(short.contains(car.floor) && car.stats.boardings == boardings)
+        for p in f.world.people.values {
+            if case let .riding(ride, _) = p.place { #expect(short.contains(ride.toFloor)) }
+            if case let .waiting(ride, _, _) = p.place { #expect(short.contains(ride.fromFloor) && short.contains(ride.toFloor)) }
+        }
+        try f.world.validateIntegrity()
+        f.run(until: "10:30")
+        #expect(f.count { $0.role == .worker && f.inAnchorRoom($0) } == 24)
+        #expect(f.world.elevators[shaft.id]!.stats.boardings >= boardings)
+    }
 }
 
 @Suite struct ElevatorScaleTests {

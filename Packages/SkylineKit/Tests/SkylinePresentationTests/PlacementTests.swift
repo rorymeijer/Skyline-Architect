@@ -60,8 +60,40 @@ import SkylineContent
         let p = try #require(PlacementPlanner.preview(tool: .room("stairs"), anchor: GridCell(column: 9, floor: 5),
                                                       current: GridCell(column: 9, floor: 1), world: s.world, propertyID: s.property, engine: s.engine))
         #expect(p.rect.minY == 4 && p.rect.maxY == 24)
-        #expect(!p.isValid)  // overlaps offices and apartments
-        #expect(p.label.contains("Overlaps"))
+        #expect(!p.isValid)  // offices in the way would be left too narrow to make way
+        #expect(p.label.contains("Too little space would be left"))
+    }
+
+    /// Dragging the top of an existing shaft with its own tool resizes it; the middle of a
+    /// shaft is not a handle.
+    @Test func draggingAShaftEndResizesIt() throws {
+        var s = try setup(withTower: true)
+        let shaft = try #require(s.world.rooms.values.first { $0.definitionID == "elevator-shaft" })
+        let x = shaft.columns.start, top = shaft.floors.highest
+        let shrink = try #require(PlacementPlanner.preview(tool: .room("elevator-shaft"), anchor: GridCell(column: x, floor: top),
+                                                           current: GridCell(column: x, floor: top - 2), world: s.world, propertyID: s.property, engine: s.engine))
+        #expect(shrink.command == .resizeRoom(shaft.id, floors: FloorSpan(lowest: shaft.floors.lowest, highest: top - 2)))
+        #expect(shrink.isValid && shrink.label.contains("refund"))
+        // Grow above the roof after building one more floor over the whole tower.
+        let roof = try #require(s.world.buildings[s.building.id]?.plate(at: top))
+        try s.engine.apply(.buildFloor(building: s.building.id, level: top + 1, span: roof.span), to: &s.world)
+        let grow = try #require(PlacementPlanner.preview(tool: .room("elevator-shaft"), anchor: GridCell(column: x + 1, floor: top),
+                                                         current: GridCell(column: x, floor: top + 1), world: s.world, propertyID: s.property, engine: s.engine))
+        #expect(grow.command == .resizeRoom(shaft.id, floors: FloorSpan(lowest: shaft.floors.lowest, highest: top + 1)) && grow.isValid)
+        let middle = try #require(PlacementPlanner.preview(tool: .room("elevator-shaft"), anchor: GridCell(column: x, floor: top - 1),
+                                                           current: GridCell(column: x, floor: top + 1), world: s.world, propertyID: s.property, engine: s.engine))
+        #expect(!(middle.command.map { if case .resizeRoom = $0 { true } else { false } } ?? false))
+    }
+
+    /// A shaft over a room that can make way is valid, and the preview says so.
+    @Test func shaftOverRoomsSaysTheyMakeWay() throws {
+        var s = try setup()
+        let b = s.building.id, f = s.building.footprint
+        for level in 0...2 { try s.engine.apply(.buildFloor(building: b, level: level, span: f), to: &s.world) }
+        try s.engine.apply(.placeRoom(building: b, definition: "lobby", columns: f, floors: FloorSpan(lowest: 0, highest: 0)), to: &s.world)
+        let p = try #require(PlacementPlanner.preview(tool: .room("stairs"), anchor: GridCell(column: f.start + 10, floor: 0),
+                                                      current: GridCell(column: f.start + 10, floor: 2), world: s.world, propertyID: s.property, engine: s.engine))
+        #expect(p.isValid && p.label.contains("1 room makes way"))
     }
 
     @Test func demolishTargetsRoomThenFloor() throws {
