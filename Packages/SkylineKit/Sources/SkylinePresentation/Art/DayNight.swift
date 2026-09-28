@@ -19,6 +19,14 @@ public struct LitRoom: Hashable, Sendable {
 public struct Grade: Hashable, Sendable {
     public var top: RGBA
     public var bottom: RGBA
+
+    public init(top: RGBA, bottom: RGBA) {
+        self.top = top
+        self.bottom = bottom
+    }
+
+    /// Plain daylight: no grading.
+    public static let day = Grade(top: RGBA(1, 1, 1), bottom: RGBA(1, 1, 1))
 }
 
 /// Day/night (Phases 9, 12): how much daylight there is at a time of day, the colour grade

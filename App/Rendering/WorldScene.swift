@@ -274,7 +274,7 @@ final class WorldScene: SKScene {
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         elevatorLayer.update(carProvider?(camera.visibleRect, camera.zoom) ?? [])
         let lighting = lightingProvider?(camera.visibleRect, camera.zoom)
-            ?? (grade: Grade(top: RGBA(1, 1, 1), bottom: RGBA(1, 1, 1)), darkness: 0, rooms: [])
+            ?? (grade: Grade.day, darkness: 0, rooms: [])
         if lighting.darkness > 0.02 {
             emissionLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         }

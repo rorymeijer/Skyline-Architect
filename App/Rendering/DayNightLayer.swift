@@ -23,7 +23,7 @@ final class DayNightLayer {
     /// `emission` is the node of the emission tile layer, faded in with the darkness.
     func update(grade: Grade, darkness: Double, rooms: [LitRoom], viewport: CGSize, emission: SKNode) {
         tint.size = viewport
-        let plain = grade.top == RGBA(1, 1, 1) && grade.bottom == RGBA(1, 1, 1)
+        let plain = grade == .day
         tint.isHidden = plain
         if !plain { applyGrade(grade) }
         emission.alpha = CGFloat(min(max(darkness * 1.1 - 0.05, 0), 1))

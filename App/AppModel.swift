@@ -205,8 +205,7 @@ final class AppModel {
         scene.onSelect = { [weak self] cell in self?.selectRoom(at: cell) }
         scene.servicesProvider = { [weak self] in self?.serviceMarks() }
         scene.lightingProvider = { [weak self] visible, zoom in
-            let day = Grade(top: RGBA(1, 1, 1), bottom: RGBA(1, 1, 1))
-            guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return (day, 0, []) }
+            guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return (.day, 0, []) }
             let t = Double(world.clock.tick) + self.host.fraction
             return (DayNight.grade(atTick: t), 1 - DayNight.daylight(atTick: t),
                     DayNight.litRooms(world: world, propertyID: property, catalog: catalog, time: t, visible: visible, zoom: zoom,
