@@ -6,13 +6,13 @@
       "centerX" : 24,
       "centerY" : 12,
       "detailLevel" : "Floors",
-      "fps" : 58.47147761322381,
-      "frameTimeMs" : 17.102355555554517,
-      "memoryMB" : 211.90625,
+      "fps" : 60.146475463539126,
+      "frameTimeMs" : 16.626078124996724,
+      "memoryMB" : 205.484375,
       "nodeCount" : 151,
-      "sceneUpdateMs" : 0.5354638888926881,
+      "sceneUpdateMs" : 0.5115390625007876,
       "tileLevel" : 2,
-      "tileRasterMs" : 12.831159226187033,
+      "tileRasterMs" : 14.069558035714634,
       "tilesCached" : 28,
       "tilesPending" : 0,
       "tilesRasterized" : 28,
@@ -27,7 +27,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0167109966278076
+    "waitSeconds" : 1.0492351055145264
   },
   {
     "diagnostics" : {
@@ -36,13 +36,13 @@
       "centerX" : 24,
       "centerY" : 12,
       "detailLevel" : "Floors",
-      "fps" : 60.45067870055571,
-      "frameTimeMs" : 16.542411458331685,
-      "memoryMB" : 222.4375,
+      "fps" : 59.731635715995736,
+      "frameTimeMs" : 16.74154722222359,
+      "memoryMB" : 216.078125,
       "nodeCount" : 151,
-      "sceneUpdateMs" : 0.45880729167180334,
+      "sceneUpdateMs" : 0.5820250000094044,
       "tileLevel" : 2,
-      "tileRasterMs" : 12.831159226187033,
+      "tileRasterMs" : 14.069558035714634,
       "tilesCached" : 28,
       "tilesPending" : 0,
       "tilesRasterized" : 28,
@@ -57,7 +57,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.081968069076538
+    "waitSeconds" : 1.0396710634231567
   },
   {
     "diagnostics" : {
@@ -66,13 +66,13 @@
       "centerX" : 24,
       "centerY" : 12,
       "detailLevel" : "Floors",
-      "fps" : 59.56085779547894,
-      "frameTimeMs" : 16.7895499999986,
-      "memoryMB" : 223.953125,
+      "fps" : 59.539225930529504,
+      "frameTimeMs" : 16.795649999998354,
+      "memoryMB" : 217.765625,
       "nodeCount" : 151,
-      "sceneUpdateMs" : 0.5133277777796745,
+      "sceneUpdateMs" : 0.40697222223116114,
       "tileLevel" : 2,
-      "tileRasterMs" : 12.831159226187033,
+      "tileRasterMs" : 14.069558035714634,
       "tilesCached" : 28,
       "tilesPending" : 0,
       "tilesRasterized" : 28,
@@ -83,11 +83,11 @@
     },
     "file" : "03-briefing-skyline.png",
     "grid" : false,
-    "note" : "Briefing of Skyline: Quay Street Lot, Port Calder · $3,000,000 · 120 days; Population ≥ 1500, Average elevator wait ≤ 60 s, Daily profit ≥ $1",
+    "note" : "Briefing of Skyline: Quay Street Lot, Port Calder · $3,000,000 · 120 days; Population ≥ 1,500, Average elevator wait ≤ 60 s, Daily profit ≥ $1",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.1053569316864014
+    "waitSeconds" : 1.093579888343811
   },
   {
     "diagnostics" : {
@@ -96,13 +96,13 @@
       "centerX" : 24,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 60.444037006864974,
-      "frameTimeMs" : 16.544229166665758,
-      "memoryMB" : 167.078125,
+      "fps" : 60.00732276862031,
+      "frameTimeMs" : 16.664632812496194,
+      "memoryMB" : 158.96875,
       "nodeCount" : 60,
-      "sceneUpdateMs" : 0.5100312500090354,
+      "sceneUpdateMs" : 0.4808359374983695,
       "tileLevel" : 2,
-      "tileRasterMs" : 15.999351851835149,
+      "tileRasterMs" : 22.777222222228172,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -117,7 +117,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0007439851760864
+    "waitSeconds" : 1.025604009628296
   },
   {
     "diagnostics" : {
@@ -126,13 +126,13 @@
       "centerX" : 24,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 60.44450320992608,
-      "frameTimeMs" : 16.544101562502078,
-      "memoryMB" : 159.75,
+      "fps" : 59.56704068768706,
+      "frameTimeMs" : 16.78780729167073,
+      "memoryMB" : 151.84375,
       "nodeCount" : 75,
-      "sceneUpdateMs" : 0.9578802083360927,
+      "sceneUpdateMs" : 0.481502604163353,
       "tileLevel" : 2,
-      "tileRasterMs" : 15.999351851835149,
+      "tileRasterMs" : 22.777222222228172,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -147,7 +147,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0673109292984009
+    "waitSeconds" : 1.0914980173110962
   },
   {
     "diagnostics" : {
@@ -156,13 +156,13 @@
       "centerX" : 24,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 59.82587678560961,
-      "frameTimeMs" : 16.715175000001636,
-      "memoryMB" : 154.96875,
+      "fps" : 59.74988139493069,
+      "frameTimeMs" : 16.736434895832986,
+      "memoryMB" : 147.109375,
       "nodeCount" : 85,
-      "sceneUpdateMs" : 0.5047249999999318,
+      "sceneUpdateMs" : 0.35348177082994425,
       "tileLevel" : 2,
-      "tileRasterMs" : 15.999351851835149,
+      "tileRasterMs" : 22.777222222228172,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -177,7 +177,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0402129888534546
+    "waitSeconds" : 1.0986430644989014
   },
   {
     "diagnostics" : {
@@ -186,13 +186,13 @@
       "centerX" : 28,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 59.56041436180544,
-      "frameTimeMs" : 16.78967499999923,
-      "memoryMB" : 157.71875,
+      "fps" : 61.13723861242239,
+      "frameTimeMs" : 16.35664322916952,
+      "memoryMB" : 148.921875,
       "nodeCount" : 51,
-      "sceneUpdateMs" : 0.2533166666732237,
+      "sceneUpdateMs" : 0.2953046874978327,
       "tileLevel" : 2,
-      "tileRasterMs" : 8.952773148160354,
+      "tileRasterMs" : 6.12484259259342,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -207,22 +207,22 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0809999704360962
+    "waitSeconds" : 1.0038388967514038
   },
   {
     "diagnostics" : {
-      "agentsRendered" : 0,
+      "agentsRendered" : 17,
       "backingScale" : 1,
       "centerX" : 22,
       "centerY" : -3.75,
       "detailLevel" : "Floors",
-      "fps" : 59.98136578903434,
-      "frameTimeMs" : 16.67184444444274,
-      "memoryMB" : 167.703125,
-      "nodeCount" : 53,
-      "sceneUpdateMs" : 0.3441277777748534,
+      "fps" : 60.129155547086405,
+      "frameTimeMs" : 16.630867187497955,
+      "memoryMB" : 154.875,
+      "nodeCount" : 70,
+      "sceneUpdateMs" : 0.40133072917925006,
       "tileLevel" : 2,
-      "tileRasterMs" : 15.011784722228564,
+      "tileRasterMs" : 13.376951388882693,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -233,10 +233,10 @@
     },
     "file" : "08-save-load.png",
     "grid" : false,
-    "note" : "Crown Prestige saved and reloaded mid-scenario: saved=true loaded=true worldIdentical=true; 44 closings left; Building class ≥ Class A: Class C ✗, Reputation ≥ 70: 52 ✗, Average elevator wait ≤ 45 s: — ✗",
+    "note" : "Crown Prestige saved and reloaded mid-scenario: saved=true loaded=true worldIdentical=true; 44 closings left; Building class ≥ Class A: Class C ✗, Reputation ≥ 70: 59 ✗, Average elevator wait ≤ 45 s: 9 s ✓",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0818079710006714
+    "waitSeconds" : 1.1140350103378296
   }
 ]
