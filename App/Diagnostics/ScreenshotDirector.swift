@@ -87,10 +87,11 @@ final class ScreenshotDirector {
             return "A save from the other device (written by the script: \(written)) arrived: \(model.syncStatus); saves \(slots)"
         },
         Step(name: "04-conflict", grid: false) { model, scene in
+            // Both edits happen before either device syncs: the iPad's version reaches the
+            // cloud first, then this device saves (and syncs) its own.
+            let written: Bool = ScreenshotDirector.writeFromOtherDevice(model, slot: "Quay Street", title: "Quay Street Tower (edited on iPad)", hours: 5)
             model.advanceSimulation(ticks: 2 * 3600)
             model.save(slot: "Quay Street", title: "Quay Street Tower")
-            let written: Bool = ScreenshotDirector.writeFromOtherDevice(model, slot: "Quay Street", title: "Quay Street Tower (edited on iPad)", hours: 5)
-            model.syncSaves()
             let conflicts: [String] = model.syncConflicts
             return "Both devices changed \"Quay Street\" (iPad copy written: \(written)): \(model.syncStatus); conflict copies \(conflicts)"
         },
