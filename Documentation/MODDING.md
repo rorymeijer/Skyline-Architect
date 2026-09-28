@@ -207,7 +207,7 @@ their lowest and highest floor) and `patienceSeconds` (default 150; personal ±5
 `maxCantileverModules` is how far (modules per side) a floor may stick out past the floor
 below; the base game uses 0. Optional (0.21): `foundationCostPerModule`,
 `excavationCostPerModule`, `pileCostPerMeter` (extending foundations) and
-`storeysPerPileMeter` (piles limit the height; omit for no limit).
+`storeysPerPileMeter` (piles limit the height; omit for no limit — the base game omits it since 0.21.1).
 
 Blueprint steps may also be `{ "foundation": { "left", "right", "basementFloors",
 "pileDepth" } }` (all optional) to grow the foundation before building on it.

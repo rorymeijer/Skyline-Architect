@@ -424,6 +424,18 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-052 — No pile height limit in the base game
+- **Date:** 2026-09-28
+- **Decision:** The base `build-rules.json` no longer sets `storeysPerPileMeter`, so piles
+  do not limit how high a tower rises. The rule stays in the engine for mods. Supersedes
+  the base-game part of D-051.
+- **Alternatives:** A much looser ratio (e.g. 10 storeys per meter); a limit from soil strata.
+- **Reason:** The player builds towards 500 storeys; at 2 storeys per meter that needs
+  250 m piles, which the player found unplayable. Any ratio is a chore at that scale.
+- **Consequences:** Longer piles have no gameplay effect in the base game for now (they
+  cost money and deepen the ground section). A later phase may give them one (e.g.
+  settlement or wind load) if the player wants it.
+
 ## D-051 — Foundations grow; piles carry the height
 - **Date:** 2026-09-28
 - **Decision:**
