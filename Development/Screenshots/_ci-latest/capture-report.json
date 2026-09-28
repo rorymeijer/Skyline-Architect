@@ -6,13 +6,13 @@
       "centerX" : 24,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 30.223512318443614,
-      "frameTimeMs" : 33.086822916665426,
-      "memoryMB" : 180.5,
+      "fps" : 60.449641434456495,
+      "frameTimeMs" : 16.542695312498523,
+      "memoryMB" : 177.25,
       "nodeCount" : 148,
-      "sceneUpdateMs" : 0.40238541667037,
+      "sceneUpdateMs" : 0.3047213541620408,
       "tileLevel" : 2,
-      "tileRasterMs" : 17.974715773803496,
+      "tileRasterMs" : 10.584550595234127,
       "tilesCached" : 24,
       "tilesPending" : 0,
       "tilesRasterized" : 28,
@@ -27,7 +27,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0336639881134033
+    "waitSeconds" : 1.0881990194320679
   },
   {
     "diagnostics" : {
@@ -36,13 +36,13 @@
       "centerX" : 24,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.98885207164732,
-      "frameTimeMs" : 16.669763888891488,
-      "memoryMB" : 190.609375,
+      "fps" : 58.617420218016484,
+      "frameTimeMs" : 17.059775000003206,
+      "memoryMB" : 187.140625,
       "nodeCount" : 148,
-      "sceneUpdateMs" : 0.40867777777672626,
+      "sceneUpdateMs" : 0.2971416666620522,
       "tileLevel" : 2,
-      "tileRasterMs" : 17.974715773803496,
+      "tileRasterMs" : 10.584550595234127,
       "tilesCached" : 24,
       "tilesPending" : 0,
       "tilesRasterized" : 28,
@@ -57,7 +57,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0855480432510376
+    "waitSeconds" : 1.0530109405517578
   },
   {
     "diagnostics" : {
@@ -66,13 +66,13 @@
       "centerX" : 24,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.53767014543372,
-      "frameTimeMs" : 16.79608888888803,
-      "memoryMB" : 191.859375,
+      "fps" : 59.53385980007796,
+      "frameTimeMs" : 16.797163888888157,
+      "memoryMB" : 190.5625,
       "nodeCount" : 148,
-      "sceneUpdateMs" : 0.3709972222206185,
+      "sceneUpdateMs" : 0.3359361111127631,
       "tileLevel" : 2,
-      "tileRasterMs" : 17.974715773803496,
+      "tileRasterMs" : 10.584550595234127,
       "tilesCached" : 24,
       "tilesPending" : 0,
       "tilesRasterized" : 28,
@@ -87,7 +87,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0789700746536255
+    "waitSeconds" : 1.0945959091186523
   },
   {
     "diagnostics" : {
@@ -96,13 +96,13 @@
       "centerX" : 24,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.96720793179354,
-      "frameTimeMs" : 16.67578055555623,
-      "memoryMB" : 195.859375,
+      "fps" : 60.00160316783081,
+      "frameTimeMs" : 16.66622135416773,
+      "memoryMB" : 194.71875,
       "nodeCount" : 143,
-      "sceneUpdateMs" : 0.33027500000268145,
+      "sceneUpdateMs" : 0.3753177083360981,
       "tileLevel" : 2,
-      "tileRasterMs" : 17.974715773803496,
+      "tileRasterMs" : 10.584550595234127,
       "tilesCached" : 24,
       "tilesPending" : 0,
       "tilesRasterized" : 28,
@@ -113,11 +113,11 @@
     },
     "file" : "04-conflict.png",
     "grid" : false,
-    "note" : "Both devices changed \"Quay Street\" (iPad copy written: true): 4 saves in sync · 1 conflict — both versions kept; conflict copies [\"Quay Street conflict 20260928-1136\"]",
+    "note" : "Both devices changed \"Quay Street\" (iPad copy written: true): 4 saves in sync · 1 conflict — both versions kept; conflict copies [\"Quay Street conflict 20260928-1140\"]",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0676299333572388
+    "waitSeconds" : 1.079780101776123
   },
   {
     "diagnostics" : {
@@ -126,13 +126,13 @@
       "centerX" : 24,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.92002673764504,
-      "frameTimeMs" : 16.688911111111793,
-      "memoryMB" : 157.78125,
+      "fps" : 60.09659588778342,
+      "frameTimeMs" : 16.639877604170294,
+      "memoryMB" : 157.203125,
       "nodeCount" : 71,
-      "sceneUpdateMs" : 0.3916694444493866,
+      "sceneUpdateMs" : 0.2766953124933025,
       "tileLevel" : 2,
-      "tileRasterMs" : 15.370587962959487,
+      "tileRasterMs" : 8.297694444447895,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -143,11 +143,11 @@
     },
     "file" : "05-loaded-conflict-copy.png",
     "grid" : false,
-    "note" : "Loaded the conflict copy \"Quay Street conflict 20260928-1136\": loaded=true, identical to the iPad's version=true, Day 1 · 15:00",
+    "note" : "Loaded the conflict copy \"Quay Street conflict 20260928-1140\": loaded=true, identical to the iPad's version=true, Day 1 · 15:00",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0691620111465454
+    "waitSeconds" : 1.0466430187225342
   },
   {
     "diagnostics" : {
@@ -156,13 +156,13 @@
       "centerX" : 24,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.539137307672675,
-      "frameTimeMs" : 16.79567499999924,
-      "memoryMB" : 161.359375,
+      "fps" : 59.99172114247596,
+      "frameTimeMs" : 16.66896666666844,
+      "memoryMB" : 160.78125,
       "nodeCount" : 71,
-      "sceneUpdateMs" : 0.4793500000005224,
+      "sceneUpdateMs" : 0.2715388888835454,
       "tileLevel" : 2,
-      "tileRasterMs" : 15.370587962959487,
+      "tileRasterMs" : 8.297694444447895,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -177,7 +177,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.1001909971237183
+    "waitSeconds" : 1.101135015487671
   },
   {
     "diagnostics" : {
@@ -186,13 +186,13 @@
       "centerX" : 24,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.998540035522666,
-      "frameTimeMs" : 16.66707222222309,
-      "memoryMB" : 161.4375,
+      "fps" : 59.9997375011525,
+      "frameTimeMs" : 16.666739583332202,
+      "memoryMB" : 161.390625,
       "nodeCount" : 71,
-      "sceneUpdateMs" : 0.42754999999867016,
+      "sceneUpdateMs" : 0.3506276041562728,
       "tileLevel" : 2,
-      "tileRasterMs" : 15.370587962959487,
+      "tileRasterMs" : 8.297694444447895,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -203,10 +203,10 @@
     },
     "file" : "07-delete-propagates.png",
     "grid" : false,
-    "note" : "Deleted \"iPad Quay\" here: 3 saves in sync · 1 updated; cloud now holds [\"Quay Street\", \"Quay Street conflict 20260928-1136\", \"quicksave\"]",
+    "note" : "Deleted \"iPad Quay\" here: 3 saves in sync · 1 updated; cloud now holds [\"Quay Street\", \"Quay Street conflict 20260928-1140\", \"quicksave\"]",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.10222589969635
+    "waitSeconds" : 1.0942920446395874
   }
 ]
