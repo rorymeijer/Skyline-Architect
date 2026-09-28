@@ -126,11 +126,11 @@ enum RoomArt {
             d.fill(Rect(minX: r.minX, minY: r.minY + 0.9, maxX: r.maxX, maxY: r.minY + 1.2), RGBA(hex: 0xE0C23A).withAlpha(0.35), minDetail: 6)
             lights(into: &d, r, y: r.maxY, spacing: 3.0, width: 1.2, palette: p)
         default:
-            break
+            AmenityArt.decorate(into: &d, appearance: appearance, rect: r, ceiling: r.maxY - ceilingBand, finishes: f, palette: p)
         }
     }
 
-    private static func lights(into d: inout Drawing, _ r: Rect, y: Double, spacing: Double, width: Double, palette p: ArtPalette) {
+    static func lights(into d: inout Drawing, _ r: Rect, y: Double, spacing: Double, width: Double, palette p: ArtPalette) {
         var x = r.minX + spacing / 2
         while x + width / 2 < r.maxX {
             d.fill(Rect(minX: x - width / 2, minY: y - 0.05, maxX: x + width / 2, maxY: y), p.ceilingLight, minDetail: 6)

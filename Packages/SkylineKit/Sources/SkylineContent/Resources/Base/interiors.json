@@ -324,9 +324,266 @@
    }
   ]
  },
-  { "room": "fire-control-room", "items": [
-    { "furniture": "sprinkler-valves", "anchor": "left", "offset": 0.3 },
-    { "furniture": "fire-panel", "anchor": "left", "offset": 1.9, "elevation": 1.1, "reserve": false },
-    { "furniture": "pump-set", "anchor": "right", "offset": 0.3 },
-    { "furniture": "fire-extinguisher", "anchor": "right", "offset": 2.0, "elevation": 0.3, "reserve": false } ] }
+ {
+  "room": "fire-control-room",
+  "items": [
+   {
+    "furniture": "sprinkler-valves",
+    "anchor": "left",
+    "offset": 0.3
+   },
+   {
+    "furniture": "fire-panel",
+    "anchor": "left",
+    "offset": 1.9,
+    "elevation": 1.1,
+    "reserve": false
+   },
+   {
+    "furniture": "pump-set",
+    "anchor": "right",
+    "offset": 0.3
+   },
+   {
+    "furniture": "fire-extinguisher",
+    "anchor": "right",
+    "offset": 2.0,
+    "elevation": 0.3,
+    "reserve": false
+   }
+  ]
+ },
+ {
+  "room": "shop",
+  "items": [
+   {
+    "furniture": "door-office",
+    "anchor": "left",
+    "offset": 0.3
+   },
+   {
+    "furniture": "shop-counter",
+    "anchor": "left",
+    "offset": 1.5
+   },
+   {
+    "furniture": "shop-shelf",
+    "anchor": "right",
+    "offset": 0.1
+   },
+   {
+    "furniture": "shop-shelf",
+    "anchor": "right",
+    "offset": 1.35,
+    "minRoomWidth": 9
+   },
+   {
+    "furniture": "wall-art",
+    "anchor": "left",
+    "offset": 1.6,
+    "elevation": 1.9,
+    "reserve": false
+   },
+   {
+    "repeat": {
+     "spacing": 1.8,
+     "margin": 0.35,
+     "items": [
+      {
+       "furniture": "clothing-rack",
+       "offset": 0
+      }
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "room": "restaurant",
+  "items": [
+   {
+    "furniture": "door-office",
+    "anchor": "left",
+    "offset": 0.3
+   },
+   {
+    "furniture": "back-bar",
+    "anchor": "right",
+    "offset": 0.2,
+    "reserve": false
+   },
+   {
+    "furniture": "bar-counter",
+    "anchor": "right",
+    "offset": 0.1
+   },
+   {
+    "furniture": "plant-tall",
+    "anchor": "left",
+    "offset": 1.45,
+    "minRoomWidth": 10
+   },
+   {
+    "repeat": {
+     "spacing": 2.45,
+     "margin": 0.35,
+     "items": [
+      {
+       "furniture": "dining-set",
+       "offset": 0
+      },
+      {
+       "furniture": "pendant-lamp",
+       "offset": 0.73,
+       "elevation": 2.35
+      }
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "room": "fitness",
+  "items": [
+   {
+    "furniture": "door-office",
+    "anchor": "left",
+    "offset": 0.3
+   },
+   {
+    "furniture": "mirror-panel",
+    "anchor": "center",
+    "offset": 0,
+    "elevation": 0.7,
+    "reserve": false
+   },
+   {
+    "furniture": "weight-rack",
+    "anchor": "right",
+    "offset": 0.2
+   },
+   {
+    "repeat": {
+     "spacing": 3.4,
+     "margin": 0.35,
+     "items": [
+      {
+       "furniture": "treadmill",
+       "offset": 0
+      },
+      {
+       "furniture": "exercise-bike",
+       "offset": 2.05
+      }
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "room": "cinema",
+  "items": [
+   {
+    "furniture": "door-office",
+    "anchor": "left",
+    "offset": 0.3
+   },
+   {
+    "furniture": "cinema-screen",
+    "anchor": "right",
+    "offset": 0.35,
+    "elevation": 0.75
+   },
+   {
+    "repeat": {
+     "spacing": 2.05,
+     "margin": 0.45,
+     "items": [
+      {
+       "furniture": "cinema-seats",
+       "offset": 0
+      }
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "room": "theater",
+  "items": [
+   {
+    "furniture": "door-office",
+    "anchor": "left",
+    "offset": 0.3
+   },
+   {
+    "furniture": "stage",
+    "anchor": "right",
+    "offset": 0
+   },
+   {
+    "furniture": "wall-art",
+    "anchor": "left",
+    "offset": 1.5,
+    "elevation": 1.9,
+    "reserve": false
+   },
+   {
+    "repeat": {
+     "spacing": 2.0,
+     "margin": 0.4,
+     "items": [
+      {
+       "furniture": "theater-seats",
+       "offset": 0
+      }
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "room": "sky-bar",
+  "items": [
+   {
+    "furniture": "door-office",
+    "anchor": "left",
+    "offset": 0.3
+   },
+   {
+    "furniture": "back-bar",
+    "anchor": "right",
+    "offset": 0.3,
+    "reserve": false
+   },
+   {
+    "furniture": "bar-counter-stools",
+    "anchor": "right",
+    "offset": 0.2
+   },
+   {
+    "furniture": "plant-tall",
+    "anchor": "left",
+    "offset": 1.45,
+    "minRoomWidth": 10
+   },
+   {
+    "repeat": {
+     "spacing": 2.9,
+     "margin": 0.35,
+     "items": [
+      {
+       "furniture": "lounge-set",
+       "offset": 0
+      },
+      {
+       "furniture": "pendant-lamp",
+       "offset": 0.5,
+       "elevation": 2.4
+      }
+     ]
+    }
+   }
+  ]
+ }
 ]
