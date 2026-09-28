@@ -15,7 +15,11 @@ public enum CameraPreset: String, CaseIterable, Sendable {
     /// The whole building (all storeys and the foundation).
     case building
 
-    public func placement(for c: SiteComposition, viewport: Vec2) -> (center: Vec2, zoom: Double) {
+    /// `bottomInset`: screen points along the bottom covered by interface. The preset is
+    /// framed in the part of the view above it (see `CameraLimits.bottomInset`).
+    public func placement(for c: SiteComposition, viewport full: Vec2, bottomInset: Double = 0) -> (center: Vec2, zoom: Double) {
+        let inset = self == .detail ? 0 : min(max(bottomInset, 0), full.y / 2)
+        let viewport = Vec2(full.x, full.y - inset)
         var cam = Camera2D(center: .zero, zoom: 1, viewportSize: viewport,
                            limits: .standard(bounds: c.cameraBounds))
         switch self {
@@ -38,6 +42,7 @@ public enum CameraPreset: String, CaseIterable, Sendable {
             cam.setZoom(0.45, anchoredAt: viewport / 2)
             cam.setCenter(Vec2(c.siteRect.center.x, viewport.y / 0.45 / 2 - 60))
         }
-        return (cam.center, cam.zoom)
+        // Framed above the interface: the full view reaches that much further down.
+        return (Vec2(cam.center.x, cam.center.y - inset / (2 * cam.zoom)), cam.zoom)
     }
 }
