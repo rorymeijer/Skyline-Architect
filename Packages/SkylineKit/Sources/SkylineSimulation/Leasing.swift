@@ -269,8 +269,9 @@ extension SimulationEngine {
         return added
     }
 
-    /// Utility allocation per building (empty without facilities rules).
-    func utilityServices(_ world: GameWorld, buildings: [BuildingID]) -> [BuildingID: UtilityService] {
+    /// Utility allocation per building (empty without facilities rules). Rooms and upkeep
+    /// are its only inputs: callers share one result until either changes.
+    public func utilityServices(_ world: GameWorld, buildings: [BuildingID]) -> [BuildingID: UtilityService] {
         guard rules.facilities != nil else { return [:] }
         var services: [BuildingID: UtilityService] = [:]
         for b in buildings { services[b] = Utilities.allocate(building: b, world: world, catalog: catalog, rules: rules) }

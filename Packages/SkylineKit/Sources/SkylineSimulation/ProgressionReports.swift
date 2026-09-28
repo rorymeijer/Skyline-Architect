@@ -22,7 +22,8 @@ public struct ProgressionSummary: Equatable, Sendable {
 
     public init() {}
 
-    public static func make(world: GameWorld, engine: SimulationEngine, building: BuildingID?) -> ProgressionSummary {
+    public static func make(world: GameWorld, engine: SimulationEngine, building: BuildingID?,
+                            service: UtilityService? = nil) -> ProgressionSummary {
         var s = ProgressionSummary()
         let classes = engine.catalog.classes
         guard let building, let b = world.buildings[building], !classes.isEmpty else { return s }
@@ -32,7 +33,7 @@ public struct ProgressionSummary: Equatable, Sendable {
         s.className = classes[level].name
         s.reputation = b.standing.reputation
         s.promotions = b.standing.promotions
-        s.assessment = Progression.assess(building, world: world, engine: engine)
+        s.assessment = Progression.assess(building, world: world, engine: engine, service: service)
         if s.byClass {
             s.maxFloor = classes[level].maxFloor
             for spec in engine.catalog.specs {

@@ -88,13 +88,14 @@ public enum Progression {
         world.people.values.reduce(0) { $0 + ($1.buildingID == building && $1.tenantID != nil ? 1 : 0) }
     }
 
-    public static func assess(_ building: BuildingID, world: GameWorld, engine: SimulationEngine, moveOuts: Int = 0) -> ReputationAssessment? {
+    public static func assess(_ building: BuildingID, world: GameWorld, engine: SimulationEngine, moveOuts: Int = 0,
+                              service shared: UtilityService? = nil) -> ReputationAssessment? {
         guard let rules = engine.rules.progression else { return nil }
         let tenants = world.tenants.values.filter { $0.buildingID == building }
         let satisfaction = tenants.isEmpty ? 0.5 : tenants.reduce(0) { $0 + $1.satisfaction } / Double(tenants.count)
         let units = world.rooms(in: building).filter { engine.catalog.spec($0.definitionID)?.rentPerModule != nil }
         let service = engine.rules.facilities == nil ? nil
-            : Utilities.allocate(building: building, world: world, catalog: engine.catalog, rules: engine.rules)
+            : shared ?? Utilities.allocate(building: building, world: world, catalog: engine.catalog, rules: engine.rules)
         let services = units.isEmpty ? 1
             : units.reduce(0) { $0 + Leasing.servicesLevel(of: $1, world: world, service: service) } / Double(units.count)
         let occupancy = units.isEmpty ? 0 : Double(Set(tenants.map(\.room)).count) / Double(units.count)

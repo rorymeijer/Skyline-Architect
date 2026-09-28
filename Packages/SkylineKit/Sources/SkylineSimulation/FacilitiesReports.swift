@@ -25,10 +25,12 @@ public struct FacilitiesSummary: Equatable, Sendable {
 
     public init() {}
 
-    public static func make(world: GameWorld, engine: SimulationEngine, building: BuildingID?) -> FacilitiesSummary {
+    /// `service` may be an allocation the caller already made this refresh (Phase 19).
+    public static func make(world: GameWorld, engine: SimulationEngine, building: BuildingID?,
+                            service shared: UtilityService? = nil) -> FacilitiesSummary {
         var s = FacilitiesSummary()
         guard let rules = engine.rules.facilities, let building else { return s }
-        let service = Utilities.allocate(building: building, world: world, catalog: engine.catalog, rules: engine.rules)
+        let service = shared ?? Utilities.allocate(building: building, world: world, catalog: engine.catalog, rules: engine.rules)
         s.utilities = rules.utilities.map {
             UtilityLine(name: $0.name, supply: service.supply[$0.id] ?? 0, demand: service.demand[$0.id] ?? 0,
                         shortRooms: service.shortOf($0.id).count)
@@ -64,11 +66,12 @@ public struct ServiceMark: Equatable, Sendable {
 public enum ServicesOverlay {
     /// The worst problem of every room of the property: failed equipment, missing utilities,
     /// wear or dirt (below the job thresholds), or fine.
-    public static func marks(world: GameWorld, engine: SimulationEngine, buildings: [BuildingID]) -> [ServiceMark] {
+    public static func marks(world: GameWorld, engine: SimulationEngine, buildings: [BuildingID],
+                             services: [BuildingID: UtilityService] = [:]) -> [ServiceMark] {
         guard let rules = engine.rules.facilities else { return [] }
         var marks: [ServiceMark] = []
         for b in buildings {
-            let service = Utilities.allocate(building: b, world: world, catalog: engine.catalog, rules: engine.rules)
+            let service = services[b] ?? Utilities.allocate(building: b, world: world, catalog: engine.catalog, rules: engine.rules)
             let broken = Set(service.broken)
             for room in world.rooms(in: b) {
                 let u = world.upkeep[room.id]

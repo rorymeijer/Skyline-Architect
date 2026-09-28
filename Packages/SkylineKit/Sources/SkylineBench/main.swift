@@ -72,6 +72,43 @@ do {
     measure("fire protection (1×)") { _ = FireSafety.protectedRooms(in: building, world: world, catalog: catalog, failureBelow: rules.facilities?.failureBelow ?? 0) }
     measure("economy summary (1×)") { _ = EconomySummary.make(world: world, rules: rules, building: building) }
 
+    // What the app does per frame (providers, for a 114 × 76 m view at 9 pt/m) and at 4 Hz
+    // (panel summaries), 20 repetitions each.
+    let view = Rect(x: 0, y: 60, width: 114, height: 76)
+    let t = Double(world.clock.tick)
+    func per(_ label: String, _ body: () -> Void) {
+        let s = DispatchTime.now().uptimeNanoseconds
+        for _ in 0..<20 { body() }
+        print(label.padding(toLength: 40, withPad: " ", startingAt: 0)
+              + String(format: "%10.2f ms each", Double(DispatchTime.now().uptimeNanoseconds - s) / 1e6 / 20))
+    }
+    print("per frame:")
+    per("  people sprites") { _ = PeopleView.visible(world: world, propertyID: property, time: t, visible: view, zoom: 9) }
+    per("  elevator cars") { _ = ElevatorView.visible(world: world, propertyID: property, time: t, visible: view, zoom: 9) }
+    per("  lit rooms") { _ = DayNight.litRooms(world: world, propertyID: property, catalog: catalog, time: t, visible: view, zoom: 9) }
+    per("  roofs + pavement") {
+        _ = WeatherView.roofs(world: world, propertyID: property)
+        _ = WeatherView.pavement(world: world, propertyID: property, visible: view)
+    }
+    per("  fire marks") {
+        _ = FireView.flames(world: world, propertyID: property, time: t)
+        _ = FireView.scorched(world: world, propertyID: property)
+    }
+    print("4 Hz summaries:")
+    per("  facilities summary") { _ = FacilitiesSummary.make(world: world, engine: engine, building: building) }
+    per("  lighting watts") { _ = Energy.lightingWatts(of: building, world: world, engine: engine) }
+    per("  progression summary") { _ = ProgressionSummary.make(world: world, engine: engine, building: building) }
+    per("  leasing summary") { _ = LeasingSummary.make(world: world, engine: engine, buildings: [building]) }
+    per("  elevator traffic") { _ = ElevatorTraffic.make(world: world, rules: rules, buildings: [building], now: world.clock.tick) }
+    per("  fire protection") { _ = FireSafety.protectedRooms(in: building, world: world, catalog: catalog, failureBelow: 0.1) }
+    per("  estate summary") { _ = EstateSummary.make(world: world, library: library) }
+    per("  app refresh (one shared allocation)") {
+        let services = engine.utilityServices(world, buildings: [building])
+        _ = FacilitiesSummary.make(world: world, engine: engine, building: building, service: services[building])
+        _ = Energy.lightingWatts(of: building, world: world, engine: engine, service: services[building])
+        _ = ProgressionSummary.make(world: world, engine: engine, building: building, service: services[building])
+    }
+
     let save = SaveGame(metadata: SaveMetadata(title: "Bench", savedAt: Date(timeIntervalSince1970: 0), gameVersion: "bench"),
                         contentPacks: [ContentPackReference(id: "base", version: library.manifest.version)],
                         activePropertyID: property, world: world)
