@@ -424,6 +424,24 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-049 — Shafts make rooms give way; shafts can be resized
+- **Date:** 2026-09-28
+- **Decision:** A shaft placed or extended over rooms trims them: each loses the shaft's
+  columns (on all its floors) and keeps its wider side; the other side becomes a new room of
+  the same type if it is at least the minimum width. A room left narrower than its minimum
+  blocks the shaft; so does another shaft. Shafts get `resizeRoom` (same columns, new
+  floors). Changes to several rooms undo through a `batch` command; `restoreRoom` updates an
+  existing room in place.
+- **Alternatives:** shafts drawn in front of rooms without changing them (two things in one
+  cell breaks the grid model and navigation); demolishing rooms in the way (loses tenants);
+  resize as demolish-and-rebuild (loses the car's statistics and 60 % of the cost).
+- **Reason:** The player asked for rooms to shrink automatically and for taller/shorter
+  lifts. Trimming keeps the one-room-per-cell model, keeps tenants, and is exactly
+  reversible.
+- **Consequences:** A tenant keeps its rent after its unit shrinks until the market reviews
+  it. A shortened shaft stops its car at the nearest served floor and lets riders out to be
+  re-planned.
+
 ## D-048 — No cantilevered floors in the base game
 - **Date:** 2026-09-28
 - **Decision:** `maxCantileverModules` is 0: every floor lies within the floor below.
