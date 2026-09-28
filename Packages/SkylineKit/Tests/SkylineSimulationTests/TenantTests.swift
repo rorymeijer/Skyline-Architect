@@ -34,6 +34,26 @@ private func room(_ f: SimFixture, _ definition: String, floor: Int, left: Bool 
         try f.world.validateIntegrity()
     }
 
+    /// No two tenants share a name, even past the 30 surnames of the name pool (then
+    /// double-barrelled names are used); members carry their household's name.
+    @Test func tenantNamesAreUnique() throws {
+        var f = try SimFixture()
+        #expect(Set(f.world.tenants.values.map(\.name)).count == f.world.tenants.count)
+        let rules = f.library.simulationRules
+        let couple = try #require(rules.tenantType("couple")), consultancy = try #require(rules.tenantType("consultancy"))
+        let home = try #require(f.world.rooms.values.first { $0.definitionID.hasPrefix("apartment") })
+        let office = try #require(f.world.rooms.values.first { $0.definitionID.hasPrefix("office") })
+        for _ in 0..<40 {
+            let people = Leasing.sign(couple, into: home, at: 0, world: &f.world, rules: rules, catalog: f.library.buildCatalog, satisfaction: 0.6)
+            let tenant = try #require(f.world.tenants.values.last)
+            #expect(people.allSatisfy { f.world.people[$0]!.name.hasSuffix(tenant.name.replacingOccurrences(of: " household", with: "")) })
+            Leasing.sign(consultancy, into: office, at: 0, world: &f.world, rules: rules, catalog: f.library.buildCatalog, satisfaction: 0.6)
+        }
+        let names = f.world.tenants.values.map(\.name)
+        #expect(Set(names).count == names.count)
+        #expect(names.contains { $0.contains("-") && $0.hasSuffix(" household") })
+    }
+
     @Test func demolishingAUnitEndsTheLease() throws {
         var f = try SimFixture()
         let office = try room(f, "office-small", floor: 1)
