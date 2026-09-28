@@ -16,7 +16,7 @@ _Last updated: 2026-09-28 (0.22.0 — Phase B: amenities and visitors)_
 Next, in the player's order: E (economy and facilities), then C (scenarios). Each is a
 phase with its own PR.
 
-Evidence: 327 tests, CI captures in `Development/Screenshots/Amenities-0.22/`.
+Evidence: 328 tests, CI run 36484523958, captures in `Development/Screenshots/Amenities-0.22/`.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |
