@@ -36,7 +36,10 @@ enum SidePanel: String, CaseIterable, Identifiable {
 
     @MainActor @ViewBuilder func view(_ model: AppModel) -> some View {
         switch self {
-        case .unit: if let report = model.unitReport { UnitInspector(report: report) { model.selectRoom(at: nil) } }
+        case .unit:
+            if let report = model.unitReport {
+                UnitInspector(report: report, shaftOptions: model.shaftOptions, onResize: { _ = model.perform($0) }) { model.selectRoom(at: nil) }
+            }
         case .scenario: ScenarioPanel(model: model)
         case .estate: EstatePanel(model: model)
         case .incidents: IncidentsPanel(model: model)

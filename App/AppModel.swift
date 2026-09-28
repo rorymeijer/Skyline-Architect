@@ -40,6 +40,8 @@ final class AppModel {
     /// Selected room (click) and its inspector data; leasing overview (Phase 8, 4 Hz).
     var selectedRoom: RoomID?
     var unitReport: UnitReport?
+    /// Height controls when the selection is a shaft (empty otherwise).
+    var shaftOptions: [ShaftResizeOption] = []
     var leasing = LeasingSummary()
     var showLeasingPanel = false
     /// Money (Phase 9, 4 Hz), economy panel, start menu, bankruptcy.
@@ -98,7 +100,7 @@ final class AppModel {
     var showLoadSheet = false
 
     @ObservationIgnored private(set) var library: ContentLibrary?
-    @ObservationIgnored private var engine: ConstructionEngine?
+    @ObservationIgnored private(set) var engine: ConstructionEngine?
     @ObservationIgnored private var history = ConstructionHistory()
     @ObservationIgnored private(set) var saveStore: SaveStore
     @ObservationIgnored var hasUnsavedChanges = false
