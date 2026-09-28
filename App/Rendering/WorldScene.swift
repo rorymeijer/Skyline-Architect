@@ -86,6 +86,7 @@ final class WorldScene: SKScene {
     private var statFrames = 0
     private var statElapsed = 0.0
     private var statUpdateSeconds = 0.0
+    private var statSections: [String: Double] = [:]
     private var lastDiagnostics = RenderDiagnostics()
 
     init(composition: SiteComposition, palette: ArtPalette = .standard) {
@@ -278,8 +279,15 @@ final class WorldScene: SKScene {
         let frameStart = CACurrentMediaTime()
         let dt = lastUpdateTime.map { min(max(currentTime - $0, 0), 0.1) } ?? 0
         lastUpdateTime = currentTime
+        var mark = frameStart
+        func lap(_ section: String) {
+            let now = CACurrentMediaTime()
+            statSections[section, default: 0] += now - mark
+            mark = now
+        }
 
         onFrame?(dt)
+        lap("sim")
         if controller.update(dt: dt) { cameraDirty = true }
         let camera = controller.camera
         if cameraDirty {
@@ -290,18 +298,24 @@ final class WorldScene: SKScene {
             overlayDirty = true
         }
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
+        lap("tiles")
         elevatorLayer.update(carProvider?(camera.visibleRect, camera.zoom) ?? [])
+        lap("cars")
         let lighting = lightingProvider?(camera.visibleRect, camera.zoom)
             ?? (grade: Grade.day, darkness: 0, emission: 0, rooms: [])
         if lighting.emission > 0.02 {
             emissionLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         }
         dayNight.update(grade: lighting.grade, darkness: lighting.emission, rooms: lighting.rooms, viewport: size, emission: emissionLayer.node)
+        lap("light")
         let sky = weatherProvider?(camera.visibleRect) ?? (look: WeatherLook.clear, roofs: [], street: [])
         weather.update(look: sky.look, darkness: lighting.darkness, viewport: size, roofs: sky.roofs, street: sky.street)
+        lap("weather")
         let burning = fireProvider?() ?? (flames: [], engines: [], scorched: [])
         fire.update(flames: burning.flames, engines: burning.engines, scorched: burning.scorched)
+        lap("fire")
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
+        lap("people")
         navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
         trafficOverlay.update(traffic: trafficProvider?(), camera: camera)
         servicesOverlay.update(marks: servicesProvider?(), camera: camera)
@@ -326,6 +340,7 @@ final class WorldScene: SKScene {
         }
         cameraDirty = false
         overlayDirty = false
+        lap("overlays")
 
         recordStats(dt: dt, updateSeconds: CACurrentMediaTime() - frameStart)
     }
@@ -361,6 +376,7 @@ final class WorldScene: SKScene {
         d.fps = Double(statFrames) / statElapsed
         d.frameTimeMs = statElapsed / Double(statFrames) * 1000
         d.sceneUpdateMs = statUpdateSeconds / Double(statFrames) * 1000
+        d.sceneSections = statSections.mapValues { ($0 / Double(statFrames) * 10_000).rounded() / 10 }
         d.nodeCount = countNodes(self)
         d.tileLevel = tileLayer.lastPlan.level
         d.tilesVisible = tileLayer.visibleCount
@@ -387,6 +403,7 @@ final class WorldScene: SKScene {
         statFrames = 0
         statElapsed = 0
         statUpdateSeconds = 0
+        statSections = [:]
     }
 
     private func countNodes(_ node: SKNode) -> Int {

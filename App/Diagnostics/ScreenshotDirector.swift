@@ -72,10 +72,11 @@ final class ScreenshotDirector {
         },
         Step(name: "02-morning-rush", grid: false) { model, scene in
             model.advanceSimulation(ticks: SimClock.secondsPerDay)
+            let day = String(format: "%.0f", model.lastSimulationMs)     // one call simulating 24 game hours
             model.advanceSimulation(toTimeOfDay: 8, minute: 20)
             model.refreshSimulationSummary()
             model.scene?.withController { $0.jump(center: Vec2(41, 88), zoom: 9) }
-            return "\(model.clockText), sky lobby 21 and zone 2 at rush hour; last step \(String(format: "%.1f", model.lastSimulationMs)) ms; \(ScreenshotDirector.scale(model))"
+            return "\(model.clockText), sky lobby 21 and zone 2 at rush hour; a whole game day took \(day) ms to simulate (Debug build); \(ScreenshotDirector.scale(model))"
         },
         Step(name: "03-sky-lobby", grid: false) { model, scene in
             model.advanceSimulation(ticks: 90)
@@ -97,9 +98,10 @@ final class ScreenshotDirector {
         Step(name: "06-400-floors", grid: false) { model, scene in
             model.loadStressTower(zones: 19)
             model.advanceSimulation(toTimeOfDay: 10)
+            let hours = String(format: "%.0f", model.lastSimulationMs)   // one call simulating 06:00–10:00
             model.refreshSimulationSummary()
             model.scene?.withController { $0.jump(center: Vec2(55, 790), zoom: 0.4) }
-            return "400-floor stress tower: \(ScreenshotDirector.scale(model)); last step \(String(format: "%.1f", model.lastSimulationMs)) ms"
+            return "400-floor stress tower: \(ScreenshotDirector.scale(model)); 06:00–10:00 (move-in and morning rush) took \(hours) ms to simulate (Debug build)"
         },
         Step(name: "07-save-load", grid: false) { model, scene in
             let before = model.world
