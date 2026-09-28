@@ -80,6 +80,9 @@ final class AppModel {
     @ObservationIgnored var dismissedFireID: Int?
     @ObservationIgnored var sprinklerRooms: Set<RoomID> = []
     @ObservationIgnored var seenPromotions: Int?
+    /// Utility allocation of the active property's buildings, made once per 4 Hz refresh and
+    /// shared by the panels and the services overlay (Phase 19).
+    @ObservationIgnored var utilityServices: [BuildingID: UtilityService] = [:]
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 

@@ -43,7 +43,7 @@ extension SimulationEngine {
 
     /// Hourly: each room of a building without a fire may ignite.
     func checkIgnition(at now: Tick, world: inout GameWorld, events: inout Events) {
-        guard let fire = fireRules else { return }
+        guard fireRules != nil else { return }
         let failure = rules.facilities?.failureBelow ?? 0
         for building in world.buildings.values where !world.incidents.isOnFire(building.id) {
             let protected = FireSafety.protectedRooms(in: building.id, world: world, catalog: catalog, failureBelow: failure)

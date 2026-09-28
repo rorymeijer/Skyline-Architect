@@ -29,7 +29,7 @@ public enum Scenarios {
         case .averageWait:
             var boardings = 0, waited = 0.0
             for building in world.buildings.values {
-                for bank in ElevatorBanks.banks(in: world, rules: engine.rules, building: building.id) {
+                for bank in engine.banks(of: building.id, in: world) {
                     let s = ElevatorBanks.stats(of: bank, in: world)
                     guard s.boardings >= 10 else { continue }
                     boardings += s.boardings

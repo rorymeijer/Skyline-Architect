@@ -1,61 +1,62 @@
 # Development Status
 
-_Last updated: 2026-09-28 (Phase 18)_
+_Last updated: 2026-09-28 (Phase 19)_
 
 ## Current phase
-**Phase 18 — iCloud persistence: COMPLETE** (awaiting approval to continue with Phase 19). Status of the parts:
+**Phase 19 — Large-scale performance: COMPLETE** (awaiting approval to continue with Phase 20).
 
-* The sync logic is FUNCTIONAL and tested.
-* The iCloud Drive connection is implemented but **unverified**: it needs a signed build with an iCloud container.
-
-## Quality gates (Phase 18)
+## Quality gates (Phase 19)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36416756463 |
-| Automated tests pass | ✅ | 275 tests (Linux + macOS); 6 new sync tests with two simulated devices |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36423606533 |
+| Automated tests pass | ✅ | 279 tests (Linux + macOS), including 4 new scale tests |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ (sync logic) · ⚠️ (iCloud itself) | 7 captures in `Development/Screenshots/Phase-18/`, synced against a stand-in folder with a simulated second device (labelled); 06 shows the real iCloud lookup failing on the unsigned CI build |
+| Feature demonstrable | ✅ | 7 captures in `Development/Screenshots/Phase-19/` (stress towers from the developer tool — labelled); `skyline-bench` numbers in PERFORMANCE.md |
+| Profiled before optimising (rule 8) | ✅ | callgrind on `skyline-bench`; the app's per-section scene timing |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | SAVE_FORMAT (Sync section, iCloud setup), DECISIONS D-043, CHANGELOG 0.18.0, ARCHITECTURE, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | Conflict scene wrongly scripted (no conflict — correct behaviour for that order): fixed; conflict badge shortened |
+| Documentation updated | ✅ | PERFORMANCE.md (Phase 19 section), DECISIONS D-044, CHANGELOG 0.19.0, SIMULATION (route cache), ARCHITECTURE, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | Four CI rounds: panel refresh and weather roofs fixed (32–42 → 47–57 fps); camera placement of rebuilt scenes fixed |
 | Known issues recorded | ✅ | below |
 
-The Phase 18 tests cover:
+**Results.**
 
-* **Travel:** saves travel between devices (upload, download, idempotent).
-* **Conflicts** keep both versions on both devices, under valid, unique names.
-* **Deletions** follow only unchanged copies; a changed copy is restored.
-* **Placeholders** are pending: never overwritten and never taken as a deletion.
-* **Autosaves** stay on the device, and the sync state file is not a save.
-* **Fingerprints** are stable.
+* **Simulation** (release, 211 floors / 950 people): 2.4 s → 0.72 s per game day; the daily
+  closing went from 1 058 ms to 100 ms.
+* **400 floors / 2 166 people:** two days take 9.0 s → 4.5 s.
+* **App** (Debug, CI): the stress towers render at 47–57 fps, with a scene update of 0.3–1.3 ms
+  (5 ms at night).
 
 ## Completed
-- Phases 0–17 (merged: rorymeijer/Skyline-Architect#1 … #17).
-- Phase 18:
-  - **`SaveSync`:** two-way sync between folders — fingerprints, a per-device base, keep-both conflicts, safe deletions, placeholders.
-  - **App:** iCloud Drive container, sync off by default, and sync on launch, on save, when the panel opens and on Sync Now.
-  - **Saves panel:** replaces the load sheet, with sync badges, paging and delete.
+- Phases 0–18 (merged: rorymeijer/Skyline-Architect#1 … #18).
+- Phase 19:
+  - **Tooling:** the `StressTower` generator and the `skyline-bench` CLI; a developer tool to load the stress tower; per-section scene timing.
+  - **Simulation fixes:**
+    - one utility allocation per market hour and per daily review;
+    - elevator banks cached per structure;
+    - the route cache raised to 65 536;
+    - cheaper noise and allocation lookups.
+  - **App fixes:** one allocation per 4 Hz refresh (panels and services overlay); roofs in O(n) and only under snow; indexed plate lookup.
 
 ## In progress
-- Nothing. Waiting for approval to continue (Phase 19 — Large-scale performance).
+- Nothing. Waiting for approval to continue (Phase 20 — Visual polish).
 
 ## Known bugs / unverified
-- **iCloud Drive has never run.** It needs the iCloud capability with a container and a signing team (SAVE_FORMAT.md → Setup). Only the sync logic is verified (tests, and captures against a stand-in folder).
-- No `NSFileCoordinator` and no live `NSMetadataQuery` updates: sync happens at fixed moments.
-- The conflict row's detail text is cut off with long slot names.
-- No human play test yet; iPad never launched.
-- Earlier notes still apply: mods cannot remove entries or ship images, scenario balance beyond Opening Day, shared weather.
+- The daily closing is still a single 100 ms spike on a 211-floor tower (650 ms on the first day of a 400-floor tower with a cold route cache). The simulation stays on the main thread (D-044).
+- Night view of huge towers: 1 845 window-pane nodes (a 4.6 ms "light" section per frame).
+- The fixed cost per `advance` call is 0.5–0.6 ms at 400 floors: the heap is rebuilt and the signatures checked every call.
+- Measured on CI VMs and a Linux container only, never on a real Mac or iPad; iPad never launched.
+- Earlier notes still apply: iCloud unverified, scenario balance beyond Opening Day, mods cannot remove entries.
 
 ## Technical debt
-- Sync reads every save file to fingerprint it on each run (fine for tens of saves).
-- `FireSafety.protectedRooms` and utility allocation are recomputed often.
-- Simulation on the main thread (Phase 19).
+- Utility allocation is still a full recomputation (about 4 ms at 400 floors). Make it incremental if hourly or refresh costs show up.
+- Window panes are separate nodes; batch them into emission tiles for very tall towers.
+- The move-in wave on the first day plans about 1 000 routes in a few steps.
 
-## Next tasks (Phase 19 — Large-scale performance)
-1. Build a large test tower (hundreds of floors, thousands of rooms and people) with a blueprint generator, and profile simulation, navigation, rendering and saving.
-2. Record baselines in PERFORMANCE.md; fix the worst hot spots (caching of utilities and fire protection, route cache, tile rasterization).
-3. Move the simulation off the main thread if profiles call for it (SimulationHost actor publishing snapshots).
-4. Scale tests, docs and captures.
+## Next tasks (Phase 20 — Visual polish)
+1. An art pass on the most visible elements (façade, lobbies, people, elevators) within the procedural pipeline.
+2. Animation and particles where they help readability (doors, crowds, weather).
+3. UI polish: consistent panels, iconography, keyboard navigation, accessibility (VoiceOver labels, Dynamic Type where it applies, contrast).
+4. Captures, docs and a final review of the whole game.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,

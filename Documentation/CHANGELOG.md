@@ -2,6 +2,34 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.19.0] — Phase 19: Large-scale performance
+
+### Added
+- `skyline-bench`: a profiling CLI with a generated stress tower (zones of 20 storeys, sky
+  lobbies, express shuttles, plant floors).
+- Developer tool: *Load Stress Tower* (211 or 400 floors).
+- Scale tests.
+
+### Changed (performance)
+- **Daily closing** on a 211-floor tower: 1 058 ms → 100 ms (one utility allocation per
+  building instead of per tenant).
+- **Elevator banks** are cached per structure: hall-call assignment went from 32 % of the
+  simulation to under 1 %.
+- **Route cache** raised to 65 536 routes per building: hit rate at 2 000 people went from
+  29 % to 72 %; a 400-floor day costs half the time.
+- **A simulated day** of the 211-floor tower: 2.4 s → 0.72 s (release).
+- **Rendering**:
+  - roofs for snow are built in linear time and only under snow (the weather section took
+    11 ms per frame at 400 floors, now 0.1 ms);
+  - the panels' 4 Hz refresh shares one utility allocation;
+  - the services overlay no longer allocates every frame.
+  - Result, stress towers in the Debug app: 211 floors 36–42 → 52–57 fps; 400 floors
+    32 → 52 fps.
+- **Render diagnostics** split the scene update by section.
+
+### Fixed
+- An unused binding warning in the fire ignition check.
+
 ## [0.18.0] — Phase 18: iCloud persistence
 
 ### Added

@@ -103,8 +103,11 @@ public enum WeatherView {
         let grid = world.grid
         var out: [Rect] = []
         for b in world.buildings(on: propertyID) {
+            // Plates by level once: looking each one up was O(floors²) per frame (Phase 19).
+            var spans: [Int: ColumnSpan] = [:]
+            for plate in b.floors { spans[plate.level] = plate.span }
             for plate in b.floors where plate.level >= 0 {
-                let above = b.plate(at: plate.level + 1)?.span
+                let above = spans[plate.level + 1]
                 let top = grid.y(ofFloor: plate.level + 1)
                 var pieces: [ColumnSpan] = [plate.span]
                 if let above {

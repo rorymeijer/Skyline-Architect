@@ -134,6 +134,13 @@ extension ScreenshotDirector {
         return true
     }
 
+    /// "211 floors, 481 rooms, 950 people, 29 cars" (Phase 19).
+    static func scale(_ model: AppModel) -> String {
+        guard let world = model.world else { return "no world" }
+        let floors = world.buildings.values.compactMap { $0.builtLevels?.count }.max() ?? 0
+        return "\(floors) floors, \(world.rooms.count) rooms, \(world.people.count) people, \(world.elevators.count) cars"
+    }
+
     static func carCenter(_ car: ElevatorCar, in world: GameWorld) -> Vec2? {
         guard let shaft = world.rooms[car.id] else { return nil }
         let x = (world.grid.x(ofColumn: shaft.columns.start) + world.grid.x(ofColumn: shaft.columns.end)) / 2

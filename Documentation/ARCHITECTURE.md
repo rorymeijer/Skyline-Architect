@@ -187,6 +187,10 @@ from the new library (D-042).
 Save sync (SAVE_FORMAT.md → Sync): `SaveSync` in Persistence syncs two folders by
 fingerprint against a per-device base (pure file logic, Linux-tested); the app only chooses
 the shared folder (iCloud container) and when to sync (D-043).
+Scale (PERFORMANCE.md → Phase 19): derived state is cached where profiles showed it —
+elevator banks live with the navigation graph in `NavigationService` (dropped by the same
+structure signature), and a market hour or daily review shares one utility allocation per
+building. `StressTower` and `skyline-bench` generate and time large towers (D-044).
 
 ## 6. Concurrency model
 

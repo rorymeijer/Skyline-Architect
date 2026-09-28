@@ -50,6 +50,10 @@ public struct UnitReport: Equatable, Sendable {
             : "\(FloorLabel.label(for: room.floors.lowest))–\(FloorLabel.label(for: room.floors.highest))"
         var report = UnitReport(roomID: room.id, title: spec.name, floor: floor, width: room.columns.count,
                                 leasable: spec.rentPerModule != nil, askingRent: Leasing.askingRent(room, world: world, catalog: engine.catalog))
+        // One allocation for every appraisal below and the utilities list (4 Hz in the app).
+        let service = engine.rules.facilities == nil ? nil
+            : Utilities.allocate(building: room.buildingID, world: world, catalog: engine.catalog, rules: engine.rules)
+        let services = service.map { [room.buildingID: $0] }
         if let tenant = world.tenants.values.first(where: { $0.room == room.id }) {
             let type = engine.rules.tenantType(tenant.typeID)
             let members = world.people.values.filter { $0.tenantID == tenant.id }
@@ -57,18 +61,17 @@ public struct UnitReport: Equatable, Sendable {
             report.occupant = Occupant(name: tenant.name, typeName: type?.name ?? tenant.typeID, members: members.count, present: present,
                                        rent: tenant.rent, sinceDay: SimClock.day(tenant.since) + 1, satisfaction: tenant.satisfaction,
                                        unhappyDays: tenant.unhappyDays,
-                                       appraisal: type.flatMap { Leasing.appraise(room, for: $0, world: world, engine: engine) })
+                                       appraisal: type.flatMap { Leasing.appraise(room, for: $0, world: world, engine: engine, services: services) })
         } else if report.leasable {
             report.interest = engine.rules.tenantTypes(for: room.definitionID).compactMap { type in
-                Leasing.appraise(room, for: type, world: world, engine: engine).map {
+                Leasing.appraise(room, for: type, world: world, engine: engine, services: services).map {
                     Interest(typeName: type.name, appraisal: $0, wouldSign: $0.affordable && $0.total >= type.minScore)
                 }
             }
             .sorted { $0.appraisal.total > $1.appraisal.total }
         }
         report.history = world.market.log.filter { $0.room == room.id }.reversed()
-        if let facilities = engine.rules.facilities {
-            let service = Utilities.allocate(building: room.buildingID, world: world, catalog: engine.catalog, rules: engine.rules)
+        if let facilities = engine.rules.facilities, let service {
             let served = service.served[room.id] ?? [:]
             report.utilities = facilities.utilities.compactMap { u in served[u.id].map { (u.name, $0) } }
         }

@@ -33,9 +33,14 @@ public final class NavigationService: @unchecked Sendable {
     struct BuildingNavigation {
         var graph: NavigationGraph
         var routes: [RouteKey: [Int]?] = [:]
+        /// Elevator banks (Phase 19): they depend only on the shafts, which the structure
+        /// signature covers, so they live and die with the graph.
+        var banks: [ElevatorBank]?
     }
 
-    public static let cacheLimit = 4096
+    /// Routes kept per building before the cache is cleared. Phase 19: 4096 thrashed at ~2,000
+    /// people (29 % hits on a 400-floor tower); an entry is a short portal list (~100 B).
+    public static let cacheLimit = 65_536
 
     private let lock = NSLock()
     private var buildings: [BuildingID: BuildingNavigation] = [:]
@@ -100,6 +105,24 @@ public final class NavigationService: @unchecked Sendable {
             return nil
         }
         return (graph, portals)
+    }
+
+    /// The building's elevator banks, computed once per structure (`ElevatorBanks.banks`
+    /// gives the same result). Strategies are player settings, read from the world each call.
+    func banks(of building: Building, world: GameWorld, catalog: BuildCatalog, rules: SimulationRules) -> [ElevatorBank] {
+        lock.lock(); defer { lock.unlock() }
+        if buildings[building.id] == nil { _ = build(building, world: world, catalog: catalog, rules: rules) }
+        let cars = world.elevators.values.reduce(0) { $0 + ($1.buildingID == building.id ? 1 : 0) }
+        var banks: [ElevatorBank]
+        if let cached = buildings[building.id]?.banks, cached.reduce(0, { $0 + $1.cars.count }) == cars {
+            banks = cached
+        } else {
+            // Computed before the cars exist (or after they changed): recompute.
+            banks = ElevatorBanks.banks(in: world, rules: rules, building: building.id)
+            buildings[building.id]?.banks = banks
+        }
+        for i in banks.indices { banks[i].strategy = world.elevators[banks[i].id]?.strategy ?? banks[i].strategy }
+        return banks
     }
 
     private func current(_ building: Building, world: GameWorld, catalog: BuildCatalog, rules: SimulationRules) -> BuildingNavigation {

@@ -382,3 +382,24 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - The iCloud connection is unverified until someone builds with a team.
   - No live updates: another device's save appears at the next sync moment.
 
+## D-044 — Scale by caching derived state per structure; the simulation stays on the main thread for now
+- **Date:** 2026-09-28
+- **Decision:**
+  - Profile a generated stress tower (`skyline-bench`, callgrind) and fix what it shows:
+    - one utility allocation per building per market hour and per daily review;
+    - elevator banks cached with the navigation graph (dropped by the same structure signature; strategies read fresh);
+    - a larger route cache;
+    - spec lookups only for real neighbours.
+  - Every cache returns exactly what a fresh computation would, which is tested, so determinism and batch independence hold (rule 7).
+  - Moving the simulation to a background actor is postponed.
+- **Alternatives:**
+  - A background `SimulationHost` actor publishing snapshots now.
+  - Incremental utility allocation.
+  - An LRU route cache.
+- **Reason:**
+  - After the fixes a 211-floor, 950-person tower costs about 0.3 % of a core at 10× speed, and one `advance` call about 0.6 ms at 400 floors.
+  - Only the once-a-day closing (about 100 ms) would benefit from a thread, while snapshots would cost a full world copy per publish and complicate every UI action that edits the world.
+- **Consequences:**
+  - The daily closing is a visible hitch of a few frames at 10× on very large towers.
+  - Revisit threading when real play at larger scale shows it, together with incremental utility allocation.
+

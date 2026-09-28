@@ -21,9 +21,10 @@ extension SimulationEngine {
     /// calls it right after a command so a paused game never shows people on removed stairs.
     @discardableResult
     public func replanAfterConstruction(_ world: inout GameWorld) -> ReplanReport {
+        // Drop graphs and banks of changed structures first: the car sync reads banks.
+        navigation.refresh(world: world, catalog: catalog)
         ElevatorSync.sync(&world, catalog: catalog, rules: rules)
         FacilitiesManagement.sync(&world)
-        navigation.refresh(world: world, catalog: catalog)
         var report = ReplanReport()
         let now = world.clock.tick
         var graphs: [BuildingID: NavigationGraph] = [:]

@@ -7,6 +7,9 @@ struct RenderDiagnostics: Equatable, Codable {
     var fps = 0.0
     var frameTimeMs = 0.0
     var sceneUpdateMs = 0.0
+    /// Where the scene update goes, ms per frame by section (Phase 19): "sim", "tiles",
+    /// "cars", "light", "weather", "fire", "people", "overlays".
+    var sceneSections: [String: Double] = [:]
     var nodeCount = 0
     var tileLevel = 0
     var tilesVisible = 0

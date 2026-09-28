@@ -10,7 +10,8 @@ extension AppModel {
     func refreshProgression() {
         guard let world, let simulation else { return }
         let building = activePropertyID.flatMap { world.buildings(on: $0).first?.id }
-        let summary = ProgressionSummary.make(world: world, engine: simulation, building: building)
+        let summary = ProgressionSummary.make(world: world, engine: simulation, building: building,
+                                              service: building.flatMap { utilityServices[$0] })
         if let seen = seenPromotions, summary.promotions.count > seen {
             let unlocked = progression.nextUnlocks
             promotionNotice = "\(propertyName) is now \(summary.className)"

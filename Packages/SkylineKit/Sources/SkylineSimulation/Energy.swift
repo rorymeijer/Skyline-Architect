@@ -7,10 +7,10 @@ public enum Energy {
     /// Current lighting load of a building in watts: every room's level from occupancy, time
     /// of day and its electricity supply.
     public static func lightingWatts(of building: BuildingID, world: GameWorld, engine: SimulationEngine,
-                                     occupied: Set<RoomID>? = nil) -> Double {
+                                     occupied: Set<RoomID>? = nil, service shared: UtilityService? = nil) -> Double {
         let occupied = occupied ?? Lighting.occupiedRooms(world)
         let service = engine.rules.facilities == nil ? nil
-            : Utilities.allocate(building: building, world: world, catalog: engine.catalog, rules: engine.rules)
+            : shared ?? Utilities.allocate(building: building, world: world, catalog: engine.catalog, rules: engine.rules)
         let sod = SimClock.secondOfDay(world.clock.tick)
         return world.rooms(in: building).reduce(0) { sum, room in
             guard let spec = engine.catalog.spec(room.definitionID)?.lighting else { return sum }
@@ -23,11 +23,12 @@ public enum Energy {
 
 extension SimulationEngine {
     /// Adds one hour at the current lighting load to every building's meter.
-    func meterLighting(at now: Tick, world: inout GameWorld) {
+    func meterLighting(at now: Tick, world: inout GameWorld, services: [BuildingID: UtilityService]) {
         guard rules.economy?.lightingPricePerKWh != nil else { return }
         let occupied = Lighting.occupiedRooms(world)
         for building in world.buildings.values {
-            let watts = Energy.lightingWatts(of: building.id, world: world, engine: self, occupied: occupied)
+            let watts = Energy.lightingWatts(of: building.id, world: world, engine: self, occupied: occupied,
+                                             service: services[building.id])
             world.setLightingEnergy(building.lightingKWh + watts / 1000, building: building.id)
         }
     }

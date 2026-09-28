@@ -60,6 +60,9 @@ extension AppModel {
         population = PopulationSummary(world)
         if let simulation { navigationMetrics = simulation.navigation.metrics }
         banks = traffic()?.banks ?? []
+        if let simulation, let property = activePropertyID {
+            utilityServices = simulation.utilityServices(world, buildings: world.buildings(on: property).map(\.id))
+        }
         refreshLeasing()
         refreshEconomy()
         refreshFacilities()
