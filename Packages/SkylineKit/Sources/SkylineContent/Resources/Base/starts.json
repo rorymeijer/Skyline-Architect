@@ -32,5 +32,39 @@
       "pileSpacingModules": 4
     },
     "startingCash": 2500000
+  },
+  {
+    "id": "scenario-saltmere",
+    "name": "Scenario — Harbour Row",
+    "mode": "standard",
+    "cityID": "saltmere",
+    "plotID": "saltmere-harbour-row",
+    "propertyName": "Harbour Row",
+    "startingFoundation": {
+      "buildingName": "Harbour Row Court",
+      "footprintOffsetModules": 8,
+      "footprintModules": 40,
+      "basementFloors": 1,
+      "pileDepthMeters": 26,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  },
+  {
+    "id": "scenario-harrowgate",
+    "name": "Scenario — Crown Yard",
+    "mode": "standard",
+    "cityID": "harrowgate",
+    "plotID": "harrowgate-crown-yard",
+    "propertyName": "Crown Yard",
+    "startingFoundation": {
+      "buildingName": "Crown Yard Chambers",
+      "footprintOffsetModules": 6,
+      "footprintModules": 32,
+      "basementFloors": 2,
+      "pileDepthMeters": 14,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
   }
 ]

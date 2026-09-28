@@ -21,6 +21,7 @@
     "facilities": "facilities.json",
     "progression": "progression.json",
     "weather": "weather.json",
-    "events": "events.json"
+    "events": "events.json",
+    "scenarios": "scenarios.json"
   }
 }
