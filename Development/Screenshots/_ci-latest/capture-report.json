@@ -6,23 +6,23 @@
       "centerX" : 24,
       "centerY" : 8.8,
       "detailLevel" : "Rooms",
-      "fps" : 60.43821483140407,
-      "frameTimeMs" : 16.54582291666884,
-      "memoryMB" : 160.171875,
+      "fps" : 59.76828830761004,
+      "frameTimeMs" : 16.73128055555632,
+      "memoryMB" : 156.6875,
       "nodeCount" : 223,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
         "light" : 0,
         "overlays" : 0,
-        "people" : 0.2,
+        "people" : 0.1,
         "sim" : 0,
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.6569531249915883,
+      "sceneUpdateMs" : 0.35513333333104435,
       "tileLevel" : 3,
-      "tileRasterMs" : 15.934317708346413,
+      "tileRasterMs" : 12.876565104162907,
       "tilesCached" : 12,
       "tilesPending" : 0,
       "tilesRasterized" : 16,
@@ -37,7 +37,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.00751793384552
+    "waitSeconds" : 1.027269959449768
   },
   {
     "diagnostics" : {
@@ -46,23 +46,23 @@
       "centerX" : 24,
       "centerY" : 8.8,
       "detailLevel" : "Rooms",
-      "fps" : 59.55410846424867,
-      "frameTimeMs" : 16.79145277777631,
-      "memoryMB" : 174.75,
+      "fps" : 59.83759080562022,
+      "frameTimeMs" : 16.7119027777782,
+      "memoryMB" : 172.46875,
       "nodeCount" : 279,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
-        "light" : 0.9,
+        "light" : 0.2,
         "overlays" : 0,
         "people" : 0.2,
         "sim" : 0,
         "tiles" : 0.1,
         "weather" : 0
       },
-      "sceneUpdateMs" : 1.3876055555594273,
+      "sceneUpdateMs" : 0.6282444444480006,
       "tileLevel" : 3,
-      "tileRasterMs" : 15.934317708346413,
+      "tileRasterMs" : 12.876565104162907,
       "tilesCached" : 12,
       "tilesPending" : 0,
       "tilesRasterized" : 16,
@@ -77,7 +77,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.097622036933899
+    "waitSeconds" : 1.033945083618164
   },
   {
     "diagnostics" : {
@@ -86,23 +86,23 @@
       "centerX" : 24,
       "centerY" : 8.8,
       "detailLevel" : "Rooms",
-      "fps" : 60.0087481503136,
-      "frameTimeMs" : 16.664236979167413,
-      "memoryMB" : 175.09375,
+      "fps" : 59.766313713386324,
+      "frameTimeMs" : 16.731833333331757,
+      "memoryMB" : 172.375,
       "nodeCount" : 284,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
-        "light" : 0.3,
+        "light" : 0.2,
         "overlays" : 0,
-        "people" : 0.5,
+        "people" : 0.2,
         "sim" : 0,
         "tiles" : 0.1,
-        "weather" : 0.1
+        "weather" : 0
       },
-      "sceneUpdateMs" : 1.1003984374937659,
+      "sceneUpdateMs" : 0.6391861111126218,
       "tileLevel" : 3,
-      "tileRasterMs" : 15.934317708346413,
+      "tileRasterMs" : 12.876565104162907,
       "tilesCached" : 12,
       "tilesPending" : 0,
       "tilesRasterized" : 16,
@@ -117,7 +117,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.1026380062103271
+    "waitSeconds" : 1.031149983406067
   },
   {
     "diagnostics" : {
@@ -126,23 +126,23 @@
       "centerX" : 24,
       "centerY" : 24,
       "detailLevel" : "Floors",
-      "fps" : 59.99861253207932,
-      "frameTimeMs" : 16.667052083334966,
-      "memoryMB" : 195.375,
+      "fps" : 60.21820631604429,
+      "frameTimeMs" : 16.606273437499652,
+      "memoryMB" : 191.515625,
       "nodeCount" : 328,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
-        "light" : 0.4,
+        "light" : 0.3,
         "overlays" : 0,
         "people" : 0.3,
         "sim" : 0,
         "tiles" : 0.1,
-        "weather" : 0.1
+        "weather" : 0
       },
-      "sceneUpdateMs" : 0.9571015624949553,
+      "sceneUpdateMs" : 0.7954817708348827,
       "tileLevel" : 2,
-      "tileRasterMs" : 15.211370000006355,
+      "tileRasterMs" : 11.894128333331084,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 25,
@@ -151,13 +151,53 @@
       "viewportWidth" : 1024,
       "zoom" : 9
     },
-    "file" : "04-leasing-economy.png",
+    "file" : "04-leasing.png",
     "grid" : false,
-    "note" : "The leasing panel's amenity totals and the economy panel's turnover row (the share booked at 06:00).",
+    "note" : "The leasing panel with the amenity totals: open venues, visitors inside, yesterday's customers, takings and share.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0650849342346191
+    "waitSeconds" : 1.1479829549789429
+  },
+  {
+    "diagnostics" : {
+      "agentsRendered" : 90,
+      "backingScale" : 1,
+      "centerX" : 24,
+      "centerY" : 24,
+      "detailLevel" : "Floors",
+      "fps" : 60.10813829756183,
+      "frameTimeMs" : 16.63668229166504,
+      "memoryMB" : 201.421875,
+      "nodeCount" : 328,
+      "sceneSections" : {
+        "cars" : 0.1,
+        "fire" : 0,
+        "light" : 0.3,
+        "overlays" : 0,
+        "people" : 0.3,
+        "sim" : 0,
+        "tiles" : 0.1,
+        "weather" : 0
+      },
+      "sceneUpdateMs" : 0.7255234374952124,
+      "tileLevel" : 2,
+      "tileRasterMs" : 11.894128333331084,
+      "tilesCached" : 15,
+      "tilesPending" : 0,
+      "tilesRasterized" : 25,
+      "tilesVisible" : 9,
+      "viewportHeight" : 681,
+      "viewportWidth" : 1024,
+      "zoom" : 9
+    },
+    "file" : "05-economy.png",
+    "grid" : false,
+    "note" : "The economy panel: the Turnover row and the turnover-share bookings of the 06:00 closing.",
+    "pixelHeight" : 681,
+    "pixelWidth" : 1024,
+    "settled" : true,
+    "waitSeconds" : 1.0135669708251953
   },
   {
     "diagnostics" : {
@@ -166,23 +206,23 @@
       "centerX" : 24,
       "centerY" : 64,
       "detailLevel" : "Rooms",
-      "fps" : 59.9985300360076,
-      "frameTimeMs" : 16.667075000001812,
-      "memoryMB" : 223.703125,
+      "fps" : 60.03757977260623,
+      "frameTimeMs" : 16.656234374995194,
+      "memoryMB" : 220.953125,
       "nodeCount" : 273,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
-        "light" : 0.3,
+        "light" : 0.2,
         "overlays" : 0,
-        "people" : 0.2,
+        "people" : 0.1,
         "sim" : 0,
         "tiles" : 0.1,
-        "weather" : 0.1
+        "weather" : 0
       },
-      "sceneUpdateMs" : 0.7397194444441387,
+      "sceneUpdateMs" : 0.6053463541668691,
       "tileLevel" : 3,
-      "tileRasterMs" : 13.54892833334039,
+      "tileRasterMs" : 10.82993629629502,
       "tilesCached" : 21,
       "tilesPending" : 0,
       "tilesRasterized" : 31,
@@ -191,12 +231,12 @@
       "viewportWidth" : 1024,
       "zoom" : 19
     },
-    "file" : "05-sky-bar.png",
+    "file" : "06-sky-bar.png",
     "grid" : false,
     "note" : "Day 2 · 22:00: the sky bar on floor 17 at night. 13 workers and residents and 44 street visitors at amenities; takings today $10,437.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0680159330368042
+    "waitSeconds" : 1.0172860622406006
   }
 ]
