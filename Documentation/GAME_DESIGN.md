@@ -292,3 +292,14 @@ appears in the estate panel, its room in the build palette and its scenario in t
 browser, with no code involved. A broken mod never takes the game down: it is listed as
 not loaded, with the reason.
 
+## Phase 18 player experience (current)
+
+*Load Game…* now opens the saves panel. It lists every save with where it lives: on this
+device, in iCloud Drive, or a conflict copy. With **iCloud Drive** switched on, a tower
+saved on the Mac is there on the iPad, and the other way round.
+
+When both devices changed the same save before they could sync, nothing is lost. Both
+versions stay, one of them named "… conflict ‹date›", and the player loads whichever they
+want. A save deleted on one device disappears on the others, unless another device changed
+it in the meantime. Autosaves stay on the device that made them.
+

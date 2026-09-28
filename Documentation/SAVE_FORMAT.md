@@ -84,6 +84,56 @@ bytes. Files use the extension `.skylinesave`.
 * Slots: `quicksave` (⌘S), named slots, and rotating `autosave-1…3` (every 2 minutes when
   there are unsaved changes). Slot names are restricted to letters, digits, space, `-`, `_`.
 
+## Sync with iCloud Drive (Phase 18)
+
+Status: the sync logic is **FUNCTIONAL** and tested. The iCloud Drive connection is
+**implemented but unverified**: it needs a signed build with an iCloud container (see
+*Setup* below), which CI does not have.
+
+**Where the code lives.**
+
+* `SaveSync` (SkylinePersistence) syncs this device's save folder with a shared folder in
+  both directions. It is plain file logic, tested on Linux with two simulated devices.
+* The app uses the app's iCloud Drive container (`Documents/Saves`) as the shared folder.
+* Sync is **off by default**. The switch is in the saves panel (File ▸ Load Game… / main
+  menu).
+* Sync runs:
+  * on launch;
+  * after every save;
+  * when the saves panel opens;
+  * on *Sync Now*.
+
+**Rules.** Each device keeps `.skyline-sync.json`, the fingerprint (FNV-1a 64 of the file
+bytes) of every slot at its last sync.
+
+| This device | Shared folder | Result |
+|-------------|---------------|--------|
+| changed | unchanged | upload |
+| unchanged | changed | download |
+| changed | changed (or both new with different contents) | **conflict**: the shared version is kept as "‹slot› conflict ‹yyyyMMdd-HHmm›" on both sides and this device's version is uploaded. Nothing is lost or silently overwritten. |
+| deleted | unchanged since the last sync | deleted in the shared folder too |
+| deleted | changed since | restored here (the change wins over the deletion) |
+| — | iCloud placeholder (`.slot.skylinesave.icloud`) | pending: a download is requested; nothing is deleted or overwritten |
+
+Autosaves are per device and never synced. Saves still need the content packs they list
+(MODDING.md).
+
+**Setup for a real iCloud build** (requires an Apple Developer team, so it is not in the
+repository's project):
+
+1. Add the iCloud capability to the app target, with *iCloud Documents* and a container
+   such as `iCloud.<team-prefix>.SkylineArchitect`.
+2. Sign with that team.
+
+Without this, `url(forUbiquityContainerIdentifier:)` returns nil and the panel says iCloud
+Drive is unavailable. That is what the CI build shows.
+
+**Limits.**
+
+* The app writes files without `NSFileCoordinator`.
+* It does not use `NSMetadataQuery` to see changes live: it syncs at the moments listed
+  above.
+
 ## Adding a format version
 
 1. Bump `SaveCodec.currentVersion`.

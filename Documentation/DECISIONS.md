@@ -360,3 +360,25 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Base entries cannot be removed yet.
   - A save made with a mod needs that mod (by id; versions are recorded but not enforced).
 
+## D-043 — Save sync as folder-to-folder logic with keep-both conflicts
+- **Date:** 2026-09-28
+- **Decision:**
+  - Saves sync between the local save folder and the app's iCloud Drive container.
+  - The logic is platform-independent (`SaveSync`), compares file fingerprints with a per-device record of the last synced version, and runs at fixed moments (launch, save, panel, Sync Now).
+  - Conflicts keep both versions under a new name; a deletion propagates only over an unchanged copy; placeholders are left alone; autosaves stay local.
+  - The iCloud entitlement is a documented setup step, not part of the checked-in project.
+- **Alternatives:**
+  - `UIDocument`/`NSDocument` with iCloud versions.
+  - CloudKit records.
+  - Newest-wins by modification date.
+  - Syncing autosaves.
+- **Reason:**
+  - Saves are single files already, so folder sync is the smallest robust step.
+  - Fingerprints and a per-device base decide "who changed" without trusting clocks across devices.
+  - Keep-both is the only rule that can never lose a player's game.
+  - A pure-Swift core is testable on Linux (two simulated devices).
+  - An iCloud entitlement would break local ad-hoc builds for anyone without a team.
+- **Consequences:**
+  - The iCloud connection is unverified until someone builds with a team.
+  - No live updates: another device's save appears at the next sync moment.
+

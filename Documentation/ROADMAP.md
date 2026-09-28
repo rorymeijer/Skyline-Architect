@@ -159,8 +159,16 @@ Delivered:
 
 Not yet: removing entries, image assets, content hashes, hot reload.
 
-### Phase 18 — iCloud persistence
-Optional iCloud Drive save sync with conflict handling.
+### Phase 18 — iCloud persistence ✅ (2026-09-28)
+Delivered:
+- save sync logic with keep-both conflicts, safe deletions and placeholders (tested);
+- the iCloud Drive connection;
+- the saves panel.
+
+Not yet:
+- verified on a signed build with an iCloud container;
+- file coordination;
+- live change notifications.
 
 ### Phase 19 — Large-scale performance
 Profiling pass against targets (hundreds of floors, thousands of rooms/people).

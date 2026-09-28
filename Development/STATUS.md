@@ -1,61 +1,61 @@
 # Development Status
 
-_Last updated: 2026-09-28 (Phase 17)_
+_Last updated: 2026-09-28 (Phase 18)_
 
 ## Current phase
-**Phase 17 — Modding / content system: COMPLETE** (awaiting approval to continue with Phase 18).
+**Phase 18 — iCloud persistence: COMPLETE** (awaiting approval to continue with Phase 19). Status of the parts:
 
-## Quality gates (Phase 17)
+* The sync logic is FUNCTIONAL and tested.
+* The iCloud Drive connection is implemented but **unverified**: it needs a signed build with an iCloud container.
+
+## Quality gates (Phase 18)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36405609107 |
-| Automated tests pass | ✅ | 269 tests (Linux + macOS); see the list below |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36416756463 |
+| Automated tests pass | ✅ | 275 tests (Linux + macOS); 6 new sync tests with two simulated devices |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-17/` (the broken mod was written by the capture script, and the tower built with the blueprint tool — labelled) |
+| Feature demonstrable | ✅ (sync logic) · ⚠️ (iCloud itself) | 7 captures in `Development/Screenshots/Phase-18/`, synced against a stand-in folder with a simulated second device (labelled); 06 shows the real iCloud lookup failing on the unsigned CI build |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | MODDING.md (rewritten: mods, overlay rules, validation, saves, example), ARCHITECTURE, DECISIONS D-042, CHANGELOG 0.17.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | Unreadable validation prefix and palette overflow (then a scroll view that does not render in captures): fixed and recaptured. Two app compile failures fixed first. |
+| Documentation updated | ✅ | SAVE_FORMAT (Sync section, iCloud setup), DECISIONS D-043, CHANGELOG 0.18.0, ARCHITECTURE, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | Conflict scene wrongly scripted (no conflict — correct behaviour for that order): fixed; conflict badge shortened |
 | Known issues recorded | ✅ | below |
 
-The Phase 17 tests cover:
+The Phase 18 tests cover:
 
-* **Example mod:** it loads over the base pack (city, plot, room, layout, tenant, scenario, blueprint); a replaced entry keeps the base order.
-* **Playability:** the mod's content works — its scenario starts, a loft is placed, and its blueprint builds.
-* **Disabled mods** are listed but not loaded.
-* **Broken mods** are reported and skipped, while the others load: invalid JSON, a bad reference (attributed to the mod), an unknown kind, a missing requirement, a duplicate id.
-* **Requirements** follow the load order.
-* **Discovery** ignores folders without a manifest.
-* **Single files** replace, and materials merge.
+* **Travel:** saves travel between devices (upload, download, idempotent).
+* **Conflicts** keep both versions on both devices, under valid, unique names.
+* **Deletions** follow only unchanged copies; a changed copy is restored.
+* **Placeholders** are pending: never overwritten and never taken as a deletion.
+* **Autosaves** stay on the device, and the sync state file is not a save.
+* **Fingerprints** are stable.
 
 ## Completed
-- Phases 0–16 (merged: rorymeijer/Skyline-Architect#1 … #16).
-- Phase 17 (FUNCTIONAL):
-  - **Loading:** `ContentPack` (read and overlay) and `ContentLibrary.build`; `ModLoader` handles discovery, load order, validation per mod, `requires`, and a status per pack.
-  - **App:** it loads the enabled mods, and the mod manager enables, orders, installs examples and applies. Saves record every pack.
-  - **Example mod:** Kestrel Bay.
-  - **Palette:** icon-only when too wide.
+- Phases 0–17 (merged: rorymeijer/Skyline-Architect#1 … #17).
+- Phase 18:
+  - **`SaveSync`:** two-way sync between folders — fingerprints, a per-device base, keep-both conflicts, safe deletions, placeholders.
+  - **App:** iCloud Drive container, sync off by default, and sync on launch, on save, when the panel opens and on Sync Now.
+  - **Saves panel:** replaces the load sheet, with sync badges, paging and delete.
 
 ## In progress
-- Nothing. Waiting for approval to continue (Phase 18 — iCloud persistence).
+- Nothing. Waiting for approval to continue (Phase 19 — Large-scale performance).
 
 ## Known bugs / unverified
-- No human play test yet; iPad never launched (the mod folder there is the app container, with no file browser integration yet).
-- Mods cannot remove base entries or ship images; a replaced entry must be copied whole.
-- Saves check pack ids, not versions or content hashes: a changed mod can alter a running save.
-- Changing mods starts a fresh game (by design, D-042).
-- Earlier notes still apply: scenario balance beyond Opening Day, shared weather, estate-wide cash.
+- **iCloud Drive has never run.** It needs the iCloud capability with a container and a signing team (SAVE_FORMAT.md → Setup). Only the sync logic is verified (tests, and captures against a stand-in folder).
+- No `NSFileCoordinator` and no live `NSMetadataQuery` updates: sync happens at fixed moments.
+- The conflict row's detail text is cut off with long slot names.
+- No human play test yet; iPad never launched.
+- Earlier notes still apply: mods cannot remove entries or ship images, scenario balance beyond Opening Day, shared weather.
 
 ## Technical debt
-- Validating after each mod rebuilds the whole library, which is fine for a handful of mods.
+- Sync reads every save file to fingerprint it on each run (fine for tens of saves).
 - `FireSafety.protectedRooms` and utility allocation are recomputed often.
-- Reloading restores the saved camera even when a caller moves it right after.
-- Simulation on the main thread.
+- Simulation on the main thread (Phase 19).
 
-## Next tasks (Phase 18 — iCloud persistence)
-1. Optional iCloud Drive save sync (ubiquity container), off by default.
-2. Conflict handling: keep both copies, newest-wins suggestion, never silent overwrite.
-3. Status in the load sheet (local, uploading, in iCloud, conflict).
-4. Tests for the conflict rules; docs and captures (as far as CI can show without an iCloud account).
+## Next tasks (Phase 19 — Large-scale performance)
+1. Build a large test tower (hundreds of floors, thousands of rooms and people) with a blueprint generator, and profile simulation, navigation, rendering and saving.
+2. Record baselines in PERFORMANCE.md; fix the worst hot spots (caching of utilities and fire protection, route cache, tile rasterization).
+3. Move the simulation off the main thread if profiles call for it (SimulationHost actor publishing snapshots).
+4. Scale tests, docs and captures.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,
