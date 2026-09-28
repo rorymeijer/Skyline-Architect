@@ -136,8 +136,12 @@ struct SimFixture {
         var ticks: Tick = 0
         for _ in 0..<60 { ticks += host.ticksToRun(realDelta: 1.0 / 60) }
         #expect(ticks == 23 || ticks == 24)     // one real second ≈ 24 ticks at 1×
-        host.speed = .fastest
+        host.speed = .fast
         #expect(host.ticksToRun(realDelta: 0.1) == 24)
+        host.speed = .fastest                   // 60×: a game day in one real minute
+        var day: Tick = 0
+        for _ in 0..<(60 * 60) { day += host.ticksToRun(realDelta: 1.0 / 60) }
+        #expect(abs(Int(day) - Int(SimClock.secondsPerDay)) <= 1)
         host.speed = .paused
         #expect(host.ticksToRun(realDelta: 1) == 0)
     }

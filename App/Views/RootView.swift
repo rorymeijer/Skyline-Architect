@@ -9,6 +9,7 @@ struct RootView: View {
             ZStack(alignment: .topLeading) {
                 WorldView(scene: scene, onToggleGrid: { model.toggleGrid() }, onToolKey: { model.handleToolKey($0) })
                     .ignoresSafeArea()
+                DeveloperShortcut(model: model)
                 ChromeOverlay(model: model)
             }
             .alert(model.alert?.title ?? "", isPresented: Binding(get: { model.alert != nil }, set: { if !$0 { model.alert = nil } })) {
@@ -179,5 +180,21 @@ private struct ControlButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(configuration.isPressed ? 0.18 : 0)))
+    }
+}
+
+/// The developer HUD has no menu item or button: only ⌥⌘D shows or hides it. An invisible,
+/// zero-size button carries the shortcut (hidden views lose theirs), on macOS and on an iPad
+/// with a keyboard.
+private struct DeveloperShortcut: View {
+    let model: AppModel
+
+    var body: some View {
+        Button("") { model.showDeveloperHUD.toggle() }
+            .keyboardShortcut("d", modifiers: [.command, .option])
+            .buttonStyle(.plain)
+            .frame(width: 0, height: 0)
+            .opacity(0)
+            .accessibilityHidden(true)
     }
 }

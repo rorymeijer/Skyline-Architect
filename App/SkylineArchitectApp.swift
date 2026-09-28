@@ -64,8 +64,6 @@ struct GameCommands: Commands {
         CommandGroup(after: .toolbar) {
             Button(model.showGrid ? "Hide Architectural Grid" : "Show Architectural Grid") { model.toggleGrid() }
                 .keyboardShortcut("g", modifiers: [.command, .option])
-            Button(model.showDeveloperHUD ? "Hide Developer HUD" : "Show Developer HUD") { model.showDeveloperHUD.toggle() }
-                .keyboardShortcut("d", modifiers: [.command, .option])
             Button(model.showTraffic ? "Hide Elevator Traffic" : "Show Elevator Traffic") { model.showTraffic.toggle() }
                 .keyboardShortcut("t", modifiers: [.command, .option])
             Button(model.showBanksPanel ? "Hide Elevator Banks" : "Show Elevator Banks") { model.showBanksPanel.toggle() }

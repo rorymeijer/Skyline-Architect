@@ -133,11 +133,8 @@ final class AppModel {
     static let autosaveInterval: TimeInterval = 120
 
     init(arguments: [String] = CommandLine.arguments) {
-        #if DEBUG
-        showDeveloperHUD = true
-        #else
+        // Hidden until the player presses ⌥⌘D (no menu item; `DeveloperShortcut`).
         showDeveloperHUD = false
-        #endif
         saveStore = SaveStore(directory: Self.defaultSaveDirectory())
         var mods = Self.defaultModsDirectory()
         var enabled = UserDefaults.standard.stringArray(forKey: Self.enabledModsKey) ?? []
@@ -316,7 +313,9 @@ final class AppModel {
         case "speed1": setSpeed(.normal)
         case "speed2": setSpeed(.double)
         case "speed3": setSpeed(.quadruple)
-        case "speed4": setSpeed(.fastest)
+        case "speed4": setSpeed(.fast)
+        case "speed5": setSpeed(.faster)
+        case "speed6": setSpeed(.fastest)
         default:
             select(tool: nil)
             selectRoom(at: nil)
