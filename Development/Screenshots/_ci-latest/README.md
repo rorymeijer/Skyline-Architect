@@ -1,6 +1,6 @@
 # Latest CI captures (automatic)
 
 Real in-game screenshots from the Debug build's screenshot director, captured by CI run
-36455345715 for commit 04b565292e386d9e1318279dee09ce9e5a0cadb6. JPEG-compressed copies of the PNG
+36456159495 for commit 6c7df1ff03e8d3e1e42a47456fa0ca0481bcd9d1. JPEG-compressed copies of the PNG
 artifact. Overwritten on every CI run of a development branch; curated per-phase
 screenshots live in `Development/Screenshots/Phase-XX/`.
