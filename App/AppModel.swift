@@ -125,17 +125,21 @@ final class AppModel {
         showDeveloperHUD = false
         #endif
         saveStore = SaveStore(directory: Self.defaultSaveDirectory())
-        modsDirectory = Self.defaultModsDirectory()
-        enabledMods = UserDefaults.standard.stringArray(forKey: Self.enabledModsKey) ?? []
+        var mods = Self.defaultModsDirectory()
+        var enabled = UserDefaults.standard.stringArray(forKey: Self.enabledModsKey) ?? []
+        var persists = true
         #if DEBUG
         if let config = ScreenshotDirector.Configuration(arguments: arguments) {
             // Captures use their own mods folder and never read or change the player's mods.
-            modsDirectory = config.directory.appendingPathComponent("mods", isDirectory: true)
-            enabledMods = []
-            persistsModSettings = false
+            mods = config.directory.appendingPathComponent("mods", isDirectory: true)
+            enabled = []
+            persists = false
         }
         #endif
-        modDraft = enabledMods
+        modsDirectory = mods
+        enabledMods = enabled
+        modDraft = enabled
+        persistsModSettings = persists
         do {
             try reloadContent()
             try startNewGame()
