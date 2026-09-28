@@ -54,11 +54,14 @@ extension SimulationEngine {
     /// Wear and dirt accumulate, jobs are opened for rooms below the thresholds, wages paid.
     func facilitiesDaily(at now: Tick, world: inout GameWorld) {
         guard let rules = rules.facilities else { return }
-        let weather = weatherKind(world)?.effects
+        // Each room wears with the weather of its own city.
+        var weatherOf: [BuildingID: WeatherKind.Effects] = [:]
+        for b in world.buildings.values { weatherOf[b.id] = weatherKind(world.city(of: b.id))?.effects }
         var members: [RoomID: Int] = [:]
         for p in world.people { if let r = p.anchorRoom { members[r, default: 0] += 1 } }
         for room in world.rooms.values {
             guard let spec = catalog.spec(room.definitionID), var u = world.upkeep[room.id] else { continue }
+            let weather = weatherOf[room.buildingID]
             u.condition = max(0, u.condition - (spec.wearPerDay ?? 0) * (weather?.wear ?? 1))
             if spec.kind == .room {
                 let dirt = spec.category == "circulation" ? rules.circulationDirtPerDay : rules.dirtPerPersonPerDay * Double(members[room.id] ?? 0)

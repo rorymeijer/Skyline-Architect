@@ -63,8 +63,8 @@ extension ScreenshotDirector {
 
     /// Sets today's weather (developer tool for captures): no transition, clear tomorrow.
     static func force(_ kind: String, _ temperature: Double, model: AppModel) {
-        guard let day = model.world?.weather?.day else { return }
-        model.world?.weather = WeatherState(day: day, yesterday: kind, today: kind, tomorrow: "clear", temperature: temperature)
+        guard let city = model.activeCity, let day = city.weather?.day else { return }
+        model.world?.setWeather(WeatherState(day: day, yesterday: kind, today: kind, tomorrow: "clear", temperature: temperature), city: city.id)
     }
 
     /// The `index`-th office from the bottom.
@@ -142,15 +142,24 @@ extension ScreenshotDirector {
         return "\(floors) floors, \(world.rooms.count) rooms, \(world.people.count) people, \(world.elevators.count) cars"
     }
 
-    /// Clouds the renderer is showing now (Phase 20).
-    static func cloudCount(_ model: AppModel) -> Int {
-        guard let world = model.world, let property = model.activePropertyID,
-              let city = world.properties[property].flatMap({ world.cities[$0.cityID] }) else { return 0 }
-        let t = Double(world.clock.tick)
-        let look = model.weatherLook(at: t)
-        let view = model.scene?.controller.camera.visibleRect
-        let x = world.buildings(on: property).first.map { world.grid.x(ofColumn: $0.footprint.start) } ?? 0
-        return CloudView.clouds(seed: city.seed, time: t, cover: look.cloud, centerX: x, visible: view).count
+    /// Adds money for a capture script (developer tool; the report says so).
+    static func grant(_ amount: Int, model: AppModel) {
+        guard let tick = model.world?.clock.tick else { return }
+        model.world?.ledger.post(Transaction(tick: tick, amount: amount, category: .grant, detail: "Capture script grant"))
+    }
+
+    /// "Port Calder: Clear 21°; Saltmere: Rain 13°. Last 24 h: …" for the estate capture.
+    static func estateNote(_ model: AppModel) -> String {
+        let s = model.estate
+        let cities = s.holdings.map { "\($0.city): \($0.weather.isEmpty ? "no weather" : $0.weather)" }.joined(separator: "; ")
+        return cities + ". Last 24 h \(Money.format(s.totalNet24h)) = buildings \(Money.format(s.totalNet24h - s.estateNet24h))"
+            + " + estate \(Money.format(s.estateNet24h))."
+    }
+
+    /// Share of the city's windows lit now (B8), as a percentage.
+    static func activity(_ model: AppModel) -> String {
+        guard let tick = model.world?.clock.tick else { return "?" }
+        return "\(Int((DayNight.cityActivity(atTick: Double(tick)) * 100).rounded())) %"
     }
 
     static func carCenter(_ car: ElevatorCar, in world: GameWorld) -> Vec2? {

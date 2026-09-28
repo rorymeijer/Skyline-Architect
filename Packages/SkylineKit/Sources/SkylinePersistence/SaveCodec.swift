@@ -31,7 +31,7 @@ public enum SaveError: Error, Equatable, CustomStringConvertible {
 /// an inconsistent save is rejected instead of silently corrupting a game.
 public enum SaveCodec {
     public static let format = "skyline-architect-save"
-    public static let currentVersion = 13
+    public static let currentVersion = 14
 
     /// Upgrades the `game` JSON object from version `key` to `key + 1`.
     public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
@@ -177,6 +177,18 @@ public enum SaveCodec {
         12: { game in
             guard game["world"] is [String: Any] else { throw SaveError.corrupt("v12 save without world") }
         },
+        // v13 → v14: weather belongs to each city. The estate's single weather moves to the
+        // first city, whose seed drew it (its days continue unchanged); other cities start
+        // their own on the next simulation step. Pack references may carry a content hash
+        // (absent in older saves: only the version can be compared).
+        13: { game in
+            guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v13 save without world") }
+            if let weather = world.removeValue(forKey: "weather"), var cities = world["cities"] as? [[String: Any]], !cities.isEmpty {
+                cities[0]["weather"] = weather
+                world["cities"] = cities
+            }
+            game["world"] = world
+        },
     ]
 
     private struct Envelope<Game: Codable>: Codable {
@@ -230,6 +242,18 @@ public enum SaveCodec {
         do { try save.world.validateIntegrity() } catch { throw SaveError.invalidWorld(String(describing: error)) }
         guard save.world.properties.contains(save.activePropertyID) else { throw SaveError.invalidWorld("active property missing") }
         return save
+    }
+
+    /// Packs the save needs that are installed but differ from the ones it was made with
+    /// (another version, or the same version with changed files). The game loads anyway;
+    /// the player is told, because the content may no longer match the world.
+    public static func changedPacks(in save: SaveGame, availablePacks: [ContentPackReference]) -> [String] {
+        save.contentPacks.compactMap { saved in
+            guard let now = availablePacks.first(where: { $0.id == saved.id }) else { return nil }
+            if now.version != saved.version { return "'\(saved.id)' is version \(now.version); the save was made with \(saved.version)" }
+            if let a = saved.hash, let b = now.hash, a != b { return "'\(saved.id)' \(now.version) has changed since the save was made" }
+            return nil
+        }
     }
 
     private static func migrateAndDecode(_ data: Data, from version: Int, to target: Int,

@@ -20,14 +20,18 @@ final class DayNightLayer {
         tint.isHidden = true
     }
 
-    /// `emission` is the node of the emission tile layer, faded in with the darkness.
-    func update(grade: Grade, darkness: Double, rooms: [LitRoom], viewport: CGSize, emission: SKNode) {
+    /// `emission` (city windows) and `lamps` (street lamps) are the nodes of the static
+    /// light tile layers, faded in with the darkness; windows also follow `cityActivity`.
+    func update(grade: Grade, darkness: Double, cityActivity: Double, rooms: [LitRoom], viewport: CGSize, emission: SKNode, lamps: SKNode) {
         tint.size = viewport
         let plain = grade == .day
         tint.isHidden = plain
         if !plain { applyGrade(grade) }
-        emission.alpha = CGFloat(min(max(darkness * 1.1 - 0.05, 0), 1))
+        let night = min(max(darkness * 1.1 - 0.05, 0), 1)
+        emission.alpha = CGFloat(night * cityActivity)
         emission.isHidden = emission.alpha < 0.01
+        lamps.alpha = CGFloat(night)
+        lamps.isHidden = lamps.alpha < 0.01
         while pool.count < rooms.count {
             let s = SKSpriteNode(color: .white, size: .zero)
             s.anchorPoint = .zero

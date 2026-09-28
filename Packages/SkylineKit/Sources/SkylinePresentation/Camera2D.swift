@@ -9,18 +9,23 @@ public struct CameraLimits: Hashable, Sendable {
     /// The camera center is clamped so the view stays within this region whenever the
     /// view is smaller than the region (see `Camera2D.clampCenter`).
     public var bounds: Rect
+    /// Screen points along the bottom edge covered by interface (the build bar). The view
+    /// may extend this far below `bounds`, so the lowest ground can always be panned into
+    /// sight above it, at any zoom.
+    public var bottomInset: Double
 
-    public init(minZoom: Double, maxZoom: Double, bounds: Rect) {
-        precondition(minZoom > 0 && maxZoom >= minZoom)
+    public init(minZoom: Double, maxZoom: Double, bounds: Rect, bottomInset: Double = 0) {
+        precondition(minZoom > 0 && maxZoom >= minZoom && bottomInset >= 0)
         self.minZoom = minZoom
         self.maxZoom = maxZoom
         self.bounds = bounds
+        self.bottomInset = bottomInset
     }
 
     /// Defaults: from ~0.35 pt/m (a 900 pt high window shows 2.5 km — a very tall tower)
     /// down to 96 pt/m (a person is ~160 pt tall).
-    public static func standard(bounds: Rect) -> CameraLimits {
-        CameraLimits(minZoom: 0.35, maxZoom: 96, bounds: bounds)
+    public static func standard(bounds: Rect, bottomInset: Double = 0) -> CameraLimits {
+        CameraLimits(minZoom: 0.35, maxZoom: 96, bounds: bounds, bottomInset: bottomInset)
     }
 }
 
@@ -92,12 +97,13 @@ public struct Camera2D: Hashable, Sendable {
     public func clampZoom(_ z: Double) -> Double { min(max(z, limits.minZoom), limits.maxZoom) }
 
     /// Keeps the view inside `limits.bounds` on each axis where the view is smaller
-    /// than the bounds; otherwise centers the bounds on that axis.
+    /// than the bounds; otherwise centers the bounds on that axis. Vertically the bounds
+    /// reach `bottomInset` points further down (the part hidden behind the interface).
     mutating func clampCenter() {
         let half = viewportSize / (2 * zoom)
         let b = limits.bounds
         center.x = Self.clampAxis(center.x, half: half.x, lo: b.minX, hi: b.maxX)
-        center.y = Self.clampAxis(center.y, half: half.y, lo: b.minY, hi: b.maxY)
+        center.y = Self.clampAxis(center.y, half: half.y, lo: b.minY - limits.bottomInset / zoom, hi: b.maxY)
     }
 
     static func clampAxis(_ c: Double, half: Double, lo: Double, hi: Double) -> Double {

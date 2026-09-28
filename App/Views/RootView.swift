@@ -49,38 +49,12 @@ struct ChromeOverlay: View {
             ViewControls(model: model)
                 .padding(12)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            VStack(alignment: .trailing, spacing: 8) {
-                if let report = model.unitReport {
-                    UnitInspector(report: report) { model.selectRoom(at: nil) }
-                }
-                if model.showScenarioPanel {
-                    ScenarioPanel(model: model)
-                }
-                if model.showEstatePanel {
-                    EstatePanel(model: model)
-                }
-                if model.showIncidentsPanel {
-                    IncidentsPanel(model: model)
-                }
-                if model.showProgressPanel {
-                    ProgressPanel(model: model)
-                }
-                if model.showEconomyPanel {
-                    EconomyPanel(model: model)
-                }
-                if model.showFacilitiesPanel {
-                    FacilitiesPanel(model: model)
-                }
-                if model.showLeasingPanel {
-                    LeasingPanel(summary: model.leasing) { model.showLeasingPanel = false }
-                }
-                if model.showBanksPanel {
-                    ElevatorBanksPanel(model: model)
-                }
-            }
-            .padding(.top, 60)
-            .padding(.trailing, 12)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            // Above the view controls (bottom right); tabs when the panels do not all fit.
+            PanelStack(model: model)
+                .padding(.top, 60)
+                .padding(.trailing, 12)
+                .padding(.bottom, 56)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             SimulationControls(model: model)
                 .padding(.top, 12)
                 .frame(maxWidth: .infinity, alignment: .top)

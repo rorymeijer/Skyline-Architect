@@ -48,6 +48,16 @@ import SkylineContent
         #expect(panes.count >= 3 && panes.allSatisfy { $0.rect.width == 1.5 && $0.rect.height < 2.5 })
     }
 
+    /// City windows go out through the night and come back with the early risers.
+    @Test func cityLightsFollowTheNight() {
+        func at(_ h: Double) -> Double { DayNight.cityActivity(atTick: ((h - 6 + 24).truncatingRemainder(dividingBy: 24)) * 3600) }
+        #expect(at(20) == 1 && at(21.9) == 1)                                          // evening: all on
+        #expect(at(23) < 1 && at(23) > at(0.5))                                        // going to bed
+        #expect(abs(at(3) - 0.4) < 0.001)                                              // quietest
+        #expect(at(5.5) > at(3) && at(6.5) > at(5.5))                                  // early risers
+        #expect((0..<96).allSatisfy { let a = at(Double($0) / 4); return a >= 0.4 && a <= 1 })
+    }
+
     @Test func gradeWarmsAtTheEdgesOfTheDay() {
         func at(_ h: Double) -> Grade { DayNight.grade(atTick: (h - 6) * 3600) }
         #expect(at(12).top == RGBA(1, 1, 1) && at(12).bottom == RGBA(1, 1, 1))       // plain daylight
@@ -65,9 +75,10 @@ import SkylineContent
         let a = try #require(SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog))
         let b = try #require(SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog))
         print("[lighting] emission items: \(a.emission.drawing.items.count)")
-        #expect(a.emission.drawing.items.count > 500)                                  // city windows, neighbours, lamps
+        #expect(a.emission.drawing.items.count > 500)                                  // city and neighbour windows
         #expect(a.emission.drawing.items == b.emission.drawing.items)                  // deterministic
-        #expect(!a.layers.contains { $0.name == "emission" })                          // drawn separately
+        #expect(a.lamps.drawing.items.count >= 4 * 4 && a.lamps.drawing.items.count % 4 == 0)   // 4 glows per lamp
+        #expect(!a.layers.contains { $0.name == "emission" || $0.name == "lamps" })    // drawn separately
         #expect(a.occluders.isEmpty)                                                     // nothing built yet
         let frontage = a.frontageRect
         let lamps = NightArt.lampPositions(span: -300...300, keepClear: frontage.minX...frontage.maxX)

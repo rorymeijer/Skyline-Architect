@@ -48,6 +48,7 @@ public struct ContentPack: Sendable {
             return try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
         }
         var p = ContentPack(manifest: manifest)
+        p.manifest.contentHash = try contentHash(of: url, manifest: manifest)
         p.cities = try load("cities") ?? []
         p.plots = try load("plots") ?? []
         p.starts = try load("starts") ?? []
@@ -68,6 +69,26 @@ public struct ContentPack: Sendable {
         p.weather = try load("weather")
         p.events = try load("events")
         return p
+    }
+
+    /// FNV-1a (64 bit) over `pack.json` and every listed file, in kind order: stable across
+    /// platforms and runs, and enough to notice a changed pack (not a security measure).
+    static func contentHash(of url: URL, manifest: ContentPackManifest) throws -> String {
+        var hash: UInt64 = 0xCBF2_9CE4_8422_2325
+        func mix(_ bytes: Data) {
+            for b in bytes {
+                hash ^= UInt64(b)
+                hash = hash &* 0x0000_0100_0000_01B3
+            }
+        }
+        let files = ["pack.json"] + manifest.files.keys.sorted().compactMap { manifest.files[$0] }
+        for file in files {
+            mix(Data(file.utf8))
+            do { mix(try Data(contentsOf: url.appendingPathComponent(file))) } catch {
+                throw ContentError(pack: manifest.id, file: file, message: "Cannot read file: \(error.localizedDescription)")
+            }
+        }
+        return String(hash, radix: 16)
     }
 
     static func decode<T: Decodable>(_ url: URL, pack: String, file: String) throws -> T {

@@ -46,6 +46,14 @@ public enum DayNight {
         daylight(secondOfDay: secondOfDay(atTick: t))
     }
 
+    /// Share of the city's lit windows still on (1 = the evening's full count): the city
+    /// goes to bed from 22:00, is quietest from 01:30, and early risers switch lights on
+    /// from 04:30 until daylight takes over. Street lamps stay on all night.
+    public static func cityActivity(atTick t: Double) -> Double {
+        let sinceNoon = (secondOfDay(atTick: t) / 3600 + 12).truncatingRemainder(dividingBy: 24)   // 22:00 = 10
+        return min(1 - 0.6 * smooth((sinceNoon - 10) / 3.5) + 0.35 * smooth((sinceNoon - 16.5) / 2), 1)
+    }
+
     static func secondOfDay(atTick t: Double) -> Double {
         (t + Double(SimClock.startSecondOfDay)).truncatingRemainder(dividingBy: Double(SimClock.secondsPerDay))
     }

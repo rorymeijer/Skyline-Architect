@@ -3,7 +3,9 @@
 Status: **FUNCTIONAL (Phase 13)**. Implemented:
 
 * seasons;
-* seven kinds of weather, drawn per day with a forecast;
+* seven kinds of weather, drawn per day with a forecast, separately in every city (save
+  format 14); a building feels its own city's weather and the screen shows the weather of
+  the city on view;
 * effects on prospective tenants, wear, dirt and heating/cooling costs;
 * weather visuals and a weather chip.
 
@@ -12,7 +14,7 @@ Status: **FUNCTIONAL (Phase 13)**. Implemented:
 * weather within a day (hourly changes);
 * seasonal day length;
 * wind acting on elevators and façades;
-* weather-driven events (storm damage, flooding) in Phase 14;
+* flooding (storm damage, outages and burst pipes exist since Phase 14);
 * commuters reacting to rain.
 
 Code:
@@ -83,7 +85,9 @@ from yesterday's look to today's over 45 minutes.
 * **Fog veil:** a screen-space veil above lights and emission, dimmed at night. City
   lights fade in fog.
 * **Rain and snow:** screen-space particle emitters (decoration; they run in real time and
-  are prewarmed when precipitation starts).
+  are prewarmed when precipitation starts). Their size, speed, density and opacity follow the
+  zoom (`WeatherView.particleScale`): larger and faster close up, smaller, denser and fainter
+  far out; neutral at 8 pt/m.
 * **Lightning:** a deterministic flash in game time. In every 40 s window there is a 25 %
   chance of a strike, which fades over 3 s.
 * **Ground:** snow lies on roofs and setbacks and on the street outside the foundations.
@@ -96,4 +100,4 @@ from yesterday's look to today's over 45 minutes.
 
 * Weather changes once a day.
 * Day length does not follow the season (always summer daylight).
-* The screen-space particles are the same at every zoom.
+* Every city has the same climate (content rules); only its days differ.

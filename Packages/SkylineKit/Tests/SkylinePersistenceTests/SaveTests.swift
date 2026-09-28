@@ -255,14 +255,14 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v9.skylinesave")), availablePacks: basePacks)
         #expect(save.world.buildings.values[0].lightingKWh == 12.5)
         #expect(save.world.tenants.count == 15)
-        #expect(save.world.weather == nil)
+        #expect(save.world.cities.values.allSatisfy { $0.weather == nil })
     }
 
     /// Golden fixture v10 (weather). Frozen since format 11: loads with an empty incident log.
     @Test func goldenFixtureV10StillLoads() throws {
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v10.skylinesave")), availablePacks: basePacks)
-        #expect(save.world.weather == WeatherState(day: 3, yesterday: "rain", today: "storm", tomorrow: "overcast", temperature: 17))
+        #expect(save.world.cities.values[0].weather == WeatherState(day: 3, yesterday: "rain", today: "storm", tomorrow: "overcast", temperature: 17))
         #expect(save.world.tenants.count == 15)
         #expect(save.world.incidents == IncidentState())
     }
@@ -294,24 +294,13 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(save.world.ledger.journal.contains { $0.category == .land && $0.amount == -450_000 })
         #expect(save.world.tenants.count == 15)
         #expect(save.world.scenario == nil)
+        // The single weather of format ≤ 13 belongs to the first city; Saltmere starts its own.
+        #expect(save.world.cities.values[0].weather?.today == "clear" && save.world.cities.values[1].weather == nil)
     }
 
-    /// Golden fixture v13 (a scenario in progress: measured objectives, a streak). Regenerate
-    /// only deliberately: `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV13`.
+    /// Golden fixture v13 (a scenario in progress: measured objectives, a streak). Frozen
+    /// since format 14: the estate's weather moves to the first city.
     @Test func goldenFixtureV13StillLoads() throws {
-        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            var save = try makeElevatorSave()
-            var scenario = ScenarioState(id: "opening-day", name: "Opening Day",
-                                         objectives: [ScenarioObjective(metric: .occupiedUnits, target: 12),
-                                                      ScenarioObjective(metric: .averageWait, target: 45)],
-                                         deadlineDay: 10, holdDays: 2)
-            scenario.measured = [15, nil]
-            scenario.streak = 1
-            save.world.scenario = scenario
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v13.skylinesave")
-            try SaveCodec.encode(save).write(to: source)
-            return
-        }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v13.skylinesave")), availablePacks: basePacks)
         let scenario = try #require(save.world.scenario)
@@ -319,6 +308,8 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(scenario.objectives.map(\.metric) == [.occupiedUnits, .averageWait])
         #expect(scenario.measured == [15, nil] && scenario.result == nil)
         #expect(save.world.tenants.count == 15)
+        #expect(save.world.cities.values[0].weather == WeatherState(day: 0, yesterday: "clear", today: "clear", tomorrow: "clear", temperature: 23))
+        #expect(save.contentPacks == [ContentPackReference(id: "base", version: "0.1.0")])
     }
 
     @Test func elevatorWorldRoundTrips() throws {

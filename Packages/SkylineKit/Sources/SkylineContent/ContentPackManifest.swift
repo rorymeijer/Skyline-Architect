@@ -16,6 +16,13 @@ public struct ContentPackManifest: Codable, Sendable, Hashable {
     public var author: String?
     /// Packs (other than base) that must be loaded before this one.
     public var requires: [String]?
+    /// Hash of the pack's files, computed when the pack is read (never part of `pack.json`).
+    /// Saves record it to notice a pack that changed without a new version.
+    public var contentHash: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, version, formatVersion, files, description, author, requires
+    }
 
     public init(id: String, name: String, version: String, formatVersion: Int, files: [String: String],
                 description: String? = nil, author: String? = nil, requires: [String]? = nil) {

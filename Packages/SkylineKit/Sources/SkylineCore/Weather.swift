@@ -90,8 +90,9 @@ public struct WeatherRules: Codable, Hashable, Sendable {
     }
 }
 
-/// Weather of the current game day and the forecast (Phase 13). Saved; advanced by the
-/// simulation at every 06:00 closing, deterministically from the city seed and the day.
+/// Weather of the current game day and the forecast in one city (Phase 13; per city since
+/// save format 14). Saved; advanced by the simulation at every 06:00 closing,
+/// deterministically from the city seed and the day.
 public struct WeatherState: Codable, Hashable, Sendable {
     /// Game day `today` belongs to (day 0 starts at tick 0).
     public var day: Int
@@ -112,8 +113,12 @@ public struct WeatherState: Codable, Hashable, Sendable {
 
 /// Deterministic weather generation.
 public enum Weather {
-    /// The weather seed of a world (from its first city).
-    public static func seed(of world: GameWorld) -> UInt64 { (world.cities.values.first?.seed ?? 1) ^ 0x57EA_7E4 }
+    /// The weather seed of a city. Each city draws its own days from it.
+    public static func seed(of city: City) -> UInt64 { city.seed ^ 0x57EA_7E4 }
+
+    /// A world-wide random seed (from the first city) for incident draws that are not
+    /// about one city's weather.
+    public static func seed(of world: GameWorld) -> UInt64 { world.cities.values.first.map(seed(of:)) ?? (1 ^ 0x57EA_7E4) }
 
     /// Season of a game day.
     public static func season(ofDay day: Int, rules: WeatherRules) -> WeatherRules.Season {

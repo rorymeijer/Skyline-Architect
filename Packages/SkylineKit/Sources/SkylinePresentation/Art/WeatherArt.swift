@@ -61,6 +61,21 @@ public enum WeatherView {
         return age >= 0 && age < 3 ? 1 - age / 3 : 0
     }
 
+    /// How the screen-space rain and snow scale with the zoom: close up, drops are larger
+    /// and cross the screen faster; far out they are smaller, denser and fainter, so a whole
+    /// tower in the rain reads as a haze. All 1 at 8 pt/m.
+    public struct ParticleScale: Equatable, Sendable {
+        public var size: Double
+        public var speed: Double
+        public var density: Double
+        public var alpha: Double
+    }
+
+    public static func particleScale(zoom: Double) -> ParticleScale {
+        let s = min(max((zoom / 8).squareRoot(), 0.4), 2.5)
+        return ParticleScale(size: s, speed: s, density: min(1 / s, 1.8), alpha: min(1, 0.55 + 0.45 * s))
+    }
+
     /// The day's grade adjusted for the weather: clouds grey and darken it, fog whitens it,
     /// heat warms it.
     public static func grade(_ g: Grade, look l: WeatherLook) -> Grade {

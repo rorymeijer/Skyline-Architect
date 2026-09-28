@@ -1,6 +1,6 @@
 # Save Format
 
-Status: **FUNCTIONAL** (Phases 2–16). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
+Status: **FUNCTIONAL** (Phases 2–18; format 14 after Phase 20). Implemented in `Packages/SkylineKit/Sources/SkylinePersistence`.
 
 ## Versions
 
@@ -8,6 +8,7 @@ Status: **FUNCTIONAL** (Phases 2–16). Implemented in `Packages/SkylineKit/Sour
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 14 | 0.20.1 | Cities may carry `weather` (each city its own); the world no longer does. Pack references may carry `hash` (FNV-1a of the pack's files) | v13→v14 moves the world's `weather` to the first city (whose seed drew it); other cities start their own on the next step. Older references have no hash: only versions are compared |
 | 13 | 0.16 | World may carry `scenario` (`id`, `name`, `objectives [{metric, target}]`, `deadlineDay`, `holdDays`, `streak`, `measured`, `result {won, tick, reason}`) | v12→v13: nothing to add — older games are free play |
 | 12 | 0.15 | Cities gain `economy` (`rent`, `construction`, `demand`); properties may carry `plotID`; ledger category `land` (daily totals grow by one) | v11→v12 adds a default economy and pads daily totals; on load `Estate.adoptLegacy` matches properties to plots and applies the content market |
 | 11 | 0.14 | World gains `incidents` (`log` of incidents, `fires` in progress with burning rooms and intensities, `nextID`) | v10→v11 adds an empty incident state |
@@ -20,29 +21,30 @@ Status: **FUNCTIONAL** (Phases 2–16). Implemented in `Packages/SkylineKit/Sour
 | 4 | 0.7 | Cars gain `strategy` (`collective` / `zoning` / `destination`) and `stats` (boardings, totalWait, maxWait, abandoned, stops, day, hourly[24]); rides may carry `assigned` | v3→v4 adds `strategy: "collective"` and zeroed `stats` to every car |
 | 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1` … `save-v12` (frozen) and `save-v13.skylinesave` (a scenario in progress).
+Golden fixtures: `save-v1` … `save-v13` (frozen) and `save-v14.skylinesave` (two cities with their own weather, a pack hash).
 
-## Envelope (format version 13)
+## Envelope (format version 14)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 13,
+  "formatVersion": 14,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
-    "contentPacks": [{ "id": "base", "version": "0.1.0" }],
+    "contentPacks": [{ "id": "base", "version": "0.1.0", "hash": "9c2e41f0a7d3b518" }],
     "activePropertyID": 2,
     "world": {
       "grid": { … },
       "ids": { "next": 57 },
-      "cities": [ … ], "properties": [ … ],
+      "cities": [ { "id": 1, "definitionID": "port-calder", "name": "Port Calder", "seed": 7301, "economy": { … },
+                    "weather": { "day": 3, "yesterday": "rain", "today": "storm", "tomorrow": "overcast", "temperature": 17 } } ],
+      "properties": [ … ],
       "buildings": [ { "id": 3, "footprint": …, "foundation": …, "floors": [ { "level": 0, "span": … } ],
                        "rentLevel": 1, "standing": { "classLevel": 1, "reputation": 61.25, "promotions": [259200] },
                        "lightingKWh": 12.5 } ],
       "unlocks": "byClass",
       "scenario": { "id": "opening-day", "name": "Opening Day", "deadlineDay": 10, "holdDays": 1, "streak": 0,
                     "objectives": [ { "metric": "occupiedUnits", "target": 12 } ], "measured": [ 9 ], "result": null },
-      "weather": { "day": 3, "yesterday": "rain", "today": "storm", "tomorrow": "overcast", "temperature": 17 },
       "rooms": [ { "id": 4, "buildingID": 3, "definitionID": "office-small", "columns": …, "floors": … } ],
       "clock": { "tick": 8400 },
       "people": [ { "id": 41, "name": "…", "role": "worker", "scheduleID": "office-worker",
@@ -71,6 +73,9 @@ bytes. Files use the extension `.skylinesave`.
 * Older versions are upgraded step by step (`migrations[v]` upgrades v → v+1) on the
   untyped JSON tree before typed decoding. A missing step → refused.
 * Every content pack listed must be installed → otherwise refused.
+* A pack installed with another version, or the same version with a different `hash`, is
+  loaded anyway; `SaveCodec.changedPacks` names it and the app tells the player that the
+  content may no longer match the world.
 * The decoded world must pass `GameWorld.validateIntegrity()` (references, floor order,
   rooms on built floors, no overlaps, cars on their shafts, riders ⇔ car passengers, ID
   allocator ahead of all IDs) → otherwise refused.

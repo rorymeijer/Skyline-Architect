@@ -57,65 +57,67 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Polish captures (Phase 20): the demo tower in the sandbox, weather set by the script
-    // for 02–04 (labelled), panels opened through the same toggles as their buttons.
+    // Known-bug fixes (after Phase 20): the demo tower in the sandbox; weather set by the
+    // script where labelled, panels opened through the same toggles as their buttons.
     let steps: [Step] = [
-        Step(name: "01-main-menu", grid: false) { model, scene in
+        Step(name: "01-skyline-street", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.applyBlueprint("demo-tower")
             model.leaseAllVacant()
-            model.advanceSimulation(toTimeOfDay: 10)
-            model.showMainMenu = true
-            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
-            return "Main menu over the live city at 10:00; clouds drift behind the skyline."
-        },
-        Step(name: "02-clouds-fair", grid: false) { model, scene in
-            model.showMainMenu = false
+            model.advanceSimulation(toTimeOfDay: 11)
             ScreenshotDirector.force("clear", 21, model: model)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
-            let n: Int = ScreenshotDirector.cloudCount(model)
-            return "\(model.clockText), clear weather (set by the script): \(n) fair-weather clouds in view."
+            scene.apply(preset: .skyline)
+            return "Skyline preset (⌘4): framed above the build bar, the street and foundation stay in sight (B2)."
         },
-        Step(name: "03-clouds-overcast", grid: false) { model, scene in
-            ScreenshotDirector.force("overcast", 14, model: model)
-            model.advanceSimulation(ticks: 1800)
-            model.refreshSimulationSummary()
-            let n: Int = ScreenshotDirector.cloudCount(model)
-            return "\(model.clockText), overcast (set by the script): \(n) denser clouds in view, 30 min of drift later."
-        },
-        Step(name: "04-dusk", grid: false) { model, scene in
-            ScreenshotDirector.force("clear", 18, model: model)
-            model.advanceSimulation(toTimeOfDay: 19, minute: 30)
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
-            return "\(model.clockText): dusk, clouds dimmed with the light."
-        },
-        Step(name: "05-panels", grid: false) { model, scene in
-            model.advanceSimulation(ticks: SimClock.secondsPerDay)
-            model.advanceSimulation(toTimeOfDay: 11)
-            model.showEconomyPanel = true
+        Step(name: "02-panel-tabs", grid: false) { model, scene in
+            for open in [\AppModel.showEconomyPanel, \.showFacilitiesPanel, \.showProgressPanel, \.showLeasingPanel, \.showIncidentsPanel] {
+                model[keyPath: open] = true
+            }
+            model.toggleEstatePanel()
             model.promotionNotice = nil
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 9) }
-            return "\(model.clockText): the economy panel in the shared card style (five recent lines; named close button for VoiceOver)."
+            return "\(model.clockText): six panels open; too tall for the window, so one shows in full and the rest are tabs (B1)."
         },
-        Step(name: "06-inspector", grid: false) { model, scene in
-            model.showEconomyPanel = false
-            if let office = ScreenshotDirector.office(model, index: 2) { model.selectRoom(at: ScreenshotDirector.cell(of: office)) }
-            model.showFacilitiesPanel = true
+        Step(name: "03-estate-two-cities", grid: false) { model, _ in
+            for close in [\AppModel.showEconomyPanel, \.showFacilitiesPanel, \.showProgressPanel, \.showLeasingPanel, \.showIncidentsPanel] {
+                model[keyPath: close] = false
+            }
+            ScreenshotDirector.grant(1_000_000, model: model)
+            model.buyPlot("saltmere-harbour-row")
+            model.advanceSimulation(toTimeOfDay: 17)   // the grant and the land stay within the last 24 h
+            model.showEstatePanel = true
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 14), zoom: 22) }
-            return "\(model.clockText): unit inspector and facilities panel in the unified style, close-up at 22 pt/m."
+            return "\(model.clockText): a plot bought in Saltmere (after a scripted $1M grant). Each city has its own weather (B3); "
+                + "the overview splits the last 24 h into buildings and estate money (B6). " + ScreenshotDirector.estateNote(model)
         },
-        Step(name: "07-night", grid: false) { model, scene in
-            model.selectRoom(at: nil)
-            model.showFacilitiesPanel = false
-            model.advanceSimulation(toTimeOfDay: 22)
+        Step(name: "04-rain-close", grid: false) { model, scene in
+            model.showEstatePanel = false
+            if let tower = model.world?.properties.values.first?.id { model.switchProperty(tower) }   // back to Port Calder
+            ScreenshotDirector.force("rain", 13, model: model)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
-            return "\(model.clockText): night; clouds as dark shapes against the sky."
+            model.scene?.withController { $0.jump(center: Vec2(20, 8), zoom: 32) }
+            return "Rain (set by the script) at 32 pt/m: larger, faster drops (B7)."
+        },
+        Step(name: "05-rain-far", grid: false) { model, scene in
+            model.scene?.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
+            return "The same rain at 0.9 pt/m: small, dense, fainter drops (B7)."
+        },
+        Step(name: "06-city-evening", grid: false) { model, scene in
+            ScreenshotDirector.force("clear", 16, model: model)
+            model.advanceSimulation(toTimeOfDay: 21, minute: 30)
+            model.refreshSimulationSummary()
+            model.scene?.withController { $0.jump(center: Vec2(24, 120), zoom: 1.4) }
+            return "\(model.clockText): the city's windows all lit (activity \(ScreenshotDirector.activity(model)))."
+        },
+        Step(name: "07-city-small-hours", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 3)
+            ScreenshotDirector.force("clear", 12, model: model)
+            model.refreshSimulationSummary()
+            model.scene?.withController { $0.jump(center: Vec2(24, 120), zoom: 1.4) }
+            return "\(model.clockText): most city windows out, street lamps still on (activity \(ScreenshotDirector.activity(model)); B8)."
         },
     ]
 

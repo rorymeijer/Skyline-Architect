@@ -14,8 +14,9 @@ public struct WeatherSummary: Equatable, Sendable {
 
     public init() {}
 
-    public static func make(world: GameWorld, rules: SimulationRules) -> WeatherSummary? {
-        guard let w = rules.weather, let state = world.weather, let today = w.kind(state.today) else { return nil }
+    /// The weather in `city` (the city of the property on screen).
+    public static func make(city: City?, rules: SimulationRules) -> WeatherSummary? {
+        guard let w = rules.weather, let state = city?.weather, let today = w.kind(state.today) else { return nil }
         var s = WeatherSummary()
         s.name = today.name
         s.symbol = today.symbol

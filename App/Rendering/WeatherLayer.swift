@@ -17,6 +17,7 @@ final class WeatherLayer {
     private var roofSprites: [SKSpriteNode] = []
     private var streetSprites: [(snow: SKSpriteNode, wet: SKSpriteNode)] = []
     private var lastViewport = CGSize.zero
+    private var lastScale: WeatherView.ParticleScale?
     private var raining = false, snowing = false
 
     init() {
@@ -46,21 +47,35 @@ final class WeatherLayer {
         e.isHidden = true
     }
 
-    func update(look: WeatherLook, darkness: Double, viewport: CGSize, roofs: [Rect], street: [ClosedRange<Double>]) {
-        if viewport != lastViewport {
+    func update(look: WeatherLook, darkness: Double, viewport: CGSize, zoom: Double, roofs: [Rect], street: [ClosedRange<Double>]) {
+        let scale = WeatherView.particleScale(zoom: zoom)
+        if viewport != lastViewport || scale != lastScale {
             lastViewport = viewport
+            lastScale = scale
             for e in [rain, snow] {
                 e.position = CGPoint(x: viewport.width / 2, y: viewport.height + 30)
                 e.particlePositionRange = CGVector(dx: viewport.width * 1.4, dy: 0)
             }
-            snow.particleLifetime = viewport.height / 45 + 4
+            // Drops scale with the zoom (particles are screen space); lifetimes cover the
+            // window at the new speed.
+            rain.particleScale = CGFloat(scale.size)
+            rain.particleSpeed = CGFloat(1150 * scale.speed)
+            rain.particleSpeedRange = rain.particleSpeed * 0.15
+            rain.particleLifetime = viewport.height / rain.particleSpeed + 0.4
+            rain.particleAlpha = CGFloat(0.32 * scale.alpha)
+            snow.particleScale = CGFloat(0.75 * scale.size)
+            snow.particleSpeed = CGFloat(55 * scale.speed)
+            snow.particleSpeedRange = CGFloat(30 * scale.speed)
+            snow.particleLifetime = viewport.height / (45 * CGFloat(scale.speed)) + 4
+            snow.particleAlpha = CGFloat(0.85 * scale.alpha)
         }
         let isRain = look.precipitation == .rain && look.intensity > 0.01
         let isSnow = look.precipitation == .snow && look.intensity > 0.01
+        let density = CGFloat(scale.density) * viewport.width / 1024
         rain.isHidden = !isRain
-        rain.particleBirthRate = isRain ? CGFloat(180 + 520 * look.intensity) * viewport.width / 1024 : 0
+        rain.particleBirthRate = isRain ? CGFloat(180 + 520 * look.intensity) * density : 0
         snow.isHidden = !isSnow
-        snow.particleBirthRate = isSnow ? CGFloat(40 + 110 * look.intensity) * viewport.width / 1024 : 0
+        snow.particleBirthRate = isSnow ? CGFloat(40 + 110 * look.intensity) * density : 0
         // Prewarm when precipitation starts so the sky is already full.
         if isRain, !raining { rain.resetSimulation(); rain.advanceSimulationTime(1.5) }
         if isSnow, !snowing { snow.resetSimulation(); snow.advanceSimulationTime(Double(snow.particleLifetime)) }

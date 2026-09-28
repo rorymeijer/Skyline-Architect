@@ -47,6 +47,28 @@ import SkylineContent
         }
     }
 
+    /// With a build bar along the bottom, presets frame above it and the camera may pan the
+    /// ground above it at every zoom; without one nothing changes.
+    @Test func presetsAndLimitsLeaveRoomForTheBuildBar() throws {
+        let c = try compose()
+        let viewport = Vec2(1440, 900), bar = 150.0
+        for preset in CameraPreset.allCases {
+            #expect(preset.placement(for: c, viewport: viewport, bottomInset: 0) == preset.placement(for: c, viewport: viewport))
+            let p = preset.placement(for: c, viewport: viewport, bottomInset: bar)
+            let cam = Camera2D(center: p.center, zoom: p.zoom, viewportSize: viewport, limits: .standard(bounds: c.cameraBounds, bottomInset: bar))
+            #expect(abs(cam.center.x - p.center.x) < 1e-6 && abs(cam.center.y - p.center.y) < 1e-6, "\(preset) placement is not clamped away")
+            if preset == .skyline { #expect(cam.worldToScreen(Vec2(0, 0)).y > bar + 20) }   // the street shows above the bar
+        }
+        for zoom in [0.45, 2.0, 20.0] {
+            var plain = Camera2D(center: .zero, zoom: zoom, viewportSize: viewport, limits: .standard(bounds: c.cameraBounds))
+            var barred = Camera2D(center: .zero, zoom: zoom, viewportSize: viewport, limits: .standard(bounds: c.cameraBounds, bottomInset: bar))
+            plain.setCenter(Vec2(0, -10_000))
+            barred.setCenter(Vec2(0, -10_000))
+            #expect(abs(plain.worldToScreen(Vec2(0, c.cameraBounds.minY)).y) < 1e-6)            // ground bottom at the screen edge
+            #expect(abs(barred.worldToScreen(Vec2(0, c.cameraBounds.minY)).y - bar) < 1e-6)     // … or above the bar
+        }
+    }
+
     @Test func fineDetailIsHiddenWhenZoomedOut() throws {
         let c = try compose()
         let view = c.siteRect

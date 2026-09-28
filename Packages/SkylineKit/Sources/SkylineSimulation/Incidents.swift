@@ -92,9 +92,10 @@ extension SimulationEngine {
     /// Hourly: weather-driven incidents (storm damage, outages, burst pipes) may strike a
     /// room of each building; the damage opens a repair job at once.
     func checkWeatherIncidents(at now: Tick, world: inout GameWorld) {
-        guard let defs = rules.events?.incidents, let state = world.weather else { return }
+        guard let defs = rules.events?.incidents else { return }
         let facilities = rules.facilities
         for building in world.buildings.values {
+            guard let state = world.city(of: building.id)?.weather else { continue }
             for (k, def) in defs.enumerated() where def.weather.contains(state.today) && state.temperature <= (def.maxTemperature ?? .infinity) {
                 var rng = SeededRandom(seed: Weather.seed(of: world) ^ UInt64(building.id.raw), stream: 0x1AC1 &+ now / 3600 &* 16 &+ UInt64(k))
                 guard rng.chance(def.chancePerDay / 24) else { continue }

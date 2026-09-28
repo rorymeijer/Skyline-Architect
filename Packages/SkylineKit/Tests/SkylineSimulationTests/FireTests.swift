@@ -122,7 +122,7 @@ struct FireFixture {
     @Test func stormsDamageTheBuilding() throws {
         var f = try SimFixture()
         for day in 0..<8 {                                              // a stormy week and a day
-            f.world.weather = WeatherState(day: day, yesterday: "storm", today: "storm", tomorrow: "storm", temperature: 12)
+            f.world.setWeather(WeatherState(day: day, yesterday: "storm", today: "storm", tomorrow: "storm", temperature: 12), city: f.world.cities.values[0].id)
             f.engine.advance(&f.world, by: 86_400 - 60)
             f.engine.advance(&f.world, by: 60)
         }
@@ -133,7 +133,7 @@ struct FireFixture {
         #expect(f.world.ledger.journal.contains { $0.detail == "Storm damage" })
         // Calm weather brings no incidents.
         var calm = try SimFixture()
-        calm.world.weather = WeatherState(day: 0, yesterday: "clear", today: "clear", tomorrow: "clear", temperature: 20)
+        calm.world.setWeather(WeatherState(day: 0, yesterday: "clear", today: "clear", tomorrow: "clear", temperature: 20), city: calm.world.cities.values[0].id)
         calm.engine.advance(&calm.world, by: 22 * 3600)
         #expect(!calm.world.incidents.log.contains { $0.kind != "fire" })
     }
@@ -148,7 +148,7 @@ struct FireFixture {
         let rules = SimulationRules(schedules: r.schedules, names: r.names, elevators: r.elevators, tenantTypes: r.tenantTypes,
                                     economy: r.economy, facilities: r.facilities, progression: r.progression, weather: r.weather, events: events)
         let engine = SimulationEngine(rules: rules, catalog: f.library.buildCatalog)
-        f.world.weather = WeatherState(day: 0, yesterday: "heat", today: "heat", tomorrow: "heat", temperature: 34)
+        f.world.setWeather(WeatherState(day: 0, yesterday: "heat", today: "heat", tomorrow: "heat", temperature: 34), city: f.world.cities.values[0].id)
         var hours = 0
         while !f.world.incidents.log.contains(where: { $0.kind == "power-outage" }) && hours < 22 {
             engine.advance(&f.world, by: 3600)

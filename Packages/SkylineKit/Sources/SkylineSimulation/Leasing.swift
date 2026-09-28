@@ -237,7 +237,7 @@ extension SimulationEngine {
         var added: [PersonID] = []
         let buildings = Set(world.buildings.values.filter { world.properties[$0.propertyID]?.cityID == city.id }.map(\.id))
         let demand = Progression.demandMultiplier(world: world, engine: self, buildings: buildings)
-            * (weatherKind(world)?.effects.demand ?? 1) * city.economy.demand
+            * (weatherKind(city)?.effects.demand ?? 1) * city.economy.demand
         for (i, type) in rules.tenantTypes.enumerated() {
             var rng = SeededRandom(seed: city.seed, stream: hour &* 64 &+ UInt64(i))
             guard rng.unit() < type.prospectsPerDay * demand / 24 else { continue }
