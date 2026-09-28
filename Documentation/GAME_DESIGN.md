@@ -90,8 +90,8 @@ No construction or simulation yet.
 ## Phase 2 player experience (current)
 
 The player builds on the prepared foundation with a palette generated from content:
-**Floor** (drag across columns; upper floors must rest on the floor below, up to 2 m
-cantilever; basements only within the excavation), rooms (lobby, corridor, office,
+**Floor** (drag across columns; upper floors must lie within the floor below — a tower
+never widens as it rises; basements only within the excavation), rooms (lobby, corridor, office,
 apartment, mechanical, parking — each with width limits and allowed floors) and shafts
 (stairwell, elevator shaft — drag vertically across floors), and **Demolish** (rooms, or an
 empty top floor, with a 40 % refund). A live ghost shows green with size and cost, or red

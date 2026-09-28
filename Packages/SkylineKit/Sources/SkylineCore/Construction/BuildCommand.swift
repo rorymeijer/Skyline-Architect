@@ -34,6 +34,8 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
     case outsideFootprint
     case noExcavation(level: Int)
     case unsupported
+    /// Wider than the floor below allows (`BuildRules.maxCantileverModules` per side).
+    case overhang(max: Int)
     case notContiguous
     case nothingToBuild
     case noFloor(level: Int)
@@ -55,6 +57,7 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
         case .outsideFootprint: "Outside the foundation footprint"
         case .noExcavation(let l): "No excavation for \(FloorLabel.label(for: l))"
         case .unsupported: "Needs a floor below to rest on"
+        case .overhang(let m): m == 0 ? "Cannot be wider than the floor below" : "Can stick out at most \(m) m past the floor below"
         case .notContiguous: "Must connect to the existing floor"
         case .nothingToBuild: "Already built"
         case .noFloor(let l): "No floor at \(FloorLabel.label(for: l))"

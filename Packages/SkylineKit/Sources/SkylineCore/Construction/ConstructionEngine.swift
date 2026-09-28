@@ -71,7 +71,7 @@ public struct ConstructionEngine: Sendable {
             guard let below = building.plate(at: level - 1) else { return .failure(.unsupported) }
             let c = catalog.rules.maxCantileverModules
             let support = ColumnSpan(start: below.span.start - c, count: below.span.count + 2 * c)
-            guard support.contains(merged) else { return .failure(.unsupported) }
+            guard support.contains(merged) else { return .failure(.overhang(max: c)) }
         }
         let added = merged.count - (existing?.span.count ?? 0)
         return .success(ConstructionPlan(cost: slabCost(level: level, modules: added, factor: costFactor(b, world)), buildingID: b,

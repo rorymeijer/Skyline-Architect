@@ -2,6 +2,14 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [Unreleased]
+
+### Fixed
+- **Floors can no longer be wider than the floor below.** The base rules allowed 2 m of
+  cantilever per side on every floor, which added up to towers that widen as they rise.
+  The allowance is now 0 (`build-rules.json`; mods can still set one). Towers in existing
+  saves keep their floors.
+
 ## [0.20.1] — Known-bug fixes
 
 ### Fixed

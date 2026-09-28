@@ -77,7 +77,8 @@ public struct RoomSpec: Codable, Hashable, Sendable {
 public struct BuildRules: Codable, Hashable, Sendable {
     public var slabCostPerModule: Int
     public var basementSlabCostPerModule: Int
-    /// How many modules an upper plate may overhang the plate below on each side.
+    /// How many modules an upper plate may overhang the plate below on each side (the base
+    /// game allows none: a floor never sticks out past the floor below).
     public var maxCantileverModules: Int
     /// Fraction of construction cost returned on demolition (0…1).
     public var demolitionRefund: Double

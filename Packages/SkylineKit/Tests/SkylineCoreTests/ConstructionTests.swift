@@ -54,9 +54,9 @@ struct ConstructionFixture {
         var f = try ConstructionFixture()
         #expect(f.check(.buildFloor(building: f.building, level: 1, span: ColumnSpan(start: 8, count: 4))) == .failure(.unsupported))
         try f.buildFloors(0...0, span: ColumnSpan(start: 10, count: 20))
-        // 2-module cantilever each side is fine, 3 is not.
+        // With a 2-module allowance (a mod could set one), 2 each side is fine, 3 is not.
         #expect((try? f.check(.buildFloor(building: f.building, level: 1, span: ColumnSpan(start: 8, count: 24))).get()) != nil)
-        #expect(f.check(.buildFloor(building: f.building, level: 1, span: ColumnSpan(start: 7, count: 25))) == .failure(.unsupported))
+        #expect(f.check(.buildFloor(building: f.building, level: 1, span: ColumnSpan(start: 7, count: 25))) == .failure(.overhang(max: 2)))
     }
 
     @Test func extendingAPlateMergesAndChargesOnlyNewModules() throws {

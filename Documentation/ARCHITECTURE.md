@@ -91,7 +91,7 @@ player input ─▶ PlacementPlanner (Presentation) ─▶ BuildCommand
 * `GameWorld.rooms`: rooms *and* shafts as one entity type (`Room`) occupying columns ×
   floors; what they are comes from `RoomSpec` in content.
 * Rules: ground/basement plates inside the footprint (basements need excavation), upper
-  plates supported by the plate below within a cantilever allowance, rooms on built plates
+  plates within the plate below (a cantilever allowance from content; 0 in the base game), rooms on built plates
   without overlap, width/height/level limits from the spec. Demolition: rooms any time,
   floors only when empty and carrying nothing.
 * Walls, partitions, doors and façades are **derived** from plates and rooms by the art —
