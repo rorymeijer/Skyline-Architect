@@ -59,8 +59,11 @@ final class WorldScene: SKScene {
     private let selectionOutline = SKShapeNode()
     /// Daylight (0…1) and lit rooms for the visible area; nil = always day.
     /// Grade, darkness and lit rooms for the visible rect at a zoom (Phase 12).
-    var lightingProvider: ((Rect, Double) -> (grade: Grade, darkness: Double, rooms: [LitRoom]))?
+    var lightingProvider: ((Rect, Double) -> (grade: Grade, darkness: Double, emission: Double, rooms: [LitRoom]))?
     private let dayNight = DayNightLayer()
+    /// Weather look and roofs for snow (Phase 13).
+    var weatherProvider: ((Rect) -> (look: WeatherLook, roofs: [Rect], street: [ClosedRange<Double>]))?
+    private let weather = WeatherLayer()
     /// Services overlay marks (nil = hidden). Asked every frame.
     var servicesProvider: (() -> [ServiceMark]?)?
     private let servicesOverlay = ServicesOverlayNode()
@@ -129,6 +132,16 @@ final class WorldScene: SKScene {
         addChild(dayNight.tint)
         dayNight.lights.zPosition = 9
         worldRoot.addChild(dayNight.lights)
+        weather.ground.zPosition = 3.5
+        worldRoot.addChild(weather.ground)
+        weather.fog.zPosition = 9.5
+        addChild(weather.fog)
+        weather.rain.zPosition = 9.6
+        addChild(weather.rain)
+        weather.snow.zPosition = 9.6
+        addChild(weather.snow)
+        weather.flash.zPosition = 9.7
+        addChild(weather.flash)
         emissionLayer.node.zPosition = 9
         emissionLayer.node.isHidden = true
         worldRoot.addChild(emissionLayer.node)
@@ -274,11 +287,13 @@ final class WorldScene: SKScene {
         tileLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         elevatorLayer.update(carProvider?(camera.visibleRect, camera.zoom) ?? [])
         let lighting = lightingProvider?(camera.visibleRect, camera.zoom)
-            ?? (grade: Grade.day, darkness: 0, rooms: [])
-        if lighting.darkness > 0.02 {
+            ?? (grade: Grade.day, darkness: 0, emission: 0, rooms: [])
+        if lighting.emission > 0.02 {
             emissionLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         }
-        dayNight.update(grade: lighting.grade, darkness: lighting.darkness, rooms: lighting.rooms, viewport: size, emission: emissionLayer.node)
+        dayNight.update(grade: lighting.grade, darkness: lighting.emission, rooms: lighting.rooms, viewport: size, emission: emissionLayer.node)
+        let sky = weatherProvider?(camera.visibleRect) ?? (look: WeatherLook.clear, roofs: [], street: [])
+        weather.update(look: sky.look, darkness: lighting.darkness, viewport: size, roofs: sky.roofs, street: sky.street)
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
         navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
         trafficOverlay.update(traffic: trafficProvider?(), camera: camera)

@@ -58,6 +58,17 @@ extension ScreenshotDirector {
         return "next \(next): " + p.requirements.map { "\($0.label) \(Int($0.current))/\(Int($0.needed)) \($0.met ? "✓" : "✗")" }.joined(separator: ", ")
     }
 
+    /// Sets today's weather (developer tool for captures): no transition, clear tomorrow.
+    static func force(_ kind: String, _ temperature: Double, model: AppModel) {
+        guard let day = model.world?.weather?.day else { return }
+        model.world?.weather = WeatherState(day: day, yesterday: kind, today: kind, tomorrow: "clear", temperature: temperature)
+    }
+
+    static func weatherNote(_ model: AppModel) -> String {
+        guard let w = model.weather else { return "no weather" }
+        return "\(w.season), \(w.name) \(w.temperature) °C, tomorrow \(w.tomorrowName)" + (w.effects.isEmpty ? "" : " — \(w.effects)")
+    }
+
     /// A grid cell inside a room (for selecting it like a click would).
     static func cell(of room: Room) -> GridCell {
         GridCell(column: room.columns.start + room.columns.count / 2, floor: room.floors.lowest)

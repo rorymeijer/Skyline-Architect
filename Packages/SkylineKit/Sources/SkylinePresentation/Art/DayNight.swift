@@ -84,11 +84,12 @@ public enum DayNight {
     public static let windowZoom = DetailLevel.thresholds[DetailLevel.floors.rawValue]
 
     /// Lights over the visible rooms at `time`: each room's level from the lighting model
-    /// (occupancy, quiet hours, `power` = served electricity per room) × darkness. Zoomed out
+    /// (occupancy, quiet hours, `power` = served electricity per room) × darkness (default:
+    /// from daylight; the weather may pass a darker value). Zoomed out
     /// they become window panes (façade emission); close up, the whole room glows.
     public static func litRooms(world: GameWorld, propertyID: PropertyID, catalog: BuildCatalog, time: Double, visible: Rect,
-                                zoom: Double = 20, power: [RoomID: Double] = [:]) -> [LitRoom] {
-        let darkness = 1 - daylight(atTick: time)
+                                zoom: Double = 20, power: [RoomID: Double] = [:], darkness: Double? = nil) -> [LitRoom] {
+        let darkness = darkness ?? 1 - daylight(atTick: time)
         guard darkness > 0.02 else { return [] }
         let occupied = Lighting.occupiedRooms(world)
         let sod = Tick(secondOfDay(atTick: time))

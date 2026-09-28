@@ -55,8 +55,10 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
+    // Weather after step 01 is set by the script (developer tool, `force`), not drawn by the
+    // simulation — labelled "(set)" in the notes.
     let steps: [Step] = [
-        Step(name: "01-noon", grid: false) { model, scene in
+        Step(name: "01-clear-summer", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.applyBlueprint("demo-tower")
@@ -64,64 +66,66 @@ final class ScreenshotDirector {
             model.advanceSimulation(toTimeOfDay: 12)
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
-            return "\(model.clockText): daylight, no grade; lighting load \(String(format: "%.1f", model.lightingKW)) kW (offices busy)."
+            return "\(model.clockText): the game's own weather — " + ScreenshotDirector.weatherNote(model)
         },
-        Step(name: "02-golden-hour", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 18, minute: 40)
+        Step(name: "02-overcast", grid: false) { model, scene in
+            ScreenshotDirector.force("overcast", 17, model: model)
+            model.advanceSimulation(toTimeOfDay: 13)
             model.refreshSimulationSummary()
-            return "\(model.clockText): golden hour — warm grade before sunset."
+            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model)
         },
-        Step(name: "03-sunset", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 20, minute: 0)
+        Step(name: "03-rain", grid: false) { model, scene in
+            ScreenshotDirector.force("rain", 15, model: model)
+            model.advanceSimulation(toTimeOfDay: 14)
+            model.refreshSimulationSummary()
+            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model) + "; wet paving outside the tower."
+        },
+        Step(name: "04-storm", grid: false) { model, scene in
+            ScreenshotDirector.force("storm", 13, model: model)
+            model.advanceSimulation(toTimeOfDay: 15)
+            let lookup = { (t: Tick) in model.weatherLook(at: Double(t)).lightning }
+            let start = model.world?.clock.tick ?? 0
+            let wait = stride(from: Tick(0), to: 600, by: 1).first { lookup(start + $0) > 0.6 } ?? 0
+            model.advanceSimulation(ticks: wait)
+            model.refreshSimulationSummary()
+            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model) +
+                "; lightning \(String(format: "%.2f", model.weatherLook(at: Double(model.world?.clock.tick ?? 0)).lightning)); lights on by day."
+        },
+        Step(name: "05-fog", grid: false) { model, scene in
+            ScreenshotDirector.force("fog", 12, model: model)
+            model.advanceSimulation(toTimeOfDay: 16, minute: 30)
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 22), zoom: 6) }
-            return "\(model.clockText): sunset — amber horizon, homes and neighbours light up, street lamps on."
+            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model) + "; the city fades into the fog."
         },
-        Step(name: "04-evening-close-up", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 21, minute: 30)
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 26), zoom: 30) }
-            return "\(model.clockText): warm home light, empty offices dark, lobby and corridors dimmed; \(String(format: "%.1f", model.lightingKW)) kW."
-        },
-        Step(name: "05-night-skyline", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 22, minute: 15)
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(40, 45), zoom: 2.4) }
-            return "\(model.clockText): zoomed out — lit rooms as window panes on the façade, city windows, street lamps."
-        },
-        Step(name: "06-small-hours", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 2, minute: 30)
+        Step(name: "06-heatwave", grid: false) { model, scene in
+            ScreenshotDirector.force("heat", 34, model: model)
+            model.advanceSimulation(toTimeOfDay: 17)
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
-            return "\(model.clockText): homes asleep (dimmed, staggered from 22:30), circulation and plant stay on; \(String(format: "%.1f", model.lightingKW)) kW."
+            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model)
         },
-        Step(name: "07-sunrise", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 5, minute: 25)
+        Step(name: "07-snow", grid: false) { model, scene in
+            ScreenshotDirector.force("snow", -3, model: model)
+            model.advanceSimulation(toTimeOfDay: 18)
             model.refreshSimulationSummary()
-            return "\(model.clockText): sunrise — rose grade, homes waking up."
+            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model) + "; snow on the roofs and the street."
         },
-        Step(name: "08-lighting-bill", grid: false) { model, scene in
-            let metered = model.lightingKWhToday
+        Step(name: "08-snow-night", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 21, minute: 30)
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(22, 22), zoom: 6) }
+            return "\(model.clockText): snowy night, lit homes and street lamps."
+        },
+        Step(name: "09-cold-bill-and-forecast", grid: false) { model, scene in
             model.advanceSimulation(toTimeOfDay: 6, minute: 5)
             model.showEconomyPanel = true
             model.refreshSimulationSummary()
-            model.promotionNotice = nil        // the sandbox tower was promoted overnight; not this capture's subject
-            let line = model.world?.ledger.journal.last { $0.detail.hasPrefix("Lighting") }
-            return "\(model.clockText): closing billed \(line.map { "\($0.detail): \($0.amount)" } ?? "no lighting line") " +
-                "(meter read \(Int(metered)) kWh at 05:25)."
-        },
-        Step(name: "09-power-cut", grid: false) { model, scene in
-            model.showEconomyPanel = false
-            model.advanceSimulation(toTimeOfDay: 21, minute: 0)
-            model.refreshSimulationSummary()
-            let before = model.lightingKW
-            let plant = model.world?.rooms.values.first { $0.definitionID == "electrical-room" }
-            let cut = plant.map { model.perform(.demolishRoom($0.id)) } ?? false
-            model.refreshSimulationSummary()
             model.promotionNotice = nil
             scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
-            return "\(model.clockText): electrical room demolished (\(cut)) — the tower goes dark: \(String(format: "%.1f", before)) → " +
-                "\(String(format: "%.2f", model.lightingKW)) kW; neighbours and street lamps stay lit."
+            let line = model.world?.ledger.journal.last { $0.detail.hasPrefix("Utilities") }
+            return "\(model.clockText): the closing billed \(line.map { "\($0.detail): \($0.amount)" } ?? "—"); today " +
+                ScreenshotDirector.weatherNote(model)
         },
     ]
 
