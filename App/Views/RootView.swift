@@ -100,7 +100,9 @@ struct ChromeOverlay: View {
             }
             .padding(.bottom, 58)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-            if model.showScenarioBrowser {
+            if model.showModManager {
+                ModManagerView(model: model)
+            } else if model.showScenarioBrowser {
                 ScenarioBrowserView(model: model)
             } else if model.showScenarioResult {
                 ScenarioResultView(model: model)
@@ -126,7 +128,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · \(mode) · Phase 16")
+            Text("\(model.cityName) · \(mode) · Phase 17")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

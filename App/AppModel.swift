@@ -106,6 +106,16 @@ final class AppModel {
     @ObservationIgnored var speedBeforePause: GameSpeed = .normal
     @ObservationIgnored var lastSimulationMs = 0.0
 
+    /// Mods (Phase 17): the folder, the enabled ids in load order (applied, and being edited
+    /// in the mod manager), and what the last load did with every pack.
+    @ObservationIgnored var modsDirectory: URL
+    @ObservationIgnored var persistsModSettings = true
+    var enabledMods: [String]
+    var modDraft: [String]
+    var packStatuses: [PackStatus] = []
+    var showModManager = false
+    static let enabledModsKey = "enabledMods"
+
     static let autosaveInterval: TimeInterval = 120
 
     init(arguments: [String] = CommandLine.arguments) {
@@ -115,11 +125,19 @@ final class AppModel {
         showDeveloperHUD = false
         #endif
         saveStore = SaveStore(directory: Self.defaultSaveDirectory())
+        modsDirectory = Self.defaultModsDirectory()
+        enabledMods = UserDefaults.standard.stringArray(forKey: Self.enabledModsKey) ?? []
+        #if DEBUG
+        if let config = ScreenshotDirector.Configuration(arguments: arguments) {
+            // Captures use their own mods folder and never read or change the player's mods.
+            modsDirectory = config.directory.appendingPathComponent("mods", isDirectory: true)
+            enabledMods = []
+            persistsModSettings = false
+        }
+        #endif
+        modDraft = enabledMods
         do {
-            let library = try ContentLibrary.loadBase()
-            self.library = library
-            engine = ConstructionEngine(catalog: library.buildCatalog)
-            simulation = SimulationEngine(rules: library.simulationRules, catalog: library.buildCatalog)
+            try reloadContent()
             try startNewGame()
         } catch {
             loadError = "\(error)"
@@ -141,6 +159,22 @@ final class AppModel {
         autosaveTimer = Timer.scheduledTimer(withTimeInterval: Self.autosaveInterval, repeats: true) { [weak self] _ in
             self?.autosaveIfNeeded()
         }
+    }
+
+    static func defaultModsDirectory() -> URL {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        return base.appendingPathComponent("Skyline Architect", isDirectory: true).appendingPathComponent("Mods", isDirectory: true)
+    }
+
+    /// Loads the base pack and the enabled mods (a failing mod is skipped and reported) and
+    /// replaces the engines. Throws only when the base pack is invalid. The world is untouched.
+    func reloadContent() throws {
+        let result = try ModLoader.load(mods: ModLoader.discover(in: modsDirectory), enabled: enabledMods)
+        library = result.library
+        engine = ConstructionEngine(catalog: result.library.buildCatalog)
+        simulation = SimulationEngine(rules: result.library.simulationRules, catalog: result.library.buildCatalog)
+        packStatuses = result.packs
     }
 
     static func defaultSaveDirectory() -> URL {
@@ -352,7 +386,7 @@ final class AppModel {
     // MARK: Saving
 
     var packReferences: [ContentPackReference] {
-        library.map { [ContentPackReference(id: $0.manifest.id, version: $0.manifest.version)] } ?? []
+        library?.packs.map { ContentPackReference(id: $0.id, version: $0.version) } ?? []
     }
 
     private func makeSave(title: String) -> SaveGame? {
