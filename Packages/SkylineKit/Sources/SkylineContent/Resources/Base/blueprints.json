@@ -1142,7 +1142,11 @@
   "name": "Demonstration Sky Tower",
   "description": "42 storeys: a bank of three elevators serves B1–20, an express shuttle runs from G to the sky lobby on floor 21, and a bank of two serves 21–40. Used for Phase 7 captures and tests.",
   "steps": [
-    { "foundation": { "pileDepth": 22 } },
+   {
+    "foundation": {
+     "pileDepth": 22
+    }
+   },
    {
     "floor": {
      "level": -1,
@@ -2092,6 +2096,596 @@
      "count": 3,
      "lowest": 21,
      "highest": 21
+    }
+   }
+  ]
+ },
+ {
+  "id": "demo-plaza",
+  "name": "Demo Plaza",
+  "description": "19 storeys with a leisure podium: shops, a restaurant, a cinema, a fitness club and a theatre on the lower floors, offices above, apartments in the tower and a sky bar on floor 17. Two elevators and a stairwell. Used for the amenity captures and tests.",
+  "steps": [
+   {
+    "floor": {
+     "level": -1,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 0,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 1,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 2,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 3,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 4,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 5,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 6,
+     "start": 0,
+     "count": 32
+    }
+   },
+   {
+    "floor": {
+     "level": 7,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 8,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 9,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 10,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 11,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 12,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 13,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 14,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 15,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 16,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "floor": {
+     "level": 17,
+     "start": 4,
+     "count": 24
+    }
+   },
+   {
+    "room": {
+     "definition": "stairs",
+     "start": 12,
+     "count": 4,
+     "lowest": -1,
+     "highest": 17
+    }
+   },
+   {
+    "room": {
+     "definition": "elevator-shaft",
+     "start": 16,
+     "count": 3,
+     "lowest": -1,
+     "highest": 17
+    }
+   },
+   {
+    "room": {
+     "definition": "elevator-shaft",
+     "start": 19,
+     "count": 3,
+     "lowest": -1,
+     "highest": 17
+    }
+   },
+   {
+    "room": {
+     "definition": "parking",
+     "start": 0,
+     "count": 9,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "telecom-room",
+     "start": 9,
+     "count": 3,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "mechanical",
+     "start": 22,
+     "count": 5,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "electrical-room",
+     "start": 27,
+     "count": 5,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "lobby",
+     "start": 0,
+     "count": 12,
+     "lowest": 0,
+     "highest": 0
+    }
+   },
+   {
+    "room": {
+     "definition": "shop",
+     "start": 22,
+     "count": 10,
+     "lowest": 0,
+     "highest": 0
+    }
+   },
+   {
+    "room": {
+     "definition": "restaurant",
+     "start": 0,
+     "count": 12,
+     "lowest": 1,
+     "highest": 1
+    }
+   },
+   {
+    "room": {
+     "definition": "shop",
+     "start": 22,
+     "count": 10,
+     "lowest": 1,
+     "highest": 1
+    }
+   },
+   {
+    "room": {
+     "definition": "cinema",
+     "start": 0,
+     "count": 12,
+     "lowest": 2,
+     "highest": 2
+    }
+   },
+   {
+    "room": {
+     "definition": "fitness",
+     "start": 22,
+     "count": 10,
+     "lowest": 2,
+     "highest": 2
+    }
+   },
+   {
+    "room": {
+     "definition": "theater",
+     "start": 0,
+     "count": 12,
+     "lowest": 3,
+     "highest": 3
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 22,
+     "count": 2,
+     "lowest": 3,
+     "highest": 3
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 24,
+     "count": 8,
+     "lowest": 3,
+     "highest": 3
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 0,
+     "count": 10,
+     "lowest": 4,
+     "highest": 4
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 10,
+     "count": 2,
+     "lowest": 4,
+     "highest": 4
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 22,
+     "count": 2,
+     "lowest": 4,
+     "highest": 4
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 24,
+     "count": 8,
+     "lowest": 4,
+     "highest": 4
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 0,
+     "count": 10,
+     "lowest": 5,
+     "highest": 5
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 10,
+     "count": 2,
+     "lowest": 5,
+     "highest": 5
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 22,
+     "count": 2,
+     "lowest": 5,
+     "highest": 5
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 24,
+     "count": 8,
+     "lowest": 5,
+     "highest": 5
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 0,
+     "count": 10,
+     "lowest": 6,
+     "highest": 6
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 10,
+     "count": 2,
+     "lowest": 6,
+     "highest": 6
+    }
+   },
+   {
+    "room": {
+     "definition": "corridor",
+     "start": 22,
+     "count": 2,
+     "lowest": 6,
+     "highest": 6
+    }
+   },
+   {
+    "room": {
+     "definition": "office-small",
+     "start": 24,
+     "count": 8,
+     "lowest": 6,
+     "highest": 6
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 7,
+     "highest": 7
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 7,
+     "highest": 7
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 8,
+     "highest": 8
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 8,
+     "highest": 8
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 9,
+     "highest": 9
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 9,
+     "highest": 9
+    }
+   },
+   {
+    "room": {
+     "definition": "mechanical",
+     "start": 4,
+     "count": 8,
+     "lowest": 10,
+     "highest": 10
+    }
+   },
+   {
+    "room": {
+     "definition": "electrical-room",
+     "start": 22,
+     "count": 6,
+     "lowest": 10,
+     "highest": 10
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 11,
+     "highest": 11
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 11,
+     "highest": 11
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 12,
+     "highest": 12
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 12,
+     "highest": 12
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 13,
+     "highest": 13
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 13,
+     "highest": 13
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 14,
+     "highest": 14
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 14,
+     "highest": 14
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 15,
+     "highest": 15
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 15,
+     "highest": 15
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 4,
+     "count": 8,
+     "lowest": 16,
+     "highest": 16
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 16,
+     "highest": 16
+    }
+   },
+   {
+    "room": {
+     "definition": "sky-bar",
+     "start": 4,
+     "count": 8,
+     "lowest": 17,
+     "highest": 17
+    }
+   },
+   {
+    "room": {
+     "definition": "apartment-studio",
+     "start": 22,
+     "count": 6,
+     "lowest": 17,
+     "highest": 17
     }
    }
   ]

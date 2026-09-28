@@ -166,8 +166,8 @@ private func room(_ f: SimFixture, _ definition: String, floor: Int, left: Bool 
 @Suite struct TenantContentTests {
     @Test func tenantTypesAreValid() throws {
         let rules = try ContentLibrary.loadBase().simulationRules
-        #expect(rules.tenantTypes.count == 6)
-        let rooms: Set<String> = ["office-small", "apartment-studio"]
+        #expect(rules.tenantTypes.count == 12)                      // 6 households and firms, 6 amenity operators (0.22)
+        let rooms: Set<String> = ["office-small", "apartment-studio", "shop", "restaurant", "fitness", "cinema", "theater", "sky-bar"]
         #expect(rules.tenantTypes.allSatisfy { $0.problems(schedules: rules.schedules, rooms: rooms).isEmpty })
         var bad = rules.tenantTypes[0]
         bad.schedules = ["resident-commuter"]                       // wrong role for a business

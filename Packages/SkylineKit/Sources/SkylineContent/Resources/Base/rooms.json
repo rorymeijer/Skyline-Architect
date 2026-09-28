@@ -1,6 +1,12 @@
 [
  {
-  "id": "lobby", "lighting": { "color": "#FFE3B5", "occupied": 1.0, "empty": 0.6, "wattsPerModule": 9 },
+  "id": "lobby",
+  "lighting": {
+   "color": "#FFE3B5",
+   "occupied": 1.0,
+   "empty": 0.6,
+   "wattsPerModule": 9
+  },
   "name": "Lobby",
   "category": "circulation",
   "kind": "room",
@@ -21,7 +27,14 @@
   "wearPerDay": 0.01
  },
  {
-  "id": "sky-lobby", "lighting": { "color": "#FFE3B5", "occupied": 1.0, "empty": 0.6, "wattsPerModule": 9 }, "unlockClass": 2,
+  "id": "sky-lobby",
+  "lighting": {
+   "color": "#FFE3B5",
+   "occupied": 1.0,
+   "empty": 0.6,
+   "wattsPerModule": 9
+  },
+  "unlockClass": 2,
   "name": "Sky Lobby",
   "category": "circulation",
   "kind": "room",
@@ -41,7 +54,13 @@
   "wearPerDay": 0.01
  },
  {
-  "id": "corridor", "lighting": { "color": "#FFE9C4", "occupied": 1.0, "empty": 0.45, "wattsPerModule": 5 },
+  "id": "corridor",
+  "lighting": {
+   "color": "#FFE9C4",
+   "occupied": 1.0,
+   "empty": 0.45,
+   "wattsPerModule": 5
+  },
   "name": "Corridor",
   "category": "circulation",
   "kind": "room",
@@ -92,7 +111,8 @@
   }
  },
  {
-  "id": "elevator-express", "unlockClass": 2,
+  "id": "elevator-express",
+  "unlockClass": 2,
   "name": "Express Elevator Shaft",
   "category": "circulation",
   "kind": "shaft",
@@ -110,7 +130,8 @@
   }
  },
  {
-  "id": "service-elevator", "unlockClass": 1,
+  "id": "service-elevator",
+  "unlockClass": 1,
   "name": "Service Elevator",
   "category": "circulation",
   "kind": "shaft",
@@ -128,7 +149,13 @@
   }
  },
  {
-  "id": "office-small", "lighting": { "color": "#EAF1FF", "occupied": 1.0, "empty": 0.0, "wattsPerModule": 11 },
+  "id": "office-small",
+  "lighting": {
+   "color": "#EAF1FF",
+   "occupied": 1.0,
+   "empty": 0.0,
+   "wattsPerModule": 11
+  },
   "name": "Small Office",
   "category": "office",
   "kind": "room",
@@ -151,7 +178,19 @@
   "wearPerDay": 0.012
  },
  {
-  "id": "apartment-studio", "lighting": { "color": "#FFC47E", "occupied": 1.0, "empty": 0.0, "wattsPerModule": 7, "quietHours": { "from": "22:30", "to": "06:15", "level": 0.06, "spreadMinutes": 90 } },
+  "id": "apartment-studio",
+  "lighting": {
+   "color": "#FFC47E",
+   "occupied": 1.0,
+   "empty": 0.0,
+   "wattsPerModule": 7,
+   "quietHours": {
+    "from": "22:30",
+    "to": "06:15",
+    "level": 0.06,
+    "spreadMinutes": 90
+   }
+  },
   "name": "Studio Apartment",
   "category": "residential",
   "kind": "room",
@@ -174,7 +213,13 @@
   "wearPerDay": 0.01
  },
  {
-  "id": "mechanical", "lighting": { "color": "#DCE7FF", "occupied": 1.0, "empty": 0.15, "wattsPerModule": 3 },
+  "id": "mechanical",
+  "lighting": {
+   "color": "#DCE7FF",
+   "occupied": 1.0,
+   "empty": 0.15,
+   "wattsPerModule": 3
+  },
   "name": "Mechanical Room",
   "category": "infrastructure",
   "kind": "room",
@@ -194,7 +239,13 @@
   "utilityRange": 20
  },
  {
-  "id": "electrical-room", "lighting": { "color": "#DCE7FF", "occupied": 1.0, "empty": 0.15, "wattsPerModule": 3 },
+  "id": "electrical-room",
+  "lighting": {
+   "color": "#DCE7FF",
+   "occupied": 1.0,
+   "empty": 0.15,
+   "wattsPerModule": 3
+  },
   "name": "Electrical Room",
   "category": "infrastructure",
   "kind": "room",
@@ -213,7 +264,13 @@
   "wearPerDay": 0.03
  },
  {
-  "id": "telecom-room", "lighting": { "color": "#CFE0FF", "occupied": 1.0, "empty": 0.2, "wattsPerModule": 3 },
+  "id": "telecom-room",
+  "lighting": {
+   "color": "#CFE0FF",
+   "occupied": 1.0,
+   "empty": 0.2,
+   "wattsPerModule": 3
+  },
   "name": "Telecom Room",
   "category": "infrastructure",
   "kind": "room",
@@ -232,7 +289,13 @@
   "wearPerDay": 0.02
  },
  {
-  "id": "parking", "lighting": { "color": "#DDE6FF", "occupied": 1.0, "empty": 0.5, "wattsPerModule": 3 },
+  "id": "parking",
+  "lighting": {
+   "color": "#DDE6FF",
+   "occupied": 1.0,
+   "empty": 0.5,
+   "wattsPerModule": 3
+  },
   "name": "Parking Level",
   "category": "infrastructure",
   "kind": "room",
@@ -250,8 +313,200 @@
   },
   "wearPerDay": 0.005
  },
-  { "id": "fire-control-room", "name": "Fire Control Room", "category": "infrastructure", "kind": "room", "appearance": "fireControl",
-    "minWidth": 4, "maxWidth": 6, "minFloors": 1, "maxFloors": 1, "costPerModule": 3600, "maintenancePerModulePerDay": 8,
-    "utilityDemand": { "electricity": 1, "water": 2 }, "wearPerDay": 0.02, "fireProtection": 15,
-    "lighting": { "color": "#FFE6D6", "occupied": 1.0, "empty": 0.2, "wattsPerModule": 3 } }
+ {
+  "id": "fire-control-room",
+  "name": "Fire Control Room",
+  "category": "infrastructure",
+  "kind": "room",
+  "appearance": "fireControl",
+  "minWidth": 4,
+  "maxWidth": 6,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 3600,
+  "maintenancePerModulePerDay": 8,
+  "utilityDemand": {
+   "electricity": 1,
+   "water": 2
+  },
+  "wearPerDay": 0.02,
+  "fireProtection": 15,
+  "lighting": {
+   "color": "#FFE6D6",
+   "occupied": 1.0,
+   "empty": 0.2,
+   "wattsPerModule": 3
+  }
+ },
+ {
+  "id": "shop",
+  "lighting": {
+   "color": "#FFF2DC",
+   "occupied": 1.0,
+   "empty": 0.1,
+   "wattsPerModule": 12
+  },
+  "name": "Shop",
+  "category": "amenity",
+  "kind": "room",
+  "appearance": "shop",
+  "minWidth": 6,
+  "maxWidth": 16,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 1300,
+  "lowestLevel": -1,
+  "noise": 0.2,
+  "rentPerModule": 320,
+  "maintenancePerModulePerDay": 6,
+  "utilityDemand": {
+   "electricity": 2.5,
+   "hvac": 1.5,
+   "data": 0.5
+  },
+  "wearPerDay": 0.012
+ },
+ {
+  "id": "restaurant",
+  "lighting": {
+   "color": "#FFC786",
+   "occupied": 1.0,
+   "empty": 0.1,
+   "wattsPerModule": 10
+  },
+  "name": "Restaurant",
+  "category": "amenity",
+  "kind": "room",
+  "appearance": "restaurant",
+  "minWidth": 8,
+  "maxWidth": 20,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 1600,
+  "lowestLevel": -1,
+  "noise": 0.35,
+  "rentPerModule": 280,
+  "maintenancePerModulePerDay": 8,
+  "utilityDemand": {
+   "electricity": 3,
+   "hvac": 2,
+   "water": 2
+  },
+  "wearPerDay": 0.015
+ },
+ {
+  "id": "fitness",
+  "lighting": {
+   "color": "#E6F2FF",
+   "occupied": 1.0,
+   "empty": 0.1,
+   "wattsPerModule": 11
+  },
+  "name": "Fitness Club",
+  "category": "amenity",
+  "kind": "room",
+  "appearance": "fitness",
+  "minWidth": 8,
+  "maxWidth": 16,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 1500,
+  "lowestLevel": -1,
+  "noise": 0.4,
+  "rentPerModule": 240,
+  "maintenancePerModulePerDay": 7,
+  "utilityDemand": {
+   "electricity": 2.5,
+   "hvac": 2.5,
+   "water": 1.5
+  },
+  "wearPerDay": 0.015,
+  "unlockClass": 1
+ },
+ {
+  "id": "cinema",
+  "lighting": {
+   "color": "#9DB0FF",
+   "occupied": 0.55,
+   "empty": 0.05,
+   "wattsPerModule": 8
+  },
+  "name": "Cinema",
+  "category": "amenity",
+  "kind": "room",
+  "appearance": "cinema",
+  "minWidth": 10,
+  "maxWidth": 24,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 1700,
+  "lowestLevel": -1,
+  "noise": 0.5,
+  "rentPerModule": 200,
+  "maintenancePerModulePerDay": 8,
+  "utilityDemand": {
+   "electricity": 3,
+   "hvac": 2,
+   "data": 0.5
+  },
+  "wearPerDay": 0.012,
+  "unlockClass": 1
+ },
+ {
+  "id": "theater",
+  "lighting": {
+   "color": "#FFD49A",
+   "occupied": 0.9,
+   "empty": 0.05,
+   "wattsPerModule": 9
+  },
+  "name": "Theatre",
+  "category": "amenity",
+  "kind": "room",
+  "appearance": "theater",
+  "minWidth": 12,
+  "maxWidth": 32,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 1900,
+  "lowestLevel": 0,
+  "noise": 0.45,
+  "rentPerModule": 180,
+  "maintenancePerModulePerDay": 8,
+  "utilityDemand": {
+   "electricity": 2.5,
+   "hvac": 2
+  },
+  "wearPerDay": 0.012,
+  "unlockClass": 2
+ },
+ {
+  "id": "sky-bar",
+  "lighting": {
+   "color": "#FFB07A",
+   "occupied": 0.85,
+   "empty": 0.1,
+   "wattsPerModule": 8
+  },
+  "name": "Sky Bar",
+  "category": "amenity",
+  "kind": "room",
+  "appearance": "skyBar",
+  "minWidth": 8,
+  "maxWidth": 24,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 2100,
+  "lowestLevel": 15,
+  "noise": 0.45,
+  "rentPerModule": 360,
+  "maintenancePerModulePerDay": 9,
+  "utilityDemand": {
+   "electricity": 2.5,
+   "hvac": 2,
+   "water": 1.5
+  },
+  "wearPerDay": 0.015,
+  "unlockClass": 2
+ }
 ]

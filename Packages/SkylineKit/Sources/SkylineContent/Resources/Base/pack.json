@@ -22,6 +22,7 @@
     "progression": "progression.json",
     "weather": "weather.json",
     "events": "events.json",
-    "scenarios": "scenarios.json"
+    "scenarios": "scenarios.json",
+    "amenities": "amenities.json"
   }
 }
