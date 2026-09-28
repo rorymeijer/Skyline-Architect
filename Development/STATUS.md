@@ -1,62 +1,63 @@
 # Development Status
 
-_Last updated: 2026-09-28 (Phase 15)_
+_Last updated: 2026-09-28 (Phase 16)_
 
 ## Current phase
-**Phase 15 — Multiple properties & cities: COMPLETE** (awaiting approval to continue with Phase 16).
+**Phase 16 — Scenarios: COMPLETE** (awaiting approval to continue with Phase 17).
 
-## Quality gates (Phase 15)
+## Quality gates (Phase 16)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36392926388 |
-| Automated tests pass | ✅ | 250 tests (Linux + macOS); see the list below |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36398839340 |
+| Automated tests pass | ✅ | 262 tests (Linux + macOS); see the list below |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-15/` (towers built with the developer blueprint tool, one loan taken by the script — labelled) |
+| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-16/` (towers built with the developer blueprint tool; leasing and results are the simulation's own) |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | ESTATE.md (new), SIMULATION, SAVE_FORMAT v12, MODDING, ARCHITECTURE, DECISIONS D-040, CHANGELOG 0.15.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | Crown Yard too narrow for the demo tower, and the developer grant under-priced blueprints: both fixed and recaptured |
+| Documentation updated | ✅ | SCENARIOS.md (new), ESTATE (budget fix), SIMULATION, SAVE_FORMAT v13, MODDING, ARCHITECTURE, DECISIONS D-041, CHANGELOG 0.16.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | Found an empty Harrowgate tower (Phase 15 budget bug, fixed and tested) and UI issues (browser height, badge overlap, number grouping, menu subtitle): fixed and recaptured |
 | Known issues recorded | ✅ | below |
 
-The Phase 15 tests cover:
+The Phase 16 tests cover:
 
-* **Offers:** the start plot is owned; the others are for sale with their city's market.
-* **Buying:** adds city, property, building with the plot's foundation and a `land` transaction; refused atomically without the cash.
-* **Buildability:** every plot for sale takes a floor, and the demo tower fits every plot of 32 m or more.
-* **City prices:** Harrowgate construction ×1.25 and asking rent ×1.35.
-* **City markets:** demo towers in two cities each lease their own units (15/15).
-* **Legacy saves:** older properties are matched to their plot and get the city's market.
-* **Saves:** v11→v12 migration, v11 frozen, and the v12 fixture with two cities.
+* **Content:** every scenario starts with its objectives, deadline, cash and city; invalid scenarios are rejected.
+* **Winning:** Opening Day is won with the demo tower (day 3), and the result is decided once.
+* **Losing:** the deadline closing ("Time ran out") and bankruptcy.
+* **Streaks:** objectives must hold for `holdDays` closings in a row; a miss resets the streak.
+* **Metrics:** population, units, cash, daily profit (construction excluded), class, wait, properties; upper-limit objectives.
+* **Determinism:** a scenario run is batch-independent.
+* **UI data:** browser briefs and live summaries.
+* **Leasing:** scenario towers in Saltmere and Harrowgate find tenants on their own markets.
+* **Saves:** v12 frozen and the v13 fixture with a scenario in progress.
 
 ## Completed
-- Phases 0–14 (merged: rorymeijer/Skyline-Architect#1 … #14).
-- Phase 15 (FUNCTIONAL):
-  - **Cities:** Port Calder, Harrowgate and Saltmere, each with a market (rent, construction, demand), ground and skyline.
-  - **Land:** plots for sale with a price and a ready foundation; buying land (`Estate.buy`).
-  - **Economy:** construction costs and asking rents follow the city; a rental market per city.
-  - **UI:** estate panel (⌥⌘K) with holdings, *Go* and *Buy*; the simulation runs the whole estate.
-  - **Save format 12.**
+- Phases 0–15 (merged: rorymeijer/Skyline-Architect#1 … #15).
+- Phase 16 (FUNCTIONAL):
+  - **Scenarios as content:** five scenarios in `scenarios.json`, each with a start, cash, days, objectives and a hold streak.
+  - **Objectives:** measured over the estate and decided at the daily closing; win, or lose by bankruptcy or the deadline; free play afterwards.
+  - **UI:** scenario browser, objectives panel (⌥⌘O) and result screen.
+  - **Save format 13.**
+  - **Fix:** tenant budgets follow the city's rent level (Harrowgate towers never leased).
 
 ## In progress
-- Nothing. Waiting for approval to continue (Phase 16 — Scenarios).
+- Nothing. Waiting for approval to continue (Phase 17 — Modding / content system).
 
 ## Known bugs / unverified
 - No human play test yet; iPad never launched.
-- Weather is shared by the whole estate (drawn from the first city's seed).
-- Cash and loans are estate-wide; land cannot be sold; one building per plot.
-- The overview's 24-hour figure counts only money booked to buildings (not loans, interest or land).
-- City markets are first-pass balancing (Harrowgate earns most per tower; Saltmere's cheap land pays back slowly).
-- Earlier notes still apply (fire rates, lighting costs, reputation floor, fast class B).
+- Only Opening Day is verified winnable (by test). The other scenario targets are first-pass balancing and have not been played through.
+- Objectives are estate-wide; there are no per-building goals, scores or scripted events.
+- The live panel can show an objective as met during the day that the next closing misses.
+- Earlier notes still apply: shared weather, estate-wide cash, fire rates, lighting costs.
 
 ## Technical debt
-- `FireSafety.protectedRooms` and utility allocation are recomputed often. Cache per structure/upkeep change if profiles show it.
-- Only the active property has a scene; switching rebuilds it (fine at three properties).
+- `FireSafety.protectedRooms` and utility allocation are recomputed often (the scenario panel adds a 4 Hz wait measurement). Cache per structure/upkeep change if profiles show it.
+- Reloading restores the saved camera even when a caller moves it right after (seen in the capture script).
 - Simulation on the main thread.
 
-## Next tasks (Phase 16 — Scenarios)
-1. Scenario definitions as content: start (city, plot, cash, unlocks), objectives, win/lose conditions and a time limit.
-2. Objective evaluation in the simulation (population, elevator waits, profit, class), deterministic and tested.
-3. A scenario browser on the main menu and an objectives panel in game; a result screen.
-4. Save format bump for the active scenario; captures and docs.
+## Next tasks (Phase 17 — Modding / content system)
+1. Pack discovery (a user mods folder) and merge/override rules over the base pack.
+2. Validation reporting per pack (which file, which entry) without taking the base game down.
+3. A mod manager UI (enable, disable, order) and saves recording their packs.
+4. Captures and docs.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,
