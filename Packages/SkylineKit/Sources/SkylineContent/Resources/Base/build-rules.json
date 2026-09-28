@@ -5,6 +5,5 @@
   "demolitionRefund": 0.4,
   "foundationCostPerModule": 6000,
   "excavationCostPerModule": 4000,
-  "pileCostPerMeter": 150,
-  "storeysPerPileMeter": 2
+  "pileCostPerMeter": 150
 }

@@ -67,9 +67,9 @@ public enum StressTower {
         let cityID = world.addCity(definitionID: city.id, name: city.name, seed: city.seed, economy: city.economy ?? CityEconomy())
         let plot = Plot(frontage: ColumnSpan(start: 0, count: width + 16), maxBasementFloors: 2, siteMargin: 40, strata: city.geology)
         let property = try world.addProperty(cityID: cityID, name: "Stress Lot", plot: plot)
-        // Piles long enough for the whole height (storeysPerPileMeter), at least 30 m.
+        // Piles long enough for the whole height when a mod limits it (storeysPerPileMeter), at least 30 m.
         let top = blueprint(zones: zones, width: width).steps.compactMap { $0.floor?.level }.max() ?? 0
-        let piles = max(30, (Double(top + 1) / (library.buildRules.storeysPerPileMeter ?? 2)).rounded(.up) + 2)
+        let piles = max(30, library.buildRules.storeysPerPileMeter.map { (Double(top + 1) / $0).rounded(.up) + 2 } ?? 0)
         let building = try world.addBuilding(propertyID: property, name: "Stress Tower", footprint: ColumnSpan(start: 8, count: width),
                                              foundation: Foundation(basementFloors: 1, pileDepth: piles, pileSpacing: 4))
         world.ledger.post(Transaction(tick: 0, amount: 1_000_000_000, category: .grant, detail: "Stress test"))
