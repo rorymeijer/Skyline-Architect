@@ -92,7 +92,7 @@ private struct SaveRow: View {
     private var badge: (symbol: String, color: Color, text: String) {
         if info.isAutosave { return ("internaldrive", .secondary, "autosave, this device only") }
         if model.syncConflicts.contains(info.slot) || info.slot.contains(" conflict ") {
-            return ("exclamationmark.icloud", .orange, "conflict copy — the other device's version")
+            return ("exclamationmark.icloud", .orange, "conflict copy")
         }
         guard model.syncEnabled else { return ("internaldrive", .secondary, "on this device") }
         return model.syncedSlots.contains(info.slot) ? ("checkmark.icloud", .green, "in iCloud Drive") : ("icloud.and.arrow.up", .yellow, "not synced yet")
