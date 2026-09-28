@@ -1,0 +1,19 @@
+[
+  {
+    "id": "kestrel-pier-lot",
+    "name": "Pier Road Lot",
+    "cityID": "kestrel-bay",
+    "frontageModules": 40,
+    "maxBasementFloors": 2,
+    "siteMarginModules": 40,
+    "price": 700000,
+    "foundation": {
+      "buildingName": "Pier Lofts",
+      "footprintOffsetModules": 4,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 18,
+      "pileSpacingModules": 4
+    }
+  }
+]

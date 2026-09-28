@@ -8,6 +8,17 @@ struct BuildPalette: View {
     let model: AppModel
 
     var body: some View {
+        // Mods can add any number of room types: when the labelled tools do not fit the
+        // window, the palette shows icons only (names stay in the tooltips). Pure SwiftUI, so
+        // captures render it exactly as the window does.
+        ViewThatFits(in: .horizontal) {
+            tools(compact: false)
+            tools(compact: true)
+        }
+        .environment(\.colorScheme, .dark)
+    }
+
+    private func tools(compact: Bool) -> some View {
         HStack(spacing: 2) {
             floorButton
             divider
@@ -16,11 +27,11 @@ struct BuildPalette: View {
             }
             demolishButton
         }
+        .environment(\.compactPalette, compact)
         .padding(.horizontal, 8)
         .padding(.vertical, 5)
         .background(RoundedRectangle(cornerRadius: 14).fill(Color.black.opacity(0.6)))
         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.white.opacity(0.12)))
-        .environment(\.colorScheme, .dark)
     }
 
     private var floorButton: some View {
@@ -108,7 +119,20 @@ struct BuildPalette: View {
     }
 }
 
+private struct CompactPaletteKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    /// Icon-only tool buttons (the palette is wider than the window).
+    fileprivate var compactPalette: Bool {
+        get { self[CompactPaletteKey.self] }
+        set { self[CompactPaletteKey.self] = newValue }
+    }
+}
+
 private struct ToolButton: View {
+    @Environment(\.compactPalette) private var compact
     let symbol: String
     let title: String
     let help: String
@@ -122,9 +146,9 @@ private struct ToolButton: View {
         Button(action: action) {
             VStack(spacing: 2) {
                 Image(systemName: symbol).font(.system(size: 15, weight: .medium))
-                Text(title).font(.system(size: 9, weight: .medium)).lineLimit(1)
+                if !compact { Text(title).font(.system(size: 9, weight: .medium)).lineLimit(1) }
             }
-            .frame(width: 58, height: 40)
+            .frame(width: compact ? 36 : 58, height: 40)
             .foregroundStyle(isOn ? Color.white : Color.white.opacity(locked ? 0.35 : 0.85))
             .background(RoundedRectangle(cornerRadius: 8).fill(isOn ? tint.opacity(0.85) : Color.clear))
             .overlay(alignment: .topTrailing) {

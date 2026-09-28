@@ -1,0 +1,37 @@
+[
+  {
+    "id": "apartment-loft",
+    "lighting": {
+      "color": "#FFC47E",
+      "occupied": 1.0,
+      "empty": 0.0,
+      "wattsPerModule": 7,
+      "quietHours": {
+        "from": "22:30",
+        "to": "06:15",
+        "level": 0.06,
+        "spreadMinutes": 90
+      }
+    },
+    "name": "Loft Apartment",
+    "category": "residential",
+    "kind": "room",
+    "appearance": "apartment",
+    "minWidth": 9,
+    "maxWidth": 12,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1650,
+    "lowestLevel": 2,
+    "noise": 0.05,
+    "rentPerModule": 240,
+    "maintenancePerModulePerDay": 5,
+    "utilityDemand": {
+      "electricity": 2,
+      "hvac": 1.5,
+      "water": 2,
+      "data": 1
+    },
+    "wearPerDay": 0.01
+  }
+]

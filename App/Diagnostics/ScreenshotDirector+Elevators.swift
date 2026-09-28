@@ -1,6 +1,7 @@
 #if DEBUG
 import Foundation
 import SkylineCore
+import SkylineContent
 import SkylineSimulation
 
 /// Scenario helpers for the Phase 6 (elevator) captures.
@@ -85,6 +86,29 @@ extension ScreenshotDirector {
     static func objectives(_ model: AppModel) -> String {
         guard let s = model.scenario else { return "no scenario" }
         return "\(s.daysLeft) closings left; " + s.rows.map { "\($0.label): \($0.current) \($0.met ? "✓" : "✗")" }.joined(separator: ", ")
+    }
+
+    /// "Base (active), Kestrel Bay (active), …" for the mod manager (Phase 17).
+    static func packs(_ model: AppModel) -> String {
+        model.modRows.map { row -> String in
+            let state: String
+            switch row.status.state {
+            case .active: state = "active"
+            case .disabled: state = row.enabled ? "off, on after Apply" : "off"
+            case .failed(let why): state = "failed: \(why)"
+            }
+            return "\(row.status.name) (\(state))"
+        }.joined(separator: "; ")
+    }
+
+    /// A mod whose tenant type rents a room type nobody defines (for the validation capture).
+    static func writeBrokenMod(into mods: URL) {
+        let folder = mods.appendingPathComponent("harbour-lights", isDirectory: true)
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let manifest = #"{"id":"harbour-lights","name":"Harbour Lights","version":"0.1.0","formatVersion":1,"description":"Lighthouse keepers (broken on purpose).","author":"Capture script","files":{"tenants":"tenants.json"}}"#
+        let tenants = #"[{"id":"lighthouse-keeper","name":"Lighthouse Keeper","kind":"household","rooms":["lighthouse-flat"],"role":"resident","members":{"fixed":1},"schedules":["resident-commuter"],"budgetPerModule":200,"weights":{"rent":1,"access":1,"noise":1,"view":1},"minScore":0.5,"leaveBelow":0.3,"prospectsPerDay":1}]"#
+        try? manifest.write(to: folder.appendingPathComponent("pack.json"), atomically: true, encoding: .utf8)
+        try? tenants.write(to: folder.appendingPathComponent("tenants.json"), atomically: true, encoding: .utf8)
     }
 
     static func carCenter(_ car: ElevatorCar, in world: GameWorld) -> Vec2? {

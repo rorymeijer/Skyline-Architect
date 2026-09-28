@@ -1,0 +1,18 @@
+{
+  "id": "kestrel-bay",
+  "name": "Kestrel Bay",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A seaside town, a loft apartment, creative households and a scenario.",
+  "author": "Skyline Architect examples",
+  "files": {
+    "cities": "cities.json",
+    "plots": "plots.json",
+    "starts": "starts.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "tenants": "tenants.json",
+    "scenarios": "scenarios.json",
+    "blueprints": "blueprints.json"
+  }
+}

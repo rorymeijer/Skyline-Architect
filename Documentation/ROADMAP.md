@@ -148,8 +148,16 @@ Delivered:
 
 Not yet: scripted events, restrictions, scores, a record of completed scenarios.
 
-### Phase 17 — Modding / content system
-Pack discovery, merge/override rules, validation reporting, mod manager UI.
+### Phase 17 — Modding / content system ✅ (2026-09-28)
+Delivered:
+- pack discovery;
+- replace/add by id;
+- validation per mod with reporting;
+- dependencies;
+- the mod manager;
+- an example mod.
+
+Not yet: removing entries, image assets, content hashes, hot reload.
 
 ### Phase 18 — iCloud persistence
 Optional iCloud Drive save sync with conflict handling.

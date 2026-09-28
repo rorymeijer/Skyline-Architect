@@ -1,63 +1,61 @@
 # Development Status
 
-_Last updated: 2026-09-28 (Phase 16)_
+_Last updated: 2026-09-28 (Phase 17)_
 
 ## Current phase
-**Phase 16 — Scenarios: COMPLETE** (awaiting approval to continue with Phase 17).
+**Phase 17 — Modding / content system: COMPLETE** (awaiting approval to continue with Phase 18).
 
-## Quality gates (Phase 16)
+## Quality gates (Phase 17)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36398839340 |
-| Automated tests pass | ✅ | 262 tests (Linux + macOS); see the list below |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36405609107 |
+| Automated tests pass | ✅ | 269 tests (Linux + macOS); see the list below |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-16/` (towers built with the developer blueprint tool; leasing and results are the simulation's own) |
+| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-17/` (the broken mod was written by the capture script, and the tower built with the blueprint tool — labelled) |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | SCENARIOS.md (new), ESTATE (budget fix), SIMULATION, SAVE_FORMAT v13, MODDING, ARCHITECTURE, DECISIONS D-041, CHANGELOG 0.16.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | Found an empty Harrowgate tower (Phase 15 budget bug, fixed and tested) and UI issues (browser height, badge overlap, number grouping, menu subtitle): fixed and recaptured |
+| Documentation updated | ✅ | MODDING.md (rewritten: mods, overlay rules, validation, saves, example), ARCHITECTURE, DECISIONS D-042, CHANGELOG 0.17.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | Unreadable validation prefix and palette overflow (then a scroll view that does not render in captures): fixed and recaptured. Two app compile failures fixed first. |
 | Known issues recorded | ✅ | below |
 
-The Phase 16 tests cover:
+The Phase 17 tests cover:
 
-* **Content:** every scenario starts with its objectives, deadline, cash and city; invalid scenarios are rejected.
-* **Winning:** Opening Day is won with the demo tower (day 3), and the result is decided once.
-* **Losing:** the deadline closing ("Time ran out") and bankruptcy.
-* **Streaks:** objectives must hold for `holdDays` closings in a row; a miss resets the streak.
-* **Metrics:** population, units, cash, daily profit (construction excluded), class, wait, properties; upper-limit objectives.
-* **Determinism:** a scenario run is batch-independent.
-* **UI data:** browser briefs and live summaries.
-* **Leasing:** scenario towers in Saltmere and Harrowgate find tenants on their own markets.
-* **Saves:** v12 frozen and the v13 fixture with a scenario in progress.
+* **Example mod:** it loads over the base pack (city, plot, room, layout, tenant, scenario, blueprint); a replaced entry keeps the base order.
+* **Playability:** the mod's content works — its scenario starts, a loft is placed, and its blueprint builds.
+* **Disabled mods** are listed but not loaded.
+* **Broken mods** are reported and skipped, while the others load: invalid JSON, a bad reference (attributed to the mod), an unknown kind, a missing requirement, a duplicate id.
+* **Requirements** follow the load order.
+* **Discovery** ignores folders without a manifest.
+* **Single files** replace, and materials merge.
 
 ## Completed
-- Phases 0–15 (merged: rorymeijer/Skyline-Architect#1 … #15).
-- Phase 16 (FUNCTIONAL):
-  - **Scenarios as content:** five scenarios in `scenarios.json`, each with a start, cash, days, objectives and a hold streak.
-  - **Objectives:** measured over the estate and decided at the daily closing; win, or lose by bankruptcy or the deadline; free play afterwards.
-  - **UI:** scenario browser, objectives panel (⌥⌘O) and result screen.
-  - **Save format 13.**
-  - **Fix:** tenant budgets follow the city's rent level (Harrowgate towers never leased).
+- Phases 0–16 (merged: rorymeijer/Skyline-Architect#1 … #16).
+- Phase 17 (FUNCTIONAL):
+  - **Loading:** `ContentPack` (read and overlay) and `ContentLibrary.build`; `ModLoader` handles discovery, load order, validation per mod, `requires`, and a status per pack.
+  - **App:** it loads the enabled mods, and the mod manager enables, orders, installs examples and applies. Saves record every pack.
+  - **Example mod:** Kestrel Bay.
+  - **Palette:** icon-only when too wide.
 
 ## In progress
-- Nothing. Waiting for approval to continue (Phase 17 — Modding / content system).
+- Nothing. Waiting for approval to continue (Phase 18 — iCloud persistence).
 
 ## Known bugs / unverified
-- No human play test yet; iPad never launched.
-- Only Opening Day is verified winnable (by test). The other scenario targets are first-pass balancing and have not been played through.
-- Objectives are estate-wide; there are no per-building goals, scores or scripted events.
-- The live panel can show an objective as met during the day that the next closing misses.
-- Earlier notes still apply: shared weather, estate-wide cash, fire rates, lighting costs.
+- No human play test yet; iPad never launched (the mod folder there is the app container, with no file browser integration yet).
+- Mods cannot remove base entries or ship images; a replaced entry must be copied whole.
+- Saves check pack ids, not versions or content hashes: a changed mod can alter a running save.
+- Changing mods starts a fresh game (by design, D-042).
+- Earlier notes still apply: scenario balance beyond Opening Day, shared weather, estate-wide cash.
 
 ## Technical debt
-- `FireSafety.protectedRooms` and utility allocation are recomputed often (the scenario panel adds a 4 Hz wait measurement). Cache per structure/upkeep change if profiles show it.
-- Reloading restores the saved camera even when a caller moves it right after (seen in the capture script).
+- Validating after each mod rebuilds the whole library, which is fine for a handful of mods.
+- `FireSafety.protectedRooms` and utility allocation are recomputed often.
+- Reloading restores the saved camera even when a caller moves it right after.
 - Simulation on the main thread.
 
-## Next tasks (Phase 17 — Modding / content system)
-1. Pack discovery (a user mods folder) and merge/override rules over the base pack.
-2. Validation reporting per pack (which file, which entry) without taking the base game down.
-3. A mod manager UI (enable, disable, order) and saves recording their packs.
-4. Captures and docs.
+## Next tasks (Phase 18 — iCloud persistence)
+1. Optional iCloud Drive save sync (ubiquity container), off by default.
+2. Conflict handling: keep both copies, newest-wins suggestion, never silent overwrite.
+3. Status in the load sheet (local, uploading, in iCloud, conflict).
+4. Tests for the conflict rules; docs and captures (as far as CI can show without an iCloud account).
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,

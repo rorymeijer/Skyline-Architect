@@ -179,6 +179,11 @@ Scenarios (SCENARIOS.md): `ScenarioState` (copied objectives, deadline, streak, 
 in Core; the simulation measures the estate-wide metrics and decides the result at the daily
 closing (`Scenarios`); Content defines scenarios, validates them, starts them and summarises
 them for the UI (`ScenarioBrief`, `ScenarioSummary`); the app only shows them (D-041).
+Mods (MODDING.md): `ContentPack` reads a pack folder (decoding only), `overlay` lays packs
+over each other by id, and `ContentLibrary.build` validates the merged result. `ModLoader`
+discovers mod folders, applies the enabled ones in order and validates each step, reporting
+`PackStatus` per pack. The app keeps the enabled list as a setting and rebuilds its engines
+from the new library (D-042).
 
 ## 6. Concurrency model
 

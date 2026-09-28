@@ -122,6 +122,9 @@ struct MainMenuView: View {
                         model.startFromMenu(startID: NewGameFactory.defaultStartID)
                     }
                     MenuButton(title: "Scenarios…", subtitle: "Objectives against the clock") { model.openScenarioBrowser() }
+                    MenuButton(title: "Mods…", subtitle: model.enabledMods.isEmpty ? "Content packs" : "\(model.enabledMods.count) enabled") {
+                        model.openModManager()
+                    }
                     MenuButton(title: "Load Game…", subtitle: nil) { model.showLoadSheet = true }
                 }
                 .frame(width: 300)

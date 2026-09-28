@@ -1,0 +1,54 @@
+[
+  {
+    "id": "couple",
+    "name": "Couple",
+    "kind": "household",
+    "rooms": [
+      "apartment-studio",
+      "apartment-loft"
+    ],
+    "role": "resident",
+    "members": {
+      "fixed": 2
+    },
+    "schedules": [
+      "resident-commuter"
+    ],
+    "budgetPerModule": 260,
+    "weights": {
+      "rent": 0.3,
+      "access": 0.3,
+      "noise": 0.2,
+      "view": 0.2
+    },
+    "minScore": 0.62,
+    "leaveBelow": 0.46,
+    "prospectsPerDay": 4
+  },
+  {
+    "id": "creative-household",
+    "name": "Creative Household",
+    "kind": "household",
+    "rooms": [
+      "apartment-loft",
+      "apartment-studio"
+    ],
+    "role": "resident",
+    "members": {
+      "fixed": 2
+    },
+    "schedules": [
+      "resident-commuter"
+    ],
+    "budgetPerModule": 290,
+    "weights": {
+      "rent": 0.2,
+      "access": 0.25,
+      "noise": 0.2,
+      "view": 0.35
+    },
+    "minScore": 0.6,
+    "leaveBelow": 0.45,
+    "prospectsPerDay": 3
+  }
+]

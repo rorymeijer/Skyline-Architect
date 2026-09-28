@@ -1,0 +1,71 @@
+[
+  {
+    "room": "apartment-loft",
+    "items": [
+      {
+        "furniture": "door-apartment",
+        "anchor": "left",
+        "offset": 0.25
+      },
+      {
+        "furniture": "kitchen-unit",
+        "anchor": "left",
+        "offset": 1.4,
+        "minRoomWidth": 7.5
+      },
+      {
+        "furniture": "fridge",
+        "anchor": "left",
+        "offset": 4.05,
+        "minRoomWidth": 7.5
+      },
+      {
+        "furniture": "kitchenette",
+        "anchor": "left",
+        "offset": 1.4,
+        "maxRoomWidth": 7.49
+      },
+      {
+        "furniture": "bathroom-pod",
+        "anchor": "right",
+        "offset": 0,
+        "minRoomWidth": 9.3
+      },
+      {
+        "furniture": "bed-double",
+        "anchor": "right",
+        "offset": 0.15,
+        "maxRoomWidth": 9.29
+      },
+      {
+        "furniture": "bed-double",
+        "anchor": "right",
+        "offset": 2.15,
+        "minRoomWidth": 9.3
+      },
+      {
+        "furniture": "nightstand-lamp",
+        "anchor": "right",
+        "offset": 2.35,
+        "minRoomWidth": 7.5,
+        "maxRoomWidth": 9.29
+      },
+      {
+        "furniture": "wall-art",
+        "anchor": "right",
+        "offset": 0.8,
+        "elevation": 1.45,
+        "reserve": false,
+        "maxRoomWidth": 9.29
+      },
+      {
+        "furniture": "wall-art",
+        "anchor": "right",
+        "offset": 2.7,
+        "elevation": 1.45,
+        "reserve": false,
+        "minRoomWidth": 9.3
+      }
+    ]
+  }
+]

@@ -32,6 +32,7 @@ struct GameCommands: Commands {
                 .keyboardShortcut("n", modifiers: .command)
             Button("New Sandbox Game") { model.newGame(startID: NewGameFactory.defaultStartID) }
             Button("Scenarios…") { model.openScenarioBrowser() }
+            Button("Mods…") { model.openModManager() }
         }
         CommandGroup(replacing: .saveItem) {
             Button("Save") { model.save() }

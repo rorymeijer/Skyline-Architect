@@ -337,3 +337,26 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
 - **Consequences:**
   - New kinds of objectives need engine code (a metric case) and a documented definition.
   - The live panel can show an objective as met during the day that the closing then misses.
+
+## D-042 — Mods overlay the base pack by id; each mod is validated on top of the others
+- **Date:** 2026-09-28
+- **Decision:**
+  - A mod is a content pack in the same format as the base pack.
+  - Packs are read (decoded only), then laid over each other in the player's load order: list entries replace by id in place or are appended; single-file kinds replace the file; materials merge per key.
+  - After each mod the merged content is validated with the base rules. A failing mod is skipped and reported with the error attributed to it.
+  - Saves list their pack ids. The enabled list is an app setting (UserDefaults), not game state.
+  - Changing mods reloads all content and starts a fresh game.
+- **Alternatives:**
+  - An explicit `"override": true` flag.
+  - Field-level patches (JSON merge patch).
+  - Rejecting the whole mod set on any error.
+  - Hot-swapping content under a running game.
+- **Reason:**
+  - Replace-by-id is predictable and matches how content is keyed everywhere.
+  - Validating each step keeps the base game safe and points at the guilty mod.
+  - A running world's rooms, tenants and cities reference content ids, so swapping content under it could break invariants. A fresh game (or loading a save made with the same packs) never does.
+- **Consequences:**
+  - A mod that wants to change one field copies the whole entry.
+  - Base entries cannot be removed yet.
+  - A save made with a mod needs that mod (by id; versions are recorded but not enforced).
+
