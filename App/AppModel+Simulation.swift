@@ -68,6 +68,7 @@ extension AppModel {
         refreshFacilities()
         refreshProgression()
         refreshWeather()
+        refreshFoundation()
         refreshIncidents()
         if showEstatePanel { refreshEstate() }
         refreshScenario()

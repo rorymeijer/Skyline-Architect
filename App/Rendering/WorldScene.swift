@@ -187,6 +187,18 @@ final class WorldScene: SKScene {
         addChild(placementOverlay)
     }
 
+    /// Replaces the whole composition when the site itself changed (a deeper or wider
+    /// foundation: the ground section and camera bounds follow). Every tile re-renders.
+    func replaceComposition(_ c: SiteComposition) {
+        composition = c
+        tileLayer.replace(composition: c, dirty: nil)
+        emissionLayer.replace(composition: c, dirty: nil)
+        lampLayer.replace(composition: c, dirty: nil)
+        controller.setLimits(.standard(bounds: c.cameraBounds, bottomInset: Self.bottomInterfaceInset))
+        cameraDirty = true
+        overlayDirty = true
+    }
+
     /// Replaces the composition after construction; only tiles in `dirty` re-render.
     func updateComposition(_ c: SiteComposition, dirty: Rect?) {
         composition = c
