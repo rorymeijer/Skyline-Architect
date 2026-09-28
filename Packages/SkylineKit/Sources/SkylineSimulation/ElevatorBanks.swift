@@ -83,13 +83,25 @@ public enum ElevatorBanks {
 // MARK: - Call assignment
 
 extension SimulationEngine {
+    /// Banks of a building from the structure cache (Phase 19; same as `ElevatorBanks.banks`).
+    func banks(of building: BuildingID, in world: GameWorld) -> [ElevatorBank] {
+        guard let b = world.buildings[building] else { return [] }
+        return navigation.banks(of: b, world: world, catalog: catalog, rules: rules)
+    }
+
+    /// The bank a car belongs to, from the structure cache.
+    func bank(of car: RoomID, in world: GameWorld) -> ElevatorBank? {
+        guard let b = world.elevators[car]?.buildingID else { return nil }
+        return banks(of: b, in: world).first { $0.cars.contains(car) }
+    }
+
     /// Chooses the car of the bank that serves a new hall call, according to the bank's
     /// strategy. Only cars stopping at both floors are eligible; ties go to the lower id.
     /// Returns the ride re-targeted to the chosen car's landing, marked as assigned.
     func assign(_ ride: Ride, world: GameWorld, now: Tick) -> Ride {
         var assigned = ride
         assigned.assigned = true
-        guard let bank = ElevatorBanks.bank(of: ride.shaft, in: world, rules: rules), bank.cars.count > 1 else { return assigned }
+        guard let bank = bank(of: ride.shaft, in: world), bank.cars.count > 1 else { return assigned }
         let candidates = bank.cars.filter { id in
             guard let room = world.rooms[id], let spec = rules.elevator(for: room.definitionID) else { return false }
             let served = spec.servedFloors(of: room.floors)

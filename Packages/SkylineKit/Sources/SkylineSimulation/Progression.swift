@@ -99,7 +99,7 @@ public enum Progression {
             : units.reduce(0) { $0 + Leasing.servicesLevel(of: $1, world: world, service: service) } / Double(units.count)
         let occupancy = units.isEmpty ? 0 : Double(Set(tenants.map(\.room)).count) / Double(units.count)
         var boardings = 0, waited = 0.0
-        for bank in ElevatorBanks.banks(in: world, rules: engine.rules, building: building) {
+        for bank in engine.banks(of: building, in: world) {
             let s = ElevatorBanks.stats(of: bank, in: world)
             guard s.boardings >= 10 else { continue }
             boardings += s.boardings

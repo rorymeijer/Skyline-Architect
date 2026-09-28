@@ -100,7 +100,8 @@ bit patterns of the positions — and store the portal sequence. Because the key
 cache hit returns precisely what a fresh search would: the cache never changes outcomes
 (tested against a run that discards the cache every step, as after loading a save). People
 repeat their trips daily from fixed personal spots, so hit rates grow after the first day.
-The cache holds at most 4096 routes per building and is cleared when full.
+The cache holds at most 65,536 routes per building (4,096 until Phase 19, which thrashed at
+~2,000 people) and is cleared when full.
 
 **Re-planning after construction.** A trip is invalid when a remaining leg walks where there
 is no floor or uses a shaft that no longer serves those floors. Affected travellers are
