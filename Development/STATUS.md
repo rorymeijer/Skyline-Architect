@@ -13,7 +13,7 @@ Still not 1.0: no human play test, the iPad build never launched, iCloud unverif
 | Compiles (macOS + iPad Simulator) | ✅ | CI run 36444953400 |
 | Automated tests pass | ✅ | 290 tests (Linux + macOS): per-city weather, v14 migration and fixture, pack hashes, estate split, camera inset, particle scale, city activity |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Fixes demonstrable | ✅ | 7 captures in `Development/Screenshots/Fixes-0.20.1/` (weather, grant and panel openings set by the script — labelled) |
+| Fixes demonstrable | ✅ | CI run 36445406112: 7 captures in `Development/Screenshots/Fixes-0.20.1/` (weather, grant and panel openings set by the script — labelled) |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
 | Documentation updated | ✅ | OPEN_ITEMS, SAVE_FORMAT (v14), ESTATE, WEATHER, LIGHTING, MODDING, DECISIONS D-046/D-047, CHANGELOG 0.20.1, ROADMAP |
 | Screenshots produced & inspected | ✅ | The estate capture first fell outside the 24 h window (estate $0): script adjusted and recaptured |
