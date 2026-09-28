@@ -210,6 +210,11 @@ public struct GameWorld: Codable, Sendable, Equatable {
         cities.update(city) { $0.economy = economy }
     }
 
+    /// Offers a unit for rent or for sale (checks are the market's, `Leasing.setTenure`).
+    public mutating func setTenure(_ tenure: Tenure?, room: RoomID) {
+        rooms.update(room) { $0.tenure = tenure == .rent ? nil : tenure }
+    }
+
     /// Sets a city's weather (the simulation's 06:00 step; tests and captures).
     public mutating func setWeather(_ weather: WeatherState?, city: CityID) {
         cities.update(city) { $0.weather = weather }

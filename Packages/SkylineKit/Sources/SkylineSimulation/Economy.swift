@@ -41,7 +41,8 @@ extension SimulationEngine {
         for tenant in world.tenants.values {
             let daily = tenant.rent / economy.rentDaysPerMonth
             guard daily > 0 else { continue }
-            world.ledger.post(Transaction(tick: now, amount: daily, category: .rent, detail: "Rent — \(tenant.name)",
+            world.ledger.post(Transaction(tick: now, amount: daily, category: .rent,
+                                          detail: (tenant.isOwner ? "Service charges — " : "Rent — ") + tenant.name,
                                           building: tenant.buildingID, room: tenant.room, tenant: tenant.id))
         }
         for building in world.buildings.values {

@@ -136,6 +136,7 @@ public struct ConstructionEngine: Sendable {
 
     private func validateDemolishRoom(_ id: RoomID, _ world: GameWorld) -> Result<ConstructionPlan, ConstructionError> {
         guard let room = world.rooms[id] else { return .failure(.unknownRoom) }
+        guard !room.isPrivatelyOwned else { return .failure(.privatelyOwned) }
         let cost = Self.scaled((catalog.spec(room.definitionID)?.costPerModule ?? 0) * room.columns.count * room.floors.count,
                                costFactor(room.buildingID, world))
         return .success(ConstructionPlan(cost: refund(cost), buildingID: room.buildingID, columns: room.columns, floors: room.floors))

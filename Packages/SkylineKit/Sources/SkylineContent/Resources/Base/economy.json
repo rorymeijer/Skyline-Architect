@@ -6,5 +6,8 @@
  "utilitiesPerPersonPerDay": 4,
  "elevatorCarPerDay": 60,
  "rentDaysPerMonth": 1,
- "lightingPricePerKWh": 7.5
+ "lightingPricePerKWh": 7.5,
+ "saleMonths": 100,
+ "serviceChargeShare": 0.25,
+ "ownerPatience": 9
 }

@@ -14,6 +14,11 @@ public struct UnitReport: Equatable, Sendable {
         public var satisfaction: Double
         public var unhappyDays: Int
         public var appraisal: UnitAppraisal?
+        /// Owner (0.20.3): the price paid to the player (0 for a resale); `rent` is then the
+        /// monthly service charges.
+        public var purchasePrice: Int?
+        /// Bad reviews in a row after which the tenant moves out (owners hold on longer).
+        public var leavesAfter = 3
     }
 
     /// How a vacant unit looks to each tenant type that could rent it.
@@ -29,6 +34,11 @@ public struct UnitReport: Equatable, Sendable {
     public var width: Int
     public var leasable: Bool
     public var askingRent: Int?
+    /// Rented, for sale or sold (0.20.3); whether it may be offered for sale, and its terms.
+    public var tenure: Tenure = .rent
+    public var canBeSold = false
+    public var salePrice: Int?
+    public var serviceCharge: Int?
     public var occupant: Occupant?
     public var interest: [Interest] = []
     /// Recent market events for this unit, newest first.
@@ -42,6 +52,7 @@ public struct UnitReport: Equatable, Sendable {
         a.roomID == b.roomID && a.title == b.title && a.occupant == b.occupant && a.interest == b.interest && a.history == b.history
             && a.utilities.map(\.name) == b.utilities.map(\.name) && a.utilities.map(\.served) == b.utilities.map(\.served)
             && a.cleanliness == b.cleanliness && a.condition == b.condition && a.askingRent == b.askingRent
+            && a.tenure == b.tenure && a.canBeSold == b.canBeSold && a.salePrice == b.salePrice && a.serviceCharge == b.serviceCharge
     }
 
     public static func make(room: Room, world: GameWorld, engine: SimulationEngine) -> UnitReport? {
@@ -50,6 +61,14 @@ public struct UnitReport: Equatable, Sendable {
             : "\(FloorLabel.label(for: room.floors.lowest))–\(FloorLabel.label(for: room.floors.highest))"
         var report = UnitReport(roomID: room.id, title: spec.name, floor: floor, width: room.columns.count,
                                 leasable: spec.rentPerModule != nil, askingRent: Leasing.askingRent(room, world: world, catalog: engine.catalog))
+        if report.leasable {
+            report.tenure = room.tenure ?? .rent
+            report.canBeSold = Leasing.canBeSold(room, rules: engine.rules)
+            if report.canBeSold {
+                report.salePrice = Leasing.salePrice(room, world: world, catalog: engine.catalog, rules: engine.rules)
+                report.serviceCharge = Leasing.serviceCharge(room, world: world, catalog: engine.catalog, rules: engine.rules)
+            }
+        }
         // One allocation for every appraisal below and the utilities list (4 Hz in the app).
         let service = engine.rules.facilities == nil ? nil
             : Utilities.allocate(building: room.buildingID, world: world, catalog: engine.catalog, rules: engine.rules)
@@ -61,9 +80,11 @@ public struct UnitReport: Equatable, Sendable {
             report.occupant = Occupant(name: tenant.name, typeName: type?.name ?? tenant.typeID, members: members.count, present: present,
                                        rent: tenant.rent, sinceDay: SimClock.day(tenant.since) + 1, satisfaction: tenant.satisfaction,
                                        unhappyDays: tenant.unhappyDays,
-                                       appraisal: type.flatMap { Leasing.appraise(room, for: $0, world: world, engine: engine, services: services) })
+                                       appraisal: type.flatMap { Leasing.appraise(room, for: $0, world: world, engine: engine, services: services) },
+                                       purchasePrice: tenant.purchasePrice,
+                                       leavesAfter: tenant.isOwner ? engine.rules.economy?.ownerReviews ?? 9 : 3)
         } else if report.leasable {
-            report.interest = engine.rules.tenantTypes(for: room.definitionID).compactMap { type in
+            report.interest = engine.rules.tenantTypes(for: room.definitionID).filter { Leasing.takes(room, type: $0) }.compactMap { type in
                 Leasing.appraise(room, for: type, world: world, engine: engine, services: services).map {
                     Interest(typeName: type.name, appraisal: $0, wouldSign: $0.affordable && $0.total >= type.minScore)
                 }
@@ -89,6 +110,9 @@ public struct LeasingSummary: Equatable, Sendable {
     public var rentRoll = 0
     public var households = 0
     public var businesses = 0
+    /// Flats sold to owners (0.20.3) and flats on offer for sale.
+    public var owned = 0
+    public var forSale = 0
     public var averageSatisfaction = 0.0
     public var market = MarketState()
     /// Human-readable recent events, newest first.
@@ -106,6 +130,9 @@ public struct LeasingSummary: Equatable, Sendable {
         for t in tenants {
             if engine.rules.tenantType(t.typeID)?.kind == "business" { s.businesses += 1 } else { s.households += 1 }
         }
+        let rooms = world.rooms.values.filter { ids.contains($0.buildingID) }
+        s.owned = rooms.filter { $0.tenure == .owned }.count
+        s.forSale = rooms.filter { $0.tenure == .forSale }.count
         s.averageSatisfaction = tenants.isEmpty ? 0 : tenants.reduce(0) { $0 + $1.satisfaction } / Double(tenants.count)
         s.market = world.market
         s.recent = world.market.log.suffix(limit).reversed().map { e in

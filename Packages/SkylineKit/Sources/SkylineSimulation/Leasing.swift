@@ -168,8 +168,8 @@ public enum Leasing {
                 (i < n ? last[i] : last[i % n] + "-" + last[(i / n + i) % n]) + " household"
             }
         }
-        world.tenants.insert(Tenant(id: tenantID, typeID: type.id, name: name, buildingID: room.buildingID, room: room.id,
-                                    rent: askingRent(room, world: world, catalog: catalog) ?? 0, since: now, satisfaction: satisfaction))
+        world.tenants.insert(contract(tenantID, type: type, name: name, room: room, at: now, satisfaction: satisfaction,
+                                      world: &world, rules: rules, catalog: catalog))
         var added: [PersonID] = []
         for _ in 0..<type.members.count(modules: room.columns.count) {
             let id = world.makePersonID()
@@ -214,7 +214,7 @@ public enum Leasing {
     public static func fillAll(_ world: inout GameWorld, catalog: BuildCatalog, rules: SimulationRules) -> Int {
         var signed = 0
         for room in vacantUnits(world, catalog: catalog) {
-            guard let type = rules.tenantTypes(for: room.definitionID).first else { continue }
+            guard let type = rules.tenantTypes(for: room.definitionID).first(where: { takes(room, type: $0) }) else { continue }
             sign(type, into: room, at: world.clock.tick, world: &world, rules: rules, catalog: catalog, satisfaction: 0.7)
             signed += 1
         }
@@ -266,6 +266,7 @@ extension SimulationEngine {
             world.market.prospects += 1
             let candidates = Leasing.vacantUnits(world, catalog: catalog).filter {
                 buildings.contains($0.buildingID) && type.rooms.contains($0.definitionID) && needed <= world.unlockedClass(of: $0.buildingID)
+                    && Leasing.takes($0, type: type)
             }
             let appraised = candidates.compactMap { room in
                 Leasing.appraise(room, for: type, world: world, engine: self, services: services).map { (room, $0) }
@@ -311,7 +312,8 @@ extension SimulationEngine {
             var t = tenant
             t.satisfaction = 0.6 * t.satisfaction + 0.4 * appraisal.total
             t.unhappyDays = appraisal.total < type.leaveBelow ? t.unhappyDays + 1 : 0
-            if t.unhappyDays >= 3 {
+            // Owners hold on longer; their flat stays privately owned and is resold.
+            if t.unhappyDays >= (t.isOwner ? rules.economy?.ownerReviews ?? 9 : 3) {
                 Leasing.moveOut(t.id, world: &world)
                 world.market.movedOut += 1
                 moveOuts[t.buildingID, default: 0] += 1

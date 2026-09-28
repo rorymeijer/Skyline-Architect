@@ -8,6 +8,7 @@ Status: **FUNCTIONAL** (Phases 2–18; format 14 after Phase 20). Implemented in
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 15 | 0.20.3 | Rooms may carry `tenure` (`rent` / `forSale` / `owned`); tenants may carry `purchasePrice`; ledger category `sales` (daily totals grow by one) | v14→v15 pads daily totals to 11; older games rent every unit |
 | 14 | 0.20.1 | Cities may carry `weather` (each city its own); the world no longer does. Pack references may carry `hash` (FNV-1a of the pack's files) | v13→v14 moves the world's `weather` to the first city (whose seed drew it); other cities start their own on the next step. Older references have no hash: only versions are compared |
 | 13 | 0.16 | World may carry `scenario` (`id`, `name`, `objectives [{metric, target}]`, `deadlineDay`, `holdDays`, `streak`, `measured`, `result {won, tick, reason}`) | v12→v13: nothing to add — older games are free play |
 | 12 | 0.15 | Cities gain `economy` (`rent`, `construction`, `demand`); properties may carry `plotID`; ledger category `land` (daily totals grow by one) | v11→v12 adds a default economy and pads daily totals; on load `Estate.adoptLegacy` matches properties to plots and applies the content market |
@@ -21,14 +22,14 @@ Status: **FUNCTIONAL** (Phases 2–18; format 14 after Phase 20). Implemented in
 | 4 | 0.7 | Cars gain `strategy` (`collective` / `zoning` / `destination`) and `stats` (boardings, totalWait, maxWait, abandoned, stops, day, hourly[24]); rides may carry `assigned` | v3→v4 adds `strategy: "collective"` and zeroed `stats` to every car |
 | 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1` … `save-v13` (frozen) and `save-v14.skylinesave` (two cities with their own weather, a pack hash).
+Golden fixtures: `save-v1` … `save-v14` (frozen) and `save-v15.skylinesave` (a sold studio with its owner, a studio for sale).
 
-## Envelope (format version 14)
+## Envelope (format version 15)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 14,
+  "formatVersion": 15,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
     "contentPacks": [{ "id": "base", "version": "0.1.0", "hash": "9c2e41f0a7d3b518" }],

@@ -19,20 +19,17 @@ import SkylineSimulation
         return save
     }
 
-    /// Golden fixture v14. Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV14`.
+    /// Golden fixture v14. Frozen since format 15: daily totals gain the sales column,
+    /// every unit is rented.
     @Test func goldenFixtureV14StillLoads() throws {
-        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v14.skylinesave")
-            try SaveCodec.encode(makeTwoCitySave()).write(to: source)
-            return
-        }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v14.skylinesave")), availablePacks: basePacks)
         #expect(save.world.cities.values.map(\.definitionID) == ["port-calder", "saltmere"])
         #expect(save.world.cities.values[0].weather?.today == "clear")
         #expect(save.world.cities.values[1].weather?.today == "storm")
         #expect(save.contentPacks.first?.hash?.isEmpty == false)
+        #expect(save.world.ledger.days.allSatisfy { $0.amounts.count == LedgerCategory.allCases.count })
+        #expect(save.world.rooms.values.allSatisfy { $0.tenure == nil } && save.world.tenants.values.allSatisfy { !$0.isOwner })
     }
 
     @Test func twoCitySaveRoundTrips() throws {

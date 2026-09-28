@@ -37,10 +37,32 @@ extension AppModel {
         leasing = LeasingSummary.make(world: world, engine: simulation, buildings: world.buildings(on: property).map(\.id))
     }
 
-    /// Room label text: the tenant's name, or "Vacant" for rentable units without a tenant.
+    /// Room label text: the tenant's name ("Rinaldi · owner" for a flat they bought), or what an
+    /// empty unit is: "Vacant", "For sale" or "For resale" (a sold flat between owners).
     func roomLabelText(_ room: Room, _ spec: RoomSpec) -> String? {
         guard let world, spec.rentPerModule != nil else { return nil }
-        return world.tenants.values.first { $0.room == room.id }?.name ?? "Vacant"
+        if let tenant = world.tenants.values.first(where: { $0.room == room.id }) {
+            // Short enough for a studio's label: "Rinaldi · owner".
+            return tenant.isOwner ? tenant.name.replacingOccurrences(of: " household", with: "") + " · owner" : tenant.name
+        }
+        switch room.tenure ?? .rent {
+        case .rent: return "Vacant"
+        case .forSale: return "For sale"
+        case .owned: return "For resale"
+        }
+    }
+
+    /// Offers the selected vacant flat for sale, or for rent again (0.20.3).
+    func offerSelectedUnit(forSale: Bool) {
+        guard var w = world, let id = selectedRoom, let simulation, let catalog else { return }
+        do {
+            try Leasing.setTenure(forSale ? .forSale : .rent, room: id, world: &w, rules: simulation.rules, catalog: catalog)
+            world = w
+            hasUnsavedChanges = true
+            refreshLeasing()
+        } catch {
+            alert = AppAlert(title: forSale ? "Cannot offer this unit for sale" : "Cannot rent this unit out", message: "\(error)")
+        }
     }
 
     #if DEBUG

@@ -57,45 +57,47 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Shafts and names (0.20.2): the demo tower in the sandbox, leased with the developer
-    // tools; every construction goes through `perform` like a click on the canvas or a
-    // button in the inspector.
+    // Flats for sale (0.20.3): the demo tower in the sandbox, leased with the developer
+    // tools; the script empties the studios (labelled) and offers them through the same
+    // model call as the inspector's button.
     let steps: [Step] = [
-        Step(name: "01-unique-names", grid: false) { model, scene in
+        Step(name: "01-vacant-flat", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.applyBlueprint("demo-tower")
             model.leaseAllVacant()
             model.advanceSimulation(toTimeOfDay: 11)
             ScreenshotDirector.force("clear", 21, model: model)
+            ScreenshotDirector.emptyStudios(model)
+            if let studio = ScreenshotDirector.studios(model).first { model.selectRoom(at: ScreenshotDirector.cell(of: studio)) }
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6.5), zoom: 14) }
-            return "\(model.clockText): household names on the upper floors. " + ScreenshotDirector.nameNote(model)
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6.5), zoom: 13) }
+            return "\(model.clockText): the studios emptied by the script; a vacant studio selected, with Offer for Sale in the inspector."
         },
-        Step(name: "02-shaft-selected", grid: false) { model, scene in
-            if let shaft = ScreenshotDirector.shaft(model) { model.selectRoom(at: GridCell(column: shaft.columns.start + 1, floor: 3)) }
+        Step(name: "02-for-sale", grid: false) { model, scene in
+            for studio in ScreenshotDirector.studios(model) {
+                model.selectRoom(at: ScreenshotDirector.cell(of: studio))
+                model.offerSelectedUnit(forSale: true)
+            }
+            if let studio = ScreenshotDirector.studios(model).first { model.selectRoom(at: ScreenshotDirector.cell(of: studio)) }
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4), zoom: 9) }
-            return "The elevator shaft selected: its height controls in the inspector. " + ScreenshotDirector.optionsNote(model)
+            return "Every studio offered for sale (the inspector's button, per flat). " + ScreenshotDirector.salesNote(model)
         },
-        Step(name: "03-shaft-extended", grid: false) { model, scene in
-            ScreenshotDirector.extendShaftUp(model)
+        Step(name: "03-sold", grid: false) { model, scene in
+            model.advanceSimulation(ticks: SimClock.secondsPerDay)
+            model.advanceSimulation(toTimeOfDay: 11)
+            if let sold = ScreenshotDirector.studios(model).first(where: { $0.tenure == .owned }) { model.selectRoom(at: ScreenshotDirector.cell(of: sold)) }
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 5), zoom: 8) }
-            return "A ninth storey built, then Extend Up pressed: the shaft now reaches floor 9. " + ScreenshotDirector.optionsNote(model)
+            return "\(model.clockText): households bought flats; a sold studio selected (owner, price, service charges). " + ScreenshotDirector.salesNote(model)
         },
-        Step(name: "04-stairs-through-rooms", grid: false) { model, scene in
+        Step(name: "04-economy", grid: false) { model, scene in
             model.selectRoom(at: nil)
-            let note = ScreenshotDirector.stairsThroughRooms(model)
+            model.showEconomyPanel = true
+            model.showLeasingPanel = true
+            model.promotionNotice = nil
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 22, floor: 0.5), zoom: 14) }
-            return "A second stairwell placed over rooms: " + note
-        },
-        Step(name: "05-undo", grid: false) { model, scene in
-            model.undo()
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 22, floor: 0.5), zoom: 14) }
-            return "Undo: the stairwell is gone and the rooms are back exactly as they were."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4), zoom: 8) }
+            return "The economy panel with sales and service charges; the leasing panel counts sold flats and flats for sale."
         },
     ]
 

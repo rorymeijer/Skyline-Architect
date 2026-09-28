@@ -138,6 +138,16 @@ public struct EconomyRules: Codable, Hashable, Sendable {
     /// Price of the lighting energy used in one game day, per kWh (Phase 12; nil = free).
     /// Like rent it is a month's worth per day (D-032).
     public var lightingPricePerKWh: Double?
+    /// Selling flats (0.20.3). A flat sells for its asking rent × `saleMonths`; its owner
+    /// then pays `serviceChargeShare` × the asking rent every month, and moves out only
+    /// after `ownerPatience` bad reviews in a row (renters: 3). Defaults: 100, 0.25, 9.
+    public var saleMonths: Double?
+    public var serviceChargeShare: Double?
+    public var ownerPatience: Int?
+
+    public var salePriceMonths: Double { saleMonths ?? 100 }
+    public var serviceShare: Double { serviceChargeShare ?? 0.25 }
+    public var ownerReviews: Int { ownerPatience ?? 9 }
 
     public init(loanStep: Int, maxLoans: Int, loanInterestRate: Double, bankruptcyDays: Int,
                 utilitiesPerPersonPerDay: Int, elevatorCarPerDay: Int, rentDaysPerMonth: Int, lightingPricePerKWh: Double? = nil) {
@@ -159,6 +169,9 @@ public struct EconomyRules: Codable, Hashable, Sendable {
         if utilitiesPerPersonPerDay < 0 || elevatorCarPerDay < 0 { p.append("economy: daily costs must be ≥ 0") }
         if rentDaysPerMonth < 1 { p.append("economy: rentDaysPerMonth must be ≥ 1") }
         if (lightingPricePerKWh ?? 0) < 0 { p.append("economy: lightingPricePerKWh must be ≥ 0") }
+        if salePriceMonths <= 0 || !(0...1).contains(serviceShare) || ownerReviews < 1 {
+            p.append("economy: saleMonths > 0, serviceChargeShare 0…1, ownerPatience ≥ 1")
+        }
         return p
     }
 }
