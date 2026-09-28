@@ -424,6 +424,27 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-051 — Foundations grow; piles carry the height
+- **Date:** 2026-09-28
+- **Decision:**
+  - A building's foundation grows through `extendFoundation`: a wider footprint within the
+    plot, more basement levels up to the plot's limit, and longer piles.
+  - It never shrinks; the exact inverse is `restoreFoundation`.
+  - With `storeysPerPileMeter` (2 in the base game), piles limit the storeys above grade.
+- **Alternatives:**
+  - Separate commands per dimension.
+  - Piles as decoration only.
+  - A height limit from soil strata.
+- **Reason:** The player asked for all three extensions. One command with the target
+  groundwork keeps undo and costs uniform. A pile limit gives longer piles a purpose
+  without new systems: the starting piles carry 40 storeys, so rising past that (Class A
+  allows 45 floors, Prime more) takes longer piles.
+- **Consequences:**
+  - Towers above 40 storeys need longer piles first; the skytower blueprint does that.
+  - Existing buildings are not checked retroactively.
+  - When the groundwork changes, the app composes the site anew, because the ground
+    section follows the deepest pile.
+
 ## D-050 — Flats for sale: one-off price, then service charges
 - **Date:** 2026-09-28
 - **Decision:** Tenure is per unit (`Room.tenure`: rent / forSale / owned), chosen by the

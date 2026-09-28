@@ -17,6 +17,11 @@ public enum BuildCommand: Codable, Hashable, Sendable {
     /// Several commands as one step, applied in order (inverses of steps that changed
     /// more than one room).
     case batch([BuildCommand])
+    /// Grows a building's foundation (Phase A, 0.21): a wider footprint within the plot,
+    /// more basement levels and/or longer piles. Never shrinks it.
+    case extendFoundation(building: BuildingID, footprint: ColumnSpan, foundation: Foundation)
+    /// Restores a footprint and foundation exactly (the inverse of `extendFoundation`).
+    case restoreFoundation(building: BuildingID, footprint: ColumnSpan, foundation: Foundation)
     /// Restores exact prior state; produced only as inverses for undo/redo.
     case restorePlate(building: BuildingID, level: Int, plate: FloorPlate?)
     case restoreRoom(Room)
@@ -32,6 +37,8 @@ public enum BuildCommand: Codable, Hashable, Sendable {
         case .restoreRoom: "Room Change"
         case .resizeRoom: "Resize Shaft"
         case .batch: "Construction"
+        case .extendFoundation: "Extend Foundation"
+        case .restoreFoundation: "Foundation Change"
         }
     }
 }
@@ -61,6 +68,16 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
     case notResizable
     /// The unit was sold: it belongs to its owner (0.20.3).
     case privatelyOwned
+    /// Foundations only grow: a narrower footprint, fewer basements or shorter piles.
+    case foundationCanOnlyGrow
+    /// More basement levels than the plot allows.
+    case basementTooDeep(allowed: Int)
+    /// Piles too short: for the raft (at `needed` m) or for the height (`needed` m to carry it).
+    case pilesTooShort(needed: Double)
+    /// The widened footprint would run into another building.
+    case footprintOverlapsBuilding
+    /// The widened footprint would leave the plot's frontage.
+    case outsidePlot
     /// Standard game: the room type or height needs a higher building class (Phase 11).
     case locked(className: String)
 
@@ -86,6 +103,11 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
         case .noSpaceLeft(let name): "Too little space would be left for the \(name)"
         case .notResizable: "Only shafts can be made taller or shorter"
         case .privatelyOwned: "Sold to a private owner"
+        case .foundationCanOnlyGrow: "A foundation can only be made larger"
+        case .basementTooDeep(let n): "The plot allows \(n) basement level\(n == 1 ? "" : "s")"
+        case .pilesTooShort(let m): "Needs piles of at least \(Int(m.rounded(.up))) m"
+        case .footprintOverlapsBuilding: "Runs into another building"
+        case .outsidePlot: "Outside the plot"
         case .locked(let name): "Unlocks at \(name)"
         }
     }

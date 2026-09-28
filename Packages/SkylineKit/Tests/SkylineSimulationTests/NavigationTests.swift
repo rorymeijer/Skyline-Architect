@@ -214,6 +214,11 @@ private func stairs(_ legs: [Leg]) -> [(RoomID, Int, Int)] {
     @Test func tallTowerWithTransfersRunsADay() throws {
         var f = try SimFixture(tower: false)
         let c = ConstructionEngine(catalog: f.library.buildCatalog)
+        // Tall test towers need long piles (0.21: pile depth limits the height).
+        let site = f.world.buildings.values[0]
+        var deep = site.foundation
+        deep.pileDepth = 120
+        try c.apply(.extendFoundation(building: site.id, footprint: site.footprint, foundation: deep), to: &f.world)
         let b = f.building
         let x0 = f.world.buildings[b]!.footprint.start
         let floors = 200

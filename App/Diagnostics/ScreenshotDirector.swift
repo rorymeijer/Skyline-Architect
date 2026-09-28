@@ -57,47 +57,37 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Flats for sale (0.20.3): the demo tower in the sandbox, leased with the developer
-    // tools; the script empties the studios (labelled) and offers them through the same
-    // model call as the inspector's button.
+    // Foundations (0.21): the demo tower in the sandbox; every change is the panel's own
+    // button (the same `extendFoundation` command), pressed by the script.
     let steps: [Step] = [
-        Step(name: "01-vacant-flat", grid: false) { model, scene in
+        Step(name: "01-foundation-panel", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.applyBlueprint("demo-tower")
             model.leaseAllVacant()
             model.advanceSimulation(toTimeOfDay: 11)
             ScreenshotDirector.force("clear", 21, model: model)
-            ScreenshotDirector.emptyStudios(model)
-            if let studio = ScreenshotDirector.studios(model).first { model.selectRoom(at: ScreenshotDirector.cell(of: studio)) }
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6.5), zoom: 13) }
-            return "\(model.clockText): the studios emptied by the script; a vacant studio selected, with Offer for Sale in the inspector."
-        },
-        Step(name: "02-for-sale", grid: false) { model, scene in
-            for studio in ScreenshotDirector.studios(model) {
-                model.selectRoom(at: ScreenshotDirector.cell(of: studio))
-                model.offerSelectedUnit(forSale: true)
-            }
-            if let studio = ScreenshotDirector.studios(model).first { model.selectRoom(at: ScreenshotDirector.cell(of: studio)) }
-            model.refreshSimulationSummary()
-            return "Every studio offered for sale (the inspector's button, per flat). " + ScreenshotDirector.salesNote(model)
-        },
-        Step(name: "03-sold", grid: false) { model, scene in
-            model.advanceSimulation(ticks: SimClock.secondsPerDay)
-            model.advanceSimulation(toTimeOfDay: 11)
-            if let sold = ScreenshotDirector.studios(model).first(where: { $0.tenure == .owned }) { model.selectRoom(at: ScreenshotDirector.cell(of: sold)) }
-            model.refreshSimulationSummary()
-            return "\(model.clockText): households bought flats; a sold studio selected (owner, price, service charges). " + ScreenshotDirector.salesNote(model)
-        },
-        Step(name: "04-economy", grid: false) { model, scene in
-            model.selectRoom(at: nil)
-            model.showEconomyPanel = true
-            model.showLeasingPanel = true
             model.promotionNotice = nil
+            model.toggleFoundationPanel()
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4), zoom: 8) }
-            return "The economy panel with sales and service charges; the leasing panel counts sold flats and flats for sale."
+            scene.apply(preset: .foundation)
+            return "The foundation panel (palette: Foundation) over the demo tower's groundwork. " + ScreenshotDirector.foundationNote(model)
+        },
+        Step(name: "02-widened", grid: true) { model, scene in
+            ScreenshotDirector.press(["left", "right"], model: model)
+            model.scene?.apply(preset: .foundation)
+            return "Widen Left and Widen Right pressed: one pile bay more on each side. " + ScreenshotDirector.foundationNote(model)
+        },
+        Step(name: "03-deeper-and-piles", grid: true) { model, scene in
+            ScreenshotDirector.press(["deeper", "piles", "piles"], model: model)
+            model.scene?.apply(preset: .foundation)
+            return "A basement level dug and the piles lengthened twice (+10 m): the ground section follows. " + ScreenshotDirector.foundationNote(model)
+        },
+        Step(name: "04-palette-icons", grid: false) { model, scene in
+            model.showFoundationPanel = false
+            model.refreshSimulationSummary()
+            model.scene?.apply(preset: .overview)
+            return "The build palette with the Foundation button and icons for Electrical, Telecom and Express Elevator."
         },
     ]
 

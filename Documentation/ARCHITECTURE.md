@@ -94,7 +94,9 @@ player input ─▶ PlacementPlanner (Presentation) ─▶ BuildCommand
   plates within the plate below (a cantilever allowance from content; 0 in the base game), rooms on built plates
   without overlap (a shaft over rooms makes them give way: narrower or split, never below
   their minimum width), width/height/level limits from the spec. Shafts can be resized
-  (`resizeRoom`); commands that change several rooms undo through `batch`. Demolition: rooms any time,
+  (`resizeRoom`); commands that change several rooms undo through `batch`. Foundations
+  grow with `extendFoundation` (wider, deeper, longer piles; exact inverse
+  `restoreFoundation`), and the pile depth limits the height (`storeysPerPileMeter`). Demolition: rooms any time,
   floors only when empty and carrying nothing.
 * Walls, partitions, doors and façades are **derived** from plates and rooms by the art —
   not separately placed entities (DECISIONS D-014).

@@ -2,13 +2,14 @@ import SwiftUI
 
 /// The side panels that can be open at once, top to bottom.
 enum SidePanel: String, CaseIterable, Identifiable {
-    case unit, scenario, estate, incidents, standing, economy, facilities, leasing, banks
+    case unit, foundation, scenario, estate, incidents, standing, economy, facilities, leasing, banks
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .unit: "Unit"
+        case .foundation: "Foundation"
         case .scenario: "Objectives"
         case .estate: "Estate"
         case .incidents: "Incidents"
@@ -23,6 +24,7 @@ enum SidePanel: String, CaseIterable, Identifiable {
     @MainActor func isOpen(_ model: AppModel) -> Bool {
         switch self {
         case .unit: model.unitReport != nil
+        case .foundation: model.showFoundationPanel && model.foundation != nil
         case .scenario: model.showScenarioPanel
         case .estate: model.showEstatePanel
         case .incidents: model.showIncidentsPanel
@@ -41,6 +43,7 @@ enum SidePanel: String, CaseIterable, Identifiable {
                 UnitInspector(report: report, shaftOptions: model.shaftOptions, onResize: { _ = model.perform($0) },
                               onTenure: { model.offerSelectedUnit(forSale: $0) }) { model.selectRoom(at: nil) }
             }
+        case .foundation: FoundationPanel(model: model)
         case .scenario: ScenarioPanel(model: model)
         case .estate: EstatePanel(model: model)
         case .incidents: IncidentsPanel(model: model)

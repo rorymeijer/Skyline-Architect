@@ -7,7 +7,7 @@ import SkylineSimulation
 /// unit — how each kind of tenant rates it and what happened on the market.
 struct UnitInspector: View {
     let report: UnitReport
-    var shaftOptions: [ShaftResizeOption] = []
+    var shaftOptions: [ConstructionOption] = []
     var onResize: (BuildCommand) -> Void = { _ in }
     /// Offer the (vacant) unit for sale (true) or for rent (false).
     var onTenure: (Bool) -> Void = { _ in }
@@ -155,7 +155,7 @@ private struct Meter: View {
 /// Height controls of a selected shaft (0.20.2): one floor up or down at either end, the
 /// same as dragging the shaft's end with its tool. Disabled options say why.
 private struct ShaftHeightControls: View {
-    let options: [ShaftResizeOption]
+    let options: [ConstructionOption]
     let onResize: (BuildCommand) -> Void
 
     var body: some View {

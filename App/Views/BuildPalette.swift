@@ -21,6 +21,7 @@ struct BuildPalette: View {
     private func tools(compact: Bool) -> some View {
         HStack(spacing: 2) {
             floorButton
+            foundationButton
             divider
             ForEach(groupedSpecs) { group in
                 groupView(group)
@@ -39,6 +40,14 @@ struct BuildPalette: View {
         return ToolButton(symbol: "square.stack.3d.up", title: "Floor",
                           help: "Build or extend floors — drag across columns (F)", isOn: isOn) {
             model.handleToolKey("floor")
+        }
+    }
+
+    /// Opens the foundation panel (0.21): not a placement tool, the panel's buttons act.
+    private var foundationButton: some View {
+        ToolButton(symbol: "building.columns", title: "Foundation", help: "Widen or deepen the foundation, lengthen the piles",
+                   isOn: model.showFoundationPanel) {
+            model.toggleFoundationPanel()
         }
     }
 
@@ -109,9 +118,12 @@ struct BuildPalette: View {
         case "corridor": "arrow.left.and.right"
         case "stairs": "stairs"
         case "elevatorShaft": "arrow.up.arrow.down.square"
+        case "expressElevatorShaft": "arrow.up.arrow.down.circle"
         case "office": "briefcase"
         case "apartment": "bed.double"
         case "mechanical": "gearshape.2"
+        case "electrical": "bolt"
+        case "telecom": "antenna.radiowaves.left.and.right"
         case "parking": "car"
         case "fireControl": "drop.triangle"
         default: "square.dashed"

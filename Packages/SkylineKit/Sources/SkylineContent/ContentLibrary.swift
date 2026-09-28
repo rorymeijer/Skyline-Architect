@@ -129,7 +129,9 @@ public struct ContentLibrary: Sendable {
 
     mutating func register(rules: BuildRules) throws {
         guard rules.slabCostPerModule >= 0, rules.basementSlabCostPerModule >= 0, rules.maxCantileverModules >= 0,
-              (0...1).contains(rules.demolitionRefund) else {
+              (0...1).contains(rules.demolitionRefund),
+              [rules.foundationCostPerModule, rules.excavationCostPerModule, rules.pileCostPerMeter].allSatisfy({ ($0 ?? 0) >= 0 }),
+              (rules.storeysPerPileMeter ?? 1) > 0 else {
             throw ContentError(pack: manifest.id, file: manifest.files["buildRules"] ?? "buildRules", message: "Build rules out of range")
         }
         buildRules = rules
@@ -153,7 +155,9 @@ public struct ContentLibrary: Sendable {
             func fail(_ m: String) -> ContentError { ContentError(pack: manifest.id, file: bpFile, message: "Blueprint '\(bp.id)': \(m)") }
             guard !orderedBlueprints.contains(where: { $0.id == bp.id }) else { throw fail("duplicate id") }
             for (i, step) in bp.steps.enumerated() {
-                guard (step.floor == nil) != (step.room == nil) else { throw fail("step \(i) must have exactly one of floor/room") }
+                guard [step.floor != nil, step.room != nil, step.foundation != nil].filter({ $0 }).count == 1 else {
+                    throw fail("step \(i) must have exactly one of floor/room/foundation")
+                }
                 if let r = step.room, !ids.contains(r.definition) { throw fail("step \(i) uses unknown room '\(r.definition)'") }
             }
             orderedBlueprints.append(bp)

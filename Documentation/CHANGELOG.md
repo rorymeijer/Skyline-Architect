@@ -2,6 +2,24 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.21.0] — Phase A: Extending foundations
+
+### Added
+- **Foundation panel** (palette: *Foundation*). It grows the building's groundwork, one
+  undoable step per button:
+  - wider by a pile bay on either side, within the plot;
+  - one basement level deeper, up to the plot's limit;
+  - piles 5 m longer.
+  Every button shows its price or why it cannot be used.
+- **Piles carry the height**: 2 storeys per meter of pile (`storeysPerPileMeter`), so the
+  starting 20 m piles carry 40 storeys. Longer piles let the tower rise further.
+- Blueprints can extend a foundation (`foundation` steps).
+- Costs in `build-rules.json`: $6,000 per new footprint module, $4,000 per excavated
+  module and level, and $150 per pile meter.
+
+### Fixed
+- Palette icons for Electrical, Telecom and Express Elevator (they showed a dashed square).
+
 ## [0.20.4] — Faster time, hidden developer HUD
 
 ### Changed

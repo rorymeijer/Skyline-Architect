@@ -17,6 +17,8 @@ public struct ConstructionEngine: Sendable {
         case let .demolishRoom(id): validateDemolishRoom(id, world)
         case let .resizeRoom(id, floors): validateResize(id, floors, world)
         case let .batch(commands): validateBatch(commands, world)
+        case let .extendFoundation(b, footprint, foundation): validateExtendFoundation(b, footprint, foundation, world)
+        case let .restoreFoundation(b, footprint, _): validateRestoreFoundation(b, footprint, world)
         case let .restorePlate(b, level, plate):
             // Affected columns: everything covered before or after the restore.
             .success(ConstructionPlan(cost: 0, buildingID: b,
@@ -74,6 +76,10 @@ public struct ConstructionEngine: Sendable {
         } else {
             if let locked = lockedClass(floor: level, building: b, world) { return .failure(.locked(className: locked)) }
             guard let below = building.plate(at: level - 1) else { return .failure(.unsupported) }
+            // The piles carry a limited height (0.21): longer piles, taller building.
+            if let top = catalog.rules.highestLevel(for: building.foundation), level > top, let perMeter = catalog.rules.storeysPerPileMeter {
+                return .failure(.pilesTooShort(needed: Double(level + 1) / perMeter))
+            }
             let c = catalog.rules.maxCantileverModules
             let support = ColumnSpan(start: below.span.start - c, count: below.span.count + 2 * c)
             guard support.contains(merged) else { return .failure(.overhang(max: c)) }
@@ -171,6 +177,8 @@ public struct ConstructionEngine: Sendable {
             world.rooms.update(id) { $0.floors = floors }
             let inverse: BuildCommand = undoTrims.isEmpty ? .restoreRoom(previous) : .batch([.restoreRoom(previous)] + undoTrims)
             return AppliedConstruction(plan: plan, inverse: inverse)
+        case let .extendFoundation(b, footprint, foundation), let .restoreFoundation(b, footprint, foundation):
+            return AppliedConstruction(plan: plan, inverse: setFoundation(b, footprint: footprint, foundation: foundation, in: &world))
         case let .batch(commands):
             var inverses: [BuildCommand] = []
             for command in commands { inverses.append(try apply(command, to: &world).inverse) }

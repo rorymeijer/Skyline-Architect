@@ -41,7 +41,10 @@ final class AppModel {
     var selectedRoom: RoomID?
     var unitReport: UnitReport?
     /// Height controls when the selection is a shaft (empty otherwise).
-    var shaftOptions: [ShaftResizeOption] = []
+    var shaftOptions: [ConstructionOption] = []
+    /// Foundation panel (0.21): the building's groundwork and what can be extended.
+    var showFoundationPanel = false
+    var foundation: FoundationSummary?
     var leasing = LeasingSummary()
     var showLeasingPanel = false
     /// Money (Phase 9, 4 Hz), economy panel, start menu, bankruptcy.
@@ -388,15 +391,28 @@ final class AppModel {
     /// Stores the new world and re-renders only what changed (`plan` nil = everything).
     /// The population follows the rooms (occupants appear for new rooms, leave demolished ones)
     /// and trips follow the structure.
+    /// Footprints and foundations of a property's buildings: when they change, the site is
+    /// composed anew (`commit`).
+    private static func groundwork(_ world: GameWorld, property: PropertyID?) -> [Building.Groundwork] {
+        property.map { world.buildings(on: $0).map(\.groundwork) } ?? []
+    }
+
     private func commit(_ newWorld: GameWorld, plan: ConstructionPlan?) {
         var newWorld = newWorld
         if let library { PopulationSync.sync(&newWorld, catalog: library.buildCatalog, rules: library.simulationRules) }
         // Trips through removed stairs are re-planned now, so even a paused game is consistent.
         simulation?.replanAfterConstruction(&newWorld)
+        let before = world.map { Self.groundwork($0, property: scene?.composition.propertyID) }
         world = newWorld
         hasUnsavedChanges = true
         refreshUndoState()
         guard let scene else { return }
+        // A changed foundation can change the ground section itself: compose the site anew.
+        if before != Self.groundwork(newWorld, property: scene.composition.propertyID),
+           let fresh = SiteComposer.compose(world: newWorld, propertyID: scene.composition.propertyID, catalog: catalog, art: art) {
+            scene.replaceComposition(fresh)
+            return
+        }
         let composition = SiteComposer.recompose(scene.composition, world: newWorld, catalog: catalog, art: art)
         scene.updateComposition(composition, dirty: plan.map { SiteComposer.dirtyRect(for: $0, grid: newWorld.grid) })
     }

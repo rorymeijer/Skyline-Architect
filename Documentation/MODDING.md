@@ -205,7 +205,12 @@ their lowest and highest floor) and `patienceSeconds` (default 150; personal ±5
 ### BuildRules (build-rules.json)
 `slabCostPerModule, basementSlabCostPerModule, maxCantileverModules, demolitionRefund (0…1)`.
 `maxCantileverModules` is how far (modules per side) a floor may stick out past the floor
-below; the base game uses 0.
+below; the base game uses 0. Optional (0.21): `foundationCostPerModule`,
+`excavationCostPerModule`, `pileCostPerMeter` (extending foundations) and
+`storeysPerPileMeter` (piles limit the height; omit for no limit).
+
+Blueprint steps may also be `{ "foundation": { "left", "right", "basementFloors",
+"pileDepth" } }` (all optional) to grow the foundation before building on it.
 
 ### Blueprint (blueprints.json)
 `id, name, description, steps: [{ "floor": {level, start, count} } | { "room": {definition,

@@ -82,6 +82,19 @@ public struct BuildRules: Codable, Hashable, Sendable {
     public var maxCantileverModules: Int
     /// Fraction of construction cost returned on demolition (0…1).
     public var demolitionRefund: Double
+    /// Extending foundations (0.21; nil = the defaults below): widening per new footprint
+    /// module (raft, walls), excavating one basement level per footprint module, and one
+    /// meter of one pile. `storeysPerPileMeter` limits the height to pile depth × this many
+    /// storeys above grade (nil = no limit).
+    public var foundationCostPerModule: Int?
+    public var excavationCostPerModule: Int?
+    public var pileCostPerMeter: Int?
+    public var storeysPerPileMeter: Double?
+
+    /// The highest level the piles can carry (nil = no limit).
+    public func highestLevel(for foundation: Foundation) -> Int? {
+        storeysPerPileMeter.map { Int((foundation.pileDepth * $0).rounded(.down)) - 1 }
+    }
 
     public init(slabCostPerModule: Int, basementSlabCostPerModule: Int, maxCantileverModules: Int, demolitionRefund: Double) {
         self.slabCostPerModule = slabCostPerModule

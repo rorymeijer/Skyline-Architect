@@ -70,6 +70,14 @@ public struct Building: Codable, Hashable, Sendable, Identifiable {
         self.floors = floors.sorted { $0.level < $1.level }
     }
 
+    /// Footprint and foundation together: what `extendFoundation` changes (0.21).
+    public struct Groundwork: Hashable, Sendable {
+        public var footprint: ColumnSpan
+        public var foundation: Foundation
+    }
+
+    public var groundwork: Groundwork { Groundwork(footprint: footprint, foundation: foundation) }
+
     public func plate(at level: Int) -> FloorPlate? {
         // Plates are kept in level order and are normally contiguous: index directly (Phase 19).
         if let first = floors.first, let last = floors.last, last.level - first.level + 1 == floors.count {
