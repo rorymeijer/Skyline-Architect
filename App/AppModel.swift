@@ -296,9 +296,12 @@ final class AppModel {
               let blueprint = library?.blueprint(id), let building = world.buildings(on: property).first else { return }
         do {
             #if DEBUG
-            // Developer tool: grant whatever the blueprint costs beyond the cash at hand.
-            let cost = blueprint.commands(for: building).reduce(0) { sum, c in
-                sum + max((try? engine.validate(c, in: world).get().cost) ?? 0, 0)
+            // Developer tool: grant whatever the blueprint costs beyond the cash at hand
+            // (priced step by step on a copy, since later steps build on earlier ones).
+            var dryRun = world
+            var cost = 0
+            for c in blueprint.commands(for: building) {
+                cost += max((try? engine.apply(c, to: &dryRun).plan.cost) ?? 0, 0)
             }
             if cost > world.ledger.cash {
                 world.ledger.post(Transaction(tick: world.clock.tick, amount: cost - world.ledger.cash, category: .grant,
