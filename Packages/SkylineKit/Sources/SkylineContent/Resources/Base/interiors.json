@@ -323,5 +323,10 @@
     }
    }
   ]
- }
+ },
+  { "room": "fire-control-room", "items": [
+    { "furniture": "sprinkler-valves", "anchor": "left", "offset": 0.3 },
+    { "furniture": "fire-panel", "anchor": "left", "offset": 1.9, "elevation": 1.1, "reserve": false },
+    { "furniture": "pump-set", "anchor": "right", "offset": 0.3 },
+    { "furniture": "fire-extinguisher", "anchor": "right", "offset": 2.0, "elevation": 0.3, "reserve": false } ] }
 ]

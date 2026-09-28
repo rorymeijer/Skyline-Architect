@@ -94,8 +94,13 @@ public struct ContentLibrary: Sendable {
         if let file = manifest.files["weather"] {
             weather = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
         }
+        var events: EventRules?
+        if let file = manifest.files["events"] {
+            events = try decode(url.appendingPathComponent(file), pack: manifest.id, file: file)
+        }
         try library.register(schedules: list("schedules"), names: names, elevators: list("elevators"), tenants: list("tenants"),
-                             economy: economy, facilities: facilities, progression: progression, weather: weather)
+                             economy: economy, facilities: facilities, progression: progression, weather: weather,
+                             events: events)
         return library
     }
 
@@ -198,7 +203,7 @@ public struct ContentLibrary: Sendable {
     /// rent/noise, transport specs and tenant types.
     mutating func register(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenants: [TenantType] = [],
                            economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil,
-                           progression: ProgressionDefinition? = nil, weather: WeatherRules? = nil) throws {
+                           progression: ProgressionDefinition? = nil, weather: WeatherRules? = nil, events: EventRules? = nil) throws {
         var problems = SimulationRules.validate(schedules: schedules, names: names)
         var elevatorRooms = Set<String>()
         for e in elevators {
@@ -226,6 +231,7 @@ public struct ContentLibrary: Sendable {
             }
             if room.utilitySupply != nil, (room.utilityRange ?? 0) < 0 { problems.append("room '\(room.id)': utilityRange must be ≥ 0") }
             if let w = room.wearPerDay, !(0...1).contains(w) { problems.append("room '\(room.id)': wearPerDay must be 0…1") }
+            if let f = room.fireProtection, f < 0 || room.kind != .room { problems.append("room '\(room.id)': fireProtection needs a room and ≥ 0") }
             if let l = room.lighting {
                 problems += l.problems.map { "room '\(room.id)': \($0)" }
                 if ArtCatalog.parseColor(l.color) == nil { problems.append("room '\(room.id)': invalid lighting colour '\(l.color)'") }
@@ -234,6 +240,7 @@ public struct ContentLibrary: Sendable {
         let roomIDs = Set(orderedRooms.map(\.id))
         problems += progression?.problems(rooms: roomIDs) ?? []
         problems += weather?.problems ?? []
+        problems += events?.problems(weatherKinds: Set(weather?.kinds.map(\.id) ?? []), utilities: utilityIDs) ?? []
         let classCount = progression?.classes.count ?? 0
         for room in orderedRooms {
             if let c = room.unlockClass, !(0..<max(classCount, 1)).contains(c) { problems.append("room '\(room.id)': unlockClass \(c) has no building class") }
@@ -250,10 +257,11 @@ public struct ContentLibrary: Sendable {
             }
         }
         if let first = problems.first {
-            throw ContentError(pack: manifest.id, file: "schedules/names/rooms/elevators/tenants/economy/facilities/progression/weather", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
+            throw ContentError(pack: manifest.id, file: "schedules/names/rooms/elevators/tenants/economy/facilities/progression/weather/events", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
         }
         simulationRules = SimulationRules(schedules: schedules, names: names, elevators: elevators, tenantTypes: tenants, economy: economy,
-                                          facilities: facilities, progression: progression?.reputation, weather: weather)
+                                          facilities: facilities, progression: progression?.reputation, weather: weather,
+                                          events: events)
         buildingClasses = progression?.classes ?? []
     }
 

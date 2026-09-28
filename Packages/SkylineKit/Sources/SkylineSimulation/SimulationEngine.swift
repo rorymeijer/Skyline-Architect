@@ -12,6 +12,8 @@ public struct SimulationReport: Equatable, Sendable {
 /// arriving and a person arriving at the same tick resolve in a fixed order.
 enum EventTarget: Comparable {
     case market
+    /// Fires in progress (Phase 14), all stepped together.
+    case fires
     case car(RoomID)
     case person(PersonID)
 }
@@ -56,6 +58,7 @@ public struct SimulationEngine: Sendable {
         }
         startWeatherIfNeeded(&world)
         if !rules.tenantTypes.isEmpty { events.push(world.market.nextTick, .market) }
+        if let next = world.incidents.fires.map(\.nextStep).min() { events.push(next, .fires) }
         for car in world.elevators { events.push(car.nextEventTick, .car(car.id)) }
         for p in world.people { events.push(p.nextEventTick, .person(p.id)) }
         while let (tick, who) = events.heap.popMin() {
@@ -64,12 +67,22 @@ public struct SimulationEngine: Sendable {
             case .market:
                 guard world.market.nextTick == tick else { continue }
                 for id in runMarket(at: tick, world: &world) { events.push(world.people[id]!.nextEventTick, .person(id)) }
+                checkWeatherIncidents(at: tick, world: &world)
+                checkIgnition(at: tick, world: &world, events: &events)
                 events.push(world.market.nextTick, .market)
+            case .fires:
+                guard world.incidents.fires.contains(where: { $0.nextStep == tick }) else { continue }
+                stepFires(at: tick, world: &world, events: &events)
             case let .car(id):
                 guard world.elevators[id]?.nextEventTick == tick else { continue }
                 handleCar(id, at: tick, world: &world, events: &events, report: &report)
             case let .person(id):
                 guard var person = world.people[id], person.nextEventTick == tick else { continue }
+                if world.incidents.isOnFire(person.buildingID), !person.isQueuing {
+                    handleDuringFire(id, at: tick, world: &world, events: &events)
+                    report.eventsProcessed += 1
+                    continue
+                }
                 if person.role.isStaff, !person.isQueuing {
                     handleStaff(id, at: tick, world: &world, events: &events)
                     report.eventsProcessed += 1
