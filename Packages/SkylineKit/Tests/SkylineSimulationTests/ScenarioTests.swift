@@ -146,3 +146,40 @@ import SkylineCore
         #expect(throws: ContentError.self) { try lib.register(scenarios: [good, good]) }
     }
 }
+
+@Suite struct ScenarioSummaryTests {
+    let library = try! ContentLibrary.loadBase()
+
+    @Test func briefsDescribeEveryScenario() throws {
+        let briefs = ScenarioBrief.all(library: library)
+        #expect(briefs.count == library.orderedScenarios.count)
+        let harbour = try #require(briefs.first { $0.id == "harbour-revival" })
+        #expect(harbour.setting == "Harbour Row, Saltmere · $1,500,000 · 30 days")
+        #expect(harbour.objectives == ["Population ≥ 120", "Daily profit ≥ $4,000"] && harbour.holdDays == 3 && harbour.difficulty == "Medium")
+        let crown = try #require(briefs.first { $0.id == "crown-prestige" })
+        #expect(crown.objectives == ["Building class ≥ Class A", "Reputation ≥ 70", "Average elevator wait ≤ 45 s"])
+    }
+
+    @Test func liveSummaryFollowsTheWorld() throws {
+        let sim = SimulationEngine(rules: library.simulationRules, catalog: library.buildCatalog)
+        var game = try NewGameFactory.make(scenarioID: "opening-day", library: library)
+        #expect(ScenarioSummary.make(world: try NewGameFactory.make(startID: NewGameFactory.standardStartID, library: library).world,
+                                     engine: sim, library: library) == nil)
+        var s = try #require(ScenarioSummary.make(world: game.world, engine: sim, library: library))
+        #expect(s.name == "Opening Day" && s.daysLeft == 10 && s.result == nil)
+        #expect(s.rows.map(\.label) == ["Units let ≥ 12", "Daily profit ≥ $5,000"])
+        #expect(s.rows.map(\.current) == ["0", "$0"] && s.rows.allSatisfy { !$0.met && $0.fraction == 0 })
+        let building = try #require(game.world.buildings(on: game.activePropertyID).first)
+        for c in try #require(library.blueprint("demo-tower")).commands(for: building) {
+            try ConstructionEngine(catalog: library.buildCatalog).apply(c, to: &game.world)
+        }
+        PopulationSync.sync(&game.world, catalog: library.buildCatalog, rules: library.simulationRules)
+        sim.replanAfterConstruction(&game.world)
+        sim.advance(&game.world, by: SimClock.secondsPerDay + 3600)
+        s = try #require(ScenarioSummary.make(world: game.world, engine: sim, library: library))
+        #expect(s.daysLeft == 9 && s.rows[0].fraction > 0)
+        sim.advance(&game.world, by: 3 * SimClock.secondsPerDay)
+        s = try #require(ScenarioSummary.make(world: game.world, engine: sim, library: library))
+        #expect(s.result?.won == true && s.daysLeft == 0 && s.rows.allSatisfy(\.met))
+    }
+}
