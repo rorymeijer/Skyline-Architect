@@ -6,13 +6,13 @@
       "centerX" : 22,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.997721961493845,
-      "frameTimeMs" : 16.667299479166786,
-      "memoryMB" : 167.421875,
+      "fps" : 60.44849001560164,
+      "frameTimeMs" : 16.543010416668835,
+      "memoryMB" : 165.25,
       "nodeCount" : 166,
-      "sceneUpdateMs" : 0.3478124999958254,
+      "sceneUpdateMs" : 0.3670833333444534,
       "tileLevel" : 2,
-      "tileRasterMs" : 11.974180000004251,
+      "tileRasterMs" : 14.500989999987723,
       "tilesCached" : 21,
       "tilesPending" : 0,
       "tilesRasterized" : 25,
@@ -27,7 +27,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.042889952659607
+    "waitSeconds" : 1.0690500736236572
   },
   {
     "diagnostics" : {
@@ -36,13 +36,13 @@
       "centerX" : 28,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 60.447233972348194,
-      "frameTimeMs" : 16.543354166667967,
-      "memoryMB" : 153.6875,
+      "fps" : 59.96977523327693,
+      "frameTimeMs" : 16.675066666668194,
+      "memoryMB" : 149.515625,
       "nodeCount" : 51,
-      "sceneUpdateMs" : 0.24134114582707866,
+      "sceneUpdateMs" : 0.4820277777904872,
       "tileLevel" : 2,
-      "tileRasterMs" : 7.495375000000119,
+      "tileRasterMs" : 9.84442129630578,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -57,7 +57,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0063369274139404
+    "waitSeconds" : 1.0825639963150024
   },
   {
     "diagnostics" : {
@@ -66,13 +66,13 @@
       "centerX" : 26,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.99698015199982,
-      "frameTimeMs" : 16.667505555555334,
-      "memoryMB" : 163.34375,
+      "fps" : 59.75633359040676,
+      "frameTimeMs" : 16.73462777777483,
+      "memoryMB" : 159.046875,
       "nodeCount" : 65,
-      "sceneUpdateMs" : 0.2618805555547018,
+      "sceneUpdateMs" : 0.2441666666679036,
       "tileLevel" : 2,
-      "tileRasterMs" : 9.41043333333482,
+      "tileRasterMs" : 12.152819444440865,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -87,7 +87,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0705519914627075
+    "waitSeconds" : 1.0908869504928589
   },
   {
     "diagnostics" : {
@@ -96,13 +96,13 @@
       "centerX" : 22,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 59.99739386318208,
-      "frameTimeMs" : 16.667390625006107,
-      "memoryMB" : 167.046875,
+      "fps" : 60.449841271922395,
+      "frameTimeMs" : 16.54264062500488,
+      "memoryMB" : 162.359375,
       "nodeCount" : 51,
-      "sceneUpdateMs" : 0.26145833333757196,
+      "sceneUpdateMs" : 0.23523177082296343,
       "tileLevel" : 2,
-      "tileRasterMs" : 6.1206898148055995,
+      "tileRasterMs" : 6.615902777765666,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -117,7 +117,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0936139822006226
+    "waitSeconds" : 1.0528039932250977
   },
   {
     "diagnostics" : {
@@ -126,13 +126,13 @@
       "centerX" : 20,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.9925009373813,
-      "frameTimeMs" : 16.668750000000422,
-      "memoryMB" : 170.171875,
-      "nodeCount" : 52,
-      "sceneUpdateMs" : 0.23902777777114656,
+      "fps" : 49.13251195952067,
+      "frameTimeMs" : 20.353121794869367,
+      "memoryMB" : 168.703125,
+      "nodeCount" : 62,
+      "sceneUpdateMs" : 0.43119871794225706,
       "tileLevel" : 2,
-      "tileRasterMs" : 8.882036111102328,
+      "tileRasterMs" : 8.285186111099089,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -143,26 +143,26 @@
     },
     "file" : "05-harrowgate-tower.png",
     "grid" : false,
-    "note" : "Demo tower in Harrowgate (build ×1.25): last construction line Build Floor, floor 0 -72000.",
+    "note" : "Demo tower in Harrowgate (build ×1.25): last construction line Place Room telecom-room (3 m), floor -1 -18000.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.110666036605835
+    "waitSeconds" : 1.0231879949569702
   },
   {
     "diagnostics" : {
-      "agentsRendered" : 0,
+      "agentsRendered" : 24,
       "backingScale" : 1,
       "centerX" : 20,
       "centerY" : 16,
       "detailLevel" : "Floors",
-      "fps" : 59.74020974124249,
-      "frameTimeMs" : 16.739144444443355,
-      "memoryMB" : 170.375,
-      "nodeCount" : 52,
-      "sceneUpdateMs" : 0.254149999996874,
+      "fps" : 60.72353035221627,
+      "frameTimeMs" : 16.468080729161727,
+      "memoryMB" : 156.75,
+      "nodeCount" : 86,
+      "sceneUpdateMs" : 1.1563932291736023,
       "tileLevel" : 2,
-      "tileRasterMs" : 8.882036111102328,
+      "tileRasterMs" : 8.285186111099089,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -173,11 +173,11 @@
     },
     "file" : "06-estate-overview.png",
     "grid" : false,
-    "note" : "Day 4 · 10:00: Quay Street Lot (Port Calder): 15\/15 let, 24 h 43689; Harbour Row (Saltmere): 15\/15 let, 24 h 32280; Crown Yard (Harrowgate): 0\/0 let, 24 h 0",
+    "note" : "Day 4 · 10:00: Quay Street Lot (Port Calder): 15\/15 let, 24 h 43689; Harbour Row (Saltmere): 15\/15 let, 24 h 32280; Crown Yard (Harrowgate): 15\/15 let, 24 h 59671",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.095823049545288
+    "waitSeconds" : 1.073193073272705
   },
   {
     "diagnostics" : {
@@ -186,13 +186,13 @@
       "centerX" : 24,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 60.45081192996693,
-      "frameTimeMs" : 16.54237500000022,
-      "memoryMB" : 162.1875,
+      "fps" : 58.110667246051804,
+      "frameTimeMs" : 17.208544444444367,
+      "memoryMB" : 161.578125,
       "nodeCount" : 80,
-      "sceneUpdateMs" : 0.3801614583203161,
+      "sceneUpdateMs" : 0.48445000000659394,
       "tileLevel" : 2,
-      "tileRasterMs" : 8.808462962949509,
+      "tileRasterMs" : 8.696574074077843,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -207,7 +207,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0777029991149902
+    "waitSeconds" : 1.0842769145965576
   },
   {
     "diagnostics" : {
@@ -216,13 +216,13 @@
       "centerX" : 24,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 59.98955806755946,
-      "frameTimeMs" : 16.66956770833039,
-      "memoryMB" : 163.09375,
+      "fps" : 59.78335508504378,
+      "frameTimeMs" : 16.727063888894616,
+      "memoryMB" : 164.125,
       "nodeCount" : 80,
-      "sceneUpdateMs" : 0.34257031249751435,
+      "sceneUpdateMs" : 0.4259416666476076,
       "tileLevel" : 2,
-      "tileRasterMs" : 14.255629629625824,
+      "tileRasterMs" : 10.091837962995164,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 9,
@@ -237,6 +237,6 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0648499727249146
+    "waitSeconds" : 1.0800870656967163
   }
 ]
