@@ -16,6 +16,11 @@ All notable changes. Versions follow `MARKETING_VERSION` of the app.
   objectives panel (⌥⌘O, flag button) and the result screen.
 - **Save format 13** (+ migration, golden fixture).
 
+### Fixed
+- Tenant budgets now follow the city's rent level. Before, Harrowgate's class C tenants
+  could not afford any unit at the default rent level, so a new Harrowgate tower stayed
+  empty.
+
 ## [0.15.0] — Phase 15: Multiple properties & cities
 
 ### Added

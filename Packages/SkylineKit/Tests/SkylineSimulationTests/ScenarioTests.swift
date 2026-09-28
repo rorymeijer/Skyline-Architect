@@ -55,6 +55,17 @@ import SkylineCore
         #expect(game.world.scenario?.result == result)
     }
 
+    /// Every scenario city lets the demo tower on its own market (no developer leasing).
+    @Test func scenarioTowersFindTenants() throws {
+        for id in ["harbour-revival", "crown-prestige"] {
+            var game = try builtScenario(id)
+            sim.advance(&game.world, by: 5 * SimClock.secondsPerDay)
+            let declines = DeclineReason.allCases.map { "\($0): \(game.world.market.declines($0))" }
+            print("[scenario] \(id): \(game.world.tenants.count) tenants after 5 days, declines \(declines), measured \(game.world.scenario!.measured)")
+            #expect(game.world.tenants.count >= 8)
+        }
+    }
+
     @Test func timeRunsOutAtTheDeadlineClosing() throws {
         var game = try NewGameFactory.make(scenarioID: "harbour-revival", library: library)
         sim.advance(&game.world, by: 29 * SimClock.secondsPerDay + 3600)
@@ -158,6 +169,7 @@ import SkylineCore
         #expect(harbour.objectives == ["Population ≥ 120", "Daily profit ≥ $4,000"] && harbour.holdDays == 3 && harbour.difficulty == "Medium")
         let crown = try #require(briefs.first { $0.id == "crown-prestige" })
         #expect(crown.objectives == ["Building class ≥ Class A", "Reputation ≥ 70", "Average elevator wait ≤ 45 s"])
+        #expect(briefs.first { $0.id == "skyline" }?.objectives.first == "Population ≥ 1,500")
     }
 
     @Test func liveSummaryFollowsTheWorld() throws {

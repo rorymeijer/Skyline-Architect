@@ -46,7 +46,9 @@ public enum Leasing {
         let catalog = engine.catalog
         guard let rent = askingRent(room, world: world, catalog: catalog), let building = world.buildings[room.buildingID] else { return nil }
         let perModule = Double(rent) / Double(max(room.columns.count, 1))
-        let budget = Double(type.budgetPerModule)
+        // Budgets follow the local price level (Phase 16 fix): a Harrowgate firm pays
+        // Harrowgate rents, so the city's rent level alone does not price everyone out.
+        let budget = Double(type.budgetPerModule) * (world.city(of: room.buildingID)?.economy.rent ?? 1)
         let rentScore = clamp((budget - perModule) / budget * 2 + 0.3)
         let seconds = accessSeconds(to: room, building: building, world: world, engine: engine)
         let accessScore = seconds.map { clamp(1 - ($0 - 30) / 270) } ?? 0

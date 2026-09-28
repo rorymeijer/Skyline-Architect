@@ -66,6 +66,10 @@ Every plot for sale is tested to be buildable on a fresh estate.
   Test: a Harrowgate slab costs ×1.25.
 * **Asking rent:** base × storey premium × building rent level × city rent. Test: a
   Harrowgate office asks ×1.35.
+* **Tenant budgets** follow the same city rent level (since Phase 16), so a city's price level
+  alone does not price its tenants out. Before this fix, Harrowgate's class C tenants could
+  not afford any unit at the default rent level. Test: demo towers in Saltmere and Harrowgate
+  both find tenants on their own markets.
 * **Rental market per city:**
   * prospects come by per city and tenant type, with their own random stream per city seed;
   * they are scaled by city demand × the reputation of the city's buildings × the weather;
