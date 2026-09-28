@@ -1,0 +1,21 @@
+[
+  {
+    "id": "kestrel-lofts",
+    "name": "Kestrel Lofts",
+    "difficulty": "medium",
+    "summary": "Fill a tower of lofts on the Kestrel Bay seafront.",
+    "briefing": "Kestrel Bay's pier road has room for one more building. Build lofts for the town's creative households: 60 residents and a reputation of 60 within 20 days.",
+    "startID": "scenario-kestrel",
+    "days": 20,
+    "objectives": [
+      {
+        "metric": "population",
+        "target": 60
+      },
+      {
+        "metric": "reputation",
+        "target": 60
+      }
+    ]
+  }
+]

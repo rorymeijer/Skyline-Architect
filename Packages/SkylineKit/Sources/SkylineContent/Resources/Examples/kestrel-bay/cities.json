@@ -1,0 +1,35 @@
+[
+  {
+    "id": "kestrel-bay",
+    "name": "Kestrel Bay",
+    "description": "A seaside town on a shingle spit: sand and gravel over chalk.",
+    "seed": 5519,
+    "geology": [
+      {
+        "material": "paving",
+        "thickness": 0.3
+      },
+      {
+        "material": "sand",
+        "thickness": 3.5
+      },
+      {
+        "material": "gravel",
+        "thickness": 6.0
+      },
+      {
+        "material": "clay",
+        "thickness": 2.5
+      },
+      {
+        "material": "bedrock",
+        "thickness": 1.0
+      }
+    ],
+    "economy": {
+      "rent": 1.1,
+      "construction": 0.95,
+      "demand": 1.05
+    }
+  }
+]

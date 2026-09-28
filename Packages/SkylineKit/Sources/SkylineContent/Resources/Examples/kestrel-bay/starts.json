@@ -1,0 +1,19 @@
+[
+  {
+    "id": "scenario-kestrel",
+    "name": "Scenario — Pier Road",
+    "mode": "standard",
+    "cityID": "kestrel-bay",
+    "plotID": "kestrel-pier-lot",
+    "propertyName": "Pier Road Lot",
+    "startingFoundation": {
+      "buildingName": "Pier Lofts",
+      "footprintOffsetModules": 4,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 18,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  }
+]
