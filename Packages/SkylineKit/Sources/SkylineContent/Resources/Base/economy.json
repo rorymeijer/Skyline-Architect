@@ -5,5 +5,6 @@
  "bankruptcyDays": 7,
  "utilitiesPerPersonPerDay": 4,
  "elevatorCarPerDay": 60,
- "rentDaysPerMonth": 1
+ "rentDaysPerMonth": 1,
+ "lightingPricePerKWh": 7.5
 }
