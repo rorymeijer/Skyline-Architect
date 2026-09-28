@@ -17,6 +17,8 @@ final class WorldScene: SKScene {
     private let tileLayer: TileLayer
     /// Night lights of the site, added over the graded scene (Phase 12).
     private let emissionLayer: TileLayer
+    /// Street lamp glow: static, on all night while city windows go out.
+    private let lampLayer: TileLayer
     private let gridOverlay: GridOverlayNode
     private let roomLabelLayer = RoomLabelLayer()
     private let placementOverlay: PlacementOverlayNode
@@ -59,7 +61,8 @@ final class WorldScene: SKScene {
     private let selectionOutline = SKShapeNode()
     /// Daylight (0…1) and lit rooms for the visible area; nil = always day.
     /// Grade, darkness and lit rooms for the visible rect at a zoom (Phase 12).
-    var lightingProvider: ((Rect, Double) -> (grade: Grade, darkness: Double, emission: Double, rooms: [LitRoom]))?
+    /// `activity`: share of the city's windows still lit (`DayNight.cityActivity`).
+    var lightingProvider: ((Rect, Double) -> (grade: Grade, darkness: Double, emission: Double, activity: Double, rooms: [LitRoom]))?
     private let dayNight = DayNightLayer()
     /// Weather look and roofs for snow (Phase 13).
     var weatherProvider: ((Rect) -> (look: WeatherLook, roofs: [Rect], street: [ClosedRange<Double>]))?
@@ -96,10 +99,11 @@ final class WorldScene: SKScene {
         self.composition = composition
         self.palette = palette
         let initial = Camera2D(center: composition.siteRect.center, zoom: 8, viewportSize: Vec2(1440, 900),
-                               limits: .standard(bounds: composition.cameraBounds))
+                               limits: .standard(bounds: composition.cameraBounds, bottomInset: Self.bottomInterfaceInset))
         controller = CameraController(camera: initial)
         tileLayer = TileLayer(composition: composition)
         emissionLayer = TileLayer(composition: composition, budget: 48, blendMode: .add, clearsOccluders: true) { [$0.emission] }
+        lampLayer = TileLayer(composition: composition, budget: 16, blendMode: .add) { [$0.lamps] }
         gridOverlay = GridOverlayNode(palette: palette)
         placementOverlay = PlacementOverlayNode(palette: palette)
         super.init(size: CGSize(width: 1440, height: 900))
@@ -157,6 +161,9 @@ final class WorldScene: SKScene {
         emissionLayer.node.zPosition = 9
         emissionLayer.node.isHidden = true
         worldRoot.addChild(emissionLayer.node)
+        lampLayer.node.zPosition = 9
+        lampLayer.node.isHidden = true
+        worldRoot.addChild(lampLayer.node)
         elevatorLayer.node.zPosition = 4
         worldRoot.addChild(elevatorLayer.node)
         agentLayer.node.zPosition = 5
@@ -240,8 +247,12 @@ final class WorldScene: SKScene {
         cameraDirty = true
     }
 
+    /// Height of the build bar, status line and banners along the bottom (`RootView`): the
+    /// camera may look this far below the ground so the street never has to hide behind them.
+    static let bottomInterfaceInset = 150.0
+
     func apply(preset: CameraPreset) {
-        let p = preset.placement(for: composition, viewport: controller.camera.viewportSize)
+        let p = preset.placement(for: composition, viewport: controller.camera.viewportSize, bottomInset: Self.bottomInterfaceInset)
         withController { $0.jump(center: p.center, zoom: p.zoom) }
     }
 
@@ -249,6 +260,7 @@ final class WorldScene: SKScene {
     var isSettled: Bool {
         !controller.isAnimating && tileLayer.isComplete && tileLayer.pendingCount == 0
             && (emissionLayer.node.isHidden || (emissionLayer.isComplete && emissionLayer.pendingCount == 0))
+            && (lampLayer.node.isHidden || (lampLayer.isComplete && lampLayer.pendingCount == 0))
     }
 
     var currentDiagnostics: RenderDiagnostics { lastDiagnostics }
@@ -308,14 +320,16 @@ final class WorldScene: SKScene {
         elevatorLayer.update(carProvider?(camera.visibleRect, camera.zoom) ?? [])
         lap("cars")
         let lighting = lightingProvider?(camera.visibleRect, camera.zoom)
-            ?? (grade: Grade.day, darkness: 0, emission: 0, rooms: [])
+            ?? (grade: Grade.day, darkness: 0, emission: 0, activity: 1, rooms: [])
         if lighting.emission > 0.02 {
             emissionLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
+            lampLayer.update(visible: camera.visibleRect, zoom: camera.zoom, backingScale: Double(backingScale))
         }
-        dayNight.update(grade: lighting.grade, darkness: lighting.emission, rooms: lighting.rooms, viewport: size, emission: emissionLayer.node)
+        dayNight.update(grade: lighting.grade, darkness: lighting.emission, cityActivity: lighting.activity, rooms: lighting.rooms,
+                        viewport: size, emission: emissionLayer.node, lamps: lampLayer.node)
         lap("light")
         let sky = weatherProvider?(camera.visibleRect) ?? (look: WeatherLook.clear, roofs: [], street: [])
-        weather.update(look: sky.look, darkness: lighting.darkness, viewport: size, roofs: sky.roofs, street: sky.street)
+        weather.update(look: sky.look, darkness: lighting.darkness, viewport: size, zoom: camera.zoom, roofs: sky.roofs, street: sky.street)
         clouds.update(cloudProvider?(camera.visibleRect) ?? [], darkness: lighting.darkness)
         lap("weather")
         let burning = fireProvider?() ?? (flames: [], engines: [], scorched: [])

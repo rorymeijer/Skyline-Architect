@@ -28,9 +28,12 @@ public struct SiteComposition: Sendable {
     public let plot: Plot
     public let site: CompositionLayer
     public internal(set) var buildings: CompositionLayer
-    /// Night lights of the site (city and neighbour windows, street lamps; Phase 12). Not
-    /// part of `layers`: the renderer adds it separately, scaled by darkness.
+    /// Night lights of the city and the neighbours' windows (Phase 12). Not part of
+    /// `layers`: the renderer adds it separately, scaled by darkness and by how many
+    /// windows are still lit at that hour (`DayNight.cityActivity`).
     public let emission: CompositionLayer
+    /// Glow of the street lamps: added like `emission`, but on all night.
+    public let lamps: CompositionLayer
     /// Silhouettes of the property's buildings: emission (city lights behind them) is
     /// cleared there, so distant windows never shine through the tower.
     public internal(set) var occluders: [Rect] = []
@@ -84,7 +87,7 @@ public enum SiteComposer {
         let extent = Rect(minX: midX - terrainHalfWidth, minY: groundBottom, maxX: midX + terrainHalfWidth, maxY: 200)
 
         var d = Drawing()
-        var lights = Drawing()
+        var lights = Drawing(), lamps = Drawing()
         // Neighbours stand in front of the city: their rects are known first so that
         // distant lit windows behind them are left out.
         var neighbors: [(Rect, NeighborArt.Style, UInt64)] = []
@@ -119,7 +122,7 @@ public enum SiteComposer {
                 d.fill(Rect(minX: x - 0.04, minY: 0, maxX: x + 0.04, maxY: 1.0), p.surveyStake)
                 d.fill(Rect(minX: x - 0.05, minY: 0.85, maxX: x + 0.05, maxY: 1.05), p.surveyCap)
             }
-            NightArt.streetLamps(site: &d, lights: &lights, at: NightArt.lampPositions(span: (midX - 600)...(midX + 600), keepClear: frontX0...frontX1),
+            NightArt.streetLamps(site: &d, lights: &lamps, at: NightArt.lampPositions(span: (midX - 600)...(midX + 600), keepClear: frontX0...frontX1),
                                  palette: p)
         }
         let siteLayer = CompositionLayer(name: "site", drawing: d)
@@ -129,6 +132,7 @@ public enum SiteComposer {
             propertyID: propertyID, grid: grid, plot: plot, site: siteLayer,
             buildings: CompositionLayer(name: "buildings", drawing: Drawing()),
             emission: CompositionLayer(name: "emission", drawing: lights),
+            lamps: CompositionLayer(name: "lamps", drawing: lamps),
             sky: .day(p), extent: siteExtent, siteExtent: siteExtent,
             siteRect: Rect(minX: siteX0, minY: groundBottom, maxX: siteX1, maxY: 0),
             frontageRect: Rect(minX: frontX0, minY: -maxBasementDepth, maxX: frontX1, maxY: 0),

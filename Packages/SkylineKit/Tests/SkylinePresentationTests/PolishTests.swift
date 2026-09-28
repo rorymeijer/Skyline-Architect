@@ -30,6 +30,16 @@ import SkylineCore
         })
     }
 
+    /// Rain and snow scale with the zoom: bigger and faster close up, smaller, denser and
+    /// fainter far out; neutral at 8 pt/m and bounded at the zoom limits.
+    @Test func precipitationScalesWithZoom() {
+        let near = WeatherView.particleScale(zoom: 96), mid = WeatherView.particleScale(zoom: 8), far = WeatherView.particleScale(zoom: 0.35)
+        #expect(mid == WeatherView.ParticleScale(size: 1, speed: 1, density: 1, alpha: 1))
+        #expect(near.size > mid.size && near.speed > mid.speed && near.density < mid.density)
+        #expect(far.size < mid.size && far.density > mid.density && far.alpha < mid.alpha)
+        #expect(near.size <= 2.5 && far.size >= 0.4 && far.density <= 1.8)
+    }
+
     @Test func iconIsDrawnInsideItsCanvas() {
         for rounded in [true, false] {
             let d = IconArt.drawing(rounded: rounded)
