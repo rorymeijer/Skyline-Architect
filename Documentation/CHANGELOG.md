@@ -2,6 +2,26 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.20.2] — Shafts over rooms, shaft heights, unique names, no overhangs
+
+### Added
+- **Shafts over rooms**: a stairwell or elevator shaft can be placed or extended over
+  rooms. They make way: narrower, or split in two when both sides are wide enough; a room
+  that would be left too narrow blocks the shaft. Tenants, people and upkeep stay with the
+  room; a split-off piece is a new vacant room.
+- **Taller and shorter shafts**: drag a shaft's top or bottom with its tool, or use Extend
+  Up / Shorten Top / Extend Down / Shorten Bottom in the inspector. Only added floors are
+  paid; removed floors are refunded like a demolition. The elevator car and its statistics
+  stay. Exact undo and redo.
+
+### Fixed
+- **Tenant names are unique**: two households could draw the same surname; signing now
+  takes the next free name, then double-barrelled names.
+- **Floors can no longer be wider than the floor below.** The base rules allowed 2 m of
+  cantilever per side on every floor, which added up to towers that widen as they rise.
+  The allowance is now 0 (`build-rules.json`; mods can still set one). Towers in existing
+  saves keep their floors.
+
 ## [0.20.1] — Known-bug fixes
 
 ### Fixed

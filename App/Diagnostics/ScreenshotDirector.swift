@@ -57,10 +57,11 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Known-bug fixes (after Phase 20): the demo tower in the sandbox; weather set by the
-    // script where labelled, panels opened through the same toggles as their buttons.
+    // Shafts and names (0.20.2): the demo tower in the sandbox, leased with the developer
+    // tools; every construction goes through `perform` like a click on the canvas or a
+    // button in the inspector.
     let steps: [Step] = [
-        Step(name: "01-skyline-street", grid: false) { model, scene in
+        Step(name: "01-unique-names", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.applyBlueprint("demo-tower")
@@ -68,56 +69,33 @@ final class ScreenshotDirector {
             model.advanceSimulation(toTimeOfDay: 11)
             ScreenshotDirector.force("clear", 21, model: model)
             model.refreshSimulationSummary()
-            scene.apply(preset: .skyline)
-            return "Skyline preset (⌘4): framed above the build bar, the street and foundation stay in sight (B2)."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6.5), zoom: 14) }
+            return "\(model.clockText): household names on the upper floors. " + ScreenshotDirector.nameNote(model)
         },
-        Step(name: "02-panel-tabs", grid: false) { model, scene in
-            for open in [\AppModel.showEconomyPanel, \.showFacilitiesPanel, \.showProgressPanel, \.showLeasingPanel, \.showIncidentsPanel] {
-                model[keyPath: open] = true
-            }
-            model.toggleEstatePanel()
-            model.promotionNotice = nil
+        Step(name: "02-shaft-selected", grid: false) { model, scene in
+            if let shaft = ScreenshotDirector.shaft(model) { model.selectRoom(at: GridCell(column: shaft.columns.start + 1, floor: 3)) }
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 9) }
-            return "\(model.clockText): six panels open; too tall for the window, so one shows in full and the rest are tabs (B1)."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4), zoom: 9) }
+            return "The elevator shaft selected: its height controls in the inspector. " + ScreenshotDirector.optionsNote(model)
         },
-        Step(name: "03-estate-two-cities", grid: false) { model, _ in
-            for close in [\AppModel.showEconomyPanel, \.showFacilitiesPanel, \.showProgressPanel, \.showLeasingPanel, \.showIncidentsPanel] {
-                model[keyPath: close] = false
-            }
-            ScreenshotDirector.grant(1_000_000, model: model)
-            model.buyPlot("saltmere-harbour-row")
-            model.advanceSimulation(toTimeOfDay: 17)   // the grant and the land stay within the last 24 h
-            model.showEstatePanel = true
+        Step(name: "03-shaft-extended", grid: false) { model, scene in
+            ScreenshotDirector.extendShaftUp(model)
             model.refreshSimulationSummary()
-            return "\(model.clockText): a plot bought in Saltmere (after a scripted $1M grant). Each city has its own weather (B3); "
-                + "the overview splits the last 24 h into buildings and estate money (B6). " + ScreenshotDirector.estateNote(model)
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 5), zoom: 8) }
+            return "A ninth storey built, then Extend Up pressed: the shaft now reaches floor 9. " + ScreenshotDirector.optionsNote(model)
         },
-        Step(name: "04-rain-close", grid: false) { model, scene in
-            model.showEstatePanel = false
-            if let tower = model.world?.properties.values.first?.id { model.switchProperty(tower) }   // back to Port Calder
-            ScreenshotDirector.force("rain", 13, model: model)
+        Step(name: "04-stairs-through-rooms", grid: false) { model, scene in
+            model.selectRoom(at: nil)
+            let note = ScreenshotDirector.stairsThroughRooms(model)
             model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(20, 8), zoom: 32) }
-            return "Rain (set by the script) at 32 pt/m: larger, faster drops (B7)."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 22, floor: 0.5), zoom: 14) }
+            return "A second stairwell placed over rooms: " + note
         },
-        Step(name: "05-rain-far", grid: false) { model, scene in
-            model.scene?.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
-            return "The same rain at 0.9 pt/m: small, dense, fainter drops (B7)."
-        },
-        Step(name: "06-city-evening", grid: false) { model, scene in
-            ScreenshotDirector.force("clear", 16, model: model)
-            model.advanceSimulation(toTimeOfDay: 21, minute: 30)
+        Step(name: "05-undo", grid: false) { model, scene in
+            model.undo()
             model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(24, 120), zoom: 1.4) }
-            return "\(model.clockText): the city's windows all lit (activity \(ScreenshotDirector.activity(model)))."
-        },
-        Step(name: "07-city-small-hours", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 3)
-            ScreenshotDirector.force("clear", 12, model: model)
-            model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(24, 120), zoom: 1.4) }
-            return "\(model.clockText): most city windows out, street lamps still on (activity \(ScreenshotDirector.activity(model)); B8)."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 22, floor: 0.5), zoom: 14) }
+            return "Undo: the stairwell is gone and the rooms are back exactly as they were."
         },
     ]
 

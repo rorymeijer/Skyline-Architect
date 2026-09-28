@@ -135,6 +135,16 @@ public enum Leasing {
 
     // MARK: Signing and leaving
 
+    /// The first name from `start` on (wrapping over `count` candidates) that nobody uses yet;
+    /// the drawn one if every candidate is taken.
+    static func uniqueName(start: Int, count: Int, taken: Set<String>, candidate: (Int) -> String) -> String {
+        for k in 0..<count {
+            let name = candidate((start + k) % count)
+            if !taken.contains(name) { return name }
+        }
+        return candidate(start)
+    }
+
     /// Signs `type` into `room` at `now`: a tenant plus its members (residents move in
     /// shortly; workers start with their next scheduled event). Returns the new people.
     @discardableResult
@@ -142,12 +152,21 @@ public enum Leasing {
                             catalog: BuildCatalog, satisfaction: Double) -> [PersonID] {
         let tenantID = world.makeTenantID()
         var rng = SeededRandom(seed: UInt64(tenantID.raw), stream: 0x7E4)
+        // Names are unique across the estate: the drawn one, else the next free one.
+        let taken = Set(world.tenants.values.map(\.name))
         let name: String
         if type.kind == "business", let words = rules.names.businessWords, let suffixes = rules.names.businessSuffixes,
            !words.isEmpty, !suffixes.isEmpty {
-            name = words[rng.int(in: 0..<words.count)] + " " + suffixes[rng.int(in: 0..<suffixes.count)]
+            let count = words.count * suffixes.count
+            name = uniqueName(start: rng.int(in: 0..<count), count: count, taken: taken) {
+                words[$0 / suffixes.count] + " " + suffixes[$0 % suffixes.count]
+            }
         } else {
-            name = rules.names.last[rng.int(in: 0..<rules.names.last.count)] + " household"
+            let last = rules.names.last, n = last.count
+            // Single surnames first, then double-barrelled ones ("Kowal-Brandt").
+            name = uniqueName(start: rng.int(in: 0..<n), count: n * n, taken: taken) { i in
+                (i < n ? last[i] : last[i % n] + "-" + last[(i / n + i) % n]) + " household"
+            }
         }
         world.tenants.insert(Tenant(id: tenantID, typeID: type.id, name: name, buildingID: room.buildingID, room: room.id,
                                     rent: askingRent(room, world: world, catalog: catalog) ?? 0, since: now, satisfaction: satisfaction))

@@ -50,6 +50,19 @@ public enum PlacementPlanner {
                 columns = ColumnSpan(start: start, count: width)
                 floors = FloorSpan(lowest: anchor.floor, highest: anchor.floor + spec.minFloors - 1)
             case .shaft:
+                // Grabbing the top or bottom floor of a shaft of this type drags that end:
+                // the shaft grows or shrinks (resizeRoom).
+                if let shaft = world.room(in: building.id, column: anchor.column, floor: anchor.floor), shaft.definitionID == id,
+                   anchor.floor == shaft.floors.highest || anchor.floor == shaft.floors.lowest {
+                    let floors = anchor.floor == shaft.floors.highest
+                        ? FloorSpan(lowest: shaft.floors.lowest, highest: max(current.floor, shaft.floors.lowest))
+                        : FloorSpan(lowest: min(current.floor, shaft.floors.highest), highest: shaft.floors.highest)
+                    let shown = FloorSpan(lowest: min(floors.lowest, shaft.floors.lowest), highest: max(floors.highest, shaft.floors.highest))
+                    return finish(.resizeRoom(shaft.id, floors: floors), rect: grid.rect(columns: shaft.columns, floors: shown),
+                                  name: "\(spec.name) \(FloorLabel.label(for: floors.lowest))–\(FloorLabel.label(for: floors.highest))",
+                                  floors: floors.count, note: makesWay(shaft.columns, floors, except: shaft.id, building: building.id, world, catalog),
+                                  demolition: floors.count < shaft.floors.count, world: world, engine: engine)
+                }
                 columns = ColumnSpan(start: anchor.column, count: spec.minWidth)
                 var lo = min(anchor.floor, current.floor), hi = max(anchor.floor, current.floor)
                 if hi - lo + 1 < spec.minFloors { hi = lo + spec.minFloors - 1 }
@@ -59,6 +72,7 @@ public enum PlacementPlanner {
             let command = BuildCommand.placeRoom(building: building.id, definition: id, columns: columns, floors: floors)
             return finish(command, rect: grid.rect(columns: columns, floors: floors), name: spec.name,
                           widthModules: columns.count, floors: spec.kind == .shaft ? floors.count : nil,
+                          note: spec.kind == .shaft ? makesWay(columns, floors, except: nil, building: building.id, world, catalog) : nil,
                           demolition: false, world: world, engine: engine)
 
         case .demolish:
@@ -76,13 +90,23 @@ public enum PlacementPlanner {
         }
     }
 
+    /// "2 rooms make way" when a shaft would go over rooms (they get narrower or split).
+    static func makesWay(_ columns: ColumnSpan, _ floors: FloorSpan, except: RoomID?, building: BuildingID,
+                         _ world: GameWorld, _ catalog: BuildCatalog) -> String? {
+        let n = world.rooms(in: building).filter {
+            $0.id != except && catalog.spec($0.definitionID)?.kind == .room && $0.overlaps(columns: columns, floors: floors)
+        }.count
+        return n == 0 ? nil : n == 1 ? "1 room makes way" : "\(n) rooms make way"
+    }
+
     private static func finish(_ command: BuildCommand, rect: Rect, name: String, widthModules: Int? = nil, floors: Int? = nil,
-                               demolition: Bool, world: GameWorld, engine: ConstructionEngine) -> PlacementPreview {
+                               note: String? = nil, demolition: Bool, world: GameWorld, engine: ConstructionEngine) -> PlacementPreview {
         switch engine.validate(command, in: world) {
         case .success(let plan):
             var parts = [name]
             if let widthModules { parts.append("\(Int(Double(widthModules) * world.grid.moduleWidth)) m") }
             if let floors { parts.append("\(floors) floors") }
+            if let note { parts.append(note) }
             parts.append(plan.cost < 0 ? "refund \(Money.format(-plan.cost))" : Money.format(plan.cost))
             if plan.cost > world.ledger.cash {
                 return PlacementPreview(command: nil, rect: rect, isValid: false, isDemolition: demolition,

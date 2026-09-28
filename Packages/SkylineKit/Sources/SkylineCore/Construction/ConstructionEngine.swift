@@ -15,13 +15,18 @@ public struct ConstructionEngine: Sendable {
         case let .demolishFloor(b, level): validateDemolishFloor(b, level, world)
         case let .placeRoom(b, def, columns, floors): validatePlaceRoom(b, def, columns, floors, world)
         case let .demolishRoom(id): validateDemolishRoom(id, world)
+        case let .resizeRoom(id, floors): validateResize(id, floors, world)
+        case let .batch(commands): validateBatch(commands, world)
         case let .restorePlate(b, level, plate):
             // Affected columns: everything covered before or after the restore.
             .success(ConstructionPlan(cost: 0, buildingID: b,
                                       columns: Self.union(plate?.span, world.buildings[b]?.plate(at: level)?.span),
                                       floors: FloorSpan(lowest: level, highest: level)))
         case let .restoreRoom(room):
-            .success(ConstructionPlan(cost: 0, buildingID: room.buildingID, columns: room.columns, floors: room.floors))
+            // Affected region: the room as restored and as it is now (if it exists).
+            .success(ConstructionPlan(cost: 0, buildingID: room.buildingID, columns: Self.union(room.columns, world.rooms[room.id]?.columns),
+                                      floors: FloorSpan(lowest: min(room.floors.lowest, world.rooms[room.id]?.floors.lowest ?? .max),
+                                                        highest: max(room.floors.highest, world.rooms[room.id]?.floors.highest ?? .min))))
         }
     }
 
@@ -71,7 +76,7 @@ public struct ConstructionEngine: Sendable {
             guard let below = building.plate(at: level - 1) else { return .failure(.unsupported) }
             let c = catalog.rules.maxCantileverModules
             let support = ColumnSpan(start: below.span.start - c, count: below.span.count + 2 * c)
-            guard support.contains(merged) else { return .failure(.unsupported) }
+            guard support.contains(merged) else { return .failure(.overhang(max: c)) }
         }
         let added = merged.count - (existing?.span.count ?? 0)
         return .success(ConstructionPlan(cost: slabCost(level: level, modules: added, factor: costFactor(b, world)), buildingID: b,
@@ -115,11 +120,18 @@ public struct ConstructionEngine: Sendable {
             guard let plate = building.plate(at: level) else { return .failure(.noFloor(level: level)) }
             guard plate.span.contains(columns) else { return .failure(.noFloor(level: level)) }
         }
+        let cost = Self.scaled(spec.costPerModule * columns.count * floors.count, costFactor(b, world))
+        if spec.kind == .shaft {
+            // Rooms in the way make way; other shafts still block.
+            switch makeWay(building: b, columns: columns, floors: floors, except: nil, world) {
+            case .success(let trims): return .success(shaftPlan(cost: cost, building: b, columns: columns, floors: floors, trims: trims))
+            case .failure(let e): return .failure(e)
+            }
+        }
         if let clash = world.rooms.first(where: { $0.buildingID == b && $0.overlaps(columns: columns, floors: floors) }) {
             return .failure(.overlaps(clash.id))
         }
-        return .success(ConstructionPlan(cost: Self.scaled(spec.costPerModule * columns.count * floors.count, costFactor(b, world)), buildingID: b,
-                                         columns: columns, floors: floors))
+        return .success(ConstructionPlan(cost: cost, buildingID: b, columns: columns, floors: floors))
     }
 
     private func validateDemolishRoom(_ id: RoomID, _ world: GameWorld) -> Result<ConstructionPlan, ConstructionError> {
@@ -145,9 +157,23 @@ public struct ConstructionEngine: Sendable {
             world.buildings.update(b) { $0.setPlate(nil, at: level) }
             return AppliedConstruction(plan: plan, inverse: .restorePlate(building: b, level: level, plate: previous))
         case let .placeRoom(b, def, columns, floors):
+            let trims = catalog.spec(def)?.kind == .shaft ? (try? makeWay(building: b, columns: columns, floors: floors, except: nil, world).get()) ?? [] : []
+            let undoTrims = applyTrims(trims, to: &world)
             let id: RoomID = world.ids.make()
             world.rooms.insert(Room(id: id, buildingID: b, definitionID: def, columns: columns, floors: floors))
-            return AppliedConstruction(plan: plan, inverse: .demolishRoom(id), createdRoom: id)
+            let inverse: BuildCommand = undoTrims.isEmpty ? .demolishRoom(id) : .batch([.demolishRoom(id)] + undoTrims)
+            return AppliedConstruction(plan: plan, inverse: inverse, createdRoom: id)
+        case let .resizeRoom(id, floors):
+            let previous = world.rooms[id]!
+            let trims = (try? makeWay(building: previous.buildingID, columns: previous.columns, floors: floors, except: id, world).get()) ?? []
+            let undoTrims = applyTrims(trims, to: &world)
+            world.rooms.update(id) { $0.floors = floors }
+            let inverse: BuildCommand = undoTrims.isEmpty ? .restoreRoom(previous) : .batch([.restoreRoom(previous)] + undoTrims)
+            return AppliedConstruction(plan: plan, inverse: inverse)
+        case let .batch(commands):
+            var inverses: [BuildCommand] = []
+            for command in commands { inverses.append(try apply(command, to: &world).inverse) }
+            return AppliedConstruction(plan: plan, inverse: .batch(inverses.reversed()))
         case let .demolishRoom(id):
             let room = world.rooms.remove(id)!
             return AppliedConstruction(plan: plan, inverse: .restoreRoom(room))
@@ -158,7 +184,11 @@ public struct ConstructionEngine: Sendable {
             return AppliedConstruction(plan: plan, inverse: .restorePlate(building: b, level: level, plate: previous))
         case let .restoreRoom(room):
             guard world.buildings.contains(room.buildingID) else { throw ConstructionError.unknownBuilding }
-            if world.rooms.contains(room.id) { world.rooms.remove(room.id) }
+            // An existing room is changed in place (and restored as it was on undo).
+            if let previous = world.rooms[room.id] {
+                world.rooms.update(room.id) { $0 = room }
+                return AppliedConstruction(plan: plan, inverse: .restoreRoom(previous))
+            }
             world.rooms.insert(room)
             return AppliedConstruction(plan: plan, inverse: .demolishRoom(room.id))
         }

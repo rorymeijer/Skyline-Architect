@@ -7,8 +7,16 @@ public enum BuildCommand: Codable, Hashable, Sendable {
     case buildFloor(building: BuildingID, level: Int, span: ColumnSpan)
     /// Removes the whole plate at `level` (must be empty and carry nothing).
     case demolishFloor(building: BuildingID, level: Int)
+    /// Places a room or shaft. A shaft may go over rooms: they make way (narrower, or split
+    /// in two) as long as a piece of at least their minimum width is left.
     case placeRoom(building: BuildingID, definition: String, columns: ColumnSpan, floors: FloorSpan)
     case demolishRoom(RoomID)
+    /// Moves a shaft's top and/or bottom to `floors` (same columns). Rooms on new floors
+    /// make way as for `placeRoom`; the elevator car and its statistics stay.
+    case resizeRoom(RoomID, floors: FloorSpan)
+    /// Several commands as one step, applied in order (inverses of steps that changed
+    /// more than one room).
+    case batch([BuildCommand])
     /// Restores exact prior state; produced only as inverses for undo/redo.
     case restorePlate(building: BuildingID, level: Int, plate: FloorPlate?)
     case restoreRoom(Room)
@@ -22,6 +30,8 @@ public enum BuildCommand: Codable, Hashable, Sendable {
         case .demolishRoom: "Demolish Room"
         case .restorePlate: "Floor Change"
         case .restoreRoom: "Room Change"
+        case .resizeRoom: "Resize Shaft"
+        case .batch: "Construction"
         }
     }
 }
@@ -34,6 +44,8 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
     case outsideFootprint
     case noExcavation(level: Int)
     case unsupported
+    /// Wider than the floor below allows (`BuildRules.maxCantileverModules` per side).
+    case overhang(max: Int)
     case notContiguous
     case nothingToBuild
     case noFloor(level: Int)
@@ -43,6 +55,10 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
     case heightOutOfRange(min: Int, max: Int)
     case levelNotAllowed
     case overlaps(RoomID)
+    /// A room in the way would be left narrower than its minimum width.
+    case noSpaceLeft(room: String)
+    /// Only shafts can be made taller or shorter.
+    case notResizable
     /// Standard game: the room type or height needs a higher building class (Phase 11).
     case locked(className: String)
 
@@ -55,6 +71,7 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
         case .outsideFootprint: "Outside the foundation footprint"
         case .noExcavation(let l): "No excavation for \(FloorLabel.label(for: l))"
         case .unsupported: "Needs a floor below to rest on"
+        case .overhang(let m): m == 0 ? "Cannot be wider than the floor below" : "Can stick out at most \(m) m past the floor below"
         case .notContiguous: "Must connect to the existing floor"
         case .nothingToBuild: "Already built"
         case .noFloor(let l): "No floor at \(FloorLabel.label(for: l))"
@@ -64,6 +81,8 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
         case .heightOutOfRange(let a, let b): a == b ? "Must span \(a) floor(s)" : "Must span \(a)–\(b) floors"
         case .levelNotAllowed: "Not allowed on this floor"
         case .overlaps: "Overlaps an existing room"
+        case .noSpaceLeft(let name): "Too little space would be left for the \(name)"
+        case .notResizable: "Only shafts can be made taller or shorter"
         case .locked(let name): "Unlocks at \(name)"
         }
     }

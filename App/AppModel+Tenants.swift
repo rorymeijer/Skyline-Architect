@@ -12,6 +12,7 @@ extension AppModel {
               let room = world.buildings(on: property).lazy.compactMap({ world.room(in: $0.id, column: cell.column, floor: cell.floor) }).first else {
             selectedRoom = nil
             unitReport = nil
+            shaftOptions = []
             scene?.selectionRect = nil
             return
         }
@@ -25,10 +26,14 @@ extension AppModel {
         if let id = selectedRoom {
             if let room = world.rooms[id] {
                 unitReport = UnitReport.make(room: room, world: world, engine: simulation)
+                // The selection follows a room that changed size (a resized shaft, a room that made way).
+                let rect = world.grid.rect(columns: room.columns, floors: room.floors)
+                if scene?.selectionRect != rect { scene?.selectionRect = rect }
             } else {
                 selectRoom(at: nil)
             }
         }
+        refreshShaftOptions()
         leasing = LeasingSummary.make(world: world, engine: simulation, buildings: world.buildings(on: property).map(\.id))
     }
 

@@ -204,6 +204,8 @@ their lowest and highest floor) and `patienceSeconds` (default 150; personal ±5
 
 ### BuildRules (build-rules.json)
 `slabCostPerModule, basementSlabCostPerModule, maxCantileverModules, demolitionRefund (0…1)`.
+`maxCantileverModules` is how far (modules per side) a floor may stick out past the floor
+below; the base game uses 0.
 
 ### Blueprint (blueprints.json)
 `id, name, description, steps: [{ "floor": {level, start, count} } | { "room": {definition,

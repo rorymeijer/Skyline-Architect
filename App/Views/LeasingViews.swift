@@ -7,6 +7,8 @@ import SkylineSimulation
 /// unit — how each kind of tenant rates it and what happened on the market.
 struct UnitInspector: View {
     let report: UnitReport
+    var shaftOptions: [ShaftResizeOption] = []
+    var onResize: (BuildCommand) -> Void = { _ in }
     let onClose: () -> Void
 
     var body: some View {
@@ -53,6 +55,7 @@ struct UnitInspector: View {
                 Meter(label: "Cleanliness", value: report.cleanliness)
                 Meter(label: "Condition", value: report.condition)
             }
+            if !shaftOptions.isEmpty { ShaftHeightControls(options: shaftOptions, onResize: onResize) }
             if !report.history.isEmpty {
                 Divider()
                 ForEach(Array(report.history.prefix(4).enumerated()), id: \.offset) { _, e in
@@ -133,5 +136,38 @@ private struct Meter: View {
             .frame(height: 6)
         }
         .frame(height: 12)
+    }
+}
+
+/// Height controls of a selected shaft (0.20.2): one floor up or down at either end, the
+/// same as dragging the shaft's end with its tool. Disabled options say why.
+private struct ShaftHeightControls: View {
+    let options: [ShaftResizeOption]
+    let onResize: (BuildCommand) -> Void
+
+    var body: some View {
+        Divider()
+        Text("Height").font(.caption.weight(.semibold))
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 6) {
+            ForEach(options) { o in
+                Button { if let c = o.command { onResize(c) } } label: {
+                    VStack(alignment: .leading, spacing: 1) {
+                        Label(o.title, systemImage: o.symbol).font(.caption.weight(.semibold))
+                        Text(o.detail).font(.caption2.monospacedDigit()).foregroundStyle(.secondary).lineLimit(1)
+                    }
+                    .padding(6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(o.command == nil ? 0.04 : 0.12)))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(o.command == nil)
+                .opacity(o.command == nil ? 0.55 : 1)
+                .help(o.detail)
+                .accessibilityLabel(o.title)
+                .accessibilityValue(o.detail)
+            }
+        }
+        Text("Or drag the shaft's top or bottom with its tool.").font(.caption2).foregroundStyle(.secondary)
     }
 }

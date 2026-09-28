@@ -1,11 +1,16 @@
 # Development Status
 
-_Last updated: 2026-09-28 (0.20.1 — known-bug fixes after Phase 20)_
+_Last updated: 2026-09-28 (0.20.2 — player feedback: overhangs, shafts, names)_
 
 ## Current phase
-**0.20.1 — Known-bug fixes: COMPLETE.** All roadmap phases (0–20) are done. This round
-fixed the known bugs B1–B8 from `Documentation/OPEN_ITEMS.md` (B4 kept by design, D-046).
-Still not 1.0: no human play test, the iPad build never launched, iCloud unverified (D-045).
+**0.20.2 — Player feedback: COMPLETE on the branch.** After the first look at the game:
+- floors can no longer be wider than the floor below (D-048);
+- stairwells and elevator shafts can go over rooms, which give way by getting narrower or
+  splitting (D-049);
+- shafts can be made taller or shorter (drag an end, or the inspector buttons);
+- tenant names are unique.
+
+Evidence: 302 tests, CI run 36457150047, captures in `Development/Screenshots/Shafts-0.20.2/`.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |
