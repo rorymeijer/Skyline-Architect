@@ -175,6 +175,10 @@ Estate (ESTATE.md): cities carry their market in the save; construction scales c
 building's city, the rental market runs per city; buying land and legacy matching live in
 Content (`Estate`), which knows plots; the app shows one property at a time while the whole
 estate simulates (D-040).
+Scenarios (SCENARIOS.md): `ScenarioState` (copied objectives, deadline, streak, result) lives
+in Core; the simulation measures the estate-wide metrics and decides the result at the daily
+closing (`Scenarios`); Content defines scenarios, validates them, starts them and summarises
+them for the UI (`ScenarioBrief`, `ScenarioSummary`); the app only shows them (D-041).
 
 ## 6. Concurrency model
 

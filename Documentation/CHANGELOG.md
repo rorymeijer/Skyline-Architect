@@ -2,6 +2,25 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.16.0] — Phase 16: Scenarios
+
+### Added
+- **Scenarios** (`scenarios.json`): five scenarios across the three cities, from Opening
+  Day (easy) to Skyline (1,500 people, short waits, in profit for a week).
+- **Objectives**: population, units let, cash, daily profit, building class, reputation,
+  average elevator wait and properties. They are measured over the estate at every daily
+  closing and must hold for the scenario's closings in a row.
+- **Win and lose**: every objective held → won; bankruptcy or the deadline → lost. After
+  the result the game goes on as free play.
+- **UI**: the scenario browser from the main menu (list, briefing, objectives), the
+  objectives panel (⌥⌘O, flag button) and the result screen.
+- **Save format 13** (+ migration, golden fixture).
+
+### Fixed
+- Tenant budgets now follow the city's rent level. Before, Harrowgate's class C tenants
+  could not afford any unit at the default rent level, so a new Harrowgate tower stayed
+  empty.
+
 ## [0.15.0] — Phase 15: Multiple properties & cities
 
 ### Added

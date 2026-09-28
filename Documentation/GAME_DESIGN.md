@@ -263,3 +263,18 @@ different skyline, different ground in the cut-away. Each city has its own tenan
 every tower keeps running while the player looks at another. The estate panel shows how
 each property is doing and takes the player back with one click.
 
+## Phase 16 player experience (current)
+
+The main menu now has **Scenarios…**. Each one starts from a lot in one of the three
+cities with a budget, a deadline and a few objectives:
+
+* **Opening Day:** let a dozen units and turn a daily profit within ten days.
+* **Harbour Revival:** bring Saltmere's waterfront back to life on a small budget.
+* **Three Properties:** grow the Quay Street lot into an estate.
+* **Crown Prestige:** a Class A address in Harrowgate with short elevator waits.
+* **Skyline:** 1,500 people, waits under a minute and a profit, for a week.
+
+The briefing says what counts. During play the objectives panel shows each objective's
+progress and how many daily closings are left. Every morning's closing checks the
+objectives. When they all hold, the scenario is won; when the money runs out or the
+deadline passes, it is lost. Either way, the player can keep playing the estate afterwards.

@@ -284,22 +284,40 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(save.world.properties.values.map(\.plotID) == ["calder-quay-lot"])
     }
 
-    /// Golden fixture v12 (two cities, a bought plot, a land transaction). Regenerate only
-    /// deliberately: `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV12`.
+    /// Golden fixture v12 (two cities, a bought plot, a land transaction). Frozen since
+    /// format 13: loads as free play (no scenario).
     @Test func goldenFixtureV12StillLoads() throws {
-        let lib = try ContentLibrary.loadBase()
-        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            var save = try makeElevatorSave()
-            try Estate.buy("saltmere-harbour-row", world: &save.world, library: lib)
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v12.skylinesave")
-            try SaveCodec.encode(save).write(to: source)
-            return
-        }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v12.skylinesave")), availablePacks: basePacks)
         #expect(save.world.cities.count == 2 && save.world.properties.count == 2)
         #expect(save.world.cities.values.map(\.definitionID) == ["port-calder", "saltmere"])
         #expect(save.world.ledger.journal.contains { $0.category == .land && $0.amount == -450_000 })
+        #expect(save.world.tenants.count == 15)
+        #expect(save.world.scenario == nil)
+    }
+
+    /// Golden fixture v13 (a scenario in progress: measured objectives, a streak). Regenerate
+    /// only deliberately: `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV13`.
+    @Test func goldenFixtureV13StillLoads() throws {
+        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
+            var save = try makeElevatorSave()
+            var scenario = ScenarioState(id: "opening-day", name: "Opening Day",
+                                         objectives: [ScenarioObjective(metric: .occupiedUnits, target: 12),
+                                                      ScenarioObjective(metric: .averageWait, target: 45)],
+                                         deadlineDay: 10, holdDays: 2)
+            scenario.measured = [15, nil]
+            scenario.streak = 1
+            save.world.scenario = scenario
+            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v13.skylinesave")
+            try SaveCodec.encode(save).write(to: source)
+            return
+        }
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v13.skylinesave")), availablePacks: basePacks)
+        let scenario = try #require(save.world.scenario)
+        #expect(scenario.id == "opening-day" && scenario.deadlineDay == 10 && scenario.holdDays == 2 && scenario.streak == 1)
+        #expect(scenario.objectives.map(\.metric) == [.occupiedUnits, .averageWait])
+        #expect(scenario.measured == [15, nil] && scenario.result == nil)
         #expect(save.world.tenants.count == 15)
     }
 

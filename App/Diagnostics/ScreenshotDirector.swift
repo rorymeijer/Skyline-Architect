@@ -55,78 +55,76 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Towers are built with the developer blueprint (with a grant if cash runs short); land
-    // is bought and loans taken through the same calls as the panels' buttons.
+    // Scenarios are started through the same calls as the browser's buttons. Towers are
+    // built with the developer blueprint; leasing and the scenario results are the
+    // simulation's own (no developer leasing in these captures).
     let steps: [Step] = [
-        Step(name: "01-home-estate", grid: false) { model, scene in
+        Step(name: "01-main-menu", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
+            model.showMainMenu = true
+            scene.withController { $0.jump(center: Vec2(22, 12), zoom: 7) }
+            return "Main menu with the new Scenarios… entry."
+        },
+        Step(name: "02-scenario-browser", grid: false) { model, scene in
+            model.openScenarioBrowser()
+            return "Scenario browser: " + model.scenarioBriefs.map { "\($0.name) (\($0.difficulty))" }.joined(separator: ", ")
+        },
+        Step(name: "03-briefing-skyline", grid: false) { model, scene in
+            model.selectedScenarioID = "skyline"
+            let brief = model.scenarioBriefs.first { $0.id == "skyline" }
+            return "Briefing of Skyline: \(brief?.setting ?? "—"); " + (brief?.objectives.joined(separator: ", ") ?? "")
+        },
+        Step(name: "04-opening-day-start", grid: false) { model, scene in
+            model.startScenario("opening-day")
+            model.setSpeed(.paused)
             model.applyBlueprint("demo-tower")
-            model.leaseAllVacant()
-            ScreenshotDirector.force("clear", 22, model: model)
             model.advanceSimulation(toTimeOfDay: 11)
-            model.toggleEstatePanel()
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 9) }
-            return "\(model.clockText): one property; land for sale: " + model.estate.offers.map { "\($0.name) (\($0.city)) $\($0.price)" }.joined(separator: ", ")
+            return "\(model.clockText): Opening Day started, demo tower built (developer blueprint); " + ScreenshotDirector.objectives(model)
         },
-        Step(name: "02-bought-saltmere", grid: false) { model, scene in
-            let cash = model.economy.cash
-            model.buyPlot("saltmere-harbour-row")
+        Step(name: "05-opening-day-progress", grid: false) { model, scene in
+            model.advanceSimulation(ticks: SimClock.secondsPerDay)
+            model.advanceSimulation(toTimeOfDay: 16)
             model.refreshSimulationSummary()
-            model.refreshEstate()
-            model.scene?.withController { $0.jump(center: Vec2(28, 2), zoom: 7) }
-            return "Bought Harbour Row, Saltmere: \(model.propertyName) in \(model.cityName); cash \(cash) → \(model.economy.cash); marsh ground, a smaller town."
+            return "\(model.clockText): " + ScreenshotDirector.objectives(model)
         },
-        Step(name: "03-saltmere-tower", grid: false) { model, scene in
-            model.showEstatePanel = false
-            model.applyBlueprint("demo-tower")
-            model.leaseAllVacant()
+        Step(name: "06-opening-day-won", grid: false) { model, scene in
+            var days = 0
+            while model.world?.scenario?.result == nil, days < 12 {
+                model.advanceSimulation(ticks: SimClock.secondsPerDay)
+                days += 1
+            }
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(26, 16), zoom: 9) }
-            let line = model.world?.ledger.journal.last { $0.category == .construction }
-            return "Demo tower in Saltmere (build ×0.8): last construction line \(line.map { "\($0.detail) \($0.amount)" } ?? "—")."
+            let r = model.world?.scenario?.result
+            return "\(model.clockText): result won=\(r?.won ?? false) \"\(r?.reason ?? "—")\" on day \(r.map { SimClock.day($0.tick) + 1 } ?? 0); " + ScreenshotDirector.objectives(model)
         },
-        Step(name: "04-bought-harrowgate", grid: false) { model, scene in
-            for _ in 0..<5 { model.borrow() }
-            let loans = model.economy.loans
-            model.buyPlot("harrowgate-crown-yard")
+        Step(name: "07-harbour-failed", grid: false) { model, scene in
+            model.startScenario("harbour-revival")
+            model.setSpeed(.paused)
+            model.advanceSimulation(ticks: 30 * SimClock.secondsPerDay)
+            model.advanceSimulation(toTimeOfDay: 9)
             model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(20, -2), zoom: 7) }
-            return "Loans \(loans); bought Crown Yard, Harrowgate: \(model.propertyName) in \(model.cityName) — granite close under the street, two basement levels."
-        },
-        Step(name: "05-harrowgate-tower", grid: false) { model, scene in
-            model.applyBlueprint("demo-tower")
-            model.leaseAllVacant()
-            model.showEconomyPanel = true
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(20, 16), zoom: 9) }
-            let line = model.world?.ledger.journal.last { $0.category == .construction }
-            return "Demo tower in Harrowgate (build ×1.25): last construction line \(line.map { "\($0.detail) \($0.amount)" } ?? "—")."
-        },
-        Step(name: "06-estate-overview", grid: false) { model, scene in
-            model.showEconomyPanel = false
-            model.advanceSimulation(ticks: 2 * SimClock.secondsPerDay)
-            model.advanceSimulation(toTimeOfDay: 10)
-            model.toggleEstatePanel()
-            model.refreshSimulationSummary()
-            let rows = model.estate.holdings.map { "\($0.name) (\($0.city)): \($0.tenants)/\($0.units) let, 24 h \($0.net24h)" }
-            return "\(model.clockText): " + rows.joined(separator: "; ")
-        },
-        Step(name: "07-back-home", grid: false) { model, scene in
-            if let home = model.estate.holdings.first?.property { model.switchProperty(home) }
-            model.refreshSimulationSummary()
-            model.refreshEstate()
-            model.scene?.withController { $0.jump(center: Vec2(22, 16), zoom: 9) }
-            return "Switched back (\"Go\") to \(model.propertyName), \(model.cityName); the other towers kept running."
+            scene.withController { $0.jump(center: Vec2(28, 6), zoom: 7) }
+            let r = model.world?.scenario?.result
+            return "Harbour Revival left unbuilt for 30 days: won=\(r?.won ?? false) \"\(r?.reason ?? "—")\" on day \(r.map { SimClock.day($0.tick) + 1 } ?? 0)."
         },
         Step(name: "08-save-load", grid: false) { model, scene in
-            model.showEstatePanel = false
+            model.startScenario("crown-prestige")
+            model.setSpeed(.paused)
+            model.applyBlueprint("demo-tower")
+            model.advanceSimulation(ticks: SimClock.secondsPerDay)
+            model.advanceSimulation(toTimeOfDay: 10)
+            model.refreshSimulationSummary()
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")
+            model.showScenarioPanel = true
             model.refreshSimulationSummary()
-            return "Saved and reloaded the estate: saved=\(saved) loaded=\(loaded) worldIdentical=\(before != nil && before == model.world), properties \(model.world?.properties.count ?? 0)"
+            // Loading builds a new scene: move that one's camera.
+            model.scene?.withController { $0.jump(center: Vec2(20, 12), zoom: 8) }
+            return "Crown Prestige saved and reloaded mid-scenario: saved=\(saved) loaded=\(loaded) worldIdentical=\(before != nil && before == model.world); " + ScreenshotDirector.objectives(model)
         },
     ]
 

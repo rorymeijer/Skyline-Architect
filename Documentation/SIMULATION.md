@@ -1,10 +1,10 @@
 # Simulation
 
-Status: **FUNCTIONAL (Phases 4–15)** — clock, speeds, people with schedules, tenants and a
+Status: **FUNCTIONAL (Phases 4–16)** — clock, speeds, people with schedules, tenants and a
 rental market (TENANTS.md), navigation graph with stair transfers and elevators, route
 cache, re-planning after construction, elevator cars, banks and dispatch strategies,
 patience, economy (ECONOMY.md), utilities, upkeep and staff (FACILITIES.md), reputation and
-building classes (PROGRESSION.md), lighting energy (LIGHTING.md), weather (WEATHER.md), fire and incidents (EMERGENCIES.md), markets per city (ESTATE.md).
+building classes (PROGRESSION.md), lighting energy (LIGHTING.md), weather (WEATHER.md), fire and incidents (EMERGENCIES.md), markets per city (ESTATE.md), scenario objectives (SCENARIOS.md).
 PLANNED: needs.
 
 Code: `Packages/SkylineKit/Sources/SkylineSimulation` (logic) and `SkylineCore/People.swift`
@@ -40,7 +40,8 @@ advance(world, n):
   while pop (tick, who):
     market     → hourly: lighting meter (LIGHTING.md), prospects sign or decline; 06:00: upkeep, jobs, wages (FACILITIES.md),
                  daily closing (ECONOMY.md), tenant reviews/move-outs (TENANTS.md),
-                 reputation and promotion (PROGRESSION.md), next day's weather (WEATHER.md);
+                 reputation and promotion (PROGRESSION.md), scenario objectives (SCENARIOS.md),
+                 next day's weather (WEATHER.md);
                  prospects per city (ESTATE.md), scaled by its demand, reputation and the weather;
                  hourly also: weather incidents, fire ignition (EMERGENCIES.md)
     fires      → every 60 s: grow / suppress / damage / spread; out → repairs, reputation

@@ -31,6 +31,7 @@ struct GameCommands: Commands {
             Button("New Game") { model.newGame() }
                 .keyboardShortcut("n", modifiers: .command)
             Button("New Sandbox Game") { model.newGame(startID: NewGameFactory.defaultStartID) }
+            Button("Scenarios…") { model.openScenarioBrowser() }
         }
         CommandGroup(replacing: .saveItem) {
             Button("Save") { model.save() }
@@ -68,6 +69,9 @@ struct GameCommands: Commands {
                 .keyboardShortcut("e", modifiers: [.command, .option])
             Button(model.showLeasingPanel ? "Hide Leasing" : "Show Leasing") { model.showLeasingPanel.toggle() }
                 .keyboardShortcut("l", modifiers: [.command, .option])
+            Button(model.showScenarioPanel ? "Hide Objectives" : "Show Objectives") { model.showScenarioPanel.toggle() }
+                .keyboardShortcut("o", modifiers: [.command, .option])
+                .disabled(model.scenario == nil)
             Button(model.showEstatePanel ? "Hide Estate" : "Show Estate") { model.toggleEstatePanel() }
                 .keyboardShortcut("k", modifiers: [.command, .option])
             Button(model.showIncidentsPanel ? "Hide Incidents" : "Show Incidents") { model.showIncidentsPanel.toggle() }

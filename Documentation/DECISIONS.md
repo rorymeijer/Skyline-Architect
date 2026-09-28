@@ -318,3 +318,22 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - A one-city game keeps exactly its earlier market draws.
   - Older saves get their city market applied once on load (`Estate.adoptLegacy`).
 
+## D-041 — Scenarios as copied objectives decided at the daily closing
+- **Date:** 2026-09-28
+- **Decision:**
+  - A scenario is content: a start, optional cash, a number of days, `holdDays` and objectives over a fixed set of estate-wide metrics.
+  - Starting one copies the objectives and the deadline into `GameWorld.scenario`.
+  - The simulation measures them at every daily closing and decides the result once: won after `holdDays` closings in a row with every objective met; lost on bankruptcy or when the deadline closing passes.
+  - After the result the game continues as free play.
+- **Alternatives:**
+  - Evaluating continuously (every tick or hour).
+  - Scripted objectives or conditions (expressions in content).
+  - Ending the game at the result.
+- **Reason:**
+  - The closing is when the day's numbers are settled (rent, costs, reputation), so a win cannot hinge on a lucky hour.
+  - Checking once a day keeps the check cheap, and deterministic and batch-independent (rule 7).
+  - A fixed metric list keeps mods declarative (rule 15) and every objective explainable in the UI.
+  - Copying keeps saves self-contained, as with city markets (D-040).
+- **Consequences:**
+  - New kinds of objectives need engine code (a metric case) and a documented definition.
+  - The live panel can show an objective as met during the day that the closing then misses.

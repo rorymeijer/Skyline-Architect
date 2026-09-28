@@ -72,6 +72,12 @@ Cities may set `economy {rent, construction, demand}` (multipliers, 0…5). Plot
 basementFloors, pileDepthMeters, pileSpacingModules}`; a plot with a price is for sale and
 needs a foundation that fits its frontage and basement limit. See ESTATE.md.
 
+### Scenarios (scenarios.json)
+`[{id, name, difficulty ("easy" | "medium" | "hard"), summary, briefing, startID,
+startingCash?, days, holdDays?, objectives [{metric, target}]}]`. Metrics: `population`,
+`occupiedUnits`, `cash`, `dailyProfit`, `buildingClass`, `reputation`, `averageWait` (an
+upper limit) and `properties`. See SCENARIOS.md.
+
 ### Events (events.json, rooms.json)
 `fire {ignitionPerRoomPerDay, wornBelow, wornMultiplier, equipmentMultiplier,
 protectedIgnitionFactor, stepSeconds, startIntensity, growthPerStep, spreadAbove,

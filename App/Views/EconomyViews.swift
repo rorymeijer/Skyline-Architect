@@ -115,12 +115,13 @@ struct MainMenuView: View {
                             model.continueLatest()
                         }
                     }
-                    MenuButton(title: "New Game", subtitle: "Quay Street, Port Calder · unlock rooms and height by building class") {
+                    MenuButton(title: "New Game", subtitle: "Quay Street, Port Calder · rooms unlock by class") {
                         model.startFromMenu()
                     }
                     MenuButton(title: "New Sandbox", subtitle: "Everything unlocked from the start") {
                         model.startFromMenu(startID: NewGameFactory.defaultStartID)
                     }
+                    MenuButton(title: "Scenarios…", subtitle: "Objectives against the clock") { model.openScenarioBrowser() }
                     MenuButton(title: "Load Game…", subtitle: nil) { model.showLoadSheet = true }
                 }
                 .frame(width: 300)
@@ -154,7 +155,7 @@ struct BankruptcyView: View {
     }
 }
 
-private struct MenuButton: View {
+struct MenuButton: View {
     let title: String
     let subtitle: String?
     let action: () -> Void

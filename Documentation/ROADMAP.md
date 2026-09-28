@@ -139,8 +139,14 @@ Delivered:
 
 Not yet: weather per city, selling land, several buildings per plot.
 
-### Phase 16 — Scenarios
-Data-driven objectives, win/lose conditions, scenario browser.
+### Phase 16 — Scenarios ✅ (2026-09-28)
+Delivered:
+- scenarios as content;
+- objectives over the estate, decided at the daily closing;
+- win and lose conditions;
+- the scenario browser, the objectives panel and the result screen.
+
+Not yet: scripted events, restrictions, scores, a record of completed scenarios.
 
 ### Phase 17 — Modding / content system
 Pack discovery, merge/override rules, validation reporting, mod manager UI.

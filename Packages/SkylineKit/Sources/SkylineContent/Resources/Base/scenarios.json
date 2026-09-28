@@ -1,0 +1,114 @@
+[
+  {
+    "id": "opening-day",
+    "name": "Opening Day",
+    "difficulty": "easy",
+    "summary": "Let a dozen units on Quay Street and turn a daily profit.",
+    "briefing": "The Quay Street lot has a foundation and $2.5M. The harbour board wants to see a working building before the season ends: at least twelve units let and a daily closing in the black by $5,000 or more.",
+    "startID": "standard-quay",
+    "days": 10,
+    "objectives": [
+      {
+        "metric": "occupiedUnits",
+        "target": 12
+      },
+      {
+        "metric": "dailyProfit",
+        "target": 5000
+      }
+    ]
+  },
+  {
+    "id": "harbour-revival",
+    "name": "Harbour Revival",
+    "difficulty": "medium",
+    "summary": "Bring 120 people back to the Saltmere waterfront on a tight budget.",
+    "briefing": "Saltmere's harbour front has been empty for years. Land is cheap and building is cheap, but tenants are few and pay little. With $1.5M, house or employ 120 people and keep the building profitable for three days in a row.",
+    "startID": "scenario-saltmere",
+    "startingCash": 1500000,
+    "days": 30,
+    "holdDays": 3,
+    "objectives": [
+      {
+        "metric": "population",
+        "target": 120
+      },
+      {
+        "metric": "dailyProfit",
+        "target": 4000
+      }
+    ]
+  },
+  {
+    "id": "three-properties",
+    "name": "Three Properties",
+    "difficulty": "medium",
+    "summary": "Grow from Quay Street into an estate of three properties.",
+    "briefing": "Start with the Quay Street lot and build an estate: own three properties (Ferry Lane, Crown Yard or Harbour Row are for sale), house or employ 250 people and earn $10,000 a day across the estate.",
+    "startID": "standard-quay",
+    "days": 60,
+    "objectives": [
+      {
+        "metric": "properties",
+        "target": 3
+      },
+      {
+        "metric": "population",
+        "target": 250
+      },
+      {
+        "metric": "dailyProfit",
+        "target": 10000
+      }
+    ]
+  },
+  {
+    "id": "crown-prestige",
+    "name": "Crown Prestige",
+    "difficulty": "hard",
+    "summary": "Raise a Class A address in Harrowgate with short elevator waits.",
+    "briefing": "Harrowgate's tenants are demanding and building is dear. With $5M, raise Crown Yard to Class A, earn a reputation of 70 and keep the average elevator wait under 45 seconds.",
+    "startID": "scenario-harrowgate",
+    "startingCash": 5000000,
+    "days": 45,
+    "objectives": [
+      {
+        "metric": "buildingClass",
+        "target": 2
+      },
+      {
+        "metric": "reputation",
+        "target": 70
+      },
+      {
+        "metric": "averageWait",
+        "target": 45
+      }
+    ]
+  },
+  {
+    "id": "skyline",
+    "name": "Skyline",
+    "difficulty": "hard",
+    "summary": "1,500 people, short waits, in profit — for a week.",
+    "briefing": "The big one. Grow Quay Street into a tower of at least 1,500 residents and workers, keep the average elevator wait under a minute and stay profitable, all for seven days running.",
+    "startID": "standard-quay",
+    "startingCash": 3000000,
+    "days": 120,
+    "holdDays": 7,
+    "objectives": [
+      {
+        "metric": "population",
+        "target": 1500
+      },
+      {
+        "metric": "averageWait",
+        "target": 60
+      },
+      {
+        "metric": "dailyProfit",
+        "target": 1
+      }
+    ]
+  }
+]

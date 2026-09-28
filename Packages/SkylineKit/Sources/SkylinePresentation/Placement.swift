@@ -109,12 +109,17 @@ public enum PlacementPlanner {
 /// Currency formatting independent of locale (deterministic in tests and captures).
 public enum Money {
     public static func format(_ amount: Int) -> String {
-        let digits = String(abs(amount))
+        (amount < 0 ? "−$" : "$") + grouped(abs(amount))
+    }
+
+    /// Digits in groups of three ("1,500"; negative with "−").
+    public static func grouped(_ number: Int) -> String {
+        let digits = String(abs(number))
         var grouped = ""
         for (i, ch) in digits.reversed().enumerated() {
             if i > 0 && i % 3 == 0 { grouped.append(",") }
             grouped.append(ch)
         }
-        return (amount < 0 ? "−$" : "$") + String(grouped.reversed())
+        return (number < 0 ? "−" : "") + String(grouped.reversed())
     }
 }

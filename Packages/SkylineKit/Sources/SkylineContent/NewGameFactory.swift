@@ -6,11 +6,14 @@ public struct NewGame: Sendable {
     public var world: GameWorld
     public var activePropertyID: PropertyID
     public var startID: String
+    /// The scenario being played (Phase 16; nil = free play).
+    public var scenarioID: String?
 }
 
 /// Builds a `GameWorld` from content definitions.
 public enum NewGameFactory {
-    public static func make(startID: String, library: ContentLibrary) throws -> NewGame {
+    /// `cash` replaces the start's starting capital (scenarios).
+    public static func make(startID: String, library: ContentLibrary, cash override: Int? = nil) throws -> NewGame {
         guard let start = library.start(startID) else {
             throw ContentError(pack: library.manifest.id, file: "starts", message: "Unknown start '\(startID)'")
         }
@@ -38,7 +41,7 @@ public enum NewGameFactory {
         if let weather = library.simulationRules.weather {
             world.weather = Weather.initial(seed: Weather.seed(of: world), rules: weather)
         }
-        if let cash = start.startingCash, cash > 0 {
+        if let cash = override ?? start.startingCash, cash > 0 {
             world.ledger.post(Transaction(tick: 0, amount: cash, category: .grant, detail: "Starting capital"))
         }
         return NewGame(world: world, activePropertyID: propertyID, startID: start.id)

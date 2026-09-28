@@ -26,6 +26,8 @@ public struct ContentLibrary: Sendable {
     public private(set) var orderedStarts: [StartDefinition] = []
     public private(set) var orderedRooms: [RoomSpec] = []
     public private(set) var orderedBlueprints: [Blueprint] = []
+    /// Scenarios in file order (Phase 16).
+    public internal(set) var orderedScenarios: [ScenarioDefinition] = []
     /// Building classes in order (Phase 11).
     public private(set) var buildingClasses: [BuildingClass] = []
     public private(set) var artCatalog = ArtCatalog.empty
@@ -101,6 +103,7 @@ public struct ContentLibrary: Sendable {
         try library.register(schedules: list("schedules"), names: names, elevators: list("elevators"), tenants: list("tenants"),
                              economy: economy, facilities: facilities, progression: progression, weather: weather,
                              events: events)
+        try library.register(scenarios: list("scenarios"))
         return library
     }
 
