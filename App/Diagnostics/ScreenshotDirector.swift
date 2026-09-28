@@ -55,118 +55,78 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Fires are started with the developer tool (`igniteForTesting`) and the storm is set
-    // by the script; everything that follows is the simulation's own doing.
+    // Towers are built with the developer blueprint (with a grant if cash runs short); land
+    // is bought and loans taken through the same calls as the panels' buttons.
     let steps: [Step] = [
-        Step(name: "01-ignition", grid: false) { model, scene in
+        Step(name: "01-home-estate", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.applyBlueprint("demo-tower")
             model.leaseAllVacant()
             ScreenshotDirector.force("clear", 22, model: model)
-            model.advanceSimulation(toTimeOfDay: 10, minute: 30)
-            let office = ScreenshotDirector.office(model, index: 2)
-            let lit = office.map { model.igniteForTesting($0.id) } ?? false
-            model.advanceSimulation(ticks: 30)
+            model.advanceSimulation(toTimeOfDay: 11)
+            model.toggleEstatePanel()
             model.refreshSimulationSummary()
-            if let r = office, let world = model.world {
-                scene.withController { $0.jump(center: world.grid.rect(columns: r.columns, floors: r.floors).center + Vec2(0, 1), zoom: 24) }
-            }
-            return "\(model.clockText): fire started in an office (developer tool: \(lit)); alert: \(model.incidentNotice ?? "none")"
+            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 9) }
+            return "\(model.clockText): one property; land for sale: " + model.estate.offers.map { "\($0.name) (\($0.city)) $\($0.price)" }.joined(separator: ", ")
         },
-        Step(name: "02-evacuation", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 50)                         // ~80 s after ignition: on the stairs
+        Step(name: "02-bought-saltmere", grid: false) { model, scene in
+            let cash = model.economy.cash
+            model.buyPlot("saltmere-harbour-row")
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 14), zoom: 11.5) }
-            let inside = model.population.inRooms + model.population.travelling
-            return "\(model.clockText): evacuation by the stairs, no elevator rides; \(inside) still inside or on their way out."
+            model.refreshEstate()
+            model.scene?.withController { $0.jump(center: Vec2(28, 2), zoom: 7) }
+            return "Bought Harbour Row, Saltmere: \(model.propertyName) in \(model.cityName); cash \(cash) → \(model.economy.cash); marsh ground, a smaller town."
         },
-        Step(name: "03-spreading", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 12 * 60)
+        Step(name: "03-saltmere-tower", grid: false) { model, scene in
+            model.showEstatePanel = false
+            model.applyBlueprint("demo-tower")
+            model.leaseAllVacant()
             model.refreshSimulationSummary()
-            return "\(model.clockText): \(model.incidents.fires.first.map { "\($0.burningRooms) room(s) burning, brigade in \($0.brigadeInMinutes) min" } ?? "out"); building empty: \(model.population.inRooms == 0)."
+            scene.withController { $0.jump(center: Vec2(26, 16), zoom: 9) }
+            let line = model.world?.ledger.journal.last { $0.category == .construction }
+            return "Demo tower in Saltmere (build ×0.8): last construction line \(line.map { "\($0.detail) \($0.amount)" } ?? "—")."
         },
-        Step(name: "04-fire-brigade", grid: false) { model, scene in
-            let arrives = model.world?.incidents.fires.first?.brigadeArrives ?? 0
-            let now = model.world?.clock.tick ?? 0
-            model.advanceSimulation(ticks: max(arrives, now) - now + 120)
+        Step(name: "04-bought-harrowgate", grid: false) { model, scene in
+            for _ in 0..<5 { model.borrow() }
+            let loans = model.economy.loans
+            model.buyPlot("harrowgate-crown-yard")
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(10, 12), zoom: 11.5) }
-            return "\(model.clockText): fire brigade on site — \(model.incidentNotice ?? "")"
+            model.scene?.withController { $0.jump(center: Vec2(20, -2), zoom: 7) }
+            return "Loans \(loans); bought Crown Yard, Harrowgate: \(model.propertyName) in \(model.cityName) — granite close under the street, two basement levels."
         },
-        Step(name: "05-aftermath", grid: false) { model, scene in
-            var guardSteps = 0
-            while !(model.world?.incidents.fires.isEmpty ?? true), guardSteps < 180 {
-                model.advanceSimulation(ticks: 60)
-                guardSteps += 1
-            }
-            model.advanceSimulation(ticks: 60)
-            model.showIncidentsPanel = true
+        Step(name: "05-harrowgate-tower", grid: false) { model, scene in
+            model.applyBlueprint("demo-tower")
+            model.leaseAllVacant()
+            model.showEconomyPanel = true
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(20, 16), zoom: 9) }
+            let line = model.world?.ledger.journal.last { $0.category == .construction }
+            return "Demo tower in Harrowgate (build ×1.25): last construction line \(line.map { "\($0.detail) \($0.amount)" } ?? "—")."
+        },
+        Step(name: "06-estate-overview", grid: false) { model, scene in
             model.showEconomyPanel = false
+            model.advanceSimulation(ticks: 2 * SimClock.secondsPerDay)
+            model.advanceSimulation(toTimeOfDay: 10)
+            model.toggleEstatePanel()
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 14), zoom: 11.5) }
-            let repairs = model.world?.ledger.journal.last { $0.detail.hasPrefix("Fire damage") }
-            return "\(model.clockText): \(model.incidents.recent.first?.detail ?? "—"); ledger: \(repairs.map { "\($0.detail) \($0.amount)" } ?? "—"); soot on the damaged rooms."
+            let rows = model.estate.holdings.map { "\($0.name) (\($0.city)): \($0.tenants)/\($0.units) let, 24 h \($0.net24h)" }
+            return "\(model.clockText): " + rows.joined(separator: "; ")
         },
-        Step(name: "06-sprinklers", grid: false) { model, scene in
-            model.showIncidentsPanel = false
-            // A fire control room on a new floor 9 protects the whole tower.
-            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
-               let span = b.plate(at: 8)?.span {
-                model.perform(.buildFloor(building: b.id, level: 9, span: span))
-                model.perform(.placeRoom(building: b.id, definition: "fire-control-room", columns: ColumnSpan(start: span.start, count: 5),
-                                         floors: FloorSpan(lowest: 9, highest: 9)))
-            }
-            model.advanceSimulation(toTimeOfDay: 14)
-            let office = ScreenshotDirector.office(model, index: 5)
-            let lit = office.map { model.igniteForTesting($0.id) } ?? false
-            model.advanceSimulation(ticks: 120)
+        Step(name: "07-back-home", grid: false) { model, scene in
+            if let home = model.estate.holdings.first?.property { model.switchProperty(home) }
             model.refreshSimulationSummary()
-            if let r = office, let world = model.world {
-                scene.withController { $0.jump(center: world.grid.rect(columns: r.columns, floors: r.floors).center + Vec2(0, 1), zoom: 24) }
-            }
-            return "\(model.clockText): fire control room built; second fire (\(lit)) under sprinklers: \(model.sprinklerRooms.count) rooms protected."
+            model.refreshEstate()
+            model.scene?.withController { $0.jump(center: Vec2(22, 16), zoom: 9) }
+            return "Switched back (\"Go\") to \(model.propertyName), \(model.cityName); the other towers kept running."
         },
-        Step(name: "07-sprinklers-win", grid: false) { model, scene in
-            let start = model.world?.incidents.log.last?.started ?? 0
-            var guardSteps = 0
-            while !(model.world?.incidents.fires.isEmpty ?? true), guardSteps < 120 {
-                model.advanceSimulation(ticks: 30)
-                guardSteps += 1
-            }
-            model.refreshSimulationSummary()
-            let minutes = ((model.world?.clock.tick ?? 0) - start) / 60
-            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
-               let room = world.rooms(in: b.id).first(where: { $0.definitionID == "fire-control-room" }) {
-                scene.withController { $0.jump(center: world.grid.rect(columns: room.columns, floors: room.floors).center + Vec2(0, 1), zoom: 30) }
-            }
-            return "\(model.clockText): sprinklers put the fire out in about \(minutes) min — \(model.incidents.recent.first?.detail ?? "")"
-        },
-        Step(name: "08-storm-damage", grid: false) { model, scene in
-            var hours = 0
-            let before = model.world?.incidents.log.count ?? 0
-            model.incidentNotice = nil
-            while (model.world?.incidents.log.count ?? 0) == before, hours < 120 {
-                ScreenshotDirector.force("storm", 12, model: model)
-                model.advanceSimulation(ticks: 3600)
-                model.refreshSimulationSummary()
-                hours += 1
-            }
-            model.showIncidentsPanel = true
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            return "\(model.clockText) (storm set, \(hours) h): \(model.incidentNotice ?? "no incident yet")"
-        },
-        Step(name: "09-save-load", grid: false) { model, scene in
-            model.showIncidentsPanel = false
-            let office = ScreenshotDirector.office(model, index: 7)
-            _ = office.map { model.igniteForTesting($0.id) }
-            model.advanceSimulation(ticks: 60)
+        Step(name: "08-save-load", grid: false) { model, scene in
+            model.showEstatePanel = false
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")
             model.refreshSimulationSummary()
-            return "Saved and reloaded during a fire: saved=\(saved) loaded=\(loaded) worldIdentical=\(before != nil && before == model.world), fires \(model.world?.incidents.fires.count ?? 0)"
+            return "Saved and reloaded the estate: saved=\(saved) loaded=\(loaded) worldIdentical=\(before != nil && before == model.world), properties \(model.world?.properties.count ?? 0)"
         },
     ]
 

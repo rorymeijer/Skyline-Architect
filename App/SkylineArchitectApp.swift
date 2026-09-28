@@ -68,6 +68,8 @@ struct GameCommands: Commands {
                 .keyboardShortcut("e", modifiers: [.command, .option])
             Button(model.showLeasingPanel ? "Hide Leasing" : "Show Leasing") { model.showLeasingPanel.toggle() }
                 .keyboardShortcut("l", modifiers: [.command, .option])
+            Button(model.showEstatePanel ? "Hide Estate" : "Show Estate") { model.toggleEstatePanel() }
+                .keyboardShortcut("k", modifiers: [.command, .option])
             Button(model.showIncidentsPanel ? "Hide Incidents" : "Show Incidents") { model.showIncidentsPanel.toggle() }
                 .keyboardShortcut("i", modifiers: [.command, .option])
             Button(model.showProgressPanel ? "Hide Standing" : "Show Standing") { model.showProgressPanel.toggle() }
