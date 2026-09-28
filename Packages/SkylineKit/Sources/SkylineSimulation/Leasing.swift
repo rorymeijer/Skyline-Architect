@@ -161,7 +161,11 @@ public enum Leasing {
         // Names are unique across the estate: the drawn one, else the next free one.
         let taken = Set(world.tenants.values.map(\.name))
         let name: String
-        if type.kind == "business", let words = rules.names.businessWords, let suffixes = rules.names.businessSuffixes,
+        if rules.amenity(for: room.definitionID) != nil, let words = rules.names.businessWords, !words.isEmpty,
+           let venue = catalog.spec(room.definitionID)?.name {
+            // Amenities are named after what they are (0.22): "Saltmarsh Restaurant".
+            name = uniqueName(start: rng.int(in: 0..<words.count), count: words.count, taken: taken) { words[$0] + " " + venue }
+        } else if type.kind == "business", let words = rules.names.businessWords, let suffixes = rules.names.businessSuffixes,
            !words.isEmpty, !suffixes.isEmpty {
             let count = words.count * suffixes.count
             name = uniqueName(start: rng.int(in: 0..<count), count: count, taken: taken) {

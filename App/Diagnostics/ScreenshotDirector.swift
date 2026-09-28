@@ -83,26 +83,33 @@ final class ScreenshotDirector {
             model.advanceSimulation(ticks: SimClock.secondsPerDay)
             ScreenshotDirector.force("clear", 18, model: model)
             if let r = ScreenshotDirector.amenityRoom(model, "restaurant") { model.selectRoom(at: ScreenshotDirector.cell(of: r)) }
-            model.promotionNotice = nil
             model.refreshSimulationSummary()
+            model.promotionNotice = nil                       // the overnight promotion is not the subject
             scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 2.2), zoom: 19) }
             return "\(model.clockText), a day later: the restaurant selected — hours, customers, takings and the landlord's share. "
                 + ScreenshotDirector.amenityNote(model)
         },
-        Step(name: "04-leasing-economy", grid: false) { model, scene in
+        Step(name: "04-leasing", grid: false) { model, scene in
             model.selectRoom(at: nil)
             model.showLeasingPanel = true
+            model.refreshSimulationSummary()
+            model.promotionNotice = nil
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6), zoom: 9) }
+            return "The leasing panel with the amenity totals: open venues, visitors inside, yesterday's customers, takings and share."
+        },
+        Step(name: "05-economy", grid: false) { model, scene in
+            model.showLeasingPanel = false
             model.showEconomyPanel = true
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6), zoom: 9) }
-            return "The leasing panel's amenity totals and the economy panel's turnover row (the share booked at 06:00)."
+            model.promotionNotice = nil
+            return "The economy panel: the Turnover row and the turnover-share bookings of the 06:00 closing."
         },
-        Step(name: "05-sky-bar", grid: false) { model, scene in
-            model.showLeasingPanel = false
+        Step(name: "06-sky-bar", grid: false) { model, scene in
             model.showEconomyPanel = false
             model.advanceSimulation(toTimeOfDay: 22)
             ScreenshotDirector.force("clear", 16, model: model)
             model.refreshSimulationSummary()
+            model.promotionNotice = nil
             scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 16), zoom: 19) }
             return "\(model.clockText): the sky bar on floor 17 at night. " + ScreenshotDirector.amenityNote(model)
         },

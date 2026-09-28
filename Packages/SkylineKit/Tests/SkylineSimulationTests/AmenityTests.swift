@@ -150,3 +150,14 @@ import SkylineContent
                                 world: f.world, engine: f.engine)?.amenity == nil)
     }
 }
+
+@Suite struct AmenityNamingTests {
+    /// Operators are named after their venue ("Saltmarsh Restaurant"), not like firms.
+    @Test func operatorsAreNamedAfterTheirVenue() throws {
+        let f = try SimFixture(blueprint: "demo-plaza")
+        for t in f.world.tenants.values {
+            guard let room = f.world.rooms[t.room], f.engine.rules.amenity(for: room.definitionID) != nil else { continue }
+            #expect(t.name.hasSuffix(" " + f.library.buildCatalog.spec(room.definitionID)!.name), "\(t.name)")
+        }
+    }
+}
