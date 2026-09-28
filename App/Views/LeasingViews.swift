@@ -9,6 +9,8 @@ struct UnitInspector: View {
     let report: UnitReport
     var shaftOptions: [ShaftResizeOption] = []
     var onResize: (BuildCommand) -> Void = { _ in }
+    /// Offer the (vacant) unit for sale (true) or for rent (false).
+    var onTenure: (Bool) -> Void = { _ in }
     let onClose: () -> Void
 
     var body: some View {
@@ -23,12 +25,20 @@ struct UnitInspector: View {
                 Text(o.name).font(.subheadline.weight(.semibold))
                 Text("\(o.typeName) · \(o.members) \(o.members == 1 ? "person" : "people") · \(o.present) here now")
                     .font(.caption).foregroundStyle(.secondary)
-                Text("Rent \(Money.format(o.rent)) / month · since day \(o.sinceDay)").font(.caption.monospacedDigit())
+                if let price = o.purchasePrice {
+                    Text("Owner since day \(o.sinceDay) · " + (price > 0 ? "bought for \(Money.format(price))" : "bought from the previous owner"))
+                        .font(.caption.monospacedDigit())
+                    Text("Service charges \(Money.format(o.rent)) / month").font(.caption.monospacedDigit())
+                } else {
+                    Text("Rent \(Money.format(o.rent)) / month · since day \(o.sinceDay)").font(.caption.monospacedDigit())
+                }
                 Meter(label: "Satisfaction", value: o.satisfaction)
-                if o.unhappyDays > 0 { Text("Unhappy for \(o.unhappyDays) day\(o.unhappyDays == 1 ? "" : "s") — leaves at 3").font(.caption).foregroundStyle(.orange) }
+                if o.unhappyDays > 0 {
+                    Text("Unhappy for \(o.unhappyDays) day\(o.unhappyDays == 1 ? "" : "s") — leaves at \(o.leavesAfter)").font(.caption).foregroundStyle(.orange)
+                }
                 if let a = o.appraisal { Criteria(appraisal: a) }
             } else if report.leasable {
-                Text("Vacant · asking \(Money.format(report.askingRent ?? 0)) / month").font(.subheadline.weight(.semibold))
+                TenureRow(report: report, onTenure: onTenure)
                 ForEach(report.interest, id: \.typeName) { i in
                     HStack {
                         Image(systemName: i.wouldSign ? "checkmark.circle.fill" : "xmark.circle")
@@ -86,6 +96,9 @@ struct LeasingPanel: View {
             }
             Text("\(summary.leased) of \(summary.units) units let · \(summary.households) households · \(summary.businesses) businesses")
                 .font(.caption)
+            if summary.owned + summary.forSale > 0 {
+                Text("\(summary.owned) flat\(summary.owned == 1 ? "" : "s") sold · \(summary.forSale) for sale").font(.caption)
+            }
             Text("Rent roll \(Money.format(summary.rentRoll)) / month (charged from Phase 9)").font(.caption.monospacedDigit())
             Meter(label: "Avg satisfaction", value: summary.averageSatisfaction)
             let m = summary.market
@@ -169,5 +182,30 @@ private struct ShaftHeightControls: View {
             }
         }
         Text("Or drag the shaft's top or bottom with its tool.").font(.caption2).foregroundStyle(.secondary)
+    }
+}
+
+/// A vacant unit: rented out, or offered for sale, with a switch between the two (0.20.3).
+/// A sold flat that stands empty is on the resale market between private parties.
+private struct TenureRow: View {
+    let report: UnitReport
+    let onTenure: (Bool) -> Void
+
+    var body: some View {
+        switch report.tenure {
+        case .owned:
+            Text("Privately owned · for resale by its owner").font(.subheadline.weight(.semibold))
+            Text("Service charges \(Money.format(report.serviceCharge ?? 0)) / month once a buyer moves in").font(.caption).foregroundStyle(.secondary)
+        case .forSale:
+            Text("For sale · \(Money.format(report.salePrice ?? 0))").font(.subheadline.weight(.semibold))
+            Text("Then \(Money.format(report.serviceCharge ?? 0)) / month service charges").font(.caption).foregroundStyle(.secondary)
+            PanelButton(title: "Rent Out Instead") { onTenure(false) }
+        case .rent:
+            Text("Vacant · asking \(Money.format(report.askingRent ?? 0)) / month").font(.subheadline.weight(.semibold))
+            if report.canBeSold, let price = report.salePrice {
+                PanelButton(title: "Offer for Sale · \(Money.format(price))") { onTenure(true) }
+                    .help("Sold once for this price; the owner then pays \(Money.format(report.serviceCharge ?? 0)) / month service charges.")
+            }
+        }
     }
 }
