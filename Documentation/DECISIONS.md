@@ -422,5 +422,42 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - No human has played the game yet, and iCloud, the iPad and real Macs are unverified: 1.0 would overclaim (rule 10).
 - **Consequences:**
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
-  - Tall panel stacks can exceed small windows (a known issue).
+  - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
+
+## D-046 — One account for the whole estate
+- **Date:** 2026-09-28
+- **Decision:** Cash, loans and bankruptcy stay estate-wide: the player runs one company
+  with one account. Buildings and cities keep their own markets, rents and costs, and
+  every transaction still names its building where it has one. The estate overview shows
+  the last 24 hours split into money booked to buildings and estate money (loans, interest,
+  land, grants).
+- **Alternatives:** a ledger per city, with loans, bankruptcy and transfers per city.
+- **Reason:** One account is how a property company works and keeps the game readable.
+  Separate purses would touch the save format, the economy, scenarios (their cash
+  objectives) and the UI, for little gameplay. The player confirmed this choice.
+- **Consequences:** A struggling city is carried by the others; the overview makes the
+  split visible instead.
+
+## D-047 — Known-bug fixes after Phase 20 (0.20.1)
+- **Date:** 2026-09-28
+- **Decision:**
+  - Weather belongs to each city (save format 14). The first city keeps the old weather on
+    migration, so its days continue unchanged.
+  - Saves record a content hash (FNV-1a over the pack files) next to each pack's version.
+    A changed pack is reported on load, not refused.
+  - The camera may look `bottomInset` points below the ground, so the street can always be
+    moved above the build bar; presets frame above it.
+  - Side panels that do not all fit become tabs (one in full, `ViewThatFits`), still plain
+    SwiftUI so captures show them.
+  - Rain and snow scale with the zoom; city windows follow the hour as a whole layer, with
+    street lamps split into their own layer.
+- **Alternatives:**
+  - A cryptographic hash (needs a dependency on Linux; change detection does not need it).
+  - Refusing saves whose packs changed (too strict: a mod update would lock the player out).
+  - A scroll view for panels (vanished from captures before).
+  - Per-window lights-out times (needs re-rasterizing tiles through the night).
+- **Reason:** Each fix is the smallest change that removes the problem without a new
+  system; all are deterministic and tested.
+- **Consequences:** One more small tile layer (lamps). Which city windows are lit does not
+  change during the night, only how many show.
 

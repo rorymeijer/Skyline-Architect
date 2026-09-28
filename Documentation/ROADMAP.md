@@ -137,7 +137,7 @@ Delivered:
 - switching properties while the whole estate runs;
 - an estate overview.
 
-Not yet: weather per city, selling land, several buildings per plot.
+Not yet: selling land, several buildings per plot. (Weather per city: 0.20.1.)
 
 ### Phase 16 — Scenarios ✅ (2026-09-28)
 Delivered:
@@ -157,7 +157,7 @@ Delivered:
 - the mod manager;
 - an example mod.
 
-Not yet: removing entries, image assets, content hashes, hot reload.
+Not yet: removing entries, image assets, hot reload. (Content hashes in saves: 0.20.1.)
 
 ### Phase 18 — iCloud persistence ✅ (2026-09-28)
 Delivered:
@@ -187,7 +187,18 @@ Delivered:
 - VoiceOver labels and Reduce Motion.
 
 Not yet:
-- panel stacks that fit very small windows;
 - Dynamic Type;
 - keyboard navigation inside panels;
 - a hand-tuned art pass on people and furniture.
+
+### 0.20.1 — Known-bug fixes ✅ (2026-09-28)
+Fixed B1–B8 from `OPEN_ITEMS.md`:
+- side panels as tabs when they do not fit;
+- sky views pan the street above the build bar;
+- weather per city (save format 14);
+- a content hash per pack in saves;
+- estate money split in the overview;
+- rain and snow scale with zoom;
+- city lights follow the night.
+
+B4 (one account for the estate) is kept by design (D-046).

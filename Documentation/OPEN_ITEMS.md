@@ -1,6 +1,6 @@
 # Open Items
 
-Everything that is still open after Phase 20 (version 0.20.0), in one place. It is collected
+Everything that is still open after Phase 20 and the 0.20.1 bug fixes, in one place. It is collected
 from `Development/STATUS.md`, the PLANNED, Limits and "Not yet" sections of every system
 document, `ROADMAP.md` and `PERFORMANCE.md`. Those documents stay the source of detail. This
 page is the checklist.
@@ -22,16 +22,19 @@ where they matter.
 
 ## 2. Known bugs and UI issues
 
-| # | Item | Source |
-|---|------|--------|
-| B1 | Stacks of tall panels can be taller than a small window. The workaround is to close one; the economy list was shortened to 5 lines. | STATUS, ROADMAP Phase 20 |
-| B2 | The wide sky views cannot pan below the street because of the camera limits, so the build bar covers the street there. | STATUS |
-| B3 | Weather is shared by the whole estate: it is drawn from the first city's seed. | ESTATE |
-| B4 | Cash and loans are estate-wide, not per building or city. | ESTATE |
-| B5 | Saves record the ids of the content packs, not their versions or a content hash. A changed mod with the same id loads silently. | MODDING, STATUS |
-| B6 | The estate overview's 24-hour figure only counts transactions booked to a building. Loans, interest and land are missing from it. | ESTATE |
-| B7 | Weather particles are drawn in screen space, so they look the same at every zoom. | WEATHER |
-| B8 | City lights are static per game and do not follow the time of night. | LIGHTING |
+All eight were addressed in 0.20.1 (DECISIONS D-046, D-047). Kept here for the record;
+new bugs go at the bottom of the table.
+
+| # | Item | Outcome | Checked by |
+|---|------|---------|------------|
+| B1 | Stacks of tall panels could be taller than a small window. | Fixed: panels that do not all fit become tabs. | Capture `02-panel-tabs` |
+| B2 | The wide sky views could not pan below the street, so the build bar covered it. | Fixed: the camera may look 150 pt below the ground; presets frame above the bar. | Tests, capture `01-skyline-street` |
+| B3 | Weather was shared by the whole estate. | Fixed: weather per city (save format 14). | Tests, capture `03-estate-two-cities` |
+| B4 | Cash and loans are estate-wide. | Kept by design (D-046): one account; the overview shows the split. | — |
+| B5 | Saves did not notice a changed mod with the same id and version. | Fixed: a content hash per pack; changes are reported on load. | Tests |
+| B6 | The estate overview's 24-hour figure missed loans, interest and land. | Fixed: buildings + estate = total. | Tests, capture `03-estate-two-cities` |
+| B7 | Weather particles looked the same at every zoom. | Fixed: size, speed, density and opacity follow the zoom. | Tests, captures `04-rain-close`, `05-rain-far` |
+| B8 | City lights did not follow the time of night. | Fixed: windows go out through the night; lamps stay on. | Tests, captures `06-city-evening`, `07-city-small-hours` |
 
 ## 3. Balancing
 
@@ -95,7 +98,6 @@ Everything below is first-pass and has not been play-tested (it depends on V1).
 * Wind acting on elevators and façades.
 * Flooding.
 * Commuters reacting to rain.
-* Weather per city (B3).
 * Player lighting policies (timers, sensors).
 * Real light falloff and shadows.
 
@@ -122,7 +124,6 @@ Everything below is first-pass and has not been play-tested (it depends on V1).
 ### Modding (MODDING)
 * Removing base entries.
 * Images and sprite sheets in mods.
-* A content hash per pack in saves (B5).
 * Hot reload without starting a new game.
 * Sharing mods through a catalogue.
 
@@ -150,9 +151,6 @@ Some PLANNED lists in the system documents still name work that later phases del
 | Document | Stale entries in its PLANNED list |
 |----------|-----------------------------------|
 | PROGRESSION | scenario goals (Phase 16) and reputation events (Phase 14) |
-| LIGHTING | weather and seasons (Phase 13) |
-| WEATHER | storm damage (Phase 14) |
-| ESTATE | scenarios (Phase 16) |
 | TENANTS | rent charged (Phase 9) and reputation effects (Phase 11) |
 | ECONOMY | wages and staff (Phase 10) and reputation (Phase 11) |
 | ELEVATORS | the "Model (planned)" heading, although most of that model is FUNCTIONAL |
@@ -162,11 +160,10 @@ Update these lists when their systems are next touched.
 
 ## 9. Suggested order
 
-1. **Play test and fix (V1, B1, B2).** A human session on a Mac and then an iPad (V2). Fix what it shows first.
+1. **Play test and fix (V1).** A human session on a Mac and then an iPad (V2). Fix what it shows first.
 2. **Balancing pass (section 3).** Use the play-test notes.
 3. **Signed build with iCloud (V3).** Verify sync between two devices, and add file coordination.
 4. **Accessibility (section 5).** Keyboard navigation in panels, Dynamic Type, and a VoiceOver pass on a device.
 5. **Performance (P1, P2).** Build the background simulation actor only if the play test shows the daily-closing hitch.
-6. **Save integrity (B5).** Add a content hash per pack. It needs a save format bump and a migration.
-7. **Features by player value.** Visitors, amenities and retail. Weather per city with city-scoped cash (B3, B4). Scenario scores and a completion record.
-8. **External art (section 7).** Before any release.
+6. **Features by player value.** Visitors, amenities and retail. Scenario scores and a completion record.
+7. **External art (section 7).** Before any release.

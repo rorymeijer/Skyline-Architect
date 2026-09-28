@@ -7,16 +7,15 @@ Status: **FUNCTIONAL (Phase 15)**. Implemented:
 * buying land;
 * a rental market per city;
 * switching between properties while the whole estate keeps running;
-* an estate overview.
+* an estate overview;
+* weather per city (save format 14): each city draws its own days from its own seed.
 
 **PLANNED:**
 
-* weather per city;
 * selling land;
 * more than one building per plot;
 * city-specific tenant types, taxes and events;
-* a map view of the estate;
-* scenarios built on it (Phase 16).
+* a map view of the estate.
 
 | Area | Code |
 |------|------|
@@ -101,7 +100,7 @@ property to its plot by city and name, and applies the city's content market.
 
 ## Limits
 
-* Weather is shared by the whole estate: it is drawn from the first city's seed.
-* Loans and cash are estate-wide.
-* The overview's 24-hour figure only counts transactions booked to a building. Loans,
-  interest and land are estate-level.
+* Cash and loans are one account for the whole estate, by design (DECISIONS D-046). The
+  overview splits the last 24 hours into money booked to buildings and estate money (loans,
+  interest, land, grants); the two add up to the total.
+* Every city shares the same climate rules; only the days drawn differ.

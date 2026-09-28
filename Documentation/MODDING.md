@@ -7,7 +7,8 @@ Status: **FUNCTIONAL (Phase 17)**. Implemented:
 * entries replaced or added by id;
 * each mod validated on top of everything loaded before it (a failing mod is skipped and reported);
 * dependencies (`requires`);
-* saves record their packs;
+* saves record their packs with a content hash; loading a save whose packs changed since
+  (another version or edited files) works, and the player is told;
 * the mod manager;
 * an example mod ("Kestrel Bay").
 
@@ -15,7 +16,6 @@ Status: **FUNCTIONAL (Phase 17)**. Implemented:
 
 * removing base entries;
 * images and sprite sheets;
-* a content hash per pack in saves (today: pack ids);
 * hot reload without a new game;
 * sharing mods through a catalogue.
 

@@ -2,6 +2,26 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.20.1] — Known-bug fixes
+
+### Fixed
+- **Side panels** that do not all fit the window become tabs: one panel in full, the rest one
+  click away (B1).
+- **Sky views** can pan the street above the build bar; camera presets frame above it (B2).
+- **Weather per city**: every city has its own days, effects and forecast; buildings feel
+  their own city's weather (B3). Save format 14 moves the old estate weather to the first
+  city.
+- **Changed mods are noticed**: saves record a content hash per pack, and loading a save
+  whose packs changed tells the player (B5).
+- **Estate overview** splits the last 24 hours into building and estate money (loans,
+  interest, land, grants) and shows each city's weather (B6).
+- **Rain and snow** scale with the zoom (B7).
+- **City lights** go out through the night and come back with early risers; street lamps
+  stay on (B8).
+
+### Decided
+- Cash and loans stay one account for the whole estate (D-046, B4).
+
 ## [0.20.0] — Phase 20: Visual polish
 
 ### Added

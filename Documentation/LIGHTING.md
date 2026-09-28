@@ -6,13 +6,13 @@ Status: **FUNCTIONAL (Phase 12)**. Implemented:
 * colour grading through the day;
 * coloured room light;
 * façade window emission at far zoom;
-* a night emission layer: city windows, neighbour windows and street lamps;
+* a night emission layer: city windows and neighbour windows, fewer lit as the night goes on;
+* street lamps in their own layer, on all night;
 * lighting energy metered and billed;
 * lights that need power.
 
 **PLANNED:**
 
-* weather and seasons (Phase 13);
 * lights as security in events (Phase 14);
 * player lighting policies (timers, sensors);
 * real light falloff and shadows (Phase 20).
@@ -84,17 +84,20 @@ rent (about $45k a day); balancing is still open.
   and skyline zoom levels), lit rooms become **window panes** on the façade: 1.5 m panes
   every 2 m, from sill to head.
 * **Emission layer:** the composition carries a static `emission` drawing (city windows at
-  reduced scale, neighbours' windows, street lamp heads and pools). The app shows it as a
-  second tile layer with additive blending. Its opacity follows the darkness, and it sits
-  above the grade so that it glows. Two things keep it from shining through buildings:
+  reduced scale, neighbours' windows). The app shows it as a second tile layer with additive
+  blending. Its opacity follows the darkness times `DayNight.cityActivity` (the share of the
+  city still awake), and it sits above the grade so that it glows. Two things keep it from shining through buildings:
   * the property's building silhouettes (`occluders`, one per floor plate) are cleared
     from its tiles, which are re-rendered on construction;
   * distant windows behind the neighbours are left out of the drawing.
 * **Street lamps:** a post every 32 m outside the buildable frontage (posts in the site
-  layer, glow in the emission layer).
+  layer, glow in the composition's `lamps` drawing, a third small additive tile layer whose
+  opacity follows the darkness only).
 
 ## Limits
 
 * The grade and the window panes work in screen space and room rectangles; there is no
   per-light falloff and no shadows.
-* City lights are static per game. They do not follow the time of night.
+* The city's lit windows are baked once per game; the hour changes how many show as a whole
+  (`DayNight.cityActivity`: all on until 22:00, 40 % from 01:30, early risers from 04:30), not
+  which ones. Street lamps are a separate layer and stay on all night.
