@@ -424,6 +424,33 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-053 — Amenities are rented; visitors are transient; seats by share
+- **Date:** 2026-09-28
+- **Decision:**
+  - Amenity rooms are leased like other units: an operator tenant pays rent. The landlord
+    also gets a content-defined share of the takings at the daily closing (the player
+    chose "rent + turnover share").
+  - Street visitors are `Person`s with the role `visitor`. They are spawned hourly per open
+    venue and removed hourly once they have left.
+  - Occupants visit with a probability of seats ÷ occupants instead of a live seat count.
+  - Visitors come from the street and from the building itself (the player's choice).
+- **Alternatives:**
+  - The player operating amenities, with stock and staff.
+  - Visitors as aggregate numbers only, without people.
+  - Live seat counting.
+- **Reason:**
+  - Leasing reuses the whole market (appraisal, satisfaction, labels, sales rules).
+  - Real visitor people load the lobby and elevators, which is the point of amenities in a
+    vertical building.
+  - The share formula keeps visits deterministic and O(1) per event, where live counting
+    would need a scan per event.
+- **Consequences:**
+  - The save format is 16: visitor role, lunch, leisure and visit goals, `Tenant.sales`,
+    and the `turnover` ledger category.
+  - Schedules may carry `chance` on lunch and leisure events.
+  - A venue can be briefly over-full.
+  - Takings do not yet affect the operator's satisfaction.
+
 ## D-052 — No pile height limit in the base game
 - **Date:** 2026-09-28
 - **Decision:** The base `build-rules.json` no longer sets `storeysPerPileMeter`, so piles

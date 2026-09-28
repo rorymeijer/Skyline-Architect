@@ -162,6 +162,10 @@ TENANTS.md; `UnitReport` / `LeasingSummary` feed the inspector and leasing panel
 (D-031), daily closing runs with the 06:00 market step, `EconomySummary` feeds the panel.
 Facilities (FACILITIES.md): utilities derived per building, `Upkeep` beside rooms (D-034),
 staff are people with jobs routed in `staff` mode (D-035).
+Amenities (AMENITIES.md, 0.22): `AmenitySpec` from content; an `AmenityDirectory` (a cache
+rebuilt per `advance` call and market hour) resolves `lunch` / `leisure` goals; street
+`visitor`s are spawned hourly and purged once gone (D-053); takings live on the operator
+`Tenant` and the share is booked at the closing.
 Progression (PROGRESSION.md): `Standing` per building and `BuildingClass` definitions live in
 Core so `ConstructionEngine` can enforce unlocks; assessment, promotion and demand are in
 Simulation (`Progression`, daily after the tenant reviews); classes never drop (D-036).

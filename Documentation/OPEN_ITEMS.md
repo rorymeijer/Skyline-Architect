@@ -71,7 +71,7 @@ Everything below is first-pass and has not been play-tested (it depends on V1).
 
 ### Simulation and people (SIMULATION, TENANTS)
 * Needs (hunger, energy …) and moods.
-* Visitors (shoppers, guests), together with amenities and retail room types.
+* ~~Visitors (shoppers, guests), together with amenities and retail room types.~~ Done in 0.22 (Phase B, AMENITIES.md). Follow-ups: operators weighing their takings; visitors with more than one stop.
 * Live queue length in route choice. Today patience is the only reaction to queues.
 * Congestion on stairs.
 
@@ -165,5 +165,5 @@ Update these lists when their systems are next touched.
 3. **Signed build with iCloud (V3).** Verify sync between two devices, and add file coordination.
 4. **Accessibility (section 5).** Keyboard navigation in panels, Dynamic Type, and a VoiceOver pass on a device.
 5. **Performance (P1, P2).** Build the background simulation actor only if the play test shows the daily-closing hitch.
-6. **Features by player value.** Visitors, amenities and retail. Scenario scores and a completion record.
+6. **Features by player value.** ~~Visitors, amenities and retail~~ (0.22). Scenario scores and a completion record.
 7. **External art (section 7).** Before any release.
