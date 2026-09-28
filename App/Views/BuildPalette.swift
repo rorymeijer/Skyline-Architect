@@ -15,7 +15,6 @@ struct BuildPalette: View {
             tools(compact: false)
             tools(compact: true)
         }
-        .padding(.horizontal, 12)
         .environment(\.colorScheme, .dark)
     }
 
