@@ -139,8 +139,6 @@ Delivered:
 
 Not yet: weather per city, selling land, several buildings per plot.
 
-Property purchase, city selection, per-city economy variables, empire overview.
-
 ### Phase 16 — Scenarios
 Data-driven objectives, win/lose conditions, scenario browser.
 
