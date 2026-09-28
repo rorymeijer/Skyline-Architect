@@ -2,6 +2,21 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.11.0] — Phase 11: Progression / reputation
+
+### Added
+- **Reputation** per building (0…100), assessed each morning from tenant satisfaction,
+  services, elevator waits and occupancy; move-outs cost points; reputation scales how
+  many prospective tenants come by.
+- **Building classes** C → B → A → Prime with population, reputation and room
+  requirements; promotions at the daily closing, never demoted.
+- **Standard game**: room types (service elevator, express elevator, sky lobby) and
+  building height unlock with the class; premium tenant types wait for it. The sandbox
+  keeps everything unlocked.
+- **UI**: Standing panel (⌥⌘P), class and reputation in the status pill, locked build tools,
+  promotion banner, New Game / New Sandbox in the main menu.
+- **Save format 8** (+ migration, golden fixture).
+
 ## [0.10.0] — Phase 10: Utilities + maintenance
 
 ### Added

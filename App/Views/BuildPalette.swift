@@ -51,8 +51,9 @@ struct BuildPalette: View {
     private func specButton(_ spec: RoomSpec) -> some View {
         let tool = ConstructionTool.room(spec.id)
         let isOn: Bool = model.activeTool == tool
+        let locked = model.lockedClass(of: spec.id)
         return ToolButton(symbol: Self.symbol(for: spec.appearance), title: Self.shortName(spec.name),
-                          help: helpText(spec), isOn: isOn) {
+                          help: locked.map { "\(spec.name) — unlocks at \($0) (⌥⌘P)" } ?? helpText(spec), isOn: isOn, locked: locked != nil) {
             model.select(tool: isOn ? nil : tool)
         }
     }
@@ -112,6 +113,8 @@ private struct ToolButton: View {
     let help: String
     var isOn: Bool
     var tint: Color = .accentColor
+    /// Not yet available in this game (standard game, Phase 11): dimmed with a lock.
+    var locked = false
     let action: () -> Void
 
     var body: some View {
@@ -121,11 +124,15 @@ private struct ToolButton: View {
                 Text(title).font(.system(size: 9, weight: .medium)).lineLimit(1)
             }
             .frame(width: 58, height: 40)
-            .foregroundStyle(isOn ? Color.white : Color.white.opacity(0.85))
+            .foregroundStyle(isOn ? Color.white : Color.white.opacity(locked ? 0.35 : 0.85))
             .background(RoundedRectangle(cornerRadius: 8).fill(isOn ? tint.opacity(0.85) : Color.clear))
+            .overlay(alignment: .topTrailing) {
+                if locked { Image(systemName: "lock.fill").font(.system(size: 9)).foregroundStyle(Color.yellow.opacity(0.9)).padding(3) }
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(PressableStyle())
+        .disabled(locked)
         .help(help)
     }
 }
@@ -145,6 +152,8 @@ struct StatusPill: View {
             Label(Money.format(model.economy.cash), systemImage: "banknote")
                 .foregroundStyle(model.economy.cash < 0 ? Color.red : Color.primary)
                 .help("Cash. Construction is paid immediately; rent and costs settle daily at 06:00 (⌥⌘M).")
+            Label("\(model.progression.className) · \(Int(model.progression.reputation.rounded()))", systemImage: "rosette")
+                .help("Building class and reputation (⌥⌘P).")
             if let save = model.lastSaveDescription {
                 Text(save).foregroundStyle(.secondary)
             }

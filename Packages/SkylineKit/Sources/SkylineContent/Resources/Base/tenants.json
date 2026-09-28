@@ -1,6 +1,6 @@
 [
  {
-  "id": "consultancy",
+  "id": "consultancy", "minClass": 2,
   "name": "Consultancy",
   "kind": "business",
   "rooms": [
@@ -25,7 +25,7 @@
   "prospectsPerDay": 3
  },
  {
-  "id": "design-studio",
+  "id": "design-studio", "minClass": 1,
   "name": "Design studio",
   "kind": "business",
   "rooms": [
@@ -100,7 +100,7 @@
   "prospectsPerDay": 4
  },
  {
-  "id": "single-professional",
+  "id": "single-professional", "minClass": 1,
   "name": "Single professional",
   "kind": "household",
   "rooms": [

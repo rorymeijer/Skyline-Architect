@@ -63,6 +63,7 @@ extension AppModel {
         refreshLeasing()
         refreshEconomy()
         refreshFacilities()
+        refreshProgression()
     }
 
     // MARK: Elevator banks

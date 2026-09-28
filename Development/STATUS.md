@@ -1,53 +1,53 @@
 # Development Status
 
-_Last updated: 2026-09-27 (Phase 10)_
+_Last updated: 2026-09-27 (Phase 11)_
 
 ## Current phase
-**Phase 10 — Utilities + maintenance: COMPLETE** (awaiting approval to continue with
-Phase 11).
+**Phase 11 — Progression / reputation: COMPLETE** (awaiting approval to continue with
+Phase 12).
 
-## Quality gates (Phase 10)
+## Quality gates (Phase 11)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36345637290 |
-| Automated tests pass | ✅ | 195 tests (Linux + macOS) incl. utility allocation (range, capacity, failure), wear/dirt → jobs, staff shifts and job completion, service elevators (staff only), services criterion capped by the worst utility, wages, reports, save v6→v7 + v7 fixture |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36347268108 |
+| Automated tests pass | ✅ | 210 tests (Linux + macOS), including: unlock modes; locked rooms and height refused until the class allows them; sandbox allows everything; premium tenants wait for the class; reputation formula; move-out penalty; demand multiplier; promotion needs every requirement; classes never drop; an empty tower earns class B by playing; a power cut costs reputation but not the class; summary; content validation; save v7→v8 + v8 fixture |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-10/` |
+| Feature demonstrable | ✅ | 8 captures in `Development/Screenshots/Phase-11/` |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0 |
-| Documentation updated | ✅ | FACILITIES.md (new), SIMULATION, SAVE_FORMAT v7, MODDING, ARCHITECTURE, DECISIONS D-034/D-035, PERFORMANCE, CHANGELOG 0.10.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | janitor close-up missed (backlog already cleared by 07:00), fixed, recaptured |
+| Documentation updated | ✅ | PROGRESSION.md (new), SIMULATION, SAVE_FORMAT v8, MODDING, ARCHITECTURE, DECISIONS D-036, PERFORMANCE, CHANGELOG 0.11.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | banner overlap and a reputation-fall step that did not fall: fixed, recaptured |
 | Known issues recorded | ✅ | below |
 
 ## Completed
-- Phases 0–9 (merged: rorymeijer/Skyline-Architect#1 … #9); M1 “First Playable” reached in Phase 9.
-- Phase 10 (FUNCTIONAL): utilities (electricity, water, climate, data) supplied by
-  equipment rooms within a floor range, derived each time (never saved); condition and
-  cleanliness per room; cleaning and repair jobs; janitors and technicians with shifts,
-  wages and service elevators (`RouteMode`); failed equipment; services appraisal
-  criterion (tenants leave badly served units); facilities panel (⌥⌘F), services
-  overlay (⌥⌘U), utilities/upkeep in the unit inspector; save format 7.
+- Phases 0–10 (merged: rorymeijer/Skyline-Architect#1 … #10). M1 “First Playable” was reached in Phase 9.
+- Phase 11 (FUNCTIONAL):
+  - Reputation per building, assessed each morning; it drives demand.
+  - Building classes C/B/A/Prime with population, reputation and room requirements. Promotions only; classes never drop.
+  - Standard game: room types, height and premium tenant types unlock by class. The sandbox keeps everything unlocked.
+  - UI: Standing panel (⌥⌘P), promotion banner, locked build tools, class in the status pill, New Game / New Sandbox.
+  - Save format 8.
 
 ## In progress
-- Nothing. Waiting for approval to continue (Phase 11 — progression / reputation).
+- Nothing. Waiting for approval to continue (Phase 12 — full day/night + lighting).
 
 ## Known bugs / unverified
 - No human play test yet; iPad never launched.
-- Utilities are abstract per-floor ranges (no pipes/cables to draw or route); no waste utility.
-- Staff pick jobs by urgency only (no distance weighting); one job at a time.
-- Economy balance is first-pass (D-032); staff wages are not yet tuned against rents.
-- Tenants who move out vanish instantly; long tenant names only show when zoomed in.
+- Balancing, first pass:
+  - An emptied building settles near reputation 50 (neutral satisfaction without tenants; the move-out penalty lasts one day).
+  - The demo tower reaches class B on day 3.
+  - Class A/Prime thresholds are not yet played through (only unit-tested for gating).
+- Raising the rent level barely moves the reputation of existing tenants (they keep their rent; only asking rents change).
+- The standing is tracked for the first building of the property only in the UI.
 
 ## Technical debt
-- `Utilities.allocate` runs per appraisal and per report (O(rooms × suppliers)); fine at
-  demo scale, unmeasured for 100+ floors.
-- Per-step O(rooms) checks (structure signature, elevator sync, facilities sync).
-- Simulation on the main thread.
+- Assessment and summary each run a utility allocation: once per day in the simulation, and at 4 Hz in the UI.
+- Per-step O(rooms) checks (structure signature, elevator sync, facilities sync). Simulation on the main thread.
 
-## Next tasks (Phase 11 — Progression / reputation)
-1. Building rating / reputation derived from satisfaction, services and traffic.
-2. Unlocks gated by rating (room types, tenant types, tower height).
-3. Goals / milestones for the sandbox and a first scenario hook.
-4. UI: rating display, unlock notifications; captures and docs.
+## Next tasks (Phase 12 — Full day/night + lighting)
+1. Window emission on façades at far zoom; light sources as data (room lighting profiles).
+2. Lighting energy use feeding the electricity utility and the ledger.
+3. Street and sky lighting through dusk and night; per-room schedules for lights.
+4. Captures across a full day; docs.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,

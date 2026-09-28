@@ -206,11 +206,17 @@ extension SimulationEngine {
         var added: [PersonID] = []
         let seed = world.cities.values.first?.seed ?? 1
         let hour = now / 3600
+        let demand = Progression.demandMultiplier(world: world, engine: self)
         for (i, type) in rules.tenantTypes.enumerated() {
             var rng = SeededRandom(seed: seed, stream: hour &* 64 &+ UInt64(i))
-            guard rng.unit() < type.prospectsPerDay / 24 else { continue }
+            guard rng.unit() < type.prospectsPerDay * demand / 24 else { continue }
+            let needed = type.minClass ?? 0
+            // A type no building qualifies for yet does not come by at all.
+            if needed > 0, !world.buildings.values.contains(where: { world.unlockedClass(of: $0.id) >= needed }) { continue }
             world.market.prospects += 1
-            let candidates = Leasing.vacantUnits(world, catalog: catalog).filter { type.rooms.contains($0.definitionID) }
+            let candidates = Leasing.vacantUnits(world, catalog: catalog).filter {
+                type.rooms.contains($0.definitionID) && needed <= world.unlockedClass(of: $0.buildingID)
+            }
             let appraised = candidates.compactMap { room in Leasing.appraise(room, for: type, world: world, engine: self).map { (room, $0) } }
             guard let best = appraised.filter({ $0.1.affordable }).min(by: { ($1.1.total, $0.0.id) < ($0.1.total, $1.0.id) })
                     ?? appraised.min(by: { ($1.1.total, $0.0.id) < ($0.1.total, $1.0.id) }) else {
@@ -230,7 +236,8 @@ extension SimulationEngine {
         if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
             facilitiesDaily(at: now, world: &world)
             closeDay(at: now, world: &world)
-            reviewTenants(at: now, world: &world)
+            let moveOuts = reviewTenants(at: now, world: &world)
+            standingDaily(at: now, moveOuts: moveOuts, world: &world)
         }
         world.market.nextTick = now + 3600
         return added
@@ -238,7 +245,10 @@ extension SimulationEngine {
 
     /// Daily review: satisfaction follows the unit's current appraisal (including measured
     /// elevator waits); three reviews in a row below the type's threshold → move out.
-    func reviewTenants(at now: Tick, world: inout GameWorld) {
+    /// Returns the move-outs per building.
+    @discardableResult
+    func reviewTenants(at now: Tick, world: inout GameWorld) -> [BuildingID: Int] {
+        var moveOuts: [BuildingID: Int] = [:]
         for tenant in world.tenants.values {
             guard let type = rules.tenantType(tenant.typeID), let room = world.rooms[tenant.room],
                   let appraisal = Leasing.appraise(room, for: type, world: world, engine: self) else { continue }
@@ -248,11 +258,13 @@ extension SimulationEngine {
             if t.unhappyDays >= 3 {
                 Leasing.moveOut(t.id, world: &world)
                 world.market.movedOut += 1
+                moveOuts[t.buildingID, default: 0] += 1
                 world.market.record(LeasingEvent(tick: now, typeID: type.id, outcome: .movedOut, room: room.id,
                                                  reason: appraisal.weakest, score: appraisal.total))
             } else {
                 world.tenants.update(t.id) { $0 = t }
             }
         }
+        return moveOuts
     }
 }

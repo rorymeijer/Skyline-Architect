@@ -171,3 +171,18 @@ janitors and technicians (paid daily) who come in every morning, walk and ride t
 most urgent jobs — service elevators keep them out of the tenants' cars — and fix things.
 Tenants notice: units with missing utilities are unusable and dirty, worn units lose
 tenants. The services overlay shows at a glance where the building is failing.
+
+## Phase 11 player experience (current)
+
+A new game is now a **standard game**. The lot starts as a class C building. It may rise to
+floor 12, and some room types are still locked: the service elevator, the express elevator
+and the sky lobby. Every morning the building's reputation moves toward what its tenants
+experience: how happy they are, whether the services work, how long they wait for the lift
+and how full the building is. A good reputation brings more prospective tenants.
+
+Once the building has enough people, a good enough reputation and the required rooms, it is
+promoted. A banner announces the new class and what it unlocks: taller floors, new room
+types and more demanding tenants. The standing panel always shows what the next class
+needs. Classes are never lost, but a neglected building's reputation, and with it its
+demand, sinks. The sandbox keeps everything unlocked.
+

@@ -8,6 +8,7 @@ public enum WorldIntegrityError: Error, Equatable, CustomStringConvertible {
     case plateOrder(BuildingID)
     case roomWithoutFloor(RoomID)
     case overlappingRooms(RoomID, RoomID)
+    case invalidStanding(BuildingID)
 
     public var description: String {
         switch self {
@@ -16,6 +17,7 @@ public enum WorldIntegrityError: Error, Equatable, CustomStringConvertible {
         case .plateOrder(let b): "Floor plates of building \(b) are unsorted or duplicated"
         case .roomWithoutFloor(let r): "Room \(r) is not on built floors"
         case .overlappingRooms(let a, let b): "Rooms \(a) and \(b) overlap"
+        case .invalidStanding(let b): "Building \(b) has an invalid class or reputation"
         }
     }
 }
@@ -34,6 +36,9 @@ extension GameWorld {
             for (a, c) in zip(b.floors, b.floors.dropFirst()) where a.level >= c.level {
                 throw WorldIntegrityError.plateOrder(b.id)
             }
+            let s = b.standing
+            guard s.classLevel >= 0, (0...100).contains(s.reputation), s.promotions.count == s.classLevel,
+                  s.promotions == s.promotions.sorted() else { throw WorldIntegrityError.invalidStanding(b.id) }
         }
         var roomsByBuilding: [BuildingID: [Room]] = [:]
         for r in rooms {

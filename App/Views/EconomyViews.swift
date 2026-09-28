@@ -1,4 +1,5 @@
 import SwiftUI
+import SkylineContent
 import SkylineCore
 import SkylinePresentation
 import SkylineSimulation
@@ -114,7 +115,12 @@ struct MainMenuView: View {
                             model.continueLatest()
                         }
                     }
-                    MenuButton(title: "New Game", subtitle: "Sandbox · Quay Street, Port Calder") { model.startFromMenu() }
+                    MenuButton(title: "New Game", subtitle: "Quay Street, Port Calder · unlock rooms and height by building class") {
+                        model.startFromMenu()
+                    }
+                    MenuButton(title: "New Sandbox", subtitle: "Everything unlocked from the start") {
+                        model.startFromMenu(startID: NewGameFactory.defaultStartID)
+                    }
                     MenuButton(title: "Load Game…", subtitle: nil) { model.showLoadSheet = true }
                 }
                 .frame(width: 300)

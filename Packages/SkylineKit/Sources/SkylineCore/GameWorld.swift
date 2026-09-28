@@ -82,6 +82,8 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var upkeep = EntityStore<Upkeep>()
     /// Facilities jobs and counters (Phase 10).
     public var facilities = FacilitiesState()
+    /// Whether rooms and height are gated by building class (Phase 11; set by the start).
+    public var unlocks = UnlockMode.all
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()

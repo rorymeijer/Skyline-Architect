@@ -88,4 +88,24 @@ import SkylineCore
             .init(floor: nil, room: .init(definition: "missing", start: 0, count: 4, lowest: 0, highest: 0))])
         #expect(throws: ContentError.self) { try lib.register(rooms: [], blueprints: [bp]) }
     }
+
+    @Test func invalidProgressionIsRejected() throws {
+        let base = try ContentLibrary.loadBase()
+        let rules = base.simulationRules.progression!
+        let rooms = Set(base.orderedRooms.map(\.id))
+        let ok = ProgressionDefinition(reputation: rules, classes: base.buildingClasses)
+        #expect(ok.problems(rooms: rooms).isEmpty)
+        var bad = ok
+        bad.classes[0].population = 10                          // the starting class cannot ask for anything
+        bad.classes[1].requiredRooms = ["moon-base"]
+        bad.classes[2].maxFloor = 3                             // lower than class B's
+        #expect(bad.problems(rooms: rooms).count == 3)
+        var lib = ContentLibrary(manifest: base.manifest)
+        try lib.register(rooms: base.orderedRooms, blueprints: [])
+        #expect(throws: ContentError.self) {
+            try lib.register(schedules: base.simulationRules.schedules, names: base.simulationRules.names,
+                             elevators: base.simulationRules.elevators, tenants: base.simulationRules.tenantTypes,
+                             economy: base.simulationRules.economy, facilities: base.simulationRules.facilities, progression: bad)
+        }
+    }
 }
