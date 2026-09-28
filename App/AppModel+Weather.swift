@@ -36,8 +36,9 @@ extension AppModel {
         }
         scene.weatherProvider = { [weak self] visible in
             guard let self, let world = self.world, let property = self.activePropertyID else { return (.clear, [], []) }
-            return (self.weatherLook(at: Double(world.clock.tick) + self.host.fraction),
-                    WeatherView.roofs(world: world, propertyID: property),
+            let look = self.weatherLook(at: Double(world.clock.tick) + self.host.fraction)
+            // Roofs only matter under snow (the layer hides them otherwise).
+            return (look, look.snowCover > 0.01 ? WeatherView.roofs(world: world, propertyID: property) : [],
                     WeatherView.pavement(world: world, propertyID: property, visible: visible))
         }
     }

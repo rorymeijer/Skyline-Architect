@@ -71,7 +71,12 @@ public struct Building: Codable, Hashable, Sendable, Identifiable {
     }
 
     public func plate(at level: Int) -> FloorPlate? {
-        floors.first { $0.level == level }
+        // Plates are kept in level order and are normally contiguous: index directly (Phase 19).
+        if let first = floors.first, let last = floors.last, last.level - first.level + 1 == floors.count {
+            let i = level - first.level
+            return floors.indices.contains(i) ? floors[i] : nil
+        }
+        return floors.first { $0.level == level }
     }
 
     /// Lowest and highest built levels, or nil if no floors exist.
