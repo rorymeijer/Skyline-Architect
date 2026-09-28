@@ -18,6 +18,25 @@ import SkylineContent
         #expect(offers.first { $0.plot.id == "harrowgate-crown-yard" }?.city.economy?.rent == 1.35)
     }
 
+    /// The overview's 24-hour figures add up: money booked to buildings plus the estate's own
+    /// (the grant and the land here); each holding shows its own city's weather.
+    @Test func overviewCountsEstateMoneyAndCityWeather() throws {
+        var game = try newGame()
+        game.world.ledger.post(Transaction(tick: 0, amount: 2_000_000, category: .grant, detail: "Test"))
+        try Estate.buy("harrowgate-crown-yard", world: &game.world, library: library)
+        game.world.ledger.post(Transaction(tick: 10, amount: -5_000, category: .maintenance, detail: "Test upkeep",
+                                           building: game.world.buildings(on: game.activePropertyID).first?.id))
+        let harrowgate = game.world.cities.values[1]
+        game.world.setWeather(WeatherState(day: 0, yesterday: "storm", today: "storm", tomorrow: "clear", temperature: 11), city: harrowgate.id)
+        let s = EstateSummary.make(world: game.world, library: library)
+        let all = game.world.ledger.journal.reduce(0) { $0 + $1.amount }
+        #expect(s.totalNet24h == all && s.cash == game.world.ledger.cash)
+        #expect(s.holdings.reduce(0) { $0 + $1.net24h } == -5_000)
+        #expect(s.estateNet24h == all + 5_000)
+        #expect(s.holdings.map(\.weather) == [game.world.cities.values[0].weather.flatMap { library.simulationRules.weather?.kind($0.today) }
+            .map { "\($0.name) \(Int(game.world.cities.values[0].weather!.temperature))°" } ?? "", "Storm 11°"])
+    }
+
     @Test func buyingLandAddsACityAPropertyAndAFoundation() throws {
         var game = try newGame()
         game.world.ledger.post(Transaction(tick: 0, amount: 2_000_000, category: .grant, detail: "Test"))

@@ -15,13 +15,16 @@ struct EstatePanel: View {
                 Spacer()
                 CloseButton { model.showEstatePanel = false }
             }
-            Text("\(s.holdings.count) propert\(s.holdings.count == 1 ? "y" : "ies") in \(s.cities) cit\(s.cities == 1 ? "y" : "ies") · last 24 h \(Money.format(s.totalNet24h))")
+            Text("\(s.holdings.count) propert\(s.holdings.count == 1 ? "y" : "ies") in \(s.cities) cit\(s.cities == 1 ? "y" : "ies") · one account: \(Money.format(s.cash))")
                 .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+            Text("Last 24 h \(Money.format(s.totalNet24h)): buildings \(Money.format(s.totalNet24h - s.estateNet24h)) · estate \(Money.format(s.estateNet24h))")
+                .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+                .help("Estate: money not booked to a building — loans, interest, land and grants.")
             ForEach(s.holdings, id: \.property) { h in
                 let active = h.property == model.activePropertyID
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 1) {
-                        Text("\(h.name) · \(h.city)").font(.caption.weight(.semibold))
+                        Text("\(h.name) · \(h.city)" + (h.weather.isEmpty ? "" : " · \(h.weather)")).font(.caption.weight(.semibold))
                         Text("\(h.floors) floors · \(h.tenants)/\(h.units) let · \(h.population) people · \(h.className) \(h.reputation)")
                             .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
                         Text("24 h: \(Money.format(h.net24h))").font(.caption2.monospacedDigit())
