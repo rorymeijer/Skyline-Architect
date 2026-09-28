@@ -87,8 +87,7 @@ final class ScreenshotDirector {
             }
             ScreenshotDirector.grant(1_000_000, model: model)
             model.buyPlot("saltmere-harbour-row")
-            model.advanceSimulation(ticks: 2 * SimClock.secondsPerDay)
-            model.advanceSimulation(toTimeOfDay: 12)
+            model.advanceSimulation(toTimeOfDay: 17)   // the grant and the land stay within the last 24 h
             model.showEstatePanel = true
             model.refreshSimulationSummary()
             return "\(model.clockText): a plot bought in Saltmere (after a scripted $1M grant). Each city has its own weather (B3); "
