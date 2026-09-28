@@ -28,6 +28,12 @@ extension AppModel {
                     DayNight.litRooms(world: world, propertyID: property, catalog: catalog, time: t, visible: visible, zoom: zoom,
                                       power: self.electricityServed, darkness: darkness))
         }
+        scene.fireProvider = { [weak self] in
+            guard let self, let world = self.world, let property = self.activePropertyID else { return ([], [], []) }
+            let t = Double(world.clock.tick) + self.host.fraction
+            return (FireView.flames(world: world, propertyID: property, time: t, protected: self.sprinklerRooms),
+                    FireView.engines(world: world, propertyID: property, time: t), FireView.scorched(world: world, propertyID: property))
+        }
         scene.weatherProvider = { [weak self] visible in
             guard let self, let world = self.world, let property = self.activePropertyID else { return (.clear, [], []) }
             return (self.weatherLook(at: Double(world.clock.tick) + self.host.fraction),

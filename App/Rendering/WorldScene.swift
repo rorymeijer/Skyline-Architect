@@ -64,6 +64,9 @@ final class WorldScene: SKScene {
     /// Weather look and roofs for snow (Phase 13).
     var weatherProvider: ((Rect) -> (look: WeatherLook, roofs: [Rect], street: [ClosedRange<Double>]))?
     private let weather = WeatherLayer()
+    /// Burning rooms and fire engines (Phase 14).
+    var fireProvider: (() -> (flames: [FlameMark], engines: [Vec2], scorched: [ScorchMark]))?
+    private let fire = FireLayer()
     /// Services overlay marks (nil = hidden). Asked every frame.
     var servicesProvider: (() -> [ServiceMark]?)?
     private let servicesOverlay = ServicesOverlayNode()
@@ -134,6 +137,8 @@ final class WorldScene: SKScene {
         worldRoot.addChild(dayNight.lights)
         weather.ground.zPosition = 3.5
         worldRoot.addChild(weather.ground)
+        fire.node.zPosition = 9.2
+        worldRoot.addChild(fire.node)
         weather.fog.zPosition = 9.5
         addChild(weather.fog)
         weather.rain.zPosition = 9.6
@@ -294,6 +299,8 @@ final class WorldScene: SKScene {
         dayNight.update(grade: lighting.grade, darkness: lighting.emission, rooms: lighting.rooms, viewport: size, emission: emissionLayer.node)
         let sky = weatherProvider?(camera.visibleRect) ?? (look: WeatherLook.clear, roofs: [], street: [])
         weather.update(look: sky.look, darkness: lighting.darkness, viewport: size, roofs: sky.roofs, street: sky.street)
+        let burning = fireProvider?() ?? (flames: [], engines: [], scorched: [])
+        fire.update(flames: burning.flames, engines: burning.engines, scorched: burning.scorched)
         agentLayer.update(peopleProvider?(camera.visibleRect, camera.zoom) ?? [])
         navigationOverlay.update(overlay: navigationProvider?(), camera: camera)
         trafficOverlay.update(traffic: trafficProvider?(), camera: camera)
