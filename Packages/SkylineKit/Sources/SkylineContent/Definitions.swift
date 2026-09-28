@@ -13,6 +13,8 @@ public struct CityDefinition: Codable, Hashable, Sendable {
     public var seed: UInt64
     /// Ground profile top-down; the last stratum is treated as unbounded bedrock.
     public var geology: [SoilStratum]
+    /// Local market (Phase 15; nil = 1 × everything).
+    public var economy: CityEconomy?
 }
 
 public struct PlotDefinition: Codable, Hashable, Sendable {
@@ -22,6 +24,10 @@ public struct PlotDefinition: Codable, Hashable, Sendable {
     public var frontageModules: Int
     public var maxBasementFloors: Int
     public var siteMarginModules: Int
+    /// Purchase price (Phase 15; nil = not for sale, e.g. a start's own plot).
+    public var price: Int?
+    /// The foundation a bought plot comes with.
+    public var foundation: StartDefinition.StartingFoundation?
 }
 
 public struct StartDefinition: Codable, Hashable, Sendable {

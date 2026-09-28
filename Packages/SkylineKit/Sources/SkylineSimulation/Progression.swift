@@ -133,10 +133,11 @@ public enum Progression {
 
     /// Multiplier on every tenant type's prospects: follows the average reputation of the
     /// buildings that have rentable units (1 without reputation rules or such buildings).
-    public static func demandMultiplier(world: GameWorld, engine: SimulationEngine) -> Double {
+    /// `buildings` limits it to one city's buildings (Phase 15; nil = all).
+    public static func demandMultiplier(world: GameWorld, engine: SimulationEngine, buildings only: Set<BuildingID>? = nil) -> Double {
         guard let rules = engine.rules.progression else { return 1 }
         let rentable = Set(world.rooms.values.filter { engine.catalog.spec($0.definitionID)?.rentPerModule != nil }.map(\.buildingID))
-        let buildings = world.buildings.values.filter { rentable.contains($0.id) }
+        let buildings = world.buildings.values.filter { rentable.contains($0.id) && (only?.contains($0.id) ?? true) }
         guard !buildings.isEmpty else { return 1 }
         let reputation = buildings.reduce(0) { $0 + $1.standing.reputation } / Double(buildings.count)
         return rules.demandAtZero + (rules.demandAtHundred - rules.demandAtZero) * reputation / 100

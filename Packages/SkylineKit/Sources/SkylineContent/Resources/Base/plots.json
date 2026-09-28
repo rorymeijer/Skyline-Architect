@@ -5,6 +5,65 @@
     "cityID": "port-calder",
     "frontageModules": 48,
     "maxBasementFloors": 3,
-    "siteMarginModules": 40
+    "siteMarginModules": 40,
+    "foundation": {
+      "buildingName": "Quay Street Tower",
+      "footprintOffsetModules": 8,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 20,
+      "pileSpacingModules": 4
+    }
+  },
+  {
+    "id": "calder-ferry-lane",
+    "name": "Ferry Lane Corner",
+    "cityID": "port-calder",
+    "frontageModules": 32,
+    "maxBasementFloors": 2,
+    "siteMarginModules": 40,
+    "price": 900000,
+    "foundation": {
+      "buildingName": "Ferry Lane House",
+      "footprintOffsetModules": 4,
+      "footprintModules": 24,
+      "basementFloors": 1,
+      "pileDepthMeters": 18,
+      "pileSpacingModules": 4
+    }
+  },
+  {
+    "id": "harrowgate-crown-yard",
+    "name": "Crown Yard",
+    "cityID": "harrowgate",
+    "frontageModules": 40,
+    "maxBasementFloors": 4,
+    "siteMarginModules": 40,
+    "price": 2400000,
+    "foundation": {
+      "buildingName": "Crown Yard Chambers",
+      "footprintOffsetModules": 6,
+      "footprintModules": 28,
+      "basementFloors": 2,
+      "pileDepthMeters": 14,
+      "pileSpacingModules": 4
+    }
+  },
+  {
+    "id": "saltmere-harbour-row",
+    "name": "Harbour Row",
+    "cityID": "saltmere",
+    "frontageModules": 56,
+    "maxBasementFloors": 1,
+    "siteMarginModules": 40,
+    "price": 450000,
+    "foundation": {
+      "buildingName": "Harbour Row Court",
+      "footprintOffsetModules": 8,
+      "footprintModules": 40,
+      "basementFloors": 1,
+      "pileDepthMeters": 26,
+      "pileSpacingModules": 4
+    }
   }
 ]

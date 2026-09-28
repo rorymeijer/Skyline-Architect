@@ -267,24 +267,39 @@ let basePacks = [ContentPackReference(id: "base", version: "0.1.0")]
         #expect(save.world.incidents == IncidentState())
     }
 
-    /// Golden fixture v11 (a fire in progress). Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV11`.
+    /// Golden fixture v11 (a fire in progress). Frozen since format 12: cities load with the
+    /// default market, daily totals gain the land column, the property has no plot id until
+    /// `Estate.adoptLegacy` matches it.
     @Test func goldenFixtureV11StillLoads() throws {
+        let lib = try ContentLibrary.loadBase()
+        let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
+        var save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v11.skylinesave")), availablePacks: basePacks)
+        let fire = try #require(save.world.incidents.fires.first)
+        #expect(!fire.burning.isEmpty && save.world.incidents.log.first?.kind == "fire")
+        #expect(save.world.tenants.count == 15)
+        #expect(save.world.cities.values.allSatisfy { $0.economy == CityEconomy() })
+        #expect(save.world.ledger.days.allSatisfy { $0.amounts.count == LedgerCategory.allCases.count })
+        #expect(save.world.properties.values.allSatisfy { $0.plotID == nil })
+        Estate.adoptLegacy(&save.world, library: lib)
+        #expect(save.world.properties.values.map(\.plotID) == ["calder-quay-lot"])
+    }
+
+    /// Golden fixture v12 (two cities, a bought plot, a land transaction). Regenerate only
+    /// deliberately: `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV12`.
+    @Test func goldenFixtureV12StillLoads() throws {
         let lib = try ContentLibrary.loadBase()
         if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
             var save = try makeElevatorSave()
-            let engine = SimulationEngine(rules: lib.simulationRules, catalog: lib.buildCatalog)
-            let office = try #require(save.world.rooms.values.first { $0.definitionID == "office-small" })
-            #expect(engine.ignite(office.id, at: save.world.clock.tick, world: &save.world))
-            engine.advance(&save.world, by: 600)
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v11.skylinesave")
+            try Estate.buy("saltmere-harbour-row", world: &save.world, library: lib)
+            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v12.skylinesave")
             try SaveCodec.encode(save).write(to: source)
             return
         }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
-        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v11.skylinesave")), availablePacks: basePacks)
-        let fire = try #require(save.world.incidents.fires.first)
-        #expect(!fire.burning.isEmpty && save.world.incidents.log.first?.kind == "fire")
+        let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v12.skylinesave")), availablePacks: basePacks)
+        #expect(save.world.cities.count == 2 && save.world.properties.count == 2)
+        #expect(save.world.cities.values.map(\.definitionID) == ["port-calder", "saltmere"])
+        #expect(save.world.ledger.journal.contains { $0.category == .land && $0.amount == -450_000 })
         #expect(save.world.tenants.count == 15)
     }
 
