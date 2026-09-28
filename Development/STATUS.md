@@ -71,6 +71,8 @@ unverified (D-045).
 - Window panes are separate nodes.
 - Simulation on the main thread.
 
+All open items in one checklist: `Documentation/OPEN_ITEMS.md`.
+
 ## Suggested next steps (beyond the roadmap)
 1. A human play test on a Mac and an iPad, followed by a balancing pass (scenario targets, tenant budgets, costs).
 2. A signed build with iCloud, then verify sync between two devices.

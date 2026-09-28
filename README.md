@@ -49,5 +49,6 @@ See [Development/STATUS.md](Development/STATUS.md).
 - `CLAUDE.md` — development rules.
 - `Documentation/ARCHITECTURE.md` — module boundaries.
 - `Documentation/DECISIONS.md` — why things are the way they are.
+- `Documentation/OPEN_ITEMS.md` — everything still open, in one checklist.
 - One document per system in `Documentation/` (SIMULATION, ELEVATORS, TENANTS, ECONOMY, FACILITIES, PROGRESSION, LIGHTING, WEATHER, EMERGENCIES, ESTATE, SCENARIOS, MODDING, SAVE_FORMAT, PERFORMANCE, GRAPHICS, ACCESSIBILITY).
 - `Development/Screenshots/Phase-XX/` — real captures of every phase, with notes.
