@@ -13,8 +13,7 @@ struct FacilitiesPanel: View {
             HStack {
                 Text("Facilities").font(.headline)
                 Spacer()
-                Button { model.showFacilitiesPanel = false } label: { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.plain).foregroundStyle(.secondary)
+                CloseButton { model.showFacilitiesPanel = false }
             }
             ForEach(s.utilities, id: \.name) { u in
                 HStack {
@@ -40,7 +39,7 @@ struct FacilitiesPanel: View {
         }
         .padding(12)
         .frame(width: 330, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .environment(\.colorScheme, .dark)
     }
 }

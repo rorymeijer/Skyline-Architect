@@ -115,3 +115,17 @@ rooms lit from inside (occupied rooms fully, lobbies/corridors dimly). The app d
 screen-sized multiply sprite over the world and additive warm quads over lit rooms; UI and
 labels stay untinted. Purely presentational — the simulation never reads it. Full lighting
 (light sources, window emission, grading, energy) is Phase 12.
+
+## Phase 20 — polish (FUNCTIONAL)
+
+* **Clouds** (`CloudView` in Presentation, `CloudLayer` in the app):
+  * a deterministic field per city seed, drifting with game time (pausing stops them);
+  * 5 fair-weather clouds per 3 km on a clear day, up to 30 when overcast;
+  * drawn between the sky gradient and the skyline, dimmed and blued as the light fades.
+* **App icon** (`IconArt`):
+  * drawn with the game's own drawing IR (a cut-away tower at dusk, lit homes and offices, an elevator car, the sky lobby band, the foundation and the blueprint grid);
+  * rendered to SVG by `skyline-snapshot --icon` and to PNG by `Scripts/make-icon.sh`, into `App/Assets.xcassets/AppIcon.appiconset`;
+  * macOS gets the rounded plate; the iPad icon is full-bleed.
+* **Panels:** one card style (`panelCard()`: material, hairline edge) and one close button.
+  See ACCESSIBILITY.md.
+

@@ -130,6 +130,7 @@ private struct SmallButton: View {
 
     var body: some View {
         Button(action: action) { Image(systemName: symbol).frame(width: 22, height: 22) }
+            .accessibilityLabel(symbol == "chevron.up" ? "Load earlier" : "Load later")
             .buttonStyle(.plain)
             .disabled(!enabled)
             .opacity(enabled ? 1 : 0.3)

@@ -15,8 +15,7 @@ struct EconomyPanel: View {
             HStack {
                 Text("Economy").font(.headline)
                 Spacer()
-                Button { model.showEconomyPanel = false } label: { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.plain).foregroundStyle(.secondary)
+                CloseButton { model.showEconomyPanel = false }
             }
             HStack {
                 Text("Cash").foregroundStyle(.secondary)
@@ -76,7 +75,7 @@ struct EconomyPanel: View {
         }
         .padding(12)
         .frame(width: 360, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .environment(\.colorScheme, .dark)
     }
 }

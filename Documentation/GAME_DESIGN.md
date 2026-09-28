@@ -311,3 +311,11 @@ computer time. The morning closing no longer freezes the game for a second, and 
 400-storey tower with more than 2,000 people keeps running. (Developers can load such
 towers from the Build menu to see for themselves.)
 
+## Phase 20 player experience (current)
+
+The game has a face: an icon of a cut-away tower at dusk. The sky moves. Clouds drift
+past the skyline on a fair day and crowd it on an overcast one. They stop when the game is
+paused and hurry at 10×, and they turn to dark shapes at night. The panels look like one
+family, and VoiceOver can name every button, including the icon-only tools. With Reduce
+Motion on, storms no longer flash the screen.
+

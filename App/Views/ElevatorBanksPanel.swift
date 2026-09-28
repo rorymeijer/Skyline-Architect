@@ -12,9 +12,7 @@ struct ElevatorBanksPanel: View {
             HStack {
                 Text("Elevator Banks").font(.headline)
                 Spacer()
-                Button { model.showBanksPanel = false } label: { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.secondary)
+                CloseButton { model.showBanksPanel = false }
             }
             if model.banks.isEmpty {
                 Text("No elevators yet. Place elevator shafts side by side to form a bank.")
@@ -27,7 +25,7 @@ struct ElevatorBanksPanel: View {
         }
         .padding(12)
         .frame(width: 330, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .environment(\.colorScheme, .dark)
     }
 }

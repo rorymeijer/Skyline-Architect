@@ -13,8 +13,7 @@ struct EstatePanel: View {
             HStack {
                 Text("Estate").font(.headline)
                 Spacer()
-                Button { model.showEstatePanel = false } label: { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.plain).foregroundStyle(.secondary)
+                CloseButton { model.showEstatePanel = false }
             }
             Text("\(s.holdings.count) propert\(s.holdings.count == 1 ? "y" : "ies") in \(s.cities) cit\(s.cities == 1 ? "y" : "ies") · last 24 h \(Money.format(s.totalNet24h))")
                 .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
@@ -54,7 +53,7 @@ struct EstatePanel: View {
         }
         .padding(12)
         .frame(width: 360, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .environment(\.colorScheme, .dark)
     }
 }

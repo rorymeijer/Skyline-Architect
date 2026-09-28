@@ -64,6 +64,9 @@ final class WorldScene: SKScene {
     /// Weather look and roofs for snow (Phase 13).
     var weatherProvider: ((Rect) -> (look: WeatherLook, roofs: [Rect], street: [ClosedRange<Double>]))?
     private let weather = WeatherLayer()
+    /// Clouds in view (Phase 20), world meters.
+    var cloudProvider: ((Rect) -> [CloudPuff])?
+    private let clouds = CloudLayer()
     /// Burning rooms and fire engines (Phase 14).
     var fireProvider: (() -> (flames: [FlameMark], engines: [Vec2], scorched: [ScorchMark]))?
     private let fire = FireLayer()
@@ -124,6 +127,9 @@ final class WorldScene: SKScene {
             sky.zPosition = -10
             worldRoot.addChild(sky)
         }
+        // Clouds drift between the sky and the skyline (Phase 20).
+        clouds.node.zPosition = -9
+        worldRoot.addChild(clouds.node)
         // Solid rock below the composed ground section (visible only at extreme zoom-out).
         let deep = SKSpriteNode(color: palette.soil(.bedrock).shaded(0.55).skColor, size: CGSize(width: 40_000, height: 20_000))
         deep.anchorPoint = CGPoint(x: 0.5, y: 1)
@@ -310,6 +316,7 @@ final class WorldScene: SKScene {
         lap("light")
         let sky = weatherProvider?(camera.visibleRect) ?? (look: WeatherLook.clear, roofs: [], street: [])
         weather.update(look: sky.look, darkness: lighting.darkness, viewport: size, roofs: sky.roofs, street: sky.street)
+        clouds.update(cloudProvider?(camera.visibleRect) ?? [], darkness: lighting.darkness)
         lap("weather")
         let burning = fireProvider?() ?? (flames: [], engines: [], scorched: [])
         fire.update(flames: burning.flames, engines: burning.engines, scorched: burning.scorched)

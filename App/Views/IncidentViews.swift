@@ -11,8 +11,7 @@ struct IncidentsPanel: View {
             HStack {
                 Text("Incidents").font(.headline)
                 Spacer()
-                Button { model.showIncidentsPanel = false } label: { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.plain).foregroundStyle(.secondary)
+                CloseButton { model.showIncidentsPanel = false }
             }
             if s.fires.isEmpty {
                 Text("No fire in progress.").font(.caption).foregroundStyle(.secondary)
@@ -41,7 +40,7 @@ struct IncidentsPanel: View {
         }
         .padding(12)
         .frame(width: 330, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .environment(\.colorScheme, .dark)
     }
 }
@@ -57,12 +56,12 @@ struct IncidentBanner: View {
         HStack(spacing: 10) {
             Text(text).font(.callout.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
             Button("Show", action: show).buttonStyle(.plain).font(.callout.weight(.bold)).foregroundStyle(fire ? .orange : .yellow)
-            Button(action: close) { Image(systemName: "xmark.circle.fill") }.buttonStyle(.plain).foregroundStyle(.secondary)
+            CloseButton(action: close)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .frame(maxWidth: 560)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder((fire ? Color.orange : Color.yellow).opacity(0.6)))
         .environment(\.colorScheme, .dark)
     }

@@ -159,6 +159,10 @@ private struct ToolButton: View {
         .buttonStyle(PressableStyle())
         .disabled(locked)
         .help(help)
+        // The compact palette shows icons only: VoiceOver still needs the name (Phase 20).
+        .accessibilityLabel(title)
+        .accessibilityHint(help)
+        .accessibilityValue(locked ? "Locked" : isOn ? "Selected" : "")
     }
 }
 

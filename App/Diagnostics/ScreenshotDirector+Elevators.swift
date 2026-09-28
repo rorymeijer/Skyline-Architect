@@ -1,6 +1,7 @@
 #if DEBUG
 import Foundation
 import SkylineCore
+import SkylinePresentation
 import SkylineContent
 import SkylinePersistence
 import SkylineSimulation
@@ -139,6 +140,17 @@ extension ScreenshotDirector {
         guard let world = model.world else { return "no world" }
         let floors = world.buildings.values.compactMap { $0.builtLevels?.count }.max() ?? 0
         return "\(floors) floors, \(world.rooms.count) rooms, \(world.people.count) people, \(world.elevators.count) cars"
+    }
+
+    /// Clouds the renderer is showing now (Phase 20).
+    static func cloudCount(_ model: AppModel) -> Int {
+        guard let world = model.world, let property = model.activePropertyID,
+              let city = world.properties[property].flatMap({ world.cities[$0.cityID] }) else { return 0 }
+        let t = Double(world.clock.tick)
+        let look = model.weatherLook(at: t)
+        let view = model.scene?.controller.camera.visibleRect
+        let x = world.buildings(on: property).first.map { world.grid.x(ofColumn: $0.footprint.start) } ?? 0
+        return CloudView.clouds(seed: city.seed, time: t, cover: look.cloud, centerX: x, visible: view).count
     }
 
     static func carCenter(_ car: ElevatorCar, in world: GameWorld) -> Vec2? {

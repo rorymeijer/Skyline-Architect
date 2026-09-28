@@ -179,5 +179,15 @@ Delivered:
 
 Not yet: background simulation thread, incremental utility allocation.
 
-### Phase 20 — Visual polish
-Art pass, animation, particles, UI polish, accessibility.
+### Phase 20 — Visual polish ✅ (2026-09-28)
+Delivered:
+- a procedural app icon;
+- drifting clouds;
+- a shared panel style;
+- VoiceOver labels and Reduce Motion.
+
+Not yet:
+- panel stacks that fit very small windows;
+- Dynamic Type;
+- keyboard navigation inside panels;
+- a hand-tuned art pass on people and furniture.

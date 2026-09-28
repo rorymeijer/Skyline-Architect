@@ -21,6 +21,15 @@ func option(_ name: String) -> String? {
     return args[i + 1]
 }
 
+// `--icon file.svg [--flat] [--size 1024]`: the app icon (Phase 20; `Scripts/make-icon.sh`).
+if let iconOut = option("--icon") {
+    let size = Int(option("--size") ?? "1024") ?? 1024
+    let svg = SVGRenderer.render(drawing: IconArt.drawing(rounded: !args.contains("--flat")), view: IconArt.canvas, pixels: size)
+    do { try svg.write(toFile: iconOut, atomically: true, encoding: .utf8) } catch { fail("\(error)") }
+    print("wrote \(iconOut)")
+    exit(0)
+}
+
 let presetName = option("--preset") ?? "overview"
 guard let preset = CameraPreset(rawValue: presetName) else { fail("unknown preset \(presetName)") }
 let viewport = Vec2(Double(option("--width") ?? "1440") ?? 1440, Double(option("--height") ?? "900") ?? 900)

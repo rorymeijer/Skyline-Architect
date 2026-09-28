@@ -55,5 +55,7 @@ struct SimulationControls: View {
         }
         .buttonStyle(.plain)
         .help(speed == .paused ? "Pause (Space)" : "Speed \(speed.label)")
+        .accessibilityLabel(speed == .paused ? "Pause" : "Speed \(speed.label)")
+        .accessibilityAddTraits(isOn ? .isSelected : [])
     }
 }

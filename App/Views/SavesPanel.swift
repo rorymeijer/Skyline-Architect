@@ -79,6 +79,8 @@ private struct SaveRow: View {
                 }
                 Button { confirmDelete = info.slot } label: { Image(systemName: "trash") }
                     .buttonStyle(.plain).foregroundStyle(.secondary)
+                    .help("Delete this save")
+                    .accessibilityLabel("Delete \(info.metadata?.title ?? info.slot)")
             }
         }
         .padding(10)

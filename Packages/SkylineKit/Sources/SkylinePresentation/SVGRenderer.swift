@@ -119,7 +119,7 @@ public enum SVGRenderer {
         }
     }
 
-    private static func element(_ shape: DrawShape, attrs: String) -> String {
+    static func element(_ shape: DrawShape, attrs: String) -> String {
         switch shape {
         case .rect(let r):
             return "<rect x=\"\(n(r.minX))\" y=\"\(n(r.minY))\" width=\"\(n(r.width))\" height=\"\(n(r.height))\" \(attrs)/>"

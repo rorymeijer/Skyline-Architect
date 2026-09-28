@@ -57,66 +57,65 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Scale captures (Phase 19): the generated stress tower (developer tool, every unit let
-    // at once) rendered and simulated in the real app; notes carry the simulation time of
-    // the last frame and the render diagnostics are in the report.
+    // Polish captures (Phase 20): the demo tower in the sandbox, weather set by the script
+    // for 02–04 (labelled), panels opened through the same toggles as their buttons.
     let steps: [Step] = [
-        Step(name: "01-stress-overview", grid: false) { model, scene in
+        Step(name: "01-main-menu", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            model.showDeveloperHUD = true
-            model.loadStressTower(zones: 10)
-            // A new scene applies its placement when it is presented (a jump now would be
-            // overridden by the default preset).
-            model.scene?.initialPlacement = (Vec2(41, 420), 0.75)
+            model.showDeveloperHUD = false
+            model.applyBlueprint("demo-tower")
+            model.leaseAllVacant()
             model.advanceSimulation(toTimeOfDay: 10)
-            model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(41, 420), zoom: 0.75) }
-            return "Stress tower: \(ScreenshotDirector.scale(model)); \(model.clockText)"
+            model.showMainMenu = true
+            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
+            return "Main menu over the live city at 10:00; clouds drift behind the skyline."
         },
-        Step(name: "02-morning-rush", grid: false) { model, scene in
+        Step(name: "02-clouds-fair", grid: false) { model, scene in
+            model.showMainMenu = false
+            ScreenshotDirector.force("clear", 21, model: model)
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
+            let n: Int = ScreenshotDirector.cloudCount(model)
+            return "\(model.clockText), clear weather (set by the script): \(n) fair-weather clouds in view."
+        },
+        Step(name: "03-clouds-overcast", grid: false) { model, scene in
+            ScreenshotDirector.force("overcast", 14, model: model)
+            model.advanceSimulation(ticks: 1800)
+            model.refreshSimulationSummary()
+            let n: Int = ScreenshotDirector.cloudCount(model)
+            return "\(model.clockText), overcast (set by the script): \(n) denser clouds in view, 30 min of drift later."
+        },
+        Step(name: "04-dusk", grid: false) { model, scene in
+            ScreenshotDirector.force("clear", 18, model: model)
+            model.advanceSimulation(toTimeOfDay: 19, minute: 30)
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
+            return "\(model.clockText): dusk, clouds dimmed with the light."
+        },
+        Step(name: "05-panels", grid: false) { model, scene in
             model.advanceSimulation(ticks: SimClock.secondsPerDay)
-            let day = String(format: "%.0f", model.lastSimulationMs)     // one call simulating 24 game hours
-            model.advanceSimulation(toTimeOfDay: 8, minute: 20)
+            model.advanceSimulation(toTimeOfDay: 11)
+            model.showEconomyPanel = true
+            model.promotionNotice = nil
             model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(41, 88), zoom: 9) }
-            return "\(model.clockText), sky lobby 21 and zone 2 at rush hour; a whole game day took \(day) ms to simulate (Debug build); \(ScreenshotDirector.scale(model))"
+            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 9) }
+            return "\(model.clockText): the economy panel in the shared card style (five recent lines; named close button for VoiceOver)."
         },
-        Step(name: "03-sky-lobby", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 90)
+        Step(name: "06-inspector", grid: false) { model, scene in
+            model.showEconomyPanel = false
+            if let office = ScreenshotDirector.office(model, index: 2) { model.selectRoom(at: ScreenshotDirector.cell(of: office)) }
+            model.showFacilitiesPanel = true
             model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(40, 86), zoom: 24) }
-            let waiting: Int = ScreenshotDirector.waiting(in: model.world ?? GameWorld())
-            return "\(model.clockText), close-up of the sky lobby on floor 21: \(waiting) people waiting in the tower"
+            scene.withController { $0.jump(center: Vec2(22, 14), zoom: 22) }
+            return "\(model.clockText): unit inspector and facilities panel in the unified style, close-up at 22 pt/m."
         },
-        Step(name: "04-upper-zones", grid: false) { model, scene in
-            model.scene?.withController { $0.jump(center: Vec2(41, 780), zoom: 3) }
-            return "Upper zones (floors 170–210) zoomed out: façade level of detail; \(ScreenshotDirector.scale(model))"
-        },
-        Step(name: "05-night", grid: false) { model, scene in
+        Step(name: "07-night", grid: false) { model, scene in
+            model.selectRoom(at: nil)
+            model.showFacilitiesPanel = false
             model.advanceSimulation(toTimeOfDay: 22)
             model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(41, 420), zoom: 0.75) }
-            return "\(model.clockText): 211 floors at night (lit homes, dark offices); \(ScreenshotDirector.scale(model))"
-        },
-        Step(name: "06-400-floors", grid: false) { model, scene in
-            model.loadStressTower(zones: 19)
-            model.scene?.initialPlacement = (Vec2(55, 790), 0.4)
-            model.advanceSimulation(toTimeOfDay: 10)
-            let hours = String(format: "%.0f", model.lastSimulationMs)   // one call simulating 06:00–10:00
-            model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(55, 790), zoom: 0.4) }
-            return "400-floor stress tower: \(ScreenshotDirector.scale(model)); 06:00–10:00 (move-in and morning rush) took \(hours) ms to simulate (Debug build)"
-        },
-        Step(name: "07-save-load", grid: false) { model, scene in
-            let before = model.world
-            let t0 = Date()
-            let saved: Bool = model.save(slot: "capture-roundtrip", title: "Stress round trip")
-            let t1 = Date()
-            let loaded: Bool = model.load(slot: "capture-roundtrip")
-            let t2 = Date()
-            let identical: Bool = before != nil && before == model.world
-            let ms = String(format: "save %.0f ms, load %.0f ms", t1.timeIntervalSince(t0) * 1000, t2.timeIntervalSince(t1) * 1000)
-            return "400-floor tower saved and reloaded: saved=\(saved) loaded=\(loaded) worldIdentical=\(identical) (\(ms), Debug build, incl. scene rebuild)"
+            scene.withController { $0.jump(center: Vec2(24, 190), zoom: 0.9) }
+            return "\(model.clockText): night; clouds as dark shapes against the sky."
         },
     ]
 

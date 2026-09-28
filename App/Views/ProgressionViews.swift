@@ -12,8 +12,7 @@ struct ProgressPanel: View {
             HStack {
                 Text("Standing").font(.headline)
                 Spacer()
-                Button { model.showProgressPanel = false } label: { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.plain).foregroundStyle(.secondary)
+                CloseButton { model.showProgressPanel = false }
             }
             HStack(alignment: .firstTextBaseline) {
                 Text(s.className).font(.title3.weight(.bold))
@@ -52,7 +51,7 @@ struct ProgressPanel: View {
         }
         .padding(12)
         .frame(width: 330, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .environment(\.colorScheme, .dark)
     }
 }
@@ -81,12 +80,12 @@ struct PromotionBanner: View {
         HStack(spacing: 10) {
             Image(systemName: "rosette").font(.title2).foregroundStyle(.yellow)
             Text(text).font(.callout.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
-            Button(action: close) { Image(systemName: "xmark.circle.fill") }.buttonStyle(.plain).foregroundStyle(.secondary)
+            CloseButton(action: close)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .frame(maxWidth: 520)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.yellow.opacity(0.5)))
         .environment(\.colorScheme, .dark)
     }
