@@ -6,13 +6,13 @@
       "centerX" : 41.5,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 41.54615919922323,
-      "frameTimeMs" : 24.069613636359833,
-      "memoryMB" : 203.84375,
+      "fps" : 51.98796478615579,
+      "frameTimeMs" : 19.235221153844755,
+      "memoryMB" : 205.078125,
       "nodeCount" : 155,
-      "sceneUpdateMs" : 3.982083333333073,
+      "sceneUpdateMs" : 3.6618205128145465,
       "tileLevel" : 2,
-      "tileRasterMs" : 16.909874999986602,
+      "tileRasterMs" : 12.266510416660973,
       "tilesCached" : 12,
       "tilesPending" : 0,
       "tilesRasterized" : 12,
@@ -27,7 +27,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.1027330160140991
+    "waitSeconds" : 1.0343890190124512
   },
   {
     "diagnostics" : {
@@ -36,13 +36,13 @@
       "centerX" : 41,
       "centerY" : 88,
       "detailLevel" : "Floors",
-      "fps" : 37.51969784136231,
-      "frameTimeMs" : 26.652666666669802,
-      "memoryMB" : 217,
+      "fps" : 56.66693583461639,
+      "frameTimeMs" : 17.646974999998598,
+      "memoryMB" : 220.046875,
       "nodeCount" : 117,
-      "sceneUpdateMs" : 4.221320833329401,
+      "sceneUpdateMs" : 2.683630555554828,
       "tileLevel" : 2,
-      "tileRasterMs" : 17.417427777763805,
+      "tileRasterMs" : 12.286144444442469,
       "tilesCached" : 14,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -53,11 +53,11 @@
     },
     "file" : "02-morning-rush.png",
     "grid" : false,
-    "note" : "Day 3 · 08:20, sky lobby 21 and zone 2 at rush hour; last step 6460.4 ms; 211 floors, 576 rooms, 1138 people, 29 cars",
+    "note" : "Day 3 · 08:20, sky lobby 21 and zone 2 at rush hour; last step 4812.2 ms; 211 floors, 576 rooms, 1138 people, 29 cars",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.2732679843902588
+    "waitSeconds" : 1.0337120294570923
   },
   {
     "diagnostics" : {
@@ -66,13 +66,13 @@
       "centerX" : 40,
       "centerY" : 86,
       "detailLevel" : "Rooms",
-      "fps" : 41.26913211173187,
-      "frameTimeMs" : 24.23118560605065,
-      "memoryMB" : 235.359375,
+      "fps" : 55.96815412031595,
+      "frameTimeMs" : 17.86730357142525,
+      "memoryMB" : 240.625,
       "nodeCount" : 147,
-      "sceneUpdateMs" : 3.360560606066346,
+      "sceneUpdateMs" : 2.623761904763861,
       "tileLevel" : 4,
-      "tileRasterMs" : 16.633345833328878,
+      "tileRasterMs" : 10.117566666671488,
       "tilesCached" : 29,
       "tilesPending" : 0,
       "tilesRasterized" : 30,
@@ -87,7 +87,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.166707992553711
+    "waitSeconds" : 1.017206072807312
   },
   {
     "diagnostics" : {
@@ -96,13 +96,13 @@
       "centerX" : 41.5,
       "centerY" : 780,
       "detailLevel" : "Massing",
-      "fps" : 35.95900673232236,
-      "frameTimeMs" : 27.8094444444466,
-      "memoryMB" : 245.6875,
+      "fps" : 55.99625758345777,
+      "frameTimeMs" : 17.85833630952181,
+      "memoryMB" : 251.078125,
       "nodeCount" : 132,
-      "sceneUpdateMs" : 3.1117037037044306,
+      "sceneUpdateMs" : 2.0783928571290744,
       "tileLevel" : 1,
-      "tileRasterMs" : 14.08494972474365,
+      "tileRasterMs" : 8.76244497932252,
       "tilesCached" : 31,
       "tilesPending" : 0,
       "tilesRasterized" : 38,
@@ -117,7 +117,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.102342963218689
+    "waitSeconds" : 1.0511950254440308
   },
   {
     "diagnostics" : {
@@ -126,13 +126,13 @@
       "centerX" : 41.5,
       "centerY" : 420,
       "detailLevel" : "Skyline",
-      "fps" : 35.99277145172837,
-      "frameTimeMs" : 27.783356481485395,
-      "memoryMB" : 288.25,
+      "fps" : 51.596327532168544,
+      "frameTimeMs" : 19.381224358972723,
+      "memoryMB" : 293.875,
       "nodeCount" : 1846,
-      "sceneUpdateMs" : 7.239782407414926,
+      "sceneUpdateMs" : 6.096458333327239,
       "tileLevel" : 0,
-      "tileRasterMs" : 6.686740342846927,
+      "tileRasterMs" : 5.0132477701099205,
       "tilesCached" : 50,
       "tilesPending" : 0,
       "tilesRasterized" : 78,
@@ -147,7 +147,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.2493189573287964
+    "waitSeconds" : 1.0111849308013916
   },
   {
     "diagnostics" : {
@@ -156,13 +156,13 @@
       "centerX" : 55,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 31.996277766361853,
-      "frameTimeMs" : 31.253635416658195,
-      "memoryMB" : 315.296875,
+      "fps" : 44.999107048976704,
+      "frameTimeMs" : 22.222663194440884,
+      "memoryMB" : 320.203125,
       "nodeCount" : 175,
-      "sceneUpdateMs" : 10.691953124997156,
+      "sceneUpdateMs" : 11.434788194440179,
       "tileLevel" : 2,
-      "tileRasterMs" : 28.87062152777749,
+      "tileRasterMs" : 15.398093749993794,
       "tilesCached" : 12,
       "tilesPending" : 0,
       "tilesRasterized" : 12,
@@ -173,11 +173,11 @@
     },
     "file" : "06-400-floors.png",
     "grid" : false,
-    "note" : "400-floor stress tower: 400 floors, 1084 rooms, 2166 people, 56 cars; last step 38558.5 ms",
+    "note" : "400-floor stress tower: 400 floors, 1084 rooms, 2166 people, 56 cars; last step 29089.3 ms",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.5232629776000977
+    "waitSeconds" : 1.0391939878463745
   },
   {
     "diagnostics" : {
@@ -186,13 +186,13 @@
       "centerX" : 55,
       "centerY" : 13,
       "detailLevel" : "Floors",
-      "fps" : 31.994299682281486,
-      "frameTimeMs" : 31.255567708325312,
-      "memoryMB" : 385.21875,
+      "fps" : 44.99983828183654,
+      "frameTimeMs" : 22.222302083330685,
+      "memoryMB" : 386.421875,
       "nodeCount" : 175,
-      "sceneUpdateMs" : 10.767635416669918,
+      "sceneUpdateMs" : 8.205722222219455,
       "tileLevel" : 2,
-      "tileRasterMs" : 18.00317708332007,
+      "tileRasterMs" : 15.575434027776208,
       "tilesCached" : 12,
       "tilesPending" : 0,
       "tilesRasterized" : 12,
@@ -203,10 +203,10 @@
     },
     "file" : "07-save-load.png",
     "grid" : false,
-    "note" : "400-floor tower saved and reloaded: saved=true loaded=true worldIdentical=true (save 64 ms, load 1364 ms, Debug build, incl. scene rebuild)",
+    "note" : "400-floor tower saved and reloaded: saved=true loaded=true worldIdentical=true (save 53 ms, load 1002 ms, Debug build, incl. scene rebuild)",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.5324690341949463
+    "waitSeconds" : 1.1290409564971924
   }
 ]
