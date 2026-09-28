@@ -408,7 +408,7 @@ final class AppModel {
     // MARK: Saving
 
     var packReferences: [ContentPackReference] {
-        library?.packs.map { ContentPackReference(id: $0.id, version: $0.version) } ?? []
+        library?.packs.map { ContentPackReference(id: $0.id, version: $0.version, hash: $0.contentHash) } ?? []
     }
 
     private func makeSave(title: String) -> SaveGame? {
@@ -439,6 +439,11 @@ final class AppModel {
             let save = try saveStore.load(slot: slot, availablePacks: packReferences)
             install(world: save.world, activePropertyID: save.activePropertyID)
             lastSaveDescription = "Loaded “\(slot)”"
+            let changed = SaveCodec.changedPacks(in: save, availablePacks: packReferences)
+            if !changed.isEmpty {
+                alert = AppAlert(title: "Content has changed since this save",
+                                 message: "The game loaded, but some content may not match the world: " + changed.joined(separator: "; ") + ".")
+            }
             return true
         } catch {
             alert = AppAlert(title: "This save cannot be loaded", message: "\(error)")

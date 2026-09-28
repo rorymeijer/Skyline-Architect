@@ -49,10 +49,10 @@ import SkylineContent
     /// The world's weather advances at each closing and matches the game day.
     @Test func weatherAdvancesWithTheDays() throws {
         var f = try SimFixture()
-        let start = try #require(f.world.weather)
+        let start = try #require(f.world.cities.values[0].weather)
         #expect(start.day == 0)
         f.run(until: "07:00", day: 3)
-        let now = try #require(f.world.weather)
+        let now = try #require(f.world.cities.values[0].weather)
         #expect(now.day == 3 && Int(SimClock.day(f.world.clock.tick)) == 3)
         #expect(now == Weather.next(Weather.next(Weather.next(start, seed: Weather.seed(of: f.world), rules: f.engine.rules.weather!),
                                                  seed: Weather.seed(of: f.world), rules: f.engine.rules.weather!),
@@ -63,15 +63,15 @@ import SkylineContent
     @Test func weatherStartsInOlderGames() throws {
         var f = try SimFixture()
         f.run(until: "12:00", day: 5)
-        f.world.weather = nil
+        f.world.setWeather(nil, city: f.world.cities.values[0].id)
         f.engine.advance(&f.world, by: 1)
-        #expect(f.world.weather?.day == 5)
+        #expect(f.world.cities.values[0].weather?.day == 5)
     }
 
     func forcing(_ kind: String, temperature: Double = 19, hours: Tick = 23, leased: Bool = false) throws -> SimFixture {
         var f = try SimFixture()
         if !leased { for t in f.world.tenants.values { Leasing.moveOut(t.id, world: &f.world) } }
-        f.world.weather = WeatherState(day: 0, yesterday: kind, today: kind, tomorrow: kind, temperature: temperature)
+        f.world.setWeather(WeatherState(day: 0, yesterday: kind, today: kind, tomorrow: kind, temperature: temperature), city: f.world.cities.values[0].id)
         f.engine.advance(&f.world, by: hours * 3600)
         return f
     }
@@ -101,5 +101,37 @@ import SkylineContent
         }
         #expect(mean(storm, \.condition) < mean(clear, \.condition))
         #expect(mean(storm, \.cleanliness) < mean(clear, \.cleanliness))
+    }
+
+    /// Every city draws its own days from its own seed (save format 14), and a building feels
+    /// only its own city's weather.
+    @Test func citiesHaveTheirOwnWeather() throws {
+        var f = try SimFixture()
+        f.world.ledger.post(Transaction(tick: 0, amount: 1_000_000, category: .grant, detail: "Test grant"))
+        try Estate.buy("saltmere-harbour-row", world: &f.world, library: f.library)
+        let calder = f.world.cities.values[0], saltmere = f.world.cities.values[1]
+        #expect(saltmere.weather?.day == 0)
+        f.run(until: "07:00", day: 20)
+        let rules = f.engine.rules.weather!
+        var expected = [Weather.initial(seed: Weather.seed(of: calder), rules: rules), Weather.initial(seed: Weather.seed(of: saltmere), rules: rules)]
+        var differs = false
+        for _ in 0..<20 {
+            expected[0] = Weather.next(expected[0], seed: Weather.seed(of: calder), rules: rules)
+            expected[1] = Weather.next(expected[1], seed: Weather.seed(of: saltmere), rules: rules)
+            differs = differs || expected[0].today != expected[1].today
+        }
+        #expect(f.world.cities.values.map(\.weather) == expected)
+        #expect(differs)
+
+        // A storm week in Saltmere leaves the Port Calder tower alone.
+        var g = try SimFixture()
+        g.world.ledger.post(Transaction(tick: 0, amount: 1_000_000, category: .grant, detail: "Test grant"))
+        try Estate.buy("saltmere-harbour-row", world: &g.world, library: g.library)
+        for day in 0..<8 {
+            g.world.setWeather(WeatherState(day: day, yesterday: "clear", today: "clear", tomorrow: "clear", temperature: 20), city: g.world.cities.values[0].id)
+            g.world.setWeather(WeatherState(day: day, yesterday: "storm", today: "storm", tomorrow: "storm", temperature: 12), city: g.world.cities.values[1].id)
+            g.engine.advance(&g.world, by: 86_400)
+        }
+        #expect(!g.world.incidents.log.contains { $0.kind == "storm-damage" })
     }
 }

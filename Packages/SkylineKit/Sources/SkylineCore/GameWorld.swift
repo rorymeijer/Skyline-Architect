@@ -16,13 +16,18 @@ public struct City: Codable, Hashable, Sendable, Identifiable {
     public var seed: UInt64
     /// Local market (Phase 15): multipliers on rents, construction costs and tenant demand.
     public var economy: CityEconomy
+    /// Today's weather and the forecast here (per city since save format 14; nil until the
+    /// simulation starts it).
+    public var weather: WeatherState?
 
-    public init(id: CityID, definitionID: String, name: String, seed: UInt64, economy: CityEconomy = CityEconomy()) {
+    public init(id: CityID, definitionID: String, name: String, seed: UInt64, economy: CityEconomy = CityEconomy(),
+                weather: WeatherState? = nil) {
         self.id = id
         self.definitionID = definitionID
         self.name = name
         self.seed = seed
         self.economy = economy
+        self.weather = weather
     }
 }
 
@@ -104,8 +109,6 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var facilities = FacilitiesState()
     /// Whether rooms and height are gated by building class (Phase 11; set by the start).
     public var unlocks = UnlockMode.all
-    /// Today's weather and the forecast (Phase 13; nil until the simulation starts it).
-    public var weather: WeatherState?
     /// Fires in progress and the incident log (Phase 14).
     public var incidents = IncidentState()
     /// The scenario being played (Phase 16; nil = free play).
@@ -205,5 +208,10 @@ public struct GameWorld: Codable, Sendable, Equatable {
 
     public mutating func setEconomy(_ economy: CityEconomy, city: CityID) {
         cities.update(city) { $0.economy = economy }
+    }
+
+    /// Sets a city's weather (the simulation's 06:00 step; tests and captures).
+    public mutating func setWeather(_ weather: WeatherState?, city: CityID) {
+        cities.update(city) { $0.weather = weather }
     }
 }

@@ -48,6 +48,10 @@ public enum Estate {
         var w = world
         let cityID = w.cities.values.first { $0.definitionID == cityDef.id }?.id
             ?? w.addCity(definitionID: cityDef.id, name: cityDef.name, seed: cityDef.seed, economy: cityDef.economy ?? CityEconomy())
+        // A city new to the estate has its own weather from today on.
+        if let rules = library.simulationRules.weather, let city = w.cities[cityID], city.weather == nil {
+            w.setWeather(Weather.initial(day: Int(SimClock.day(w.clock.tick)), seed: Weather.seed(of: city), rules: rules), city: cityID)
+        }
         let property = try w.addProperty(
             cityID: cityID, name: plot.name,
             plot: Plot(frontage: ColumnSpan(start: 0, count: plot.frontageModules), maxBasementFloors: plot.maxBasementFloors,

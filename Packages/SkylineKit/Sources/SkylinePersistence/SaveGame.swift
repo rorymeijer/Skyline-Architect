@@ -5,10 +5,13 @@ import SkylineCore
 public struct ContentPackReference: Codable, Hashable, Sendable {
     public var id: String
     public var version: String
+    /// Hash of the pack's files (save format 14; nil in older saves).
+    public var hash: String?
 
-    public init(id: String, version: String) {
+    public init(id: String, version: String, hash: String? = nil) {
         self.id = id
         self.version = version
+        self.hash = hash
     }
 }
 
