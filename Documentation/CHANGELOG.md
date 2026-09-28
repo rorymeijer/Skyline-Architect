@@ -2,7 +2,7 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
-## [Unreleased]
+## [0.20.2] — Shafts over rooms, shaft heights, unique names, no overhangs
 
 ### Added
 - **Shafts over rooms**: a stairwell or elevator shaft can be placed or extended over

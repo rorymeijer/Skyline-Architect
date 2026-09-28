@@ -5,7 +5,7 @@ iPadOS. Swift · SwiftUI · SpriteKit. No third-party engines, no copied assets.
 
 <img src="App/Assets.xcassets/AppIcon.appiconset/mac-256.png" width="128" alt="App icon: a cut-away tower at dusk">
 
-## What the game does (0.20.1)
+## What the game does (0.20.2)
 
 Build a tower in cross-section and keep it running.
 
@@ -40,7 +40,7 @@ See [Development/STATUS.md](Development/STATUS.md).
 ## Build and run
 
 - **Play:** open `SkylineArchitect.xcodeproj` in Xcode 16+ and run the `SkylineArchitect` scheme (My Mac).
-- **Test** the engine: `Scripts/test-package.sh` (also runs on Linux, 290 tests).
+- **Test** the engine: `Scripts/test-package.sh` (also runs on Linux, 300+ tests).
 - **Profile:** `cd Packages/SkylineKit && swift run -c release skyline-bench --zones 10 --width 64`.
 - **Regenerate the icon:** `Scripts/make-icon.sh`.
 
