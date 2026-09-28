@@ -74,7 +74,8 @@ final class WeatherLayer {
         fog.color = SKColor(red: 0.80 * dim, green: 0.83 * dim, blue: 0.87 * dim, alpha: 1)
         fog.alpha = CGFloat(look.fog * 0.5)
         flash.size = viewport
-        flash.isHidden = look.lightning < 0.01
+        // No full-screen flashes when the system asks to reduce motion (Phase 20).
+        flash.isHidden = look.lightning < 0.01 || Motion.reduced
         flash.alpha = CGFloat(look.lightning * 0.16)
 
         // Ground: snow lies on the street and on roofs; rain darkens the paving (never over

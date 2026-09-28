@@ -34,6 +34,13 @@ extension AppModel {
             return (FireView.flames(world: world, propertyID: property, time: t, protected: self.sprinklerRooms),
                     FireView.engines(world: world, propertyID: property, time: t), FireView.scorched(world: world, propertyID: property))
         }
+        scene.cloudProvider = { [weak self] visible in
+            guard let self, let world = self.world, let property = self.activePropertyID,
+                  let city = world.properties[property].flatMap({ world.cities[$0.cityID] }) else { return [] }
+            let t = Double(world.clock.tick) + self.host.fraction
+            let centerX = world.buildings(on: property).first.map { world.grid.x(ofColumn: $0.footprint.start) } ?? 0
+            return CloudView.clouds(seed: city.seed, time: t, cover: self.weatherLook(at: t).cloud, centerX: centerX, visible: visible)
+        }
         scene.weatherProvider = { [weak self] visible in
             guard let self, let world = self.world, let property = self.activePropertyID else { return (.clear, [], []) }
             let look = self.weatherLook(at: Double(world.clock.tick) + self.host.fraction)
