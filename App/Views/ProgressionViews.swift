@@ -57,7 +57,7 @@ struct ProgressPanel: View {
     }
 }
 
-private struct ProgressBar: View {
+struct ProgressBar: View {
     let value: Double
     let tint: Color
 

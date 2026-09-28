@@ -66,6 +66,14 @@ final class AppModel {
     /// Properties, cities and land for sale (Phase 15), and the estate panel.
     var estate = EstateSummary()
     var showEstatePanel = false
+    /// The scenario being played (Phase 16, 4 Hz; nil = free play), its panel, the browser
+    /// and the result screen.
+    var scenario: ScenarioSummary?
+    var showScenarioPanel = false
+    var showScenarioBrowser = false
+    var selectedScenarioID: String?
+    var showScenarioResult = false
+    @ObservationIgnored var seenScenarioResult: ScenarioResult?
     var showIncidentsPanel = false
     var incidentNotice: String?
     @ObservationIgnored var seenIncidentID: Int?
@@ -173,6 +181,9 @@ final class AppModel {
         promotionNotice = nil
         seenIncidentID = nil
         incidentNotice = nil
+        // A result decided before this world was installed (a loaded save) is not announced.
+        seenScenarioResult = world.scenario?.result
+        showScenarioResult = false
         let property = world.properties[activePropertyID]
         propertyName = property?.name ?? "—"
         cityName = property.flatMap { world.cities[$0.cityID]?.name } ?? "—"

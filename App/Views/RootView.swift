@@ -56,6 +56,9 @@ struct ChromeOverlay: View {
                 if let report = model.unitReport {
                     UnitInspector(report: report) { model.selectRoom(at: nil) }
                 }
+                if model.showScenarioPanel {
+                    ScenarioPanel(model: model)
+                }
                 if model.showEstatePanel {
                     EstatePanel(model: model)
                 }
@@ -97,7 +100,11 @@ struct ChromeOverlay: View {
             }
             .padding(.bottom, 58)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-            if model.economy.bankrupt {
+            if model.showScenarioBrowser {
+                ScenarioBrowserView(model: model)
+            } else if model.showScenarioResult {
+                ScenarioResultView(model: model)
+            } else if model.economy.bankrupt {
                 BankruptcyView(model: model)
             } else if model.showMainMenu {
                 MainMenuView(model: model)
@@ -110,11 +117,16 @@ struct ChromeOverlay: View {
 struct TitleBadge: View {
     let model: AppModel
 
+    private var mode: String {
+        if let scenario = model.scenario { return "Scenario: " + scenario.name }
+        return model.progression.byClass ? "Standard" : "Sandbox"
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · \(model.progression.byClass ? "Standard" : "Sandbox") · Phase 15")
+            Text("\(model.cityName) · \(mode) · Phase 16")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -143,6 +155,9 @@ struct ViewControls: View {
             ControlButton(symbol: "square.grid.3x3", help: "Architectural Grid (G, ⌥⌘G)", isOn: model.showGrid) { model.toggleGrid() }
             ControlButton(symbol: "arrow.up.arrow.down", help: "Elevator Traffic (⌥⌘T)", isOn: model.showTraffic) { model.showTraffic.toggle() }
             ControlButton(symbol: "slider.horizontal.3", help: "Elevator Banks (⌥⌘E)", isOn: model.showBanksPanel) { model.showBanksPanel.toggle() }
+            if model.scenario != nil {
+                ControlButton(symbol: "flag.checkered", help: "Objectives (⌥⌘O)", isOn: model.showScenarioPanel) { model.showScenarioPanel.toggle() }
+            }
             ControlButton(symbol: "globe.europe.africa", help: "Estate (⌥⌘K)", isOn: model.showEstatePanel) { model.toggleEstatePanel() }
             ControlButton(symbol: "flame", help: "Incidents (⌥⌘I)", isOn: model.showIncidentsPanel) { model.showIncidentsPanel.toggle() }
             ControlButton(symbol: "rosette", help: "Standing (⌥⌘P)", isOn: model.showProgressPanel) { model.showProgressPanel.toggle() }
