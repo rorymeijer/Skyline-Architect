@@ -67,7 +67,7 @@ final class ScreenshotDirector {
             model.advanceSimulation(toTimeOfDay: 10, minute: 30)
             let office = ScreenshotDirector.office(model, index: 2)
             let lit = office.map { model.igniteForTesting($0.id) } ?? false
-            model.advanceSimulation(ticks: 90)
+            model.advanceSimulation(ticks: 30)
             model.refreshSimulationSummary()
             if let r = office, let world = model.world {
                 scene.withController { $0.jump(center: world.grid.rect(columns: r.columns, floors: r.floors).center + Vec2(0, 1), zoom: 24) }
@@ -75,14 +75,14 @@ final class ScreenshotDirector {
             return "\(model.clockText): fire started in an office (developer tool: \(lit)); alert: \(model.incidentNotice ?? "none")"
         },
         Step(name: "02-evacuation", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 150)
+            model.advanceSimulation(ticks: 50)                         // ~80 s after ignition: on the stairs
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 14), zoom: 11.5) }
             let inside = model.population.inRooms + model.population.travelling
             return "\(model.clockText): evacuation by the stairs, no elevator rides; \(inside) still inside or on their way out."
         },
         Step(name: "03-spreading", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 11 * 60)
+            model.advanceSimulation(ticks: 12 * 60)
             model.refreshSimulationSummary()
             return "\(model.clockText): \(model.incidents.fires.first.map { "\($0.burningRooms) room(s) burning, brigade in \($0.brigadeInMinutes) min" } ?? "out"); building empty: \(model.population.inRooms == 0)."
         },
@@ -143,23 +143,25 @@ final class ScreenshotDirector {
             return "\(model.clockText): sprinklers put the fire out in about \(minutes) min — \(model.incidents.recent.first?.detail ?? "")"
         },
         Step(name: "08-storm-damage", grid: false) { model, scene in
-            var days = 0
+            var hours = 0
             let before = model.world?.incidents.log.count ?? 0
-            while (model.world?.incidents.log.count ?? 0) == before, days < 6 {
+            model.incidentNotice = nil
+            while (model.world?.incidents.log.count ?? 0) == before, hours < 120 {
                 ScreenshotDirector.force("storm", 12, model: model)
-                model.advanceSimulation(ticks: 3 * 3600)
-                days += 1
+                model.advanceSimulation(ticks: 3600)
+                model.refreshSimulationSummary()
+                hours += 1
             }
             model.showIncidentsPanel = true
             model.refreshSimulationSummary()
             scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
-            return "\(model.clockText) (storm set): \(model.incidentNotice ?? "no incident yet")"
+            return "\(model.clockText) (storm set, \(hours) h): \(model.incidentNotice ?? "no incident yet")"
         },
         Step(name: "09-save-load", grid: false) { model, scene in
             model.showIncidentsPanel = false
             let office = ScreenshotDirector.office(model, index: 7)
             _ = office.map { model.igniteForTesting($0.id) }
-            model.advanceSimulation(ticks: 300)
+            model.advanceSimulation(ticks: 60)
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")
