@@ -5,6 +5,8 @@ import SpriteKit
 import SwiftUI
 import UniformTypeIdentifiers
 import SkylineCore
+import SkylineContent
+import SkylinePersistence
 import SkylinePresentation
 import SkylineSimulation
 #if os(macOS)
@@ -55,76 +57,81 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Scenarios are started through the same calls as the browser's buttons. Towers are
-    // built with the developer blueprint; leasing and the scenario results are the
-    // simulation's own (no developer leasing in these captures).
+    // Mods are installed, enabled and applied through the same calls as the mod manager's
+    // buttons, in the capture's own mods folder. The broken mod in 04 is written by this
+    // script to show validation reporting. Towers are built with blueprints (developer tool);
+    // leasing is the simulation's own.
     let steps: [Step] = [
-        Step(name: "01-main-menu", grid: false) { model, scene in
+        Step(name: "01-mods-empty", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.showMainMenu = true
+            model.openModManager()
             scene.withController { $0.jump(center: Vec2(22, 12), zoom: 7) }
-            return "Main menu with the new Scenarios… entry."
+            return "Mod manager before any mod is installed: " + ScreenshotDirector.packs(model)
         },
-        Step(name: "02-scenario-browser", grid: false) { model, scene in
+        Step(name: "02-examples-installed", grid: false) { model, scene in
+            model.installExampleMods()
+            model.toggleMod("kestrel-bay")
+            return "Installed the example mods and switched Kestrel Bay on (pending): " + ScreenshotDirector.packs(model)
+                + "; pending=\(model.hasPendingModChanges)"
+        },
+        Step(name: "03-mod-active", grid: false) { model, scene in
+            model.applyMods()
+            model.openModManager()
+            let changes = model.packStatuses.first { $0.id == "kestrel-bay" }?.changes
+            return "Applied: " + ScreenshotDirector.packs(model) + "; library packs \(model.packReferences.map(\.id)); Kestrel Bay adds "
+                + (changes?.added.joined(separator: ", ") ?? "—") + "; replaces " + (changes?.replaced.joined(separator: ", ") ?? "—")
+        },
+        Step(name: "04-broken-mod", grid: false) { model, scene in
+            ScreenshotDirector.writeBrokenMod(into: model.modsDirectory)
+            model.rescanMods()
+            model.toggleMod("harbour-lights")
+            model.applyMods()
+            model.openModManager()
+            return "A mod with a broken reference (written by the capture script) is reported and skipped: " + ScreenshotDirector.packs(model)
+        },
+        Step(name: "05-scenario-from-mod", grid: false) { model, scene in
+            model.showModManager = false
             model.openScenarioBrowser()
-            return "Scenario browser: " + model.scenarioBriefs.map { "\($0.name) (\($0.difficulty))" }.joined(separator: ", ")
+            model.selectedScenarioID = "kestrel-lofts"
+            return "Scenario browser with the mod's scenario: " + model.scenarioBriefs.map(\.name).joined(separator: ", ")
         },
-        Step(name: "03-briefing-skyline", grid: false) { model, scene in
-            model.selectedScenarioID = "skyline"
-            let brief = model.scenarioBriefs.first { $0.id == "skyline" }
-            return "Briefing of Skyline: \(brief?.setting ?? "—"); " + (brief?.objectives.joined(separator: ", ") ?? "")
-        },
-        Step(name: "04-opening-day-start", grid: false) { model, scene in
-            model.startScenario("opening-day")
+        Step(name: "06-kestrel-bay", grid: false) { model, scene in
+            model.startScenario("kestrel-lofts")
             model.setSpeed(.paused)
-            model.applyBlueprint("demo-tower")
-            model.advanceSimulation(toTimeOfDay: 11)
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 9) }
-            return "\(model.clockText): Opening Day started, demo tower built (developer blueprint); " + ScreenshotDirector.objectives(model)
-        },
-        Step(name: "05-opening-day-progress", grid: false) { model, scene in
+            model.applyBlueprint("kestrel-lofts")
             model.advanceSimulation(ticks: SimClock.secondsPerDay)
-            model.advanceSimulation(toTimeOfDay: 16)
+            model.advanceSimulation(toTimeOfDay: 19)
             model.refreshSimulationSummary()
-            return "\(model.clockText): " + ScreenshotDirector.objectives(model)
+            model.scene?.withController { $0.jump(center: Vec2(20, 16), zoom: 9) }
+            let types = Set(model.world?.tenants.values.map(\.typeID) ?? []).sorted()
+            return "\(model.clockText) in \(model.cityName) (mod city): Pier Lofts built from the mod's blueprint; tenant types \(types); "
+                + ScreenshotDirector.objectives(model)
         },
-        Step(name: "06-opening-day-won", grid: false) { model, scene in
-            var days = 0
-            while model.world?.scenario?.result == nil, days < 12 {
-                model.advanceSimulation(ticks: SimClock.secondsPerDay)
-                days += 1
-            }
+        Step(name: "07-loft-close-up", grid: false) { model, scene in
+            guard let world = model.world,
+                  let loft = world.rooms.values.first(where: { $0.definitionID == "apartment-loft" }) else { return "no loft" }
+            model.selectRoom(at: ScreenshotDirector.cell(of: loft))
             model.refreshSimulationSummary()
-            let r = model.world?.scenario?.result
-            return "\(model.clockText): result won=\(r?.won ?? false) \"\(r?.reason ?? "—")\" on day \(r.map { SimClock.day($0.tick) + 1 } ?? 0); " + ScreenshotDirector.objectives(model)
-        },
-        Step(name: "07-harbour-failed", grid: false) { model, scene in
-            model.startScenario("harbour-revival")
-            model.setSpeed(.paused)
-            model.advanceSimulation(ticks: 30 * SimClock.secondsPerDay)
-            model.advanceSimulation(toTimeOfDay: 9)
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(28, 6), zoom: 7) }
-            let r = model.world?.scenario?.result
-            return "Harbour Revival left unbuilt for 30 days: won=\(r?.won ?? false) \"\(r?.reason ?? "—")\" on day \(r.map { SimClock.day($0.tick) + 1 } ?? 0)."
+            let x = (world.grid.x(ofColumn: loft.columns.start) + world.grid.x(ofColumn: loft.columns.end)) / 2
+            model.scene?.withController { $0.jump(center: Vec2(x, world.grid.y(ofFloor: loft.floors.lowest) + 2), zoom: 34) }
+            let tenant = world.tenants.values.first { $0.room == loft.id }
+            return "Loft Apartment (mod room, furnished from the mod's layout) on floor \(loft.floors.lowest): "
+                + (tenant.map { "\($0.name) (\($0.typeID))" } ?? "vacant")
         },
         Step(name: "08-save-load", grid: false) { model, scene in
-            model.startScenario("crown-prestige")
-            model.setSpeed(.paused)
-            model.applyBlueprint("demo-tower")
-            model.advanceSimulation(ticks: SimClock.secondsPerDay)
-            model.advanceSimulation(toTimeOfDay: 10)
-            model.refreshSimulationSummary()
+            model.selectRoom(at: nil)
             let before = model.world
             let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
             let loaded = model.load(slot: "capture-roundtrip")
-            model.showScenarioPanel = true
+            var withoutMod = "loaded"
+            do { _ = try model.saveStore.load(slot: "capture-roundtrip", availablePacks: [ContentPackReference(id: "base", version: "0.1.0")]) } catch {
+                withoutMod = "\(error)"
+            }
             model.refreshSimulationSummary()
-            // Loading builds a new scene: move that one's camera.
-            model.scene?.withController { $0.jump(center: Vec2(20, 12), zoom: 8) }
-            return "Crown Prestige saved and reloaded mid-scenario: saved=\(saved) loaded=\(loaded) worldIdentical=\(before != nil && before == model.world); " + ScreenshotDirector.objectives(model)
+            return "Saved with packs \(model.packReferences.map(\.id)): saved=\(saved) loaded=\(loaded) worldIdentical=\(before != nil && before == model.world); "
+                + "the same save with only the base pack: \(withoutMod)"
         },
     ]
 
