@@ -1,51 +1,48 @@
 # Development Status
 
-_Last updated: 2026-09-28 (Phase 12)_
+_Last updated: 2026-09-28 (Phase 13)_
 
 ## Current phase
-**Phase 12 — Full day/night + lighting: COMPLETE** (awaiting approval to continue with
-Phase 13).
+**Phase 13 — Weather: COMPLETE** (awaiting approval to continue with Phase 14).
 
-## Quality gates (Phase 12)
+## Quality gates (Phase 13)
 | Gate | Status | Evidence |
 |------|--------|----------|
-| Compiles (macOS + iPad Simulator) | ✅ | CI run 36380170316 |
-| Automated tests pass | ✅ | 221 tests (Linux + macOS). They cover:<br>• lighting levels, quiet hours and staggering<br>• content lights every room and no shaft<br>• load follows the day; the closing bills the meter<br>• no power, no light; metering is batch-independent<br>• coloured lit rooms, panes when zoomed out, grade<br>• emission layer deterministic; buildings occlude city lights<br>• save v8→v9 and the v9 fixture |
+| Compiles (macOS + iPad Simulator) | ✅ | CI run 36384182661 |
+| Automated tests pass | ✅ | 233 tests (Linux + macOS). They cover:<br>• generation: seasons cycle from summer; kinds only in their seasons; the forecast comes true; deterministic per seed; all kinds occur<br>• the world's weather follows the days, and older games start weather on their day<br>• storms keep prospects away; temperature scales the utilities bill (×1.48 at 35 °C, ×1.60 at −1 °C); storms wear and dirty the building<br>• look: transition after 06:00, snow cover rules, deterministic lightning, grade and lights<br>• roofs and street segments<br>• save v9→v10 and the v10 fixture |
 | Game launches | ✅ macOS (CI) · ⚠️ iPad built, not launched | |
-| Feature demonstrable | ✅ | 9 captures in `Development/Screenshots/Phase-12/` |
+| Feature demonstrable | ✅ | 9 captures in `Development/Screenshots/Phase-13/` (weather in 02–07 set by the script, labelled) |
 | Obvious runtime errors fixed | ✅ | captures settle, exit 0, 60 fps |
-| Documentation updated | ✅ | LIGHTING.md (new), GRAPHICS, SIMULATION, SAVE_FORMAT v9, MODDING, ARCHITECTURE, DECISIONS D-037, PERFORMANCE, CHANGELOG 0.12.0, GAME_DESIGN, ROADMAP |
-| Screenshots produced & inspected | ✅ | City lights shining through the tower and a crowded bill capture: fixed, recaptured |
+| Documentation updated | ✅ | WEATHER.md (new), GRAPHICS, SIMULATION, SAVE_FORMAT v10, MODDING, ARCHITECTURE, DECISIONS D-038, CHANGELOG 0.13.0, GAME_DESIGN, ROADMAP |
+| Screenshots produced & inspected | ✅ | Washed-out storm flash and invisible snow cover: fixed, recaptured |
 | Known issues recorded | ✅ | below |
 
 ## Completed
-- Phases 0–11 (merged: rorymeijer/Skyline-Architect#1 … #11).
-- Phase 12 (FUNCTIONAL):
-  - Lighting model per room type (content), shared by the simulation and the renderer; lights need electricity.
-  - Hourly energy meter billed at the closing.
-  - Colour grading; coloured room light; façade window panes when zoomed out.
-  - Night emission layer: city windows, neighbour windows, street lamps.
-  - Save format 9.
+- Phases 0–12 (merged: rorymeijer/Skyline-Architect#1 … #12).
+- Phase 13 (FUNCTIONAL):
+  - Seasons and seven weather kinds (content), drawn each morning with a forecast.
+  - Effects on prospects, wear, dirt and heating/cooling.
+  - Visuals: grade, fog, rain and snow, lightning, snow cover, wet paving; weather chip.
+  - Save format 10.
 
 ## In progress
-- Nothing. Waiting for approval to continue (Phase 13 — weather).
+- Nothing. Waiting for approval to continue (Phase 14 — events and emergencies, including fire).
 
 ## Known bugs / unverified
 - No human play test yet; iPad never launched.
-- Lighting energy is small next to rent (about $130/day vs $45k/day); balancing is still open. There is no player lighting policy yet.
-- Plant rooms keep 15–20 % light without power (they have no electricity demand in the content).
-- City lights are static per game, and the lamp glow is flat programmer art.
-- Balancing notes from Phase 11 still apply (reputation floor near 50, fast class B).
+- Weather changes once a day; day length ignores the season; no wind.
+- Particles are screen-space programmer art, and snow cover is drawn exaggerated for readability.
+- Balancing: lighting costs small, reputation floor near 50, fast class B (earlier phases).
 
 ## Technical debt
-- Utility allocation now runs in the hourly meter, the daily assessment and the 4 Hz UI refresh (facilities, power map, lighting load). Cache per structure/upkeep change if profiles show it.
+- Utility allocation runs in several places per refresh (see Phase 12).
 - Simulation on the main thread.
 
-## Next tasks (Phase 13 — Weather)
-1. Weather states as content (clear, overcast, rain, storm, snow, heat, fog), with deterministic daily and hourly changes from the city seed.
-2. Visual: sky and grade per weather, rain streaks, fog, wet paving reflections.
-3. Simulation hooks (data-driven): heat and cold raise the energy load; storms and snow add wear and cleaning jobs; rain shifts arrivals and departures.
-4. Captures across weather types; docs.
+## Next tasks (Phase 14 — Events & emergencies)
+1. Event system as content: triggers (weather, wear, time, reputation) and outcomes (damage, cost, reputation). Deterministic.
+2. Fire: ignition chance from wear and equipment; spread through rooms and floors; evacuation over stairs (shared navigation); damage and repair; fire safety rooms and staff.
+3. Storm damage and power outages tied to the Phase 13 weather.
+4. Notifications/alerts UI; captures; docs.
 
 ## Environment
 - Cloud sessions run in a Linux container without Xcode. To build/test the package there,
