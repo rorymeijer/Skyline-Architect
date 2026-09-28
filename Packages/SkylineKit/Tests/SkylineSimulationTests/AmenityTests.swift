@@ -128,3 +128,25 @@ import SkylineContent
         #expect(a.world == b.world)
     }
 }
+
+/// What the inspector and the leasing panel show about amenities.
+@Suite struct AmenityReportTests {
+    @Test func reportsShowHoursCustomersAndYesterday() throws {
+        var f = try SimFixture(blueprint: "demo-plaza")
+        f.run(until: "20:30", day: 1)
+        let restaurant = try #require(f.world.rooms.values.first { $0.definitionID == "restaurant" })
+        let report = try #require(UnitReport.make(room: restaurant, world: f.world, engine: f.engine))
+        let info = try #require(report.amenity)
+        #expect(info.hours == "11:00–23:00" && info.isOpenNow && info.operated && info.seats == 18)
+        #expect(info.today.lastVisits > 0 && info.today.lastTakings > 0 && info.share == 0.07)
+        let summary = LeasingSummary.make(world: f.world, engine: f.engine, buildings: [f.building]).amenities
+        #expect(summary.venues == 7 && summary.open >= 5)
+        #expect(summary.lastVisits > 0 && summary.lastStreetVisits > 0 && summary.lastShare > 0)
+        #expect(summary.visitorsNow == f.count { $0.role == .visitor && $0.place != .outside })
+        // The share of yesterday's takings equals what the closing booked.
+        let booked = f.world.ledger.journal.filter { $0.category == .turnover && SimClock.day($0.tick) == 1 }.map(\.amount).reduce(0, +)
+        #expect(summary.lastShare == booked)
+        #expect(UnitReport.make(room: try #require(f.world.rooms.values.first { $0.definitionID == "office-small" }),
+                                world: f.world, engine: f.engine)?.amenity == nil)
+    }
+}

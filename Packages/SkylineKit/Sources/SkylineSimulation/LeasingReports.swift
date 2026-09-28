@@ -47,12 +47,15 @@ public struct UnitReport: Equatable, Sendable {
     public var utilities: [(name: String, served: Double)] = []
     public var cleanliness = 1.0
     public var condition = 1.0
+    /// Amenities (0.22): hours, seats, customers and takings.
+    public var amenity: AmenityInfo?
 
     public static func == (a: UnitReport, b: UnitReport) -> Bool {
         a.roomID == b.roomID && a.title == b.title && a.occupant == b.occupant && a.interest == b.interest && a.history == b.history
             && a.utilities.map(\.name) == b.utilities.map(\.name) && a.utilities.map(\.served) == b.utilities.map(\.served)
             && a.cleanliness == b.cleanliness && a.condition == b.condition && a.askingRent == b.askingRent
             && a.tenure == b.tenure && a.canBeSold == b.canBeSold && a.salePrice == b.salePrice && a.serviceCharge == b.serviceCharge
+            && a.amenity == b.amenity
     }
 
     public static func make(room: Room, world: GameWorld, engine: SimulationEngine) -> UnitReport? {
@@ -98,6 +101,7 @@ public struct UnitReport: Equatable, Sendable {
         }
         report.cleanliness = world.upkeep[room.id]?.cleanliness ?? 1
         report.condition = world.upkeep[room.id]?.condition ?? 1
+        report.amenity = AmenityInfo.make(room: room, world: world, engine: engine)
         return report
     }
 }
@@ -115,6 +119,8 @@ public struct LeasingSummary: Equatable, Sendable {
     public var forSale = 0
     public var averageSatisfaction = 0.0
     public var market = MarketState()
+    /// Shops, restaurants and other amenities (0.22).
+    public var amenities = AmenitySummary()
     /// Human-readable recent events, newest first.
     public var recent: [String] = []
 
@@ -135,6 +141,7 @@ public struct LeasingSummary: Equatable, Sendable {
         s.forSale = rooms.filter { $0.tenure == .forSale }.count
         s.averageSatisfaction = tenants.isEmpty ? 0 : tenants.reduce(0) { $0 + $1.satisfaction } / Double(tenants.count)
         s.market = world.market
+        s.amenities = AmenitySummary.make(world: world, engine: engine, buildings: buildings)
         s.recent = world.market.log.suffix(limit).reversed().map { e in
             let type = engine.rules.tenantType(e.typeID)?.name ?? e.typeID
             let place = e.room.flatMap { world.rooms[$0] }.map { " · \(FloorLabel.label(for: $0.floors.lowest))" } ?? ""

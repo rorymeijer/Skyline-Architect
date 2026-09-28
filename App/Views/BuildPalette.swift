@@ -126,6 +126,12 @@ struct BuildPalette: View {
         case "telecom": "antenna.radiowaves.left.and.right"
         case "parking": "car"
         case "fireControl": "drop.triangle"
+        case "shop": "bag"
+        case "restaurant": "fork.knife"
+        case "fitness": "dumbbell"
+        case "cinema": "film"
+        case "theater": "theatermasks"
+        case "skyBar": "wineglass"
         default: "square.dashed"
         }
     }

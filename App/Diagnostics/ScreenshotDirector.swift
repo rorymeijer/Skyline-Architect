@@ -57,37 +57,54 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Foundations (0.21): the demo tower in the sandbox; every change is the panel's own
-    // button (the same `extendFoundation` command), pressed by the script.
+    // Amenities and visitors (0.22): the demo plaza in the sandbox, leased with the developer
+    // tools; the simulation does the rest (lunch, evening, street visitors, the closing).
     let steps: [Step] = [
-        Step(name: "01-foundation-panel", grid: false) { model, scene in
+        Step(name: "01-lunch", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
-            model.applyBlueprint("demo-tower")
+            model.applyBlueprint("demo-plaza")
             model.leaseAllVacant()
-            model.advanceSimulation(toTimeOfDay: 11)
+            model.advanceSimulation(toTimeOfDay: 12, minute: 40)
             ScreenshotDirector.force("clear", 21, model: model)
             model.promotionNotice = nil
-            model.toggleFoundationPanel()
             model.refreshSimulationSummary()
-            scene.apply(preset: .foundation)
-            return "The foundation panel (palette: Foundation) over the demo tower's groundwork. " + ScreenshotDirector.foundationNote(model)
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 2.2), zoom: 19) }
+            return "\(model.clockText): lunch on the leisure podium. " + ScreenshotDirector.amenityNote(model)
         },
-        Step(name: "02-widened", grid: true) { model, scene in
-            ScreenshotDirector.press(["left", "right"], model: model)
-            model.scene?.apply(preset: .foundation)
-            return "Widen Left and Widen Right pressed: one pile bay more on each side. " + ScreenshotDirector.foundationNote(model)
-        },
-        Step(name: "03-deeper-and-piles", grid: true) { model, scene in
-            ScreenshotDirector.press(["deeper", "piles", "piles"], model: model)
-            model.scene?.apply(preset: .foundation)
-            return "A basement level dug and the piles lengthened twice (+10 m): the ground section follows. " + ScreenshotDirector.foundationNote(model)
-        },
-        Step(name: "04-palette-icons", grid: false) { model, scene in
-            model.showFoundationPanel = false
+        Step(name: "02-evening", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 20, minute: 15)
+            ScreenshotDirector.force("clear", 18, model: model)
             model.refreshSimulationSummary()
-            model.scene?.apply(preset: .overview)
-            return "The build palette with the Foundation button and icons for Electrical, Telecom and Express Elevator."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 2.2), zoom: 19) }
+            return "\(model.clockText): the evening — cinema, theatre and restaurant. " + ScreenshotDirector.amenityNote(model)
+        },
+        Step(name: "03-restaurant-inspector", grid: false) { model, scene in
+            model.advanceSimulation(ticks: SimClock.secondsPerDay)
+            ScreenshotDirector.force("clear", 18, model: model)
+            if let r = ScreenshotDirector.amenityRoom(model, "restaurant") { model.selectRoom(at: ScreenshotDirector.cell(of: r)) }
+            model.promotionNotice = nil
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 2.2), zoom: 19) }
+            return "\(model.clockText), a day later: the restaurant selected — hours, customers, takings and the landlord's share. "
+                + ScreenshotDirector.amenityNote(model)
+        },
+        Step(name: "04-leasing-economy", grid: false) { model, scene in
+            model.selectRoom(at: nil)
+            model.showLeasingPanel = true
+            model.showEconomyPanel = true
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6), zoom: 9) }
+            return "The leasing panel's amenity totals and the economy panel's turnover row (the share booked at 06:00)."
+        },
+        Step(name: "05-sky-bar", grid: false) { model, scene in
+            model.showLeasingPanel = false
+            model.showEconomyPanel = false
+            model.advanceSimulation(toTimeOfDay: 22)
+            ScreenshotDirector.force("clear", 16, model: model)
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 16), zoom: 19) }
+            return "\(model.clockText): the sky bar on floor 17 at night. " + ScreenshotDirector.amenityNote(model)
         },
     ]
 
