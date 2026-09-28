@@ -303,3 +303,11 @@ versions stay, one of them named "… conflict ‹date›", and the player loads
 want. A save deleted on one device disappears on the others, unless another device changed
 it in the meantime. Autosaves stay on the device that made them.
 
+## Phase 19 player experience (current)
+
+Nothing new to click, but big towers stay smooth. A 211-storey tower with ten zones, sky
+lobbies and express shuttles, and 950 people, runs a game day in under a second of
+computer time. The morning closing no longer freezes the game for a second, and a
+400-storey tower with more than 2,000 people keeps running. (Developers can load such
+towers from the Build menu to see for themselves.)
+

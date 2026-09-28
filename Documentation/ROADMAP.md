@@ -170,8 +170,14 @@ Not yet:
 - file coordination;
 - live change notifications.
 
-### Phase 19 — Large-scale performance
-Profiling pass against targets (hundreds of floors, thousands of rooms/people).
+### Phase 19 — Large-scale performance ✅ (2026-09-28)
+Delivered:
+- stress tower generator and `skyline-bench`;
+- callgrind profiles and four hot spots fixed (3.3× per game day, 10× on the daily closing);
+- 400 floors and 2 166 people measured;
+- scale captures in the app.
+
+Not yet: background simulation thread, incremental utility allocation.
 
 ### Phase 20 — Visual polish
 Art pass, animation, particles, UI polish, accessibility.
