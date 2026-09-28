@@ -108,9 +108,13 @@ private struct ModRowView: View {
         case .active:
             if s.folder.isEmpty { return "Base game content · always loaded first" }
             let c = s.changes
-            return "Active · adds \(c.added.count), replaces \(c.replaced.count)"
-                + (c.replaced.isEmpty ? "" : " (" + c.replaced.prefix(3).joined(separator: ", ") + (c.replaced.count > 3 ? ", …" : "") + ")")
-                + (row.enabled ? "" : " · turned off, applies on Apply")
+            var text = "Active · adds \(c.added.count), replaces \(c.replaced.count)"
+            if !c.replaced.isEmpty {
+                let names: String = c.replaced.prefix(3).joined(separator: ", ")
+                text += c.replaced.count > 3 ? " (\(names), …)" : " (\(names))"
+            }
+            if !row.enabled { text += " · turned off, applies on Apply" }
+            return text
         case .disabled:
             return row.enabled ? "Off · turned on, loads on Apply" : "Off"
         case .failed(let why):

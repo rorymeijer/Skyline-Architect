@@ -68,20 +68,24 @@ final class ScreenshotDirector {
             model.showMainMenu = true
             model.openModManager()
             scene.withController { $0.jump(center: Vec2(22, 12), zoom: 7) }
-            return "Mod manager before any mod is installed: " + ScreenshotDirector.packs(model)
+            let packs: String = ScreenshotDirector.packs(model)
+            return "Mod manager before any mod is installed: \(packs)"
         },
         Step(name: "02-examples-installed", grid: false) { model, scene in
             model.installExampleMods()
             model.toggleMod("kestrel-bay")
-            return "Installed the example mods and switched Kestrel Bay on (pending): " + ScreenshotDirector.packs(model)
-                + "; pending=\(model.hasPendingModChanges)"
+            let packs: String = ScreenshotDirector.packs(model)
+            return "Installed the example mods and switched Kestrel Bay on (pending): \(packs); pending=\(model.hasPendingModChanges)"
         },
         Step(name: "03-mod-active", grid: false) { model, scene in
             model.applyMods()
             model.openModManager()
             let changes = model.packStatuses.first { $0.id == "kestrel-bay" }?.changes
-            return "Applied: " + ScreenshotDirector.packs(model) + "; library packs \(model.packReferences.map(\.id)); Kestrel Bay adds "
-                + (changes?.added.joined(separator: ", ") ?? "—") + "; replaces " + (changes?.replaced.joined(separator: ", ") ?? "—")
+            let packs: String = ScreenshotDirector.packs(model)
+            let ids: [String] = model.packReferences.map(\.id)
+            let added: String = changes?.added.joined(separator: ", ") ?? "—"
+            let replaced: String = changes?.replaced.joined(separator: ", ") ?? "—"
+            return "Applied: \(packs); library packs \(ids); Kestrel Bay adds \(added); replaces \(replaced)"
         },
         Step(name: "04-broken-mod", grid: false) { model, scene in
             ScreenshotDirector.writeBrokenMod(into: model.modsDirectory)
@@ -89,13 +93,15 @@ final class ScreenshotDirector {
             model.toggleMod("harbour-lights")
             model.applyMods()
             model.openModManager()
-            return "A mod with a broken reference (written by the capture script) is reported and skipped: " + ScreenshotDirector.packs(model)
+            let packs: String = ScreenshotDirector.packs(model)
+            return "A mod with a broken reference (written by the capture script) is reported and skipped: \(packs)"
         },
         Step(name: "05-scenario-from-mod", grid: false) { model, scene in
             model.showModManager = false
             model.openScenarioBrowser()
             model.selectedScenarioID = "kestrel-lofts"
-            return "Scenario browser with the mod's scenario: " + model.scenarioBriefs.map(\.name).joined(separator: ", ")
+            let names: String = model.scenarioBriefs.map(\.name).joined(separator: ", ")
+            return "Scenario browser with the mod's scenario: \(names)"
         },
         Step(name: "06-kestrel-bay", grid: false) { model, scene in
             model.startScenario("kestrel-lofts")
@@ -105,9 +111,9 @@ final class ScreenshotDirector {
             model.advanceSimulation(toTimeOfDay: 19)
             model.refreshSimulationSummary()
             model.scene?.withController { $0.jump(center: Vec2(20, 16), zoom: 9) }
-            let types = Set(model.world?.tenants.values.map(\.typeID) ?? []).sorted()
-            return "\(model.clockText) in \(model.cityName) (mod city): Pier Lofts built from the mod's blueprint; tenant types \(types); "
-                + ScreenshotDirector.objectives(model)
+            let types: [String] = Set(model.world?.tenants.values.map(\.typeID) ?? []).sorted()
+            let objectives: String = ScreenshotDirector.objectives(model)
+            return "\(model.clockText) in \(model.cityName) (mod city): Pier Lofts built from the mod's blueprint; tenant types \(types); \(objectives)"
         },
         Step(name: "07-loft-close-up", grid: false) { model, scene in
             guard let world = model.world,
@@ -116,9 +122,8 @@ final class ScreenshotDirector {
             model.refreshSimulationSummary()
             let x = (world.grid.x(ofColumn: loft.columns.start) + world.grid.x(ofColumn: loft.columns.end)) / 2
             model.scene?.withController { $0.jump(center: Vec2(x, world.grid.y(ofFloor: loft.floors.lowest) + 2), zoom: 34) }
-            let tenant = world.tenants.values.first { $0.room == loft.id }
-            return "Loft Apartment (mod room, furnished from the mod's layout) on floor \(loft.floors.lowest): "
-                + (tenant.map { "\($0.name) (\($0.typeID))" } ?? "vacant")
+            let tenant: String = world.tenants.values.first { $0.room == loft.id }.map { "\($0.name) (\($0.typeID))" } ?? "vacant"
+            return "Loft Apartment (mod room, furnished from the mod's layout) on floor \(loft.floors.lowest): \(tenant)"
         },
         Step(name: "08-save-load", grid: false) { model, scene in
             model.selectRoom(at: nil)
@@ -130,8 +135,9 @@ final class ScreenshotDirector {
                 withoutMod = "\(error)"
             }
             model.refreshSimulationSummary()
-            return "Saved with packs \(model.packReferences.map(\.id)): saved=\(saved) loaded=\(loaded) worldIdentical=\(before != nil && before == model.world); "
-                + "the same save with only the base pack: \(withoutMod)"
+            let ids: [String] = model.packReferences.map(\.id)
+            let identical: Bool = before != nil && before == model.world
+            return "Saved with packs \(ids): saved=\(saved) loaded=\(loaded) worldIdentical=\(identical); the same save with only the base pack: \(withoutMod)"
         },
     ]
 
