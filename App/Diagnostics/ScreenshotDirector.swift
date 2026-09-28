@@ -65,6 +65,9 @@ final class ScreenshotDirector {
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = true
             model.loadStressTower(zones: 10)
+            // A new scene applies its placement when it is presented (a jump now would be
+            // overridden by the default preset).
+            model.scene?.initialPlacement = (Vec2(41, 420), 0.75)
             model.advanceSimulation(toTimeOfDay: 10)
             model.refreshSimulationSummary()
             model.scene?.withController { $0.jump(center: Vec2(41, 420), zoom: 0.75) }
@@ -97,6 +100,7 @@ final class ScreenshotDirector {
         },
         Step(name: "06-400-floors", grid: false) { model, scene in
             model.loadStressTower(zones: 19)
+            model.scene?.initialPlacement = (Vec2(55, 790), 0.4)
             model.advanceSimulation(toTimeOfDay: 10)
             let hours = String(format: "%.0f", model.lastSimulationMs)   // one call simulating 06:00–10:00
             model.refreshSimulationSummary()
