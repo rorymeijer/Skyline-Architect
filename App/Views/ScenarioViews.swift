@@ -91,8 +91,7 @@ struct ScenarioPanel: View {
                 HStack {
                     Text(s.name).font(.headline)
                     Spacer()
-                    Button { model.showScenarioPanel = false } label: { Image(systemName: "xmark.circle.fill") }
-                        .buttonStyle(.plain).foregroundStyle(.secondary)
+                    CloseButton { model.showScenarioPanel = false }
                 }
                 if let r = s.result {
                     Text(r.won ? "Won on day \(SimClock.day(r.tick) + 1)" : "Lost on day \(SimClock.day(r.tick) + 1) — \(r.reason.lowercased())")
@@ -109,7 +108,7 @@ struct ScenarioPanel: View {
             }
             .padding(12)
             .frame(width: 330, alignment: .leading)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            .panelCard()
             .environment(\.colorScheme, .dark)
         }
     }

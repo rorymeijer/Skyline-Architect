@@ -15,7 +15,7 @@ struct UnitInspector: View {
                 Text(report.title).font(.headline)
                 Text("\(report.floor) · \(report.width) m").font(.caption).foregroundStyle(.secondary)
                 Spacer()
-                Button(action: onClose) { Image(systemName: "xmark.circle.fill") }.buttonStyle(.plain).foregroundStyle(.secondary)
+                CloseButton(action: onClose)
             }
             if let o = report.occupant {
                 Text(o.name).font(.subheadline.weight(.semibold))
@@ -64,7 +64,7 @@ struct UnitInspector: View {
         }
         .padding(12)
         .frame(width: 300, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .environment(\.colorScheme, .dark)
     }
 }
@@ -79,7 +79,7 @@ struct LeasingPanel: View {
             HStack {
                 Text("Leasing").font(.headline)
                 Spacer()
-                Button(action: onClose) { Image(systemName: "xmark.circle.fill") }.buttonStyle(.plain).foregroundStyle(.secondary)
+                CloseButton(action: onClose)
             }
             Text("\(summary.leased) of \(summary.units) units let · \(summary.households) households · \(summary.businesses) businesses")
                 .font(.caption)
@@ -96,7 +96,7 @@ struct LeasingPanel: View {
         }
         .padding(12)
         .frame(width: 330, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .panelCard()
         .environment(\.colorScheme, .dark)
     }
 }

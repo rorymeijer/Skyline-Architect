@@ -127,7 +127,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · \(mode) · Phase 19")
+            Text("\(model.cityName) · \(mode) · Phase 20")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -195,6 +195,9 @@ private struct ControlButton: View {
         }
         .buttonStyle(ControlButtonStyle())
         .help(help)
+        // "Elevator Traffic (⌥⌘T)" → "Elevator Traffic"; toggles report their state.
+        .accessibilityLabel(help.components(separatedBy: " (").first ?? help)
+        .accessibilityValue(isOn ? "On" : "")
     }
 }
 
