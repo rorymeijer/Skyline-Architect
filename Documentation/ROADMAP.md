@@ -97,7 +97,11 @@ everything), standing panel, promotion banner, locked tools. Scenario goals foll
 
 Levels + reputation unlocking systems in order of simulation complexity.
 
-### Phase 12 — Full day/night + lighting
+### Phase 12 — Full day/night + lighting ✅ (2026-09-28)
+Delivered: lighting model per room type (content), energy metered and billed, lights need power,
+colour grading, coloured room light, façade window panes, night emission layer (city, neighbours,
+street lamps). Player lighting policies and real falloff/shadows later.
+
 Interior light sources, window emission, sunrise/sunset grading, energy link.
 
 ### Phase 13 — Weather

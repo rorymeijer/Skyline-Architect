@@ -66,6 +66,11 @@ failureBelow, cleanMinutes, repairMinutes, shiftStart, shiftEnd`. Rooms may set
 `wearPerDay`. Elevator specs may set `serviceOnly: true` (staff only). Tenant weights may
 set `services`. See FACILITIES.md.
 
+### Lighting (rooms.json, economy.json)
+Rooms may set `lighting {color "#RRGGBB", occupied, empty, wattsPerModule, quietHours?
+{from "HH:MM", to, level, spreadMinutes}}`; `economy.json` may set `lightingPricePerKWh`.
+See LIGHTING.md.
+
 ### Progression (progression.json, rooms.json, tenants.json, starts.json)
 `progression.json`: `reputation {dailyAdjustment, weights {satisfaction, services, waits,
 occupancy}, goodWaitSeconds, badWaitSeconds, moveOutPenalty, demandAtZero, demandAtHundred}`

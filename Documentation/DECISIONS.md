@@ -258,3 +258,14 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - A badly run building keeps its class but loses tenants through lower demand.
   - Old saves load as sandbox games.
 
+## D-037 — One lighting model for energy and rendering; static night emission
+- **Date:** 2026-09-28
+- **Decision:**
+  - Room lighting levels come from `Lighting.level` in Core, with content specs. The simulation meters them hourly at market events and bills them daily. The renderer draws the same levels scaled by darkness.
+  - Static night lights (city, neighbours, lamps) are a composition layer, rendered as additive tiles above the grade with the tower's silhouettes cleared.
+- **Alternatives:** A separate visual-only lighting rule (the bill and the picture could disagree); shading the backdrop per frame (thousands of sprites); a runtime mask node (inverse masks are awkward in SpriteKit).
+- **Reason:** Rule 4 (no game rules in the renderer) and pillar 3 (traceable numbers): what you see lit is what you pay for.
+- **Consequences:**
+  - Metering hourly is an approximation of the integral (within one hour of occupancy change).
+  - The emission layer's tiles are redrawn where construction changes the silhouette.
+

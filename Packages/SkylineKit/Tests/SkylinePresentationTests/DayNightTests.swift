@@ -64,6 +64,7 @@ import SkylineContent
         let game = try NewGameFactory.make(startID: NewGameFactory.defaultStartID, library: lib)
         let a = try #require(SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog))
         let b = try #require(SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog))
+        print("[lighting] emission items: \(a.emission.drawing.items.count)")
         #expect(a.emission.drawing.items.count > 500)                                  // city windows, neighbours, lamps
         #expect(a.emission.drawing.items == b.emission.drawing.items)                  // deterministic
         #expect(!a.layers.contains { $0.name == "emission" })                          // drawn separately

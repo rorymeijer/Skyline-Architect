@@ -186,3 +186,22 @@ types and more demanding tenants. The standing panel always shows what the next 
 needs. Classes are never lost, but a neglected building's reputation, and with it its
 demand, sinks. The sandbox keeps everything unlocked.
 
+## Phase 12 player experience (current)
+
+The day now has a colour:
+
+* The morning starts rose.
+* The late afternoon turns golden.
+* The sunset glows amber at the horizon.
+* The night is deep blue.
+
+As the light fades, the city lights up behind the tower, the neighbours' windows come on
+and the street lamps glow. Inside the tower, offices shine cool white while people work
+and go dark when they leave. Homes glow warm in the evening and go out one by one after
+22:30; lobbies and corridors stay dimly lit all night. Zoomed out, the tower's lit rooms
+show as windows on its façade.
+
+Light costs money. The facilities panel shows the current lighting load, and every
+morning's closing bills the night's energy. Cutting the power, for instance by demolishing
+the electrical room, turns the tower dark.
+

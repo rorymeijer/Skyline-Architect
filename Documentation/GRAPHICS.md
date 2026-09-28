@@ -72,7 +72,19 @@ based LOD, not a fixed zoom. Below-grade levels always stay in section.
 * No lighting model yet (day only; day/night lands in Phase 9/12).
 * No shaders yet; depth comes from gradients and contact darkening.
 
-## Day/night (Phase 9, basic) — FUNCTIONAL
+## Day/night and lighting (Phase 12) — FUNCTIONAL
+
+Phase 12 adds:
+
+* colour grading (a vertical gradient: rose sunrise, amber golden hour and sunset, blue night);
+* coloured room light from the content lighting model;
+* façade window panes when zoomed out;
+* a static emission layer: city windows, neighbour windows and street lamps, cleared behind
+  the tower.
+
+See LIGHTING.md.
+
+## Day/night (Phase 9, basic) — FUNCTIONAL (superseded in part by Phase 12)
 
 `DayNight` (Presentation) gives daylight 0…1 from the time of day (sunrise 04:45–06:15,
 sunset 19:00–21:00), an ambient multiply colour (white → warm at dusk → blue night) and the
