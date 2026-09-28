@@ -238,7 +238,7 @@ public struct ContentLibrary: Sendable {
             }
         }
         if let first = problems.first {
-            throw ContentError(pack: manifest.id, file: "schedules/names/rooms/elevators/tenants/economy/facilities/progression/weather/events", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
+            throw ContentError(pack: manifest.id, file: "rules", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
         }
         simulationRules = SimulationRules(schedules: schedules, names: names, elevators: elevators, tenantTypes: tenants, economy: economy,
                                           facilities: facilities, progression: progression?.reputation, weather: weather,

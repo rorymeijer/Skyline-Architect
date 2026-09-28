@@ -91,7 +91,7 @@ import SkylineCore
         func state(_ id: String) -> PackStatus.State? { result.packs.first { $0.id == id }?.state }
         func failure(_ id: String) -> String { if case .failed(let why)? = state(id) { why } else { "" } }
         #expect(failure("aa-garbled").contains("Invalid JSON"))
-        #expect(failure("bad-ref").hasPrefix("[bad-ref/") && failure("bad-ref").contains("tenant 'ghost': unknown room type 'no-such-room'"))
+        #expect(failure("bad-ref").hasPrefix("[bad-ref/rules] ") && failure("bad-ref").contains("tenant 'ghost': unknown room type 'no-such-room'"))
         #expect(failure("odd-kind").contains("Unknown definition kind 'spells'"))
         #expect(failure("needs-other").contains("Requires 'not-installed'"))
         #expect(result.packs.filter { $0.id == "base" }.map(\.state) == [.active, .failed("Another pack already uses the id 'base'")])
