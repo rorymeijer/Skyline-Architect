@@ -12,7 +12,7 @@ import SkylineCore
         let overcast = CloudView.clouds(seed: 7301, time: 3600, cover: 1, centerX: 30)
         #expect(a.count == 10 && overcast.count == 30)
         #expect(overcast.map(\.opacity).max()! > a.map(\.opacity).max()!)
-        #expect(a.allSatisfy { $0.center.y >= 240 && $0.center.y < 950 && $0.size.x > 0 })
+        #expect(a.allSatisfy { $0.center.y >= 180 && $0.center.y < 820 && $0.size.x > 0 })
     }
 
     /// Clouds drift with game time (paused game, still sky) and wrap around the field.
@@ -21,7 +21,7 @@ import SkylineCore
         let later = CloudView.clouds(seed: 1, time: 60, cover: 0.5, centerX: 0)
         for (a, b) in zip(now, later) {
             let dx = b.center.x - a.center.x
-            #expect(dx > 0 && dx < 60 * CloudView.wind * 1.5 || dx < -5000)   // moved east, or wrapped
+            #expect(dx > 0 && dx < 60 * CloudView.wind * 1.5 || dx < -2000)   // moved east, or wrapped
             #expect(a.center.y == b.center.y)
         }
         let view = Rect(minX: -200, minY: 0, maxX: 200, maxY: 1000)

@@ -10,7 +10,8 @@ extension AppModel {
     func refreshEconomy() {
         guard let world, let simulation else { return }
         let building = activePropertyID.flatMap { world.buildings(on: $0).first?.id }
-        economy = EconomySummary.make(world: world, rules: simulation.rules, building: building)
+        // Five recent lines keep the panel inside a 681 pt window next to another panel (Phase 20).
+        economy = EconomySummary.make(world: world, rules: simulation.rules, building: building, recent: 5)
         if world.ledger.bankrupt && speed != .paused { setSpeed(.paused) }
     }
 
