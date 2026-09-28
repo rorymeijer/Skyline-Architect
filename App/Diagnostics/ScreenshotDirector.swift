@@ -57,87 +57,66 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Mods are installed, enabled and applied through the same calls as the mod manager's
-    // buttons, in the capture's own mods folder. The broken mod in 04 is written by this
-    // script to show validation reporting. Towers are built with blueprints (developer tool);
-    // leasing is the simulation's own.
+    // iCloud Drive cannot be used by an unsigned CI build: the sync runs against a local
+    // folder standing in for the app's iCloud container (`syncFolderOverride`), through the
+    // same calls as the saves panel. "The iPad" is simulated by this script writing saves
+    // straight into that folder. Step 06 shows what the real iCloud lookup returns on CI.
     let steps: [Step] = [
-        Step(name: "01-mods-empty", grid: false) { model, scene in
+        Step(name: "01-saves-local", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
-            model.showMainMenu = true
-            model.openModManager()
-            scene.withController { $0.jump(center: Vec2(22, 12), zoom: 7) }
-            let packs: String = ScreenshotDirector.packs(model)
-            return "Mod manager before any mod is installed: \(packs)"
+            model.applyBlueprint("demo-tower")
+            model.advanceSimulation(toTimeOfDay: 10)
+            model.autosaveIfNeeded()
+            model.save(slot: "Quay Street", title: "Quay Street Tower")
+            model.save(slot: SaveStore.quicksaveSlot, title: "Quay Street Tower")
+            model.openSavesPanel()
+            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 8) }
+            let slots: [String] = model.availableSaves().map(\.slot)
+            return "Saves panel, iCloud Drive off: \(slots); \(model.syncStatus)"
         },
-        Step(name: "02-examples-installed", grid: false) { model, scene in
-            model.installExampleMods()
-            model.toggleMod("kestrel-bay")
-            let packs: String = ScreenshotDirector.packs(model)
-            return "Installed the example mods and switched Kestrel Bay on (pending): \(packs); pending=\(model.hasPendingModChanges)"
+        Step(name: "02-sync-on", grid: false) { model, scene in
+            model.setSyncEnabled(true)
+            let cloud: [String] = ScreenshotDirector.cloudSlots(model)
+            return "iCloud Drive on (stand-in folder): \(model.syncStatus); cloud holds \(cloud)"
         },
-        Step(name: "03-mod-active", grid: false) { model, scene in
-            model.applyMods()
-            model.openModManager()
-            let changes = model.packStatuses.first { $0.id == "kestrel-bay" }?.changes
-            let packs: String = ScreenshotDirector.packs(model)
-            let ids: [String] = model.packReferences.map(\.id)
-            let added: String = changes?.added.joined(separator: ", ") ?? "—"
-            let replaced: String = changes?.replaced.joined(separator: ", ") ?? "—"
-            return "Applied: \(packs); library packs \(ids); Kestrel Bay adds \(added); replaces \(replaced)"
+        Step(name: "03-from-other-device", grid: false) { model, scene in
+            let written: Bool = ScreenshotDirector.writeFromOtherDevice(model, slot: "iPad Quay", title: "Quay Street — played on iPad", hours: 30)
+            model.syncSaves()
+            let slots: [String] = model.availableSaves().map(\.slot)
+            return "A save from the other device (written by the script: \(written)) arrived: \(model.syncStatus); saves \(slots)"
         },
-        Step(name: "04-broken-mod", grid: false) { model, scene in
-            ScreenshotDirector.writeBrokenMod(into: model.modsDirectory)
-            model.rescanMods()
-            model.toggleMod("harbour-lights")
-            model.applyMods()
-            model.openModManager()
-            let packs: String = ScreenshotDirector.packs(model)
-            return "A mod with a broken reference (written by the capture script) is reported and skipped: \(packs)"
+        Step(name: "04-conflict", grid: false) { model, scene in
+            // Both edits happen before either device syncs: the iPad's version reaches the
+            // cloud first, then this device saves (and syncs) its own.
+            let written: Bool = ScreenshotDirector.writeFromOtherDevice(model, slot: "Quay Street", title: "Quay Street Tower (edited on iPad)", hours: 5)
+            model.advanceSimulation(ticks: 2 * 3600)
+            model.save(slot: "Quay Street", title: "Quay Street Tower")
+            let conflicts: [String] = model.syncConflicts
+            return "Both devices changed \"Quay Street\" (iPad copy written: \(written)): \(model.syncStatus); conflict copies \(conflicts)"
         },
-        Step(name: "05-scenario-from-mod", grid: false) { model, scene in
-            model.showModManager = false
-            model.openScenarioBrowser()
-            model.selectedScenarioID = "kestrel-lofts"
-            let names: String = model.scenarioBriefs.map(\.name).joined(separator: ", ")
-            return "Scenario browser with the mod's scenario: \(names)"
-        },
-        Step(name: "06-kestrel-bay", grid: false) { model, scene in
-            model.startScenario("kestrel-lofts")
-            model.setSpeed(.paused)
-            model.applyBlueprint("kestrel-lofts")
-            model.advanceSimulation(ticks: SimClock.secondsPerDay)
-            model.advanceSimulation(toTimeOfDay: 19)
+        Step(name: "05-loaded-conflict-copy", grid: false) { model, scene in
+            guard let copy = model.syncConflicts.first else { return "no conflict copy" }
+            let expected = ScreenshotDirector.otherDeviceWorlds["Quay Street"]
+            let loaded: Bool = model.load(slot: copy)
+            model.showLoadSheet = false
             model.refreshSimulationSummary()
-            model.scene?.withController { $0.jump(center: Vec2(20, 16), zoom: 9) }
-            let types: [String] = Set(model.world?.tenants.values.map(\.typeID) ?? []).sorted()
-            let objectives: String = ScreenshotDirector.objectives(model)
-            return "\(model.clockText) in \(model.cityName) (mod city): Pier Lofts built from the mod's blueprint; tenant types \(types); \(objectives)"
+            model.scene?.withController { $0.jump(center: Vec2(22, 16), zoom: 8) }
+            let identical: Bool = expected != nil && expected == model.world
+            return "Loaded the conflict copy \"\(copy)\": loaded=\(loaded), identical to the iPad's version=\(identical), \(model.clockText)"
         },
-        Step(name: "07-loft-close-up", grid: false) { model, scene in
-            guard let world = model.world,
-                  let loft = world.rooms.values.first(where: { $0.definitionID == "apartment-loft" }) else { return "no loft" }
-            model.selectRoom(at: ScreenshotDirector.cell(of: loft))
-            model.refreshSimulationSummary()
-            let x = (world.grid.x(ofColumn: loft.columns.start) + world.grid.x(ofColumn: loft.columns.end)) / 2
-            model.scene?.withController { $0.jump(center: Vec2(x, world.grid.y(ofFloor: loft.floors.lowest) + 2), zoom: 34) }
-            let tenant: String = world.tenants.values.first { $0.room == loft.id }.map { "\($0.name) (\($0.typeID))" } ?? "vacant"
-            return "Loft Apartment (mod room, furnished from the mod's layout) on floor \(loft.floors.lowest): \(tenant)"
+        Step(name: "06-icloud-unavailable", grid: false) { model, scene in
+            let standIn = model.syncFolderOverride
+            model.syncFolderOverride = nil
+            model.openSavesPanel()
+            let status: String = model.syncStatus
+            model.syncFolderOverride = standIn
+            return "The real iCloud container lookup on this unsigned CI build: \(status)"
         },
-        Step(name: "08-save-load", grid: false) { model, scene in
-            model.selectRoom(at: nil)
-            let before = model.world
-            let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
-            let loaded = model.load(slot: "capture-roundtrip")
-            var withoutMod = "loaded"
-            do { _ = try model.saveStore.load(slot: "capture-roundtrip", availablePacks: [ContentPackReference(id: "base", version: "0.1.0")]) } catch {
-                withoutMod = "\(error)"
-            }
-            model.refreshSimulationSummary()
-            let ids: [String] = model.packReferences.map(\.id)
-            let identical: Bool = before != nil && before == model.world
-            return "Saved with packs \(ids): saved=\(saved) loaded=\(loaded) worldIdentical=\(identical); the same save with only the base pack: \(withoutMod)"
+        Step(name: "07-delete-propagates", grid: false) { model, scene in
+            model.deleteSave(slot: "iPad Quay")
+            let cloud: [String] = ScreenshotDirector.cloudSlots(model)
+            return "Deleted \"iPad Quay\" here: \(model.syncStatus); cloud now holds \(cloud)"
         },
     ]
 

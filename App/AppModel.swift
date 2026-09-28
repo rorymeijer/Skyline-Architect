@@ -115,6 +115,15 @@ final class AppModel {
     var packStatuses: [PackStatus] = []
     var showModManager = false
     static let enabledModsKey = "enabledMods"
+    /// Save sync with iCloud Drive (Phase 18; off by default), its last result and the
+    /// saves panel's page.
+    var syncEnabled = false
+    var syncStatus = "Saves stay on this device."
+    var syncedSlots: Set<String> = []
+    var syncConflicts: [String] = []
+    var savesPage = 0
+    /// Debug captures: a local folder standing in for iCloud Drive.
+    @ObservationIgnored var syncFolderOverride: URL?
 
     static let autosaveInterval: TimeInterval = 120
 
@@ -128,14 +137,19 @@ final class AppModel {
         var mods = Self.defaultModsDirectory()
         var enabled = UserDefaults.standard.stringArray(forKey: Self.enabledModsKey) ?? []
         var persists = true
+        var sync = UserDefaults.standard.bool(forKey: Self.syncSavesKey)
         #if DEBUG
         if let config = ScreenshotDirector.Configuration(arguments: arguments) {
-            // Captures use their own mods folder and never read or change the player's mods.
+            // Captures use their own mods and sync folders and never read or change the
+            // player's settings.
             mods = config.directory.appendingPathComponent("mods", isDirectory: true)
             enabled = []
             persists = false
+            sync = false
+            syncFolderOverride = config.directory.appendingPathComponent("cloud", isDirectory: true)
         }
         #endif
+        syncEnabled = sync
         modsDirectory = mods
         enabledMods = enabled
         modDraft = enabled
@@ -160,6 +174,7 @@ final class AppModel {
             scene.onReady = { [weak director] in director?.start() }
         }
         #endif
+        syncSaves()
         autosaveTimer = Timer.scheduledTimer(withTimeInterval: Self.autosaveInterval, repeats: true) { [weak self] _ in
             self?.autosaveIfNeeded()
         }
@@ -405,6 +420,7 @@ final class AppModel {
         guard let save = makeSave(title: title ?? propertyName) else { return false }
         do {
             try saveStore.write(save, slot: slot)
+            syncSaves()
             hasUnsavedChanges = false
             lastSaveDescription = "Saved “\(slot)” at \(Self.timeFormatter.string(from: save.metadata.savedAt))"
             return true

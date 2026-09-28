@@ -2,6 +2,21 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.18.0] — Phase 18: iCloud persistence
+
+### Added
+- **Save sync with iCloud Drive** (off by default), in both directions:
+  - a save changed on one device reaches the others;
+  - a conflict keeps both versions ("‹slot› conflict ‹date›");
+  - deletions follow only unchanged copies;
+  - iCloud placeholders wait for their download;
+  - autosaves stay on the device.
+- **Saves panel** (replaces the load sheet): the saves with their sync state (in iCloud
+  Drive, not synced yet, conflict copy, this device only), the iCloud Drive switch, sync
+  status, *Sync Now*, paging and *Delete* with confirmation.
+- The iCloud connection needs a signed build with an iCloud container (setup in
+  SAVE_FORMAT.md). Without one, the panel says iCloud Drive is unavailable.
+
 ## [0.17.0] — Phase 17: Modding
 
 ### Added

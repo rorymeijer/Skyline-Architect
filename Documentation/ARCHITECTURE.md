@@ -184,6 +184,9 @@ over each other by id, and `ContentLibrary.build` validates the merged result. `
 discovers mod folders, applies the enabled ones in order and validates each step, reporting
 `PackStatus` per pack. The app keeps the enabled list as a setting and rebuilds its engines
 from the new library (D-042).
+Save sync (SAVE_FORMAT.md → Sync): `SaveSync` in Persistence syncs two folders by
+fingerprint against a per-device base (pure file logic, Linux-tested); the app only chooses
+the shared folder (iCloud container) and when to sync (D-043).
 
 ## 6. Concurrency model
 

@@ -11,9 +11,6 @@ struct RootView: View {
                     .ignoresSafeArea()
                 ChromeOverlay(model: model)
             }
-            .sheet(isPresented: Binding(get: { model.showLoadSheet }, set: { model.showLoadSheet = $0 })) {
-                LoadGameSheet(model: model)
-            }
             .alert(model.alert?.title ?? "", isPresented: Binding(get: { model.alert != nil }, set: { if !$0 { model.alert = nil } })) {
                 Button("OK", role: .cancel) { model.alert = nil }
             } message: {
@@ -100,7 +97,9 @@ struct ChromeOverlay: View {
             }
             .padding(.bottom, 58)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-            if model.showModManager {
+            if model.showLoadSheet {
+                SavesPanel(model: model)
+            } else if model.showModManager {
                 ModManagerView(model: model)
             } else if model.showScenarioBrowser {
                 ScenarioBrowserView(model: model)
@@ -128,7 +127,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · \(mode) · Phase 17")
+            Text("\(model.cityName) · \(mode) · Phase 18")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

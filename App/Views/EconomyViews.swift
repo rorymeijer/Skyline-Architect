@@ -125,7 +125,7 @@ struct MainMenuView: View {
                     MenuButton(title: "Mods…", subtitle: model.enabledMods.isEmpty ? "Content packs" : "\(model.enabledMods.count) enabled") {
                         model.openModManager()
                     }
-                    MenuButton(title: "Load Game…", subtitle: nil) { model.showLoadSheet = true }
+                    MenuButton(title: "Load Game…", subtitle: nil) { model.openSavesPanel() }
                 }
                 .frame(width: 300)
                 .padding(.top, 8)
@@ -149,7 +149,7 @@ struct BankruptcyView: View {
                 Text("Cash stayed below zero for \(model.economy.bankruptcyDays) daily closings in a row. The creditors take over the building.")
                     .multilineTextAlignment(.center).frame(width: 320).foregroundStyle(.secondary)
                 MenuButton(title: "New Game", subtitle: nil) { model.startFromMenu() }.frame(width: 260)
-                MenuButton(title: "Load Game…", subtitle: nil) { model.showLoadSheet = true }.frame(width: 260)
+                MenuButton(title: "Load Game…", subtitle: nil) { model.openSavesPanel() }.frame(width: 260)
             }
             .padding(32)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))

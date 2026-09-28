@@ -2,6 +2,7 @@
 import Foundation
 import SkylineCore
 import SkylineContent
+import SkylinePersistence
 import SkylineSimulation
 
 /// Scenario helpers for the Phase 6 (elevator) captures.
@@ -109,6 +110,28 @@ extension ScreenshotDirector {
         let tenants = #"[{"id":"lighthouse-keeper","name":"Lighthouse Keeper","kind":"household","rooms":["lighthouse-flat"],"role":"resident","members":{"fixed":1},"schedules":["resident-commuter"],"budgetPerModule":200,"weights":{"rent":1,"access":1,"noise":1,"view":1},"minScore":0.5,"leaveBelow":0.3,"prospectsPerDay":1}]"#
         try? manifest.write(to: folder.appendingPathComponent("pack.json"), atomically: true, encoding: .utf8)
         try? tenants.write(to: folder.appendingPathComponent("tenants.json"), atomically: true, encoding: .utf8)
+    }
+
+    /// Slots in the stand-in cloud folder (Phase 18).
+    static func cloudSlots(_ model: AppModel) -> [String] {
+        guard let folder = model.syncFolderOverride else { return [] }
+        return SaveStore(directory: folder).list().map(\.slot).sorted()
+    }
+
+    /// Worlds the simulated other device wrote, by slot (to check what was loaded).
+    static var otherDeviceWorlds: [String: GameWorld] = [:]
+
+    /// Writes a save into the stand-in cloud folder as another device would: the current
+    /// world advanced by `hours` on a copy.
+    static func writeFromOtherDevice(_ model: AppModel, slot: String, title: String, hours: Int) -> Bool {
+        guard let folder = model.syncFolderOverride, var world = model.world, let simulation = model.simulation,
+              let property = model.activePropertyID else { return false }
+        simulation.advance(&world, by: Tick(hours * 3600))
+        let save = SaveGame(metadata: SaveMetadata(title: title, savedAt: Date(), gameVersion: "0.18.0 (iPad)"),
+                            contentPacks: model.packReferences, activePropertyID: property, world: world)
+        guard (try? SaveStore(directory: folder).write(save, slot: slot)) != nil else { return false }
+        otherDeviceWorlds[slot] = world
+        return true
     }
 
     static func carCenter(_ car: ElevatorCar, in world: GameWorld) -> Vec2? {
