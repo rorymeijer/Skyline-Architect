@@ -1,16 +1,98 @@
 # Modding
 
-Status: **SCAFFOLDED** — content already loads from a declarative JSON pack; pack
-merging and user mod folders are PLANNED for Phase 17.
+Status: **FUNCTIONAL (Phase 17)**. Implemented:
+
+* the base pack plus user mods from a mods folder;
+* an enabled list and a load order;
+* entries replaced or added by id;
+* each mod validated on top of everything loaded before it (a failing mod is skipped and reported);
+* dependencies (`requires`);
+* saves record their packs;
+* the mod manager;
+* an example mod ("Kestrel Bay").
+
+**PLANNED:**
+
+* removing base entries;
+* images and sprite sheets;
+* a content hash per pack in saves (today: pack ids);
+* hot reload without a new game;
+* sharing mods through a catalogue.
 
 ## Rules
 
-* Mods are **data only** (JSON, and later images/sprite sheets). No scripts, no native
-  code, no dynamic libraries. Ever.
-* Every definition has a stable string `id` (`namespace.name` recommended for mods,
-  e.g. `acme.rooftop-bar`).
-* Validation errors name the pack, file and id; invalid packs are rejected, never
-  partially applied.
+* Mods are **data only**: JSON, and later images and sprite sheets. There are no scripts, no
+  native code and no dynamic libraries, ever. The loader only decodes JSON (rule 15).
+* Every definition has a stable string `id`. For new entries, prefix it with your pack's
+  name (e.g. `acme-rooftop-bar`).
+* Validation errors name the pack, the file or area, and the entry. A mod is never
+  partially applied: it loads completely or not at all.
+
+## Mods (Phase 17)
+
+**Where mods live.**
+
+* Each mod is a folder with a `pack.json`, laid out like the base pack below.
+* The folder is `~/Library/Application Support/Skyline Architect/Mods/` (on iPadOS, the
+  app container equivalent).
+* The mod manager (main menu → *Mods…*) lists every installed pack. There you switch a
+  pack on or off, change the load order, and install the bundled examples.
+* *Apply* reloads all content and starts a fresh game; saves are kept.
+
+**The manifest** (`pack.json`):
+
+```json
+{ "id": "kestrel-bay", "name": "Kestrel Bay", "version": "1.0.0", "formatVersion": 1,
+  "description": "One line for the mod manager.", "author": "…", "requires": ["other-pack"],
+  "files": { "cities": "cities.json", "rooms": "rooms.json", … } }
+```
+
+`files` may list these kinds:
+
+* `cities`, `plots`, `starts`, `rooms`, `buildRules`, `blueprints`;
+* `materials`, `furniture`, `interiors`, `schedules`, `names`, `elevators`;
+* `tenants`, `economy`, `facilities`, `progression`, `weather`, `events`, `scenarios`.
+
+An unknown kind rejects the pack, which catches typos.
+
+**How packs combine.** Packs load in order, starting with the base pack:
+
+* **List kinds:**
+  * An entry with an id that already exists **replaces** that entry in place, keeping its
+    position (for interiors and elevators, the key is `room`).
+  * New ids are **added**.
+  * To change one field, copy the whole entry and edit it.
+* **Single-file kinds** (`buildRules`, `names`, `economy`, `facilities`, `progression`,
+  `weather`, `events`): the mod's file replaces the whole file.
+* **`materials`:** merged per key.
+
+**Validation.**
+
+* After laying each mod over the base pack and the mods before it, the loader validates
+  the result with the same rules as the base pack.
+* A mod that fails is skipped. It is listed as *Not loaded* with the first problem, for
+  example: `[bad-ref/…] tenant 'ghost': unknown room type 'no-such-room'`.
+* The mods after it still load, and the base game never depends on a mod.
+* Other reasons a mod is skipped:
+  * its JSON is invalid;
+  * its format is unsupported;
+  * its id is already taken;
+  * a pack listed in `requires` is not loaded before it.
+
+**Saves** list every pack that was loaded. Loading such a save without one of those packs
+is refused and names the missing pack. A mod that adds content the save uses must stay
+installed.
+
+**The example mod** is Kestrel Bay (`SkylineContent/Resources/Examples/kestrel-bay`). It
+adds:
+
+* the city of Kestrel Bay and a plot for sale there;
+* a scenario start and the scenario "Kestrel Lofts";
+* the Loft Apartment room with its interior layout;
+* the "Pier Lofts" blueprint;
+* a Creative Household tenant type.
+
+It also replaces the Couple tenant type, so couples rent lofts too.
 
 ## Pack layout (current base pack)
 
@@ -138,7 +220,4 @@ elevation?, flip?, minRoomWidth?, maxRoomWidth?, reserve? } | { repeat: { spacin
 items: [{ furniture, offset, elevation?, flip? }] } }]`. Validation rejects unknown
 materials, furniture, slots and rooms.
 
-## Planned (Phase 17)
 
-Load order (base → mods by dependency), override-by-id with explicit `"override": true`,
-additive lists, content hashes stored in saves so a save knows which packs it needs.

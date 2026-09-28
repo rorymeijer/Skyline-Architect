@@ -278,3 +278,17 @@ The briefing says what counts. During play the objectives panel shows each objec
 progress and how many daily closings are left. Every morning's closing checks the
 objectives. When they all hold, the scenario is won; when the money runs out or the
 deadline passes, it is lost. Either way, the player can keep playing the estate afterwards.
+
+## Phase 17 player experience (current)
+
+The main menu has **Mods…**. The mod manager lists the content packs in the mods folder.
+For each pack it shows what it adds and replaces, or, when it cannot load, which file and
+entry are wrong. The player switches packs on and off, puts them in order and applies the
+change, which reloads all content and starts a fresh game.
+
+The game ships an example, **Kestrel Bay**: a seaside town with land for sale, a loft
+apartment and the households who want one, a tower blueprint and a scenario. Its new city
+appears in the estate panel, its room in the build palette and its scenario in the
+browser, with no code involved. A broken mod never takes the game down: it is listed as
+not loaded, with the reason.
+

@@ -2,6 +2,20 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.17.0] — Phase 17: Modding
+
+### Added
+- **Mods**: content packs in a user mods folder, laid over the base pack in a chosen
+  order. Entries replace or add by id; single files replace; materials merge.
+- **Validation per mod**: each mod is validated on top of the others. A broken mod is
+  skipped and reported (with its file and entry); the base game and the other mods still
+  load. `requires` checks dependencies.
+- **Mod manager** (main menu → *Mods…*): installed packs with what they add and replace or
+  why they failed; on/off, load order, *Install Examples*, *Apply*.
+- **Example mod "Kestrel Bay"**: a city, a plot, a scenario, a loft apartment room with its
+  interior, a blueprint and a tenant type; it replaces the Couple tenant type.
+- Saves record every loaded pack; a save needing a missing mod is refused by name.
+
 ## [0.16.0] — Phase 16: Scenarios
 
 ### Added
