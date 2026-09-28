@@ -1,16 +1,22 @@
 # Development Status
 
-_Last updated: 2026-09-28 (0.20.2 — player feedback: overhangs, shafts, names)_
+_Last updated: 2026-09-28 (0.20.3 — flats for sale)_
 
 ## Current phase
-**0.20.2 — Player feedback: COMPLETE on the branch.** After the first look at the game:
-- floors can no longer be wider than the floor below (D-048);
-- stairwells and elevator shafts can go over rooms, which give way by getting narrower or
-  splitting (D-049);
-- shafts can be made taller or shorter (drag an end, or the inspector buttons);
-- tenant names are unique.
+**0.20.3 — Flats for sale: COMPLETE on the branch.**
+- A vacant flat can be offered for sale in the inspector (D-050). A household buys it for
+  the asking rent × 100, then pays a quarter of the rent as service charges.
+- Owners hold on three times as long as renters; sold flats stay privately owned.
+- Save format 15.
 
-Evidence: 302 tests, CI run 36457150047, captures in `Development/Screenshots/Shafts-0.20.2/`.
+Evidence: 308 tests, CI run 36464379394, captures in `Development/Screenshots/Sales-0.20.3/`.
+The owners' labels were too long for a studio in the first run: shortened ("Rinaldi · owner").
+
+Earlier today, 0.20.2 (merged: rorymeijer/Skyline-Architect#22):
+- no overhangs;
+- shafts over rooms;
+- shaft heights;
+- unique tenant names.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |

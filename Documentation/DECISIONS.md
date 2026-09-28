@@ -424,6 +424,22 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-050 — Flats for sale: one-off price, then service charges
+- **Date:** 2026-09-28
+- **Decision:** Tenure is per unit (`Room.tenure`: rent / forSale / owned), chosen by the
+  player for vacant flats in the inspector. A sale pays asking rent × `saleMonths` once;
+  the owner then pays `serviceChargeShare` of the rent monthly and moves out only after
+  `ownerPatience` bad reviews. A sold flat never returns to the player: an owner who leaves
+  is followed by a private resale. Only households buy.
+- **Alternatives (offered to the player):** sale only, with no income afterwards; sale with
+  buy-back; a per-building share for sale.
+- **Reason:** The player chose a sale plus service charges, set per flat. Keeping sold flats
+  private closes the loop of selling the same flat twice, and the monthly service charges
+  keep the building's economy running.
+- **Consequences:** Save format 15. Selling trades future rent for cash now: a sold studio
+  brings about 100 days of rent at once, then a quarter of the rent. The balance is
+  first-pass and needs a play test.
+
 ## D-049 — Shafts make rooms give way; shafts can be resized
 - **Date:** 2026-09-28
 - **Decision:** A shaft placed or extended over rooms trims them: each loses the shaft's

@@ -2,6 +2,16 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.20.3] — Flats for sale
+
+### Added
+- **Buying next to renting.** Offer a vacant flat for sale in the unit inspector. A
+  household buys it for the asking rent × 100, then pays a quarter of the rent as monthly
+  service charges and holds on three times as long as a renter. Sold flats stay privately
+  owned (resold between owners, never demolished or cut by a shaft). Businesses always
+  rent. New ledger category *Sales*; the leasing panel counts sold flats and flats for sale.
+- Save format 15 (migration from 14).
+
 ## [0.20.2] — Shafts over rooms, shaft heights, unique names, no overhangs
 
 ### Added

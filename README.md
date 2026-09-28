@@ -5,7 +5,7 @@ iPadOS. Swift · SwiftUI · SpriteKit. No third-party engines, no copied assets.
 
 <img src="App/Assets.xcassets/AppIcon.appiconset/mac-256.png" width="128" alt="App icon: a cut-away tower at dusk">
 
-## What the game does (0.20.2)
+## What the game does (0.20.3)
 
 Build a tower in cross-section and keep it running.
 
@@ -14,7 +14,7 @@ Build a tower in cross-section and keep it running.
 | **Construction** | Floors, rooms and shafts on a grid, with structural rules. Undo and redo. Construction costs and refunds. |
 | **People** | Every resident, worker and staff member is simulated: schedules, walking and stairs, elevators with patience, route planning with sky-lobby transfers. |
 | **Elevators** | Cars, banks, express shuttles, and three dispatch strategies with statistics and a traffic overlay. |
-| **Tenants** | A rental market where prospects appraise rent, access, noise, view and services, with satisfaction and move-outs. |
+| **Tenants** | A rental market with flats for sale beside flats for rent, where prospects appraise rent, access, noise, view and services, with satisfaction and move-outs. |
 | **Economy** | Ledger, rent, running costs, loans and bankruptcy. |
 | **Facilities** | Utilities with a reach and a capacity, wear and dirt, and janitors and technicians. |
 | **Progression** | Reputation and building classes that unlock rooms, height and tenants. |

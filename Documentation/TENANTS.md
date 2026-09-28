@@ -1,13 +1,29 @@
 # Tenants & Leasing
 
 Status: **FUNCTIONAL (Phase 8)** — tenant types from content, a deterministic rental
-market, unit appraisal, daily reviews and move-outs, unit inspector and leasing panel.
-**PLANNED:** rent charged and configurable (Phase 9 economy), amenities and retail
-(later room types), reputation effects (Phase 11), visitors.
+market, unit appraisal, daily reviews and move-outs, unit inspector and leasing panel;
+flats for sale next to flats for rent (0.20.3, see *Buying and renting* below).
+**PLANNED:** amenities and retail (later room types), visitors.
 
 Code: `SkylineCore/Tenant.swift` (saved state), `SkylineSimulation/TenantType.swift`,
 `Leasing.swift` (appraisal, market, signing, move-out), `LeasingReports.swift` (UI data),
 content `tenants.json`; app `LeasingViews.swift`, `AppModel+Tenants.swift`.
+
+## Buying and renting (0.20.3)
+
+* **Per flat, in the inspector.** A vacant flat is *for rent* (the default) or *for sale*.
+  Only room types that some household type lives in can be sold; businesses always rent.
+* **A sale.** A household that signs for a flat for sale buys it: the player receives the
+  asking rent × `saleMonths` (100) at once, booked in the ledger's `sales` category. The flat
+  is then privately owned (`Tenure.owned`) and the owner pays `serviceChargeShare` (25 %) of
+  the asking rent every month instead of rent ("Service charges" in the ledger).
+* **Owners stay.** They move out only after `ownerPatience` (9) bad reviews in a row;
+  renters after 3. When an owner leaves, the flat stays owned and is resold between private
+  parties: the next household pays the player nothing, the service charges go on.
+* **Their property.** A sold flat cannot be offered for rent again, demolished or cut by a
+  shaft (`ConstructionError.privatelyOwned`).
+* **Code.** `SkylineSimulation/Sales.swift`; `Room.tenure`, `Tenant.purchasePrice`; rules in
+  `economy.json`. Save format 15.
 
 ## Model
 
