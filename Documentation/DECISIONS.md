@@ -283,3 +283,19 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Particles run in real time and are not reproducible; they are decoration.
   - Lightning is deterministic in game time.
 
+## D-039 — Fire as a stepped incident; evacuation through the normal movement system
+- **Date:** 2026-09-28
+- **Decision:**
+  - A fire is saved state (burning rooms with intensities, brigade arrival, next step), stepped every 60 game seconds as its own event target in the simulation queue.
+  - Evacuation is not a separate mover: people get ordinary trips out with `stairsOnly` routing. While their building burns, one hook in the person loop keeps them out.
+  - They return to wherever their schedule says when they next check.
+  - Nobody is harmed: the game models damage, cost and reputation, not casualties.
+- **Alternatives:** A cellular fire grid per module (finer, costlier, harder to read in the cutaway); a scripted evacuation animation; responders as simulated people.
+- **Reason:**
+  - The room is the unit players build and inspect.
+  - Events keep fires deterministic and independent of batch size (rule 7).
+  - Reusing trips and navigation gives stairs congestion and elevator blocking for free.
+- **Consequences:**
+  - Fire brigade suppression is abstract (the engine parks at the kerb).
+  - Smoke is visual only.
+

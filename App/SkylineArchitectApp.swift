@@ -54,6 +54,7 @@ struct GameCommands: Commands {
             Divider()
             Button("Developer: Build Demo Tower") { model.applyBlueprint("demo-tower") }
             Button("Developer: Lease All Vacant Units") { model.leaseAllVacant() }
+            Button("Developer: Start a Fire") { model.igniteFirstOffice() }
             #endif
         }
         CommandGroup(after: .toolbar) {
@@ -67,6 +68,8 @@ struct GameCommands: Commands {
                 .keyboardShortcut("e", modifiers: [.command, .option])
             Button(model.showLeasingPanel ? "Hide Leasing" : "Show Leasing") { model.showLeasingPanel.toggle() }
                 .keyboardShortcut("l", modifiers: [.command, .option])
+            Button(model.showIncidentsPanel ? "Hide Incidents" : "Show Incidents") { model.showIncidentsPanel.toggle() }
+                .keyboardShortcut("i", modifiers: [.command, .option])
             Button(model.showProgressPanel ? "Hide Standing" : "Show Standing") { model.showProgressPanel.toggle() }
                 .keyboardShortcut("p", modifiers: [.command, .option])
             Button(model.showEconomyPanel ? "Hide Economy" : "Show Economy") { model.showEconomyPanel.toggle() }

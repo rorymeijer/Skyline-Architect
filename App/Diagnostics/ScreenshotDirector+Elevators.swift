@@ -64,6 +64,13 @@ extension ScreenshotDirector {
         model.world?.weather = WeatherState(day: day, yesterday: kind, today: kind, tomorrow: "clear", temperature: temperature)
     }
 
+    /// The `index`-th office from the bottom.
+    static func office(_ model: AppModel, index: Int) -> Room? {
+        guard let world = model.world else { return nil }
+        let offices = world.rooms.values.filter { $0.definitionID == "office-small" }.sorted { ($0.floors.lowest, $0.id) < ($1.floors.lowest, $1.id) }
+        return offices.indices.contains(index) ? offices[index] : offices.last
+    }
+
     static func weatherNote(_ model: AppModel) -> String {
         guard let w = model.weather else { return "no weather" }
         return "\(w.season), \(w.name) \(w.temperature) °C, tomorrow \(w.tomorrowName)" + (w.effects.isEmpty ? "" : " — \(w.effects)")

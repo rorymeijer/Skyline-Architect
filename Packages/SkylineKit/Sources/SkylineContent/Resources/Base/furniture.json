@@ -2827,5 +2827,18 @@
     "minDetail": 20
    }
   ]
- }
+ },
+  { "id": "sprinkler-valves", "name": "Sprinkler valve set", "width": 1.2, "height": 2.2, "parts": [
+    { "shape": "rect", "x": 0.15, "y": 0, "w": 0.14, "h": 2.2, "material": "redSafety" },
+    { "shape": "rect", "x": 0.15, "y": 1.1, "w": 1.05, "h": 0.12, "material": "redSafety", "shade": 0.9 },
+    { "shape": "ellipse", "x": 0.45, "y": 0.95, "w": 0.4, "h": 0.4, "material": "redSafety", "shade": 0.8 },
+    { "shape": "rect", "x": 0.58, "y": 1.35, "w": 0.14, "h": 0.25, "material": "steel", "minDetail": 14 },
+    { "shape": "ellipse", "x": 0.5, "y": 1.58, "w": 0.3, "h": 0.08, "material": "metalDark", "minDetail": 14 },
+    { "shape": "rect", "x": 0.95, "y": 0, "w": 0.14, "h": 1.22, "material": "redSafety", "shade": 0.85 },
+    { "shape": "ellipse", "x": 0.88, "y": 1.5, "w": 0.28, "h": 0.28, "material": "chrome", "minDetail": 16 } ] },
+  { "id": "fire-panel", "name": "Fire alarm panel", "width": 0.7, "height": 0.9, "parts": [
+    { "shape": "rect", "x": 0, "y": 0, "w": 0.7, "h": 0.9, "material": "redSafety" },
+    { "shape": "rect", "x": 0.1, "y": 0.45, "w": 0.5, "h": 0.3, "material": "black", "minDetail": 12 },
+    { "shape": "ellipse", "x": 0.12, "y": 0.12, "w": 0.12, "h": 0.12, "material": "yellowSafety", "minDetail": 16 },
+    { "shape": "ellipse", "x": 0.3, "y": 0.12, "w": 0.12, "h": 0.12, "material": "chrome", "minDetail": 16 } ] }
 ]

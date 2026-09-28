@@ -224,3 +224,26 @@ The weather is visible too:
 * a warm haze in a heatwave;
 * snow falling on the roofs and the street, which stays white on a cold day after.
 
+## Phase 14 player experience (current)
+
+Things go wrong.
+
+**Fire.** Worn rooms and plant rooms can catch fire.
+
+* An alert names the room, and its *Show* button takes the camera there.
+* Flames rise and smoke gathers under the ceiling. The fire grows and can spread to
+  the rooms beside, above and below.
+* Everyone leaves by the stairs, never the elevators, and nobody goes back in while
+  it burns.
+* The fire brigade arrives after a quarter of an hour and parks at the kerb.
+* A fire control room prevents most of this: its sprinklers cover fifteen floors above
+  and below and put a fire out within minutes.
+* Afterwards come the bill, soot in the damaged rooms until the technicians repair
+  them, sometimes a tenant who leaves a destroyed unit, and a dent in the building's
+  reputation.
+
+**Weather.** Storms also tear at the building, heatwaves and storms can knock out the
+electrical plant (the tower goes dark until it is repaired), and frost bursts pipes.
+
+The incidents panel keeps the record.
+

@@ -76,7 +76,7 @@ extension SimulationEngine {
 
     /// Where a traveller stands at `now`, snapped to a floor (a stair climber steps onto the
     /// nearest landing of the storey they are on).
-    private func currentSpot(_ legs: [Leg], at now: Tick, grid: GridSpec) -> Spot? {
+    func currentSpot(_ legs: [Leg], at now: Tick, grid: GridSpec) -> Spot? {
         guard let sample = PersonMotion.sample(legs, at: Double(now), grid: grid) else { return nil }
         let leg = legs.first { now < $0.end } ?? legs.last!
         switch leg {

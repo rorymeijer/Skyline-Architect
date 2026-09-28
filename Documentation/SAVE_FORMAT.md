@@ -8,6 +8,7 @@ Status: **FUNCTIONAL** (Phases 2–13). Implemented in `Packages/SkylineKit/Sour
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 11 | 0.14 | World gains `incidents` (`log` of incidents, `fires` in progress with burning rooms and intensities, `nextID`) | v10→v11 adds an empty incident state |
 | 10 | 0.13 | World may carry `weather` (`day`, `yesterday`, `today`, `tomorrow`, `temperature`) | v9→v10: nothing to add — the simulation starts the weather on the current day at its next step |
 | 9 | 0.12 | Buildings gain `lightingKWh` (lighting energy since the last closing) | v8→v9 adds `lightingKWh: 0` |
 | 8 | 0.11 | Buildings gain `standing` (`classLevel`, `reputation`, `promotions`); world gains `unlocks` (`all` / `byClass`) | v7→v8 adds `standing: {classLevel: 0, reputation: 50, promotions: []}` and `unlocks: "all"` (older games stay sandbox-like) |
@@ -17,9 +18,9 @@ Status: **FUNCTIONAL** (Phases 2–13). Implemented in `Packages/SkylineKit/Sour
 | 4 | 0.7 | Cars gain `strategy` (`collective` / `zoning` / `destination`) and `stats` (boardings, totalWait, maxWait, abandoned, stops, day, hourly[24]); rides may carry `assigned` | v3→v4 adds `strategy: "collective"` and zeroed `stats` to every car |
 | 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1` … `save-v9` (frozen) and `save-v10.skylinesave` (weather).
+Golden fixtures: `save-v1` … `save-v10` (frozen) and `save-v11.skylinesave` (a fire in progress).
 
-## Envelope (format version 10)
+## Envelope (format version 11)
 
 ```json
 {

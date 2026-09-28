@@ -9,6 +9,7 @@ public enum WorldIntegrityError: Error, Equatable, CustomStringConvertible {
     case roomWithoutFloor(RoomID)
     case overlappingRooms(RoomID, RoomID)
     case invalidStanding(BuildingID)
+    case invalidFire(Int)
 
     public var description: String {
         switch self {
@@ -18,12 +19,18 @@ public enum WorldIntegrityError: Error, Equatable, CustomStringConvertible {
         case .roomWithoutFloor(let r): "Room \(r) is not on built floors"
         case .overlappingRooms(let a, let b): "Rooms \(a) and \(b) overlap"
         case .invalidStanding(let b): "Building \(b) has an invalid class or reputation"
+        case .invalidFire(let id): "Fire \(id) refers to a missing building or room"
         }
     }
 }
 
 extension GameWorld {
     public func validateIntegrity() throws {
+        for fire in incidents.fires {
+            guard buildings.contains(fire.building), fire.burning.allSatisfy({ rooms[$0.room]?.buildingID == fire.building }) else {
+                throw WorldIntegrityError.invalidFire(fire.incident)
+            }
+        }
         var maxID: UInt32 = 0
         for c in cities { maxID = max(maxID, c.id.raw) }
         for p in properties {

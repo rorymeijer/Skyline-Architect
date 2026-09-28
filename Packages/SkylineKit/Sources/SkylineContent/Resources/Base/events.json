@@ -1,0 +1,65 @@
+{
+ "fire": {
+  "ignitionPerRoomPerDay": 0.0015,
+  "wornBelow": 0.45,
+  "wornMultiplier": 4,
+  "equipmentMultiplier": 3,
+  "protectedIgnitionFactor": 0.5,
+  "stepSeconds": 60,
+  "startIntensity": 0.15,
+  "growthPerStep": 0.05,
+  "spreadAbove": 0.45,
+  "spreadChancePerStep": 0.035,
+  "protectedSpreadFactor": 0.2,
+  "sprinklerSuppressionPerStep": 0.09,
+  "brigadeResponseMinutes": 16,
+  "brigadeSuppressionPerStep": 0.08,
+  "damagePerStep": 0.045,
+  "destroyedBelow": 0.25,
+  "repairCostPerModule": 900,
+  "reputationPenalty": 8
+ },
+ "incidents": [
+  {
+   "id": "storm-damage",
+   "name": "Storm damage",
+   "weather": [
+    "storm"
+   ],
+   "chancePerDay": 0.45,
+   "target": "room",
+   "condition": -0.35,
+   "cleanliness": -0.4,
+   "cost": 4000,
+   "reputation": 0
+  },
+  {
+   "id": "power-outage",
+   "name": "Power outage",
+   "weather": [
+    "storm",
+    "heat"
+   ],
+   "chancePerDay": 0.2,
+   "target": "supplies:electricity",
+   "condition": -1.0,
+   "cleanliness": 0,
+   "cost": 0,
+   "reputation": 2
+  },
+  {
+   "id": "burst-pipe",
+   "name": "Burst pipe",
+   "weather": [
+    "snow"
+   ],
+   "maxTemperature": 0,
+   "chancePerDay": 0.35,
+   "target": "supplies:water",
+   "condition": -0.6,
+   "cleanliness": -0.5,
+   "cost": 2500,
+   "reputation": 1
+  }
+ ]
+}

@@ -86,6 +86,8 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var unlocks = UnlockMode.all
     /// Today's weather and the forecast (Phase 13; nil until the simulation starts it).
     public var weather: WeatherState?
+    /// Fires in progress and the incident log (Phase 14).
+    public var incidents = IncidentState()
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()

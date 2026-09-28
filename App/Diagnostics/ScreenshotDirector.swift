@@ -55,77 +55,118 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Weather after step 01 is set by the script (developer tool, `force`), not drawn by the
-    // simulation — labelled "(set)" in the notes.
+    // Fires are started with the developer tool (`igniteForTesting`) and the storm is set
+    // by the script; everything that follows is the simulation's own doing.
     let steps: [Step] = [
-        Step(name: "01-clear-summer", grid: false) { model, scene in
+        Step(name: "01-ignition", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.applyBlueprint("demo-tower")
             model.leaseAllVacant()
-            model.advanceSimulation(toTimeOfDay: 12)
+            ScreenshotDirector.force("clear", 22, model: model)
+            model.advanceSimulation(toTimeOfDay: 10, minute: 30)
+            let office = ScreenshotDirector.office(model, index: 2)
+            let lit = office.map { model.igniteForTesting($0.id) } ?? false
+            model.advanceSimulation(ticks: 30)
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
-            return "\(model.clockText): the game's own weather — " + ScreenshotDirector.weatherNote(model)
+            if let r = office, let world = model.world {
+                scene.withController { $0.jump(center: world.grid.rect(columns: r.columns, floors: r.floors).center + Vec2(0, 1), zoom: 24) }
+            }
+            return "\(model.clockText): fire started in an office (developer tool: \(lit)); alert: \(model.incidentNotice ?? "none")"
         },
-        Step(name: "02-overcast", grid: false) { model, scene in
-            ScreenshotDirector.force("overcast", 17, model: model)
-            model.advanceSimulation(toTimeOfDay: 13)
+        Step(name: "02-evacuation", grid: false) { model, scene in
+            model.advanceSimulation(ticks: 50)                         // ~80 s after ignition: on the stairs
             model.refreshSimulationSummary()
-            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model)
+            scene.withController { $0.jump(center: Vec2(22, 14), zoom: 11.5) }
+            let inside = model.population.inRooms + model.population.travelling
+            return "\(model.clockText): evacuation by the stairs, no elevator rides; \(inside) still inside or on their way out."
         },
-        Step(name: "03-rain", grid: false) { model, scene in
-            ScreenshotDirector.force("rain", 15, model: model)
+        Step(name: "03-spreading", grid: false) { model, scene in
+            model.advanceSimulation(ticks: 12 * 60)
+            model.refreshSimulationSummary()
+            return "\(model.clockText): \(model.incidents.fires.first.map { "\($0.burningRooms) room(s) burning, brigade in \($0.brigadeInMinutes) min" } ?? "out"); building empty: \(model.population.inRooms == 0)."
+        },
+        Step(name: "04-fire-brigade", grid: false) { model, scene in
+            let arrives = model.world?.incidents.fires.first?.brigadeArrives ?? 0
+            let now = model.world?.clock.tick ?? 0
+            model.advanceSimulation(ticks: max(arrives, now) - now + 120)
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(10, 12), zoom: 11.5) }
+            return "\(model.clockText): fire brigade on site — \(model.incidentNotice ?? "")"
+        },
+        Step(name: "05-aftermath", grid: false) { model, scene in
+            var guardSteps = 0
+            while !(model.world?.incidents.fires.isEmpty ?? true), guardSteps < 180 {
+                model.advanceSimulation(ticks: 60)
+                guardSteps += 1
+            }
+            model.advanceSimulation(ticks: 60)
+            model.showIncidentsPanel = true
+            model.showEconomyPanel = false
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: Vec2(22, 14), zoom: 11.5) }
+            let repairs = model.world?.ledger.journal.last { $0.detail.hasPrefix("Fire damage") }
+            return "\(model.clockText): \(model.incidents.recent.first?.detail ?? "—"); ledger: \(repairs.map { "\($0.detail) \($0.amount)" } ?? "—"); soot on the damaged rooms."
+        },
+        Step(name: "06-sprinklers", grid: false) { model, scene in
+            model.showIncidentsPanel = false
+            // A fire control room on a new floor 9 protects the whole tower.
+            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
+               let span = b.plate(at: 8)?.span {
+                model.perform(.buildFloor(building: b.id, level: 9, span: span))
+                model.perform(.placeRoom(building: b.id, definition: "fire-control-room", columns: ColumnSpan(start: span.start, count: 5),
+                                         floors: FloorSpan(lowest: 9, highest: 9)))
+            }
             model.advanceSimulation(toTimeOfDay: 14)
+            let office = ScreenshotDirector.office(model, index: 5)
+            let lit = office.map { model.igniteForTesting($0.id) } ?? false
+            model.advanceSimulation(ticks: 120)
             model.refreshSimulationSummary()
-            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model) + "; wet paving outside the tower."
+            if let r = office, let world = model.world {
+                scene.withController { $0.jump(center: world.grid.rect(columns: r.columns, floors: r.floors).center + Vec2(0, 1), zoom: 24) }
+            }
+            return "\(model.clockText): fire control room built; second fire (\(lit)) under sprinklers: \(model.sprinklerRooms.count) rooms protected."
         },
-        Step(name: "04-storm", grid: false) { model, scene in
-            ScreenshotDirector.force("storm", 13, model: model)
-            model.advanceSimulation(toTimeOfDay: 15)
-            let lookup = { (t: Tick) in model.weatherLook(at: Double(t)).lightning }
-            let start = model.world?.clock.tick ?? 0
-            let wait = stride(from: Tick(0), to: 600, by: 1).first { lookup(start + $0) > 0.6 } ?? 0
-            model.advanceSimulation(ticks: wait)
+        Step(name: "07-sprinklers-win", grid: false) { model, scene in
+            let start = model.world?.incidents.log.last?.started ?? 0
+            var guardSteps = 0
+            while !(model.world?.incidents.fires.isEmpty ?? true), guardSteps < 120 {
+                model.advanceSimulation(ticks: 30)
+                guardSteps += 1
+            }
             model.refreshSimulationSummary()
-            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model) +
-                "; lightning \(String(format: "%.2f", model.weatherLook(at: Double(model.world?.clock.tick ?? 0)).lightning)); lights on by day."
+            let minutes = ((model.world?.clock.tick ?? 0) - start) / 60
+            if let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
+               let room = world.rooms(in: b.id).first(where: { $0.definitionID == "fire-control-room" }) {
+                scene.withController { $0.jump(center: world.grid.rect(columns: room.columns, floors: room.floors).center + Vec2(0, 1), zoom: 30) }
+            }
+            return "\(model.clockText): sprinklers put the fire out in about \(minutes) min — \(model.incidents.recent.first?.detail ?? "")"
         },
-        Step(name: "05-fog", grid: false) { model, scene in
-            ScreenshotDirector.force("fog", 12, model: model)
-            model.advanceSimulation(toTimeOfDay: 16, minute: 30)
+        Step(name: "08-storm-damage", grid: false) { model, scene in
+            var hours = 0
+            let before = model.world?.incidents.log.count ?? 0
+            model.incidentNotice = nil
+            while (model.world?.incidents.log.count ?? 0) == before, hours < 120 {
+                ScreenshotDirector.force("storm", 12, model: model)
+                model.advanceSimulation(ticks: 3600)
+                model.refreshSimulationSummary()
+                hours += 1
+            }
+            model.showIncidentsPanel = true
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 22), zoom: 6) }
-            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model) + "; the city fades into the fog."
+            scene.withController { $0.jump(center: Vec2(22, 16), zoom: 11.5) }
+            return "\(model.clockText) (storm set, \(hours) h): \(model.incidentNotice ?? "no incident yet")"
         },
-        Step(name: "06-heatwave", grid: false) { model, scene in
-            ScreenshotDirector.force("heat", 34, model: model)
-            model.advanceSimulation(toTimeOfDay: 17)
+        Step(name: "09-save-load", grid: false) { model, scene in
+            model.showIncidentsPanel = false
+            let office = ScreenshotDirector.office(model, index: 7)
+            _ = office.map { model.igniteForTesting($0.id) }
+            model.advanceSimulation(ticks: 60)
+            let before = model.world
+            let saved = model.save(slot: "capture-roundtrip", title: "Capture round trip")
+            let loaded = model.load(slot: "capture-roundtrip")
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
-            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model)
-        },
-        Step(name: "07-snow", grid: false) { model, scene in
-            ScreenshotDirector.force("snow", -3, model: model)
-            model.advanceSimulation(toTimeOfDay: 18)
-            model.refreshSimulationSummary()
-            return "\(model.clockText) (set): " + ScreenshotDirector.weatherNote(model) + "; snow on the roofs and the street."
-        },
-        Step(name: "08-snow-night", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 21, minute: 30)
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: Vec2(22, 22), zoom: 6) }
-            return "\(model.clockText): snowy night, lit homes and street lamps."
-        },
-        Step(name: "09-cold-bill-and-forecast", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 6, minute: 5)
-            model.showEconomyPanel = true
-            model.refreshSimulationSummary()
-            model.promotionNotice = nil
-            scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
-            let line = model.world?.ledger.journal.last { $0.detail.hasPrefix("Utilities") }
-            return "\(model.clockText): the closing billed \(line.map { "\($0.detail): \($0.amount)" } ?? "—"); today " +
-                ScreenshotDirector.weatherNote(model)
+            return "Saved and reloaded during a fire: saved=\(saved) loaded=\(loaded) worldIdentical=\(before != nil && before == model.world), fires \(model.world?.incidents.fires.count ?? 0)"
         },
     ]
 

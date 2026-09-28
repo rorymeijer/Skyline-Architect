@@ -1,6 +1,6 @@
 # Architecture
 
-Status: Phase 13 (2026-09-28). This document describes what exists and the intended evolution.
+Status: Phase 14 (2026-09-28). This document describes what exists and the intended evolution.
 Items are marked **FUNCTIONAL** (exists, tested), **SCAFFOLDED** (exists, incomplete) or
 **PLANNED** (design only).
 
@@ -167,6 +167,10 @@ layer, drawn by the app as an additive tile layer with building silhouettes clea
 Weather (WEATHER.md): kinds, rules and the saved `WeatherState` live in Core; the simulation
 advances it at the closing and applies content multipliers; Presentation derives the look
 (`WeatherView`), the app draws it (`WeatherLayer`) (D-038).
+Emergencies (EMERGENCIES.md): `IncidentState` (log, fires in progress) lives in Core; fires
+are stepped as their own event target in the simulation queue; evacuation reuses trips with
+`stairsOnly` routing and a single hook in the person event loop; Presentation derives flames,
+soot and fire engines (`FireView`), the app draws them (`FireLayer`) (D-039).
 
 ## 6. Concurrency model
 

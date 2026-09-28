@@ -249,5 +249,9 @@
    "electricity": 0.5
   },
   "wearPerDay": 0.005
- }
+ },
+  { "id": "fire-control-room", "name": "Fire Control Room", "category": "infrastructure", "kind": "room", "appearance": "fireControl",
+    "minWidth": 4, "maxWidth": 6, "minFloors": 1, "maxFloors": 1, "costPerModule": 3600, "maintenancePerModulePerDay": 8,
+    "utilityDemand": { "electricity": 1, "water": 2 }, "wearPerDay": 0.02, "fireProtection": 15,
+    "lighting": { "color": "#FFE6D6", "occupied": 1.0, "empty": 0.2, "wattsPerModule": 3 } }
 ]

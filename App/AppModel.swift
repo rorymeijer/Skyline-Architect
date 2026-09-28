@@ -61,11 +61,18 @@ final class AppModel {
     var lightingKWhToday = 0.0
     /// Today's weather and forecast (Phase 13, 4 Hz).
     var weather: WeatherSummary?
+    /// Fires and incidents (Phase 14, 4 Hz), the incidents panel and the latest alert.
+    var incidents = IncidentSummary()
+    var showIncidentsPanel = false
+    var incidentNotice: String?
+    @ObservationIgnored var seenIncidentID: Int?
+    @ObservationIgnored var dismissedFireID: Int?
+    @ObservationIgnored var sprinklerRooms: Set<RoomID> = []
     @ObservationIgnored var seenPromotions: Int?
     private(set) var loadError: String?
     private(set) var scene: WorldScene?
 
-    private(set) var showGrid = true
+    var showGrid = true
     var showDeveloperHUD: Bool
     private(set) var diagnostics = RenderDiagnostics()
 
@@ -157,6 +164,8 @@ final class AppModel {
         showMainMenu = false
         seenPromotions = nil
         promotionNotice = nil
+        seenIncidentID = nil
+        incidentNotice = nil
         let property = world.properties[activePropertyID]
         propertyName = property?.name ?? "—"
         cityName = property.flatMap { world.cities[$0.cityID]?.name } ?? "—"
@@ -378,21 +387,4 @@ final class AppModel {
         f.timeStyle = .short
         return f
     }()
-
-    // MARK: View commands
-
-    func zoom(by factor: Double) {
-        guard let scene else { return }
-        let center = scene.controller.camera.viewportSize / 2
-        scene.withController { $0.zoom(by: factor, at: center, animated: true) }
-    }
-
-    func apply(_ preset: CameraPreset) { scene?.apply(preset: preset) }
-
-    func toggleGrid() { setGrid(!showGrid) }
-
-    func setGrid(_ visible: Bool) {
-        showGrid = visible
-        scene?.showGrid = visible
-    }
 }

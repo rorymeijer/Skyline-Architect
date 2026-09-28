@@ -236,6 +236,8 @@ public struct SimulationRules: Sendable {
     public let progression: ReputationRules?
     /// Climate and weather (Phase 13; nil = no weather).
     public let weather: WeatherRules?
+    /// Fire and incidents (Phase 14; nil = none).
+    public let events: EventRules?
     /// Walking speed in meters per game second.
     public var walkSpeed = 1.3
     /// Game seconds to climb or descend one storey by stairs.
@@ -248,7 +250,7 @@ public struct SimulationRules: Sendable {
 
     public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenantTypes: [TenantType] = [],
                 economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil, progression: ReputationRules? = nil,
-                weather: WeatherRules? = nil) {
+                weather: WeatherRules? = nil, events: EventRules? = nil) {
         self.schedules = schedules
         self.names = names
         self.elevators = elevators
@@ -257,6 +259,7 @@ public struct SimulationRules: Sendable {
         self.facilities = facilities
         self.progression = progression
         self.weather = weather
+        self.events = events
     }
 
     public func tenantType(_ id: String) -> TenantType? { tenantTypes.first { $0.id == id } }
@@ -314,5 +317,17 @@ public struct SimulationRules: Sendable {
             if best != nil { break }
         }
         return best.map { (tick: $0.0, goal: $0.1) }
+    }
+
+    /// Where the schedule wants someone at `tick`: the goal of their latest scheduled event
+    /// (within the last day), nil if none.
+    func currentGoal(at tick: Tick, schedule: Schedule, traits: UInt32) -> Goal? {
+        var t = tick >= Tick(SimClock.secondsPerDay) ? tick - Tick(SimClock.secondsPerDay) : 0
+        var goal: Goal?
+        while let next = nextScheduled(after: t, schedule: schedule, traits: traits), next.tick <= tick {
+            goal = next.goal
+            t = next.tick
+        }
+        return goal
     }
 }

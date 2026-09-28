@@ -56,6 +56,9 @@ struct ChromeOverlay: View {
                 if let report = model.unitReport {
                     UnitInspector(report: report) { model.selectRoom(at: nil) }
                 }
+                if model.showIncidentsPanel {
+                    IncidentsPanel(model: model)
+                }
                 if model.showProgressPanel {
                     ProgressPanel(model: model)
                 }
@@ -79,6 +82,10 @@ struct ChromeOverlay: View {
                 .padding(.top, 12)
                 .frame(maxWidth: .infinity, alignment: .top)
             VStack(spacing: 8) {
+                if let alert = model.incidentNotice {
+                    IncidentBanner(text: alert, fire: !model.incidents.fires.isEmpty, show: { model.showIncident() },
+                                   close: { model.dismissIncidentNotice() })
+                }
                 if let notice = model.promotionNotice {
                     PromotionBanner(text: notice) { model.promotionNotice = nil }
                 }
@@ -104,7 +111,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · \(model.progression.byClass ? "Standard" : "Sandbox") · Phase 13")
+            Text("\(model.cityName) · \(model.progression.byClass ? "Standard" : "Sandbox") · Phase 14")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -133,6 +140,7 @@ struct ViewControls: View {
             ControlButton(symbol: "square.grid.3x3", help: "Architectural Grid (G, ⌥⌘G)", isOn: model.showGrid) { model.toggleGrid() }
             ControlButton(symbol: "arrow.up.arrow.down", help: "Elevator Traffic (⌥⌘T)", isOn: model.showTraffic) { model.showTraffic.toggle() }
             ControlButton(symbol: "slider.horizontal.3", help: "Elevator Banks (⌥⌘E)", isOn: model.showBanksPanel) { model.showBanksPanel.toggle() }
+            ControlButton(symbol: "flame", help: "Incidents (⌥⌘I)", isOn: model.showIncidentsPanel) { model.showIncidentsPanel.toggle() }
             ControlButton(symbol: "rosette", help: "Standing (⌥⌘P)", isOn: model.showProgressPanel) { model.showProgressPanel.toggle() }
             ControlButton(symbol: "key", help: "Leasing (⌥⌘L)", isOn: model.showLeasingPanel) { model.showLeasingPanel.toggle() }
             ControlButton(symbol: "banknote", help: "Economy (⌥⌘M)", isOn: model.showEconomyPanel) { model.showEconomyPanel.toggle() }

@@ -102,6 +102,7 @@ struct BuildPalette: View {
         case "apartment": "bed.double"
         case "mechanical": "gearshape.2"
         case "parking": "car"
+        case "fireControl": "drop.triangle"
         default: "square.dashed"
         }
     }
