@@ -36,14 +36,14 @@
     "id": "harrowgate-crown-yard",
     "name": "Crown Yard",
     "cityID": "harrowgate",
-    "frontageModules": 40,
+    "frontageModules": 44,
     "maxBasementFloors": 4,
     "siteMarginModules": 40,
     "price": 2400000,
     "foundation": {
       "buildingName": "Crown Yard Chambers",
       "footprintOffsetModules": 6,
-      "footprintModules": 28,
+      "footprintModules": 32,
       "basementFloors": 2,
       "pileDepthMeters": 14,
       "pileSpacingModules": 4

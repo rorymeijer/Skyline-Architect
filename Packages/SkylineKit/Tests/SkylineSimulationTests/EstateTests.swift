@@ -60,7 +60,12 @@ import SkylineContent
             var game = try newGame()
             game.world.ledger.post(Transaction(tick: 0, amount: 10_000_000, category: .grant, detail: "Test"))
             let property = try Estate.buy(offer.plot.id, world: &game.world, library: library)
-            #expect(game.world.buildings(on: property).count == 1)
+            let building = try #require(game.world.buildings(on: property).first)
+            // The larger plots take the demo tower (32 m wide, one basement).
+            if building.footprint.count >= 32 {
+                let engine = ConstructionEngine(catalog: library.buildCatalog)
+                for c in library.blueprint("demo-tower")!.commands(for: building) { try engine.apply(c, to: &game.world) }
+            }
         }
     }
 
