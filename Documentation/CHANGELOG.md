@@ -2,6 +2,23 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.13.0] — Phase 13: Weather
+
+### Added
+- **Seasons and weather** from `weather.json`:
+  - seven kinds (clear, overcast, rain, storm, snow, heatwave, fog) drawn each morning from the city seed, with a forecast;
+  - temperatures per season.
+- **Effects**:
+  - storms and snow keep prospective tenants away;
+  - bad weather wears and dirties the building faster;
+  - heating and cooling scale the utilities bill with the temperature.
+- **Visuals**:
+  - weather colour grade, fog veil;
+  - rain and snow particles, lightning;
+  - snow on roofs and the street, wet paving;
+  - weather chip with the forecast.
+- **Save format 10** (+ migration, golden fixture).
+
 ## [0.12.0] — Phase 12: Full day/night + lighting
 
 ### Added

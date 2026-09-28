@@ -205,3 +205,22 @@ Light costs money. The facilities panel shows the current lighting load, and eve
 morning's closing bills the night's energy. Cutting the power, for instance by demolishing
 the electrical room, turns the tower dark.
 
+## Phase 13 player experience (current)
+
+Every day has weather. A chip next to the clock shows today's weather, the temperature and
+tomorrow's forecast.
+
+* Summer brings clear days and the odd heatwave; autumn brings rain, fog and storms;
+  winter brings snow.
+* Storms keep prospective tenants at home and wear the building down, so the technicians
+  and janitors have more to do.
+* Heatwaves and frost push up the utilities bill, and the closing shows the temperature
+  behind it.
+
+The weather is visible too:
+
+* grey skies and rain streaks, with lightning in a storm;
+* fog swallowing the skyline;
+* a warm haze in a heatwave;
+* snow falling on the roofs and the street, which stays white on a cold day after.
+

@@ -75,7 +75,7 @@ final class WeatherLayer {
         fog.alpha = CGFloat(look.fog * 0.5)
         flash.size = viewport
         flash.isHidden = look.lightning < 0.01
-        flash.alpha = CGFloat(look.lightning * 0.22)
+        flash.alpha = CGFloat(look.lightning * 0.16)
 
         // Ground: snow lies on the street and on roofs; rain darkens the paving (never over
         // the cutaway building).

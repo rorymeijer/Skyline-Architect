@@ -66,6 +66,12 @@ failureBelow, cleanMinutes, repairMinutes, shiftStart, shiftEnd`. Rooms may set
 `wearPerDay`. Elevator specs may set `serviceOnly: true` (staff only). Tenant weights may
 set `services`. See FACILITIES.md.
 
+### Weather (weather.json)
+`seasons [{id, name, temperature}], daysPerYear, startSeason, persistence, temperatureSpread,
+energyPerDegree, comfortTemperature, kinds [{id, name, symbol, weights {season: w},
+persistence?, effects {demand, wear, dirt, temperature}, look {cloud, fog, precipitation?
+("rain" | "snow"), intensity, lightning, heat}}]`. See WEATHER.md.
+
 ### Lighting (rooms.json, economy.json)
 Rooms may set `lighting {color "#RRGGBB", occupied, empty, wattsPerModule, quietHours?
 {from "HH:MM", to, level, spreadMinutes}}`; `economy.json` may set `lightingPricePerKWh`.

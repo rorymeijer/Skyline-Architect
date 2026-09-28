@@ -67,7 +67,8 @@ public enum WeatherView {
         func adjust(_ c: RGBA, _ horizon: Bool) -> RGBA {
             let lum = 0.3 * c.r + 0.59 * c.g + 0.11 * c.b
             var out = c.mixed(with: RGBA(lum, lum, lum * 1.04), l.cloud * 0.55)
-            out = RGBA(out.r * (1 - 0.3 * l.cloud), out.g * (1 - 0.3 * l.cloud), out.b * (1 - 0.26 * l.cloud))
+            let dark = 0.3 * l.cloud + 0.14 * l.cloud * l.cloud          // heavy cloud is much darker
+            out = RGBA(out.r * (1 - dark), out.g * (1 - dark), out.b * (1 - dark * 0.9))
             out = out.mixed(with: RGBA(0.9 * lum + 0.1, 0.92 * lum + 0.1, 0.95 * lum + 0.1), l.fog * (horizon ? 0.45 : 0.25))
             return out.mixed(with: RGBA(1.0, 0.9, 0.74), l.heat * (horizon ? 0.3 : 0.15))
         }
