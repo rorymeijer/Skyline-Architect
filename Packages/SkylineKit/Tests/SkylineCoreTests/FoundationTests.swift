@@ -64,6 +64,13 @@ import Testing
         _ = try f.run(.buildFloor(building: f.building, level: 40, span: ColumnSpan(start: 8, count: 32)))
     }
 
+    /// Without `storeysPerPileMeter` (the base game, 0.21.1) piles do not limit the height.
+    @Test func withoutAPileRuleTheHeightIsFree() throws {
+        var f = try ConstructionFixture()
+        try f.buildFloors(0...60)
+        #expect(f.world.buildings[f.building]?.builtLevels?.highest == 60)
+    }
+
     @Test func undoRestoresTheFoundationAndTheMoney() throws {
         var f = try fixture()
         var history = ConstructionHistory()

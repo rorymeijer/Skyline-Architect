@@ -2,6 +2,14 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.21.1] — No pile height limit
+
+### Changed
+- **Piles no longer limit the height** in the base game. At 2 storeys per meter a
+  500-storey tower would need 250 m piles; `storeysPerPileMeter` is gone from the base
+  `build-rules.json`. Longer piles, wider foundations and deeper basements stay available,
+  and a mod can still set the rule (D-052).
+
 ## [0.21.0] — Phase A: Extending foundations
 
 ### Added

@@ -1,15 +1,15 @@
 # Development Status
 
-_Last updated: 2026-09-28 (0.21.0 — Phase A: extending foundations)_
+_Last updated: 2026-09-28 (0.21.1 — no pile height limit)_
 
 ## Current phase
 **Phase A — Extending foundations: COMPLETE on the branch.** A foundation panel widens the
-foundation, digs basement levels and lengthens the piles; piles carry 2 storeys per meter
-(D-051). The palette icons for Electrical, Telecom and Express Elevator are fixed.
+foundation, digs basement levels and lengthens the piles (D-051). Since 0.21.1 piles no longer limit the height in the base
+game (D-052): 500-storey towers must stay feasible. The palette icons for Electrical, Telecom and Express Elevator are fixed.
 Next, in the player's order: B (amenities and visitors), E (economy and facilities),
 C (scenarios). Each is a phase with its own PR.
 
-Evidence: 315 tests, CI run 36478216982, captures in `Development/Screenshots/Foundation-0.21/`.
+Evidence: 316 tests (0.21.1), CI run 36478216982, captures in `Development/Screenshots/Foundation-0.21/`.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |

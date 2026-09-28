@@ -6,23 +6,23 @@
       "centerX" : 24,
       "centerY" : -14.125460574797348,
       "detailLevel" : "Rooms",
-      "fps" : 60.70608768236198,
-      "frameTimeMs" : 16.472812499998213,
-      "memoryMB" : 175.953125,
+      "fps" : 60.28294364752824,
+      "frameTimeMs" : 16.58844010416871,
+      "memoryMB" : 173.453125,
       "nodeCount" : 148,
       "sceneSections" : {
-        "cars" : 0.1,
+        "cars" : 0,
         "fire" : 0,
-        "light" : 0.1,
+        "light" : 0,
         "overlays" : 0,
-        "people" : 0.2,
+        "people" : 0.1,
         "sim" : 0,
-        "tiles" : 0.4,
-        "weather" : 0.2
+        "tiles" : 0.1,
+        "weather" : 0.1
       },
-      "sceneUpdateMs" : 1.0163281250079592,
+      "sceneUpdateMs" : 0.3578437499882625,
       "tileLevel" : 3,
-      "tileRasterMs" : 35.45538815788967,
+      "tileRasterMs" : 21.46362719297725,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 19,
@@ -33,11 +33,11 @@
     },
     "file" : "01-foundation-panel.png",
     "grid" : false,
-    "note" : "The foundation panel (palette: Foundation) over the demo tower's groundwork. 32 m wide · 1 of 3 basements · piles 20 m · carries 40 storeys. Widen Left: $43,000; Widen Right: $43,000; Dig a Basement Level: $128,000; Piles +5 m: $6,750.",
+    "note" : "The foundation panel (palette: Foundation) over the demo tower's groundwork. 32 m wide · 1 of 3 basements · piles 20 m · carries any number of storeys. Widen Left: $43,000; Widen Right: $43,000; Dig a Basement Level: $128,000; Piles +5 m: $6,750.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.086542010307312
+    "waitSeconds" : 1.0420739650726318
   },
   {
     "diagnostics" : {
@@ -46,9 +46,9 @@
       "centerX" : 24,
       "centerY" : -14.125460574797348,
       "detailLevel" : "Rooms",
-      "fps" : 59.92305505212182,
-      "frameTimeMs" : 16.68806770833342,
-      "memoryMB" : 184.75,
+      "fps" : 60.59733826193657,
+      "frameTimeMs" : 16.50237499999463,
+      "memoryMB" : 182.15625,
       "nodeCount" : 140,
       "sceneSections" : {
         "cars" : 0,
@@ -60,9 +60,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.3683437499972797,
+      "sceneUpdateMs" : 0.40788802083824294,
       "tileLevel" : 3,
-      "tileRasterMs" : 30.756809523810254,
+      "tileRasterMs" : 20.510342261904462,
       "tilesCached" : 9,
       "tilesPending" : 0,
       "tilesRasterized" : 28,
@@ -73,11 +73,11 @@
     },
     "file" : "02-widened.png",
     "grid" : true,
-    "note" : "Widen Left and Widen Right pressed: one pile bay more on each side. 40 m wide · 1 of 3 basements · piles 20 m · carries 40 storeys. Widen Left: $43,000; Widen Right: $43,000; Dig a Basement Level: $160,000; Piles +5 m: $8,250.",
+    "note" : "Widen Left and Widen Right pressed: one pile bay more on each side. 40 m wide · 1 of 3 basements · piles 20 m · carries any number of storeys. Widen Left: $43,000; Widen Right: $43,000; Dig a Basement Level: $160,000; Piles +5 m: $8,250.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.044234037399292
+    "waitSeconds" : 1.0501669645309448
   },
   {
     "diagnostics" : {
@@ -86,9 +86,9 @@
       "centerX" : 24,
       "centerY" : -20.660709899287646,
       "detailLevel" : "Rooms",
-      "fps" : 60.00646944748078,
-      "frameTimeMs" : 16.66486979166848,
-      "memoryMB" : 199.75,
+      "fps" : 59.99438052636473,
+      "frameTimeMs" : 16.66822777777573,
+      "memoryMB" : 194.25,
       "nodeCount" : 149,
       "sceneSections" : {
         "cars" : 0,
@@ -100,9 +100,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.4606250000094292,
+      "sceneUpdateMs" : 0.3854416666664898,
       "tileLevel" : 3,
-      "tileRasterMs" : 27.75810932092521,
+      "tileRasterMs" : 19.357028250935382,
       "tilesCached" : 12,
       "tilesPending" : 0,
       "tilesRasterized" : 40,
@@ -113,11 +113,11 @@
     },
     "file" : "03-deeper-and-piles.png",
     "grid" : true,
-    "note" : "A basement level dug and the piles lengthened twice (+10 m): the ground section follows. 40 m wide · 2 of 3 basements · piles 30 m · carries 60 storeys. Widen Left: $60,500; Widen Right: $60,500; Dig a Basement Level: $160,000; Piles +5 m: $8,250.",
+    "note" : "A basement level dug and the piles lengthened twice (+10 m): the ground section follows. 40 m wide · 2 of 3 basements · piles 30 m · carries any number of storeys. Widen Left: $60,500; Widen Right: $60,500; Dig a Basement Level: $160,000; Piles +5 m: $8,250.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0704209804534912
+    "waitSeconds" : 1.0289299488067627
   },
   {
     "diagnostics" : {
@@ -126,23 +126,23 @@
       "centerX" : 24,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 59.99059147556331,
-      "frameTimeMs" : 16.669280555557485,
-      "memoryMB" : 202.375,
+      "fps" : 60.00185630742184,
+      "frameTimeMs" : 16.666151041668797,
+      "memoryMB" : 196.59375,
       "nodeCount" : 178,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
         "light" : 0,
         "overlays" : 0,
-        "people" : 0.2,
+        "people" : 0.1,
         "sim" : 0,
-        "tiles" : 0.2,
+        "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.6571083333293851,
+      "sceneUpdateMs" : 0.42486197916957735,
       "tileLevel" : 2,
-      "tileRasterMs" : 20.127515610361765,
+      "tileRasterMs" : 14.786438200528087,
       "tilesCached" : 27,
       "tilesPending" : 0,
       "tilesRasterized" : 55,
@@ -157,6 +157,6 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.059931993484497
+    "waitSeconds" : 1.0323809385299683
   }
 ]
