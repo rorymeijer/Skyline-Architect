@@ -104,21 +104,21 @@ final class ScreenshotDirector {
             let metered = model.lightingKWhToday
             model.advanceSimulation(toTimeOfDay: 6, minute: 5)
             model.showEconomyPanel = true
-            model.showFacilitiesPanel = true
             model.refreshSimulationSummary()
+            model.promotionNotice = nil        // the sandbox tower was promoted overnight; not this capture's subject
             let line = model.world?.ledger.journal.last { $0.detail.hasPrefix("Lighting") }
             return "\(model.clockText): closing billed \(line.map { "\($0.detail): \($0.amount)" } ?? "no lighting line") " +
                 "(meter read \(Int(metered)) kWh at 05:25)."
         },
         Step(name: "09-power-cut", grid: false) { model, scene in
             model.showEconomyPanel = false
-            model.showFacilitiesPanel = false
             model.advanceSimulation(toTimeOfDay: 21, minute: 0)
             model.refreshSimulationSummary()
             let before = model.lightingKW
             let plant = model.world?.rooms.values.first { $0.definitionID == "electrical-room" }
             let cut = plant.map { model.perform(.demolishRoom($0.id)) } ?? false
             model.refreshSimulationSummary()
+            model.promotionNotice = nil
             scene.withController { $0.jump(center: Vec2(22, 18), zoom: 9) }
             return "\(model.clockText): electrical room demolished (\(cut)) — the tower goes dark: \(String(format: "%.1f", before)) → " +
                 "\(String(format: "%.2f", model.lightingKW)) kW; neighbours and street lamps stay lit."
