@@ -12,13 +12,20 @@ public struct Tenant: Codable, Hashable, Sendable, Identifiable {
     public var name: String
     public var buildingID: BuildingID
     public var room: RoomID
-    /// Monthly rent agreed at signing (not charged until the economy, Phase 9).
+    /// Monthly rent agreed at signing (not charged until the economy, Phase 9); for an
+    /// owner, the monthly service charges.
     public var rent: Int
+    /// Bought the unit (0.20.3; nil = renter): the price paid, if bought from the player
+    /// (0 for a resale between private parties).
+    public var purchasePrice: Int?
     public var since: Tick
     /// 0…1, updated daily from the unit's current qualities (rent, access, noise, view).
     public var satisfaction: Double
-    /// Consecutive daily reviews below the type's threshold; at 3 the tenant moves out.
+    /// Consecutive daily reviews below the type's threshold; at 3 the tenant moves out
+    /// (owners hold on longer, `EconomyRules.ownerPatience`).
     public var unhappyDays: Int
+
+    public var isOwner: Bool { purchasePrice != nil }
 
     public init(id: TenantID, typeID: String, name: String, buildingID: BuildingID, room: RoomID, rent: Int,
                 since: Tick, satisfaction: Double) {

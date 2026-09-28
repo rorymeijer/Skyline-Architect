@@ -59,6 +59,8 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
     case noSpaceLeft(room: String)
     /// Only shafts can be made taller or shorter.
     case notResizable
+    /// The unit was sold: it belongs to its owner (0.20.3).
+    case privatelyOwned
     /// Standard game: the room type or height needs a higher building class (Phase 11).
     case locked(className: String)
 
@@ -83,6 +85,7 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
         case .overlaps: "Overlaps an existing room"
         case .noSpaceLeft(let name): "Too little space would be left for the \(name)"
         case .notResizable: "Only shafts can be made taller or shorter"
+        case .privatelyOwned: "Sold to a private owner"
         case .locked(let name): "Unlocks at \(name)"
         }
     }

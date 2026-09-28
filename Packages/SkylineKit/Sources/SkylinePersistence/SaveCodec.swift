@@ -31,7 +31,7 @@ public enum SaveError: Error, Equatable, CustomStringConvertible {
 /// an inconsistent save is rejected instead of silently corrupting a game.
 public enum SaveCodec {
     public static let format = "skyline-architect-save"
-    public static let currentVersion = 14
+    public static let currentVersion = 15
 
     /// Upgrades the `game` JSON object from version `key` to `key + 1`.
     public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
@@ -186,6 +186,22 @@ public enum SaveCodec {
             if let weather = world.removeValue(forKey: "weather"), var cities = world["cities"] as? [[String: Any]], !cities.isEmpty {
                 cities[0]["weather"] = weather
                 world["cities"] = cities
+            }
+            game["world"] = world
+        },
+        // v14 → v15 (0.20.3): rooms may carry `tenure` (rent / forSale / owned) and tenants a
+        // `purchasePrice` (older games rent everything); the ledger gains a `sales` category
+        // (daily totals grow by one).
+        14: { game in
+            guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v14 save without world") }
+            if var ledger = world["ledger"] as? [String: Any] {
+                ledger["days"] = (ledger["days"] as? [[String: Any]] ?? []).map { day -> [String: Any] in
+                    var d = day
+                    let amounts = d["amounts"] as? [Int] ?? []
+                    if amounts.count < 11 { d["amounts"] = amounts + [Int](repeating: 0, count: 11 - amounts.count) }
+                    return d
+                }
+                world["ledger"] = ledger
             }
             game["world"] = world
         },

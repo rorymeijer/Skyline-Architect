@@ -19,6 +19,7 @@ extension ConstructionEngine {
         var trims: [Trim] = []
         for other in world.rooms.values where other.buildingID == b && other.id != except && other.overlaps(columns: columns, floors: floors) {
             guard let spec = catalog.spec(other.definitionID), spec.kind == .room else { return .failure(.overlaps(other.id)) }
+            guard !other.isPrivatelyOwned else { return .failure(.privatelyOwned) }
             let left = ColumnSpan(start: other.columns.start, count: max(0, min(columns.start, other.columns.end) - other.columns.start))
             let right = ColumnSpan(start: max(columns.end, other.columns.start), count: max(0, other.columns.end - max(columns.end, other.columns.start)))
             let fitting = [left, right].filter { $0.count >= max(spec.minWidth, 1) }
@@ -81,7 +82,8 @@ extension ConstructionEngine {
             restore.append(.restoreRoom(t.room))
             for piece in t.pieces {
                 let id: RoomID = world.ids.make()
-                world.rooms.insert(Room(id: id, buildingID: t.room.buildingID, definitionID: t.room.definitionID, columns: piece, floors: t.room.floors))
+                world.rooms.insert(Room(id: id, buildingID: t.room.buildingID, definitionID: t.room.definitionID, columns: piece,
+                                        floors: t.room.floors, tenure: t.room.tenure))
                 removePieces.append(.demolishRoom(id))
             }
             // People standing in the room step aside, into what is left of it.
