@@ -42,7 +42,11 @@ public enum Leasing {
 
     // MARK: Appraisal
 
-    public static func appraise(_ room: Room, for type: TenantType, world: GameWorld, engine: SimulationEngine) -> UnitAppraisal? {
+    /// `services` may carry the buildings' utility allocations when many units are appraised
+    /// at once (daily review, market hour); rooms and upkeep do not change in between, so the
+    /// result is identical to allocating per unit (Phase 19).
+    public static func appraise(_ room: Room, for type: TenantType, world: GameWorld, engine: SimulationEngine,
+                                services: [BuildingID: UtilityService]? = nil) -> UnitAppraisal? {
         let catalog = engine.catalog
         guard let rent = askingRent(room, world: world, catalog: catalog), let building = world.buildings[room.buildingID] else { return nil }
         let perModule = Double(rent) / Double(max(room.columns.count, 1))
@@ -55,7 +59,7 @@ public enum Leasing {
         let noiseScore = clamp(1 - noiseLevel(around: room, world: world, catalog: catalog))
         let viewScore = 0.2 + 0.8 * min(Double(max(room.floors.lowest, 0)) / 15, 1)
         let service = engine.rules.facilities == nil ? nil
-            : Utilities.allocate(building: room.buildingID, world: world, catalog: engine.catalog, rules: engine.rules)
+            : services?[room.buildingID] ?? Utilities.allocate(building: room.buildingID, world: world, catalog: engine.catalog, rules: engine.rules)
         let servicesScore = servicesLevel(of: room, world: world, service: service)
         let utilities = service?.minimum(room.id) ?? 1
         let w = type.weights
@@ -93,14 +97,13 @@ public enum Leasing {
     static func noiseLevel(around room: Room, world: GameWorld, catalog: BuildCatalog) -> Double {
         var level = 0.0
         for other in world.rooms(in: room.buildingID) where other.id != room.id {
-            guard let n = catalog.spec(other.definitionID)?.noise, n > 0 else { continue }
+            // Geometry first: only neighbours need their (hashed) spec lookup (Phase 19).
             let floorsOverlap = other.floors.lowest <= room.floors.highest && room.floors.lowest <= other.floors.highest
-            if floorsOverlap, other.columns.end == room.columns.start || room.columns.end == other.columns.start {
-                level += n
-            } else if other.columns.overlaps(room.columns),
-                      other.floors.highest == room.floors.lowest - 1 || other.floors.lowest == room.floors.highest + 1 {
-                level += n / 2
-            }
+            let beside = floorsOverlap && (other.columns.end == room.columns.start || room.columns.end == other.columns.start)
+            let stacked = !beside && other.columns.overlaps(room.columns)
+                && (other.floors.highest == room.floors.lowest - 1 || other.floors.lowest == room.floors.highest + 1)
+            guard beside || stacked, let n = catalog.spec(other.definitionID)?.noise, n > 0 else { continue }
+            level += beside ? n : n / 2
         }
         return level
     }
@@ -121,7 +124,7 @@ public enum Leasing {
             total += Double(last.end)
             guard let ride = trip.ride else { return total }
             guard let shaft = world.rooms[ride.shaft], let spec = engine.rules.elevator(for: shaft.definitionID) else { return nil }
-            let measured = ElevatorBanks.bank(of: ride.shaft, in: world, rules: engine.rules)
+            let measured = engine.bank(of: ride.shaft, in: world)
                 .map { ElevatorBanks.stats(of: $0, in: world) }
             let wait = measured.flatMap { $0.boardings >= 10 ? $0.averageWait : nil } ?? spec.expectedWaitSeconds
             total += wait + Double(abs(ride.toFloor - ride.fromFloor)) * grid.floorHeight / spec.speed + Double(2 * spec.doorSeconds)
@@ -208,11 +211,13 @@ extension SimulationEngine {
     func runMarket(at now: Tick, world: inout GameWorld) -> [PersonID] {
         var added: [PersonID] = []
         let hour = now / 3600
-        meterLighting(at: now, world: &world)
+        // Metering and signing change neither rooms nor upkeep: one allocation for the hour.
+        let services = utilityServices(world, buildings: world.buildings.values.map(\.id))
+        meterLighting(at: now, world: &world, services: services)
         // Each city has its own market (Phase 15): prospects come by per city, scaled by its
         // demand, the reputation of its buildings and the weather, and look at its units only.
         for city in world.cities.values {
-            added += runCityMarket(city, hour: hour, at: now, world: &world)
+            added += runCityMarket(city, hour: hour, at: now, world: &world, services: services)
         }
         if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
             facilitiesDaily(at: now, world: &world)
@@ -227,7 +232,8 @@ extension SimulationEngine {
     }
 
     /// One city's hourly market step.
-    private func runCityMarket(_ city: City, hour: Tick, at now: Tick, world: inout GameWorld) -> [PersonID] {
+    private func runCityMarket(_ city: City, hour: Tick, at now: Tick, world: inout GameWorld,
+                               services: [BuildingID: UtilityService]) -> [PersonID] {
         var added: [PersonID] = []
         let buildings = Set(world.buildings.values.filter { world.properties[$0.propertyID]?.cityID == city.id }.map(\.id))
         let demand = Progression.demandMultiplier(world: world, engine: self, buildings: buildings)
@@ -242,7 +248,9 @@ extension SimulationEngine {
             let candidates = Leasing.vacantUnits(world, catalog: catalog).filter {
                 buildings.contains($0.buildingID) && type.rooms.contains($0.definitionID) && needed <= world.unlockedClass(of: $0.buildingID)
             }
-            let appraised = candidates.compactMap { room in Leasing.appraise(room, for: type, world: world, engine: self).map { (room, $0) } }
+            let appraised = candidates.compactMap { room in
+                Leasing.appraise(room, for: type, world: world, engine: self, services: services).map { (room, $0) }
+            }
             guard let best = appraised.filter({ $0.1.affordable }).min(by: { ($1.1.total, $0.0.id) < ($0.1.total, $1.0.id) })
                     ?? appraised.min(by: { ($1.1.total, $0.0.id) < ($0.1.total, $1.0.id) }) else {
                 world.market.countDecline(.noVacancy)          // counted, not logged (would flood a full building's log)
@@ -261,15 +269,25 @@ extension SimulationEngine {
         return added
     }
 
+    /// Utility allocation per building (empty without facilities rules).
+    func utilityServices(_ world: GameWorld, buildings: [BuildingID]) -> [BuildingID: UtilityService] {
+        guard rules.facilities != nil else { return [:] }
+        var services: [BuildingID: UtilityService] = [:]
+        for b in buildings { services[b] = Utilities.allocate(building: b, world: world, catalog: catalog, rules: rules) }
+        return services
+    }
+
     /// Daily review: satisfaction follows the unit's current appraisal (including measured
     /// elevator waits); three reviews in a row below the type's threshold → move out.
     /// Returns the move-outs per building.
     @discardableResult
     func reviewTenants(at now: Tick, world: inout GameWorld) -> [BuildingID: Int] {
         var moveOuts: [BuildingID: Int] = [:]
+        // Moving out removes tenants and people, never rooms or upkeep: allocate once.
+        let services = utilityServices(world, buildings: world.buildings.values.map(\.id))
         for tenant in world.tenants.values {
             guard let type = rules.tenantType(tenant.typeID), let room = world.rooms[tenant.room],
-                  let appraisal = Leasing.appraise(room, for: type, world: world, engine: self) else { continue }
+                  let appraisal = Leasing.appraise(room, for: type, world: world, engine: self, services: services) else { continue }
             var t = tenant
             t.satisfaction = 0.6 * t.satisfaction + 0.4 * appraisal.total
             t.unhappyDays = appraisal.total < type.leaveBelow ? t.unhappyDays + 1 : 0
