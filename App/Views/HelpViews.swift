@@ -2,13 +2,17 @@ import SwiftUI
 import SkylineContent
 
 /// The manual (F3): chapters on the left with a search field, the chapter on the right.
-/// Links to other chapters (`transport.md`) open them in place.
+/// Long chapters are split into pages (◀ ▶) instead of scrolling, like the saves list: all
+/// plain SwiftUI, so captures render it exactly as the window does. Links to other chapters
+/// (`transport.md`) open them in place.
 struct ManualView: View {
     let model: AppModel
 
     var body: some View {
         let document = model.manual?.document ?? ManualDocument(chapters: [])
         let chapter = model.manualChapterID.flatMap { document.chapter($0) } ?? document.chapters.first
+        let pages = chapter.map(ManualPages.split) ?? []
+        let page = min(model.manualPage, max(pages.count - 1, 0))
         ZStack {
             Color.black.opacity(0.5).ignoresSafeArea()
                 .onTapGesture { model.showManual = false }
@@ -19,26 +23,29 @@ struct ManualView: View {
                     CloseButton { model.showManual = false }
                         .keyboardShortcut(.cancelAction)
                 }
-                HStack(alignment: .top, spacing: 14) {
+                HStack(alignment: .top, spacing: 16) {
                     sidebar(document, current: chapter?.id)
                         .frame(width: 220)
-                    ScrollView {
-                        if let chapter {
-                            ManualChapterView(chapter: chapter).padding(.trailing, 8)
+                    Divider()
+                    VStack(alignment: .leading, spacing: 10) {
+                        if let chapter, !pages.isEmpty {
+                            ManualPageView(title: page == 0 ? chapter.title : nil, blocks: pages[page])
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                .clipped()
+                            pager(page: page, count: pages.count, chapter: chapter, document: document)
                         } else {
                             Text("The manual is missing from this build.").foregroundStyle(.secondary)
                         }
                     }
-                    .id(chapter?.id)                                      // a new chapter starts at the top
                     .environment(\.openURL, OpenURLAction { url in
                         guard url.pathExtension == "md" else { return .systemAction }
-                        model.manualChapterID = url.deletingPathExtension().lastPathComponent
+                        model.showChapter(url.deletingPathExtension().lastPathComponent)
                         return .handled
                     })
                 }
             }
             .padding(20)
-            .frame(maxWidth: 860, maxHeight: 600)
+            .frame(maxWidth: 880, maxHeight: 600)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
             .padding(24)
         }
@@ -47,28 +54,24 @@ struct ManualView: View {
 
     private func sidebar(_ document: ManualDocument, current: String?) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            TextField("Search", text: Binding(get: { model.manualQuery }, set: { model.manualQuery = $0 }))
-                .textFieldStyle(.roundedBorder)
-                .accessibilityLabel("Search the manual")
-            ScrollView {
-                VStack(alignment: .leading, spacing: 2) {
-                    if model.manualQuery.trimmingCharacters(in: .whitespaces).isEmpty {
-                        ForEach(document.chapters) { c in
-                            row(title: c.title, detail: nil, selected: c.id == current) { model.manualChapterID = c.id }
-                        }
-                    } else {
-                        let hits = document.search(model.manualQuery)
-                        if hits.isEmpty {
-                            Text("No chapter mentions that.").font(.caption).foregroundStyle(.secondary).padding(6)
-                        }
-                        ForEach(hits, id: \.chapter.id) { hit in
-                            row(title: hit.chapter.title, detail: hit.snippet, selected: hit.chapter.id == current) {
-                                model.manualChapterID = hit.chapter.id
-                            }
-                        }
-                    }
+            ManualSearchField(text: Binding(get: { model.manualQuery }, set: { model.manualQuery = $0 }))
+            if model.manualQuery.trimmingCharacters(in: .whitespaces).isEmpty {
+                ForEach(document.chapters) { c in
+                    row(title: c.title, detail: nil, selected: c.id == current) { model.showChapter(c.id) }
+                }
+            } else {
+                let hits = document.search(model.manualQuery)
+                if hits.isEmpty {
+                    Text("No chapter mentions that.").font(.caption).foregroundStyle(.secondary).padding(6)
+                }
+                ForEach(hits.prefix(7), id: \.chapter.id) { hit in
+                    row(title: hit.chapter.title, detail: hit.snippet, selected: hit.chapter.id == current) { model.showChapter(hit.chapter.id) }
+                }
+                if hits.count > 7 {
+                    Text("\(hits.count - 7) more — add a word").font(.caption).foregroundStyle(.secondary).padding(.horizontal, 8)
                 }
             }
+            Spacer(minLength: 0)
         }
     }
 
@@ -77,11 +80,11 @@ struct ManualView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.callout.weight(selected ? .semibold : .regular))
                 if let detail {
-                    Text(detail).font(.caption2).foregroundStyle(.secondary).lineLimit(2)
+                    Text(ManualMarkdown.strip(detail)).font(.caption2).foregroundStyle(.secondary).lineLimit(2)
                 }
             }
             .padding(.horizontal, 8)
-            .padding(.vertical, 5)
+            .padding(.vertical, 4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(selected ? 0.2 : 0)))
             .contentShape(Rectangle())
@@ -89,21 +92,98 @@ struct ManualView: View {
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
+
+    /// Previous/next page, or the neighbouring chapter at either end.
+    private func pager(page: Int, count: Int, chapter: ManualChapter, document: ManualDocument) -> some View {
+        let index = document.chapters.firstIndex { $0.id == chapter.id } ?? 0
+        let previous = index > 0 ? document.chapters[index - 1] : nil
+        let next = index + 1 < document.chapters.count ? document.chapters[index + 1] : nil
+        return HStack {
+            if page > 0 {
+                PagerButton(title: "◀ Previous page") { model.manualPage = page - 1 }
+            } else if let previous {
+                PagerButton(title: "◀ \(previous.title)") { model.showChapter(previous.id) }
+            }
+            Spacer()
+            if count > 1 {
+                Text("Page \(page + 1) of \(count)").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+            }
+            Spacer()
+            if page + 1 < count {
+                PagerButton(title: "Next page ▶") { model.manualPage = page + 1 }
+            } else if let next {
+                PagerButton(title: "\(next.title) ▶") { model.showChapter(next.id) }
+            }
+        }
+    }
 }
 
-/// One chapter's blocks, rendered natively (inline Markdown via `AttributedString`).
-struct ManualChapterView: View {
-    let chapter: ManualChapter
+private struct PagerButton: View {
+    let title: String
+    let action: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(chapter.title).font(.title.weight(.bold)).accessibilityAddTraits(.isHeader)
-            ForEach(Array(chapter.blocks.enumerated()), id: \.offset) { _, block in
+        Button(action: action) {
+            Text(title).font(.callout.weight(.medium))
+                .padding(.horizontal, 10).padding(.vertical, 5)
+                .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(0.12)))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// Splits a chapter into pages that fit the manual's reading area, by an estimate of each
+/// block's height in lines (about 80 characters of body text per line).
+enum ManualPages {
+    static let linesPerPage = 21
+
+    static func split(_ chapter: ManualChapter) -> [[ManualBlock]] {
+        var pages: [[ManualBlock]] = [[]]
+        var used = 3                                              // the chapter title
+        for block in chapter.blocks {
+            let lines = height(block)
+            if used + lines > linesPerPage, !pages[pages.count - 1].isEmpty {
+                // A heading never ends a page: it moves over with what follows it.
+                var carried: [ManualBlock] = []
+                if case .heading? = pages[pages.count - 1].last { carried.append(pages[pages.count - 1].removeLast()) }
+                pages.append(carried)
+                used = carried.reduce(0) { $0 + height($1) }
+            }
+            pages[pages.count - 1].append(block)
+            used += lines
+        }
+        return pages.filter { !$0.isEmpty }
+    }
+
+    static func height(_ block: ManualBlock) -> Int {
+        func lines(_ text: String, per: Int = 80) -> Int { max(1, (ManualMarkdown.strip(text).count + per - 1) / per) }
+        switch block {
+        case .heading: return 2
+        case let .paragraph(t): return lines(t) + 1
+        case let .note(t): return lines(t, per: 72) + 2
+        case let .bullets(items), let .numbered(items): return items.reduce(1) { $0 + lines($1, per: 76) }
+        case let .table(header, rows):
+            let columns = max(header.count, 1)
+            return rows.reduce(3) { total, row in total + (row.map { lines($0, per: 90 / columns) }.max() ?? 1) }
+        }
+    }
+}
+
+/// One page of a chapter, rendered natively (inline Markdown via `AttributedString`).
+struct ManualPageView: View {
+    let title: String?
+    let blocks: [ManualBlock]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            if let title {
+                Text(title).font(.title.weight(.bold)).accessibilityAddTraits(.isHeader)
+            }
+            ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
                 blockView(block)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .textSelection(.enabled)
     }
 
     @ViewBuilder
@@ -111,39 +191,48 @@ struct ManualChapterView: View {
         switch block {
         case let .heading(level, text):
             Text(Self.inline(text)).font(level <= 2 ? .title3.weight(.semibold) : .headline)
-                .padding(.top, level <= 2 ? 6 : 2)
+                .padding(.top, level <= 2 ? 4 : 2)
                 .accessibilityAddTraits(.isHeader)
         case let .paragraph(text):
-            Text(Self.inline(text)).font(.body).fixedSize(horizontal: false, vertical: true)
+            Text(Self.inline(text)).font(.callout).fixedSize(horizontal: false, vertical: true)
         case let .bullets(items):
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 3) {
                 ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
                         Text("•")
                         Text(Self.inline(item)).fixedSize(horizontal: false, vertical: true)
                     }
+                    .font(.callout)
                 }
             }
         case let .numbered(items):
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 3) {
                 ForEach(Array(items.enumerated()), id: \.offset) { i, item in
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
                         Text("\(i + 1).").monospacedDigit()
                         Text(Self.inline(item)).fixedSize(horizontal: false, vertical: true)
                     }
+                    .font(.callout)
                 }
             }
         case let .note(text):
-            Label { Text(Self.inline(text)).fixedSize(horizontal: false, vertical: true) } icon: { Image(systemName: "lightbulb") }
-                .padding(10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 8).fill(Color.yellow.opacity(0.12)))
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Image(systemName: "lightbulb").foregroundStyle(.yellow)
+                Text(Self.inline(text)).font(.callout).fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: 8).fill(Color.yellow.opacity(0.12)))
         case let .table(header, rows):
-            Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 4) {
+            Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 3) {
                 GridRow { ForEach(Array(header.enumerated()), id: \.offset) { _, h in Text(Self.inline(h)).font(.caption.weight(.semibold)) } }
                 Divider()
                 ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
-                    GridRow { ForEach(Array(row.enumerated()), id: \.offset) { _, cell in Text(Self.inline(cell)).font(.callout) } }
+                    GridRow {
+                        ForEach(Array(row.enumerated()), id: \.offset) { _, cell in
+                            Text(Self.inline(cell)).font(.caption).fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
                 }
             }
         }
@@ -152,6 +241,57 @@ struct ManualChapterView: View {
     static func inline(_ markdown: String) -> AttributedString {
         (try? AttributedString(markdown: markdown, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)))
             ?? AttributedString(markdown)
+    }
+}
+
+/// The manual's search box. On a Mac it is drawn in SwiftUI and takes typed keys while
+/// focused (click it), so captures show it like the window does; on an iPad it is a text
+/// field for the on-screen keyboard.
+struct ManualSearchField: View {
+    @Binding var text: String
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        #if os(macOS)
+        HStack(spacing: 6) {
+            Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+            Text(text.isEmpty ? (focused ? "|" : "Search") : text + (focused ? "|" : ""))
+                .foregroundStyle(text.isEmpty && !focused ? .secondary : .primary)
+                .lineLimit(1)
+            Spacer(minLength: 0)
+            if !text.isEmpty {
+                Button { text = "" } label: { Image(systemName: "xmark.circle.fill") }
+                    .buttonStyle(.plain).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+            }
+        }
+        .font(.callout)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(focused ? 0.16 : 0.1)))
+        .contentShape(Rectangle())
+        .focusable()
+        .focused($focused)
+        .focusEffectDisabled()
+        .onTapGesture { focused = true }
+        .onKeyPress(phases: .down) { press in
+            if press.key == .delete {
+                if !text.isEmpty { text.removeLast() }
+                return .handled
+            }
+            let typed = press.characters
+            guard !typed.isEmpty, press.modifiers.isDisjoint(with: [.command, .control]),
+                  typed.allSatisfy({ $0.isLetter || $0.isNumber || $0 == " " || $0 == "-" || $0 == "'" }) else { return .ignored }
+            text += typed
+            return .handled
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Search the manual")
+        .accessibilityValue(text)
+        #else
+        TextField("Search", text: $text)
+            .textFieldStyle(.roundedBorder)
+            .accessibilityLabel("Search the manual")
+        #endif
     }
 }
 
@@ -169,14 +309,14 @@ struct TutorialPanel: View {
                     .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                 CloseButton { model.showTutorialPanel = false }
             }
-            ProgressView(value: Double(tutorial.progress.completed), total: Double(max(tutorial.steps.count, 1)))
+            ProgressBar(value: Double(tutorial.progress.completed) / Double(max(tutorial.steps.count, 1)), tint: .green)
                 .accessibilityLabel("Tutorial progress")
+                .accessibilityValue("\(tutorial.progress.completed) of \(tutorial.steps.count) steps")
             if let step = tutorial.current {
                 Text(step.title).font(.callout.weight(.semibold))
-                Text(ManualChapterView.inline(step.text)).font(.callout).fixedSize(horizontal: false, vertical: true)
+                Text(ManualPageView.inline(step.text)).font(.callout).fixedSize(horizontal: false, vertical: true)
                 if let chapter = step.chapter {
-                    Button("Read more in the manual") { model.openManual(chapter: chapter) }
-                        .buttonStyle(.borderless).font(.caption)
+                    LinkButton(title: "Read more in the manual") { model.openManual(chapter: chapter) }
                 }
             } else {
                 Text("Every step done. Keep the units let through a closing to finish.")
@@ -213,18 +353,17 @@ struct HintBubble: View {
                 Spacer()
                 CloseButton { model.dismissHint() }
             }
-            Text(ManualChapterView.inline(hint.text)).font(.callout).fixedSize(horizontal: false, vertical: true)
-            HStack {
+            Text(ManualPageView.inline(hint.text)).font(.callout).fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: 12) {
                 if let chapter = hint.chapter {
-                    Button("Read more") {
+                    LinkButton(title: "Read more") {
                         model.dismissHint()
                         model.openManual(chapter: chapter)
                     }
-                    .buttonStyle(.borderless)
                 }
                 Spacer()
-                Button("Turn off tips") { model.setHintsEnabled(false) }.buttonStyle(.borderless).foregroundStyle(.secondary)
-                Button("Got it") { model.dismissHint() }.buttonStyle(.borderedProminent).controlSize(.small)
+                LinkButton(title: "Turn off tips", muted: true) { model.setHintsEnabled(false) }
+                PagerButton(title: "Got it") { model.dismissHint() }
             }
             .font(.caption)
         }
@@ -234,5 +373,20 @@ struct HintBubble: View {
         .environment(\.colorScheme, .dark)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Tip: \(hint.title)")
+    }
+}
+
+/// A text button in the accent colour (plain SwiftUI, so captures render it).
+private struct LinkButton: View {
+    let title: String
+    var muted = false
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title).font(.caption.weight(.medium)).foregroundStyle(muted ? Color.secondary : Color.accentColor)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }

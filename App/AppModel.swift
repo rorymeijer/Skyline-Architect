@@ -89,6 +89,8 @@ final class AppModel {
     var showManual = false
     var manualChapterID: String?
     var manualQuery = ""
+    /// Page of the open chapter (the manual pages instead of scrolling, like the saves list).
+    var manualPage = 0
     var tutorial: TutorialSummary?
     var showTutorialPanel = true
     var activeHint: ManualHint?

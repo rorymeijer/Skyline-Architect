@@ -58,10 +58,16 @@ extension AppModel {
     /// Opens the manual, at a chapter if given (else where it was left).
     func openManual(chapter: String? = nil) {
         if manual == nil { loadManual() }
-        if let chapter { manualChapterID = chapter }
-        if manualChapterID == nil { manualChapterID = manual?.document.chapters.first?.id }
+        if let chapter { showChapter(chapter) }
+        if manualChapterID == nil { showChapter(manual?.document.chapters.first?.id) }
         manualQuery = ""
         showManual = true
+    }
+
+    /// Shows a chapter from its first page.
+    func showChapter(_ id: String?) {
+        manualChapterID = id
+        manualPage = 0
     }
 
     // MARK: Tutorial (F3)
