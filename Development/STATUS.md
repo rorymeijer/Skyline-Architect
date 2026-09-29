@@ -24,6 +24,9 @@ _Last updated: 2026-09-29 (0.29.2 — every screen on the iPhone; App Store prep
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
 
+**Docs:** `Documentation/MOD_AUTHORING_PROMPT.md` is a shareable brief/AI prompt for making
+content mods (format version 1), with a headless validation snippet. Documentation only.
+
 **0.29.1:** the Mac app runs in the App Sandbox, which the Mac App Store requires (D-061).
 CI checks the entitlement in a signed Release build. Not verified here: the upload to App
 Store Connect itself (done by the owner from Xcode).
