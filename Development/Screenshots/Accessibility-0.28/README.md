@@ -1,6 +1,6 @@
 # Accessibility and the iPad — 0.28.0 (F4)
 
-Real captures from the Debug build, taken by CI run  with the same script on two platforms:
+Real captures from the Debug build, taken by CI run 36553103619 with the same script on two platforms:
 
 - `mac/`: the macOS app on a GitHub `macos-15` runner, 1024 × 681 pt.
 - `ipad/`: the iPad app in the iPad simulator on the same runner, 1210 × 834 pt landscape
