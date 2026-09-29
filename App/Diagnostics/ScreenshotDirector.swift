@@ -97,6 +97,14 @@ final class ScreenshotDirector {
             let hits = model.manual?.document.search("sprinklers").map(\.chapter.title) ?? []
             return "Searching the manual for 'sprinklers': \(hits.joined(separator: ", ")); showing 'Fire and incidents'."
         },
+        Step(name: "07-manual-table", grid: false) { model, scene in
+            model.manualQuery = ""
+            model.showChapter("building")
+            let pages = model.manual?.document.chapter("building").map(ManualPages.split) ?? []
+            let page = pages.firstIndex { $0.contains { if case .table = $0 { true } else { false } } } ?? 0
+            model.manualPage = page
+            return "The manual's longest table (rooms, in 'Building'): page \(page + 1) of \(pages.count), checked for clipping."
+        },
     ]
 
     init(configuration: Configuration, model: AppModel) {
