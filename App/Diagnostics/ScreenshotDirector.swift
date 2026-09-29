@@ -57,44 +57,45 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // F2 (0.26): the 526-floor stress tower (developer tool) — by day with the HUD, a
-    // storey band at mid-height, and at night whole (lit strips) and closer (window panes).
+    // F3 (0.27): the main menu with Tutorial and Manual; the tutorial scenario at its first
+    // step and after the construction steps (built through the player's command path); a
+    // first-time tip the game raised by itself; the manual at a chapter and searching.
     let steps: [Step] = [
-        Step(name: "01-526-floors", grid: false) { model, scene in
+        Step(name: "01-main-menu", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            model.showDeveloperHUD = true
-            let t0 = Date()
-            model.loadStressTower(zones: 25)
-            let load = Date().timeIntervalSince(t0) * 1000
-            model.advanceSimulation(toTimeOfDay: 10)
+            model.showDeveloperHUD = false
+            model.showMainMenu = true
+            return "The main menu: Tutorial first, Manual last."
+        },
+        Step(name: "02-tutorial-start", grid: false) { model, scene in
+            model.startTutorial()
             model.refreshSimulationSummary()
-            return "Stress tower, the base (the camera starts at the street): \(ScreenshotDirector.scale(model)); loaded (incl. "
-                + "route-cache warm-up and scene) in " + String(format: "%.0f ms", load) + ", Debug build; \(model.clockText)"
+            return "First Tower (Tutorial) just started, \(model.clockText), speed \(model.speed): \(ScreenshotDirector.tutorialNote(model))"
         },
-        Step(name: "02-whole-tower", grid: false) { model, scene in
-            let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 262), zoom: 0.3) }
-            return "\(model.clockText): all 526 floors by day, zoomed out as far as the camera goes"
-        },
-        Step(name: "03-mid-tower", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 240)
+        Step(name: "03-tutorial-built", grid: false) { model, scene in
+            let refused = ScreenshotDirector.buildTutorialSteps(model)
+            model.activeHint = nil
             model.refreshSimulationSummary()
-            let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 262), zoom: 9) }
-            return "\(model.clockText), floors ~255–270 of 526; last step (240 ticks) "
-                + String(format: "%.1f ms", model.lastSimulationMs) + " (Debug)"
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 1), zoom: 11) }
+            return "After the construction steps (built with the player's commands, \(refused) refused): \(ScreenshotDirector.tutorialNote(model)); cash \(model.economy.cash)"
         },
-        Step(name: "04-night-whole", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 22)
+        Step(name: "04-first-tip", grid: false) { model, scene in
+            model.activeHint = nil
+            model.advanceSimulation(ticks: 3 * 3600)
             model.refreshSimulationSummary()
-            let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 262), zoom: 0.3) }
-            return "\(model.clockText): 526 floors at night, zoomed out: one lit strip per storey of each room; \(ScreenshotDirector.scale(model))"
+            return "\(model.clockText), after three game hours at play: the tip the game raised is "
+                + (model.activeHint.map { "'\($0.title)'" } ?? "none") + "; \(ScreenshotDirector.tutorialNote(model)); \(model.world?.tenants.count ?? 0) tenants"
         },
-        Step(name: "05-night-panes", grid: false) { model, scene in
-            let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 480), zoom: 3) }
-            return "\(model.clockText): the upper zones closer (3 pt/m): individual window panes"
+        Step(name: "05-manual", grid: false) { model, scene in
+            model.activeHint = nil
+            model.openManual(chapter: "transport")
+            return "The manual (Help ▸ Skyline Architect Manual) at 'Stairs and elevators'."
+        },
+        Step(name: "06-manual-search", grid: false) { model, scene in
+            model.manualQuery = "sprinklers"
+            model.manualChapterID = "emergencies"
+            let hits = model.manual?.document.search("sprinklers").map(\.chapter.title) ?? []
+            return "Searching the manual for 'sprinklers': \(hits.joined(separator: ", ")); showing 'Fire and incidents'."
         },
     ]
 
