@@ -120,4 +120,15 @@ import SkylineCore
         #expect(result.won && (result.stars ?? 0) >= 1 && (result.score ?? 0) >= 1000)
         print("[scenario] Opening Day won with \(result.stars ?? 0) stars, \(result.score ?? 0) points")
     }
+
+    /// The panel and browser show news and restrictions in words.
+    @Test func reportsShowNewsAndRestrictions() throws {
+        var game = try built("lean-tower")
+        sim.advance(&game.world, by: 3 * 3600)
+        let summary = try #require(ScenarioSummary.make(world: game.world, engine: sim, library: library))
+        #expect(summary.restrictions == ["No Studio Apartment", "Floors up to 12", "Fixed rents", "No staff"])
+        #expect(summary.news.count == 1 && summary.news[0].hasPrefix("D1 08:00 · Offices only"))
+        let brief = try #require(ScenarioBrief.all(library: library).first { $0.id == "lean-tower" })
+        #expect(brief.restrictions.count == 4 && brief.events == 2)
+    }
 }

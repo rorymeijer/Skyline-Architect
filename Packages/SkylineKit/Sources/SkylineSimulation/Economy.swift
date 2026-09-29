@@ -129,6 +129,8 @@ public struct EconomySummary: Equatable, Sendable {
     /// The building's city: today's energy price and its tax level (Phase E).
     public var energyPrice = 1.0
     public var taxLevel = 1.0
+    /// The scenario fixes rents (Phase C).
+    public var rentFixed = false
     public var negativeDays = 0
     public var bankruptcyDays = 7
     public var bankrupt = false
@@ -152,6 +154,7 @@ public struct EconomySummary: Equatable, Sendable {
         s.lastDay = ledger.days.last(where: { $0.day == today }) ?? DayTotals(day: today)
         s.week = ledger.totals(lastDays: 7)
         s.rentLevel = building.flatMap { world.buildings[$0]?.rentLevel } ?? 1
+        s.rentFixed = world.restrictions?.rentIsFixed == true
         if let city = building.flatMap({ world.city(of: $0) }) {
             s.energyPrice = city.energyPrice ?? city.economy.energy ?? 1
             s.taxLevel = city.economy.tax ?? 1

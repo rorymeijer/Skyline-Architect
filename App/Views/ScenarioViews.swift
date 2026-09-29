@@ -1,6 +1,7 @@
 import SwiftUI
 import SkylineContent
 import SkylineCore
+import SkylinePersistence
 
 /// Scenario list and briefing, opened from the main menu (Phase 16).
 struct ScenarioBrowserView: View {
@@ -21,6 +22,7 @@ struct ScenarioBrowserView: View {
                                     HStack {
                                         Text(b.name).font(.headline)
                                         Spacer()
+                                        if let r = model.scenarioRecords.record(for: b.id) { Stars(count: r.bestStars, size: 10) }
                                         DifficultyTag(text: b.difficulty)
                                     }
                                     Text(b.summary).font(.caption).foregroundStyle(.secondary).lineLimit(2)
@@ -51,6 +53,21 @@ struct ScenarioBrowserView: View {
                             } else {
                                 Text("All at once, at a daily closing.").font(.caption).foregroundStyle(.secondary)
                             }
+                            if !s.restrictions.isEmpty {
+                                Text("Rules").font(.caption.weight(.semibold))
+                                ForEach(s.restrictions, id: \.self) { r in Label(r, systemImage: "nosign").font(.callout) }
+                            }
+                            if s.events > 0 {
+                                Text("\(s.events) scripted event\(s.events == 1 ? "" : "s") along the way.").font(.caption).foregroundStyle(.secondary)
+                            }
+                            if let r = model.scenarioRecords.record(for: s.id) {
+                                HStack(spacing: 6) {
+                                    Stars(count: r.bestStars, size: 12)
+                                    Text("Best \(r.bestScore) points · \(r.wins) of \(r.attempts) won"
+                                         + (r.fastestDays.map { " · fastest \($0) days" } ?? ""))
+                                        .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                                }
+                            }
                             HStack {
                                 MenuButton(title: "Back", subtitle: nil) { model.showScenarioBrowser = false }
                                 MenuButton(title: "Start \(s.name)", subtitle: nil) { model.startScenario(s.id) }
@@ -66,6 +83,23 @@ struct ScenarioBrowserView: View {
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
         }
         .environment(\.colorScheme, .dark)
+    }
+}
+
+/// Up to three stars, filled for those earned (Phase C).
+struct Stars: View {
+    let count: Int
+    var size: CGFloat = 12
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(0..<3, id: \.self) { i in
+                Image(systemName: i < count ? "star.fill" : "star").font(.system(size: size))
+                    .foregroundStyle(i < count ? Color.yellow : Color.secondary)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(count) of 3 stars")
     }
 }
 
@@ -104,6 +138,17 @@ struct ScenarioPanel: View {
                 ScenarioRows(rows: s.rows)
                 if s.result == nil {
                     Text("Checked at every daily closing (06:00).").font(.caption2).foregroundStyle(.secondary)
+                }
+                if !s.restrictions.isEmpty {
+                    Text("Rules: " + s.restrictions.joined(separator: " · ")).font(.caption2).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                if !s.news.isEmpty {
+                    Divider()
+                    ForEach(s.news, id: \.self) { line in
+                        Label(line, systemImage: "newspaper").font(.caption2).lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             }
             .padding(12)
@@ -145,6 +190,11 @@ struct ScenarioResultView: View {
                         .foregroundStyle(r.won ? Color.yellow : Color.orange)
                     Text(r.won ? "Scenario complete" : "Scenario failed").font(.largeTitle.weight(.bold))
                     Text("\(s.name) · \(r.reason) · day \(SimClock.day(r.tick) + 1)").font(.callout).foregroundStyle(.secondary)
+                    if r.won { Stars(count: r.stars ?? 1, size: 26) }
+                    if let score = r.score {
+                        Text("\(score) points" + (model.scenarioNewBest ? " · new best!" : "")).font(.title3.monospacedDigit().weight(.semibold))
+                            .foregroundStyle(model.scenarioNewBest ? Color.yellow : Color.primary)
+                    }
                     VStack(alignment: .leading, spacing: 6) { ScenarioRows(rows: s.rows) }
                         .frame(width: 320)
                         .padding(.vertical, 6)

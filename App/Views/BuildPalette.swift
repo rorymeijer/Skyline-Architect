@@ -71,9 +71,9 @@ struct BuildPalette: View {
     private func specButton(_ spec: RoomSpec) -> some View {
         let tool = ConstructionTool.room(spec.id)
         let isOn: Bool = model.activeTool == tool
-        let locked = model.lockedClass(of: spec.id)
+        let locked = model.lockReason(of: spec.id)
         return ToolButton(symbol: Self.symbol(for: spec.appearance), title: Self.shortName(spec.name),
-                          help: locked.map { "\(spec.name) — unlocks at \($0) (⌥⌘P)" } ?? helpText(spec), isOn: isOn, locked: locked != nil) {
+                          help: locked.map { "\(spec.name) — \($0)" } ?? helpText(spec), isOn: isOn, locked: locked != nil) {
             model.select(tool: isOn ? nil : tool)
         }
     }

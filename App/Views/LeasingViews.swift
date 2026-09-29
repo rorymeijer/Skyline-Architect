@@ -63,8 +63,12 @@ struct UnitInspector: View {
                         Text("· asks \(Money.format(asking)) / month").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                     }
                     Spacer()
-                    PanelButton(title: "−", enabled: report.rentFactor > 0.61) { onUnitRent(-0.1) }
-                    PanelButton(title: "+", enabled: report.rentFactor < 1.59) { onUnitRent(0.1) }
+                    if report.rentFixed {
+                        Text("fixed").font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        PanelButton(title: "−", enabled: report.rentFactor > 0.61) { onUnitRent(-0.1) }
+                        PanelButton(title: "+", enabled: report.rentFactor < 1.59) { onUnitRent(0.1) }
+                    }
                 }
                 .help("This unit's rent on top of the building's rent level; for new tenants and how units are rated. Signed rents stay.")
             }

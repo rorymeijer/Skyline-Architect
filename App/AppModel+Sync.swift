@@ -35,6 +35,9 @@ extension AppModel {
         }
         do {
             let report = try SaveSync.sync(local: saveStore, remote: remote, now: Date())
+            // The completion record travels with the saves: both sides keep the best (Phase C).
+            scenarioRecords = try ScenarioRecordStore.sync(local: ScenarioRecordStore(directory: saveStore.directory),
+                                                           remote: ScenarioRecordStore(directory: remote.directory))
             syncedSlots = Set(report.synced)
             syncConflicts = report.conflicts
             requestDownloads(report.pending, in: remote)

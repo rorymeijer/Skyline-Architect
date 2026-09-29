@@ -57,65 +57,58 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Economy and facilities (Phase E, 0.23): the demo plaza in the sandbox, leased with the
-    // developer tools; rent and staff changes are the panels' own calls, the breakdown is
-    // forced by wearing a car out (labelled), the repair is the simulation's.
+    // Scenarios (Phase C, 0.24): Opening Day played with the demo tower (built and leased
+    // with the developer tools) until the closing decides it; the browser with the record;
+    // Lean Tower's rules, where the same blueprint stops at the forbidden apartments.
     let steps: [Step] = [
-        Step(name: "01-unit-rent", grid: false) { model, scene in
-            model.setSpeed(.paused)  // captures advance time explicitly
+        Step(name: "01-news", grid: false) { model, scene in
             model.showDeveloperHUD = false
-            model.applyBlueprint("demo-plaza")
+            model.startScenario("opening-day")
+            model.setSpeed(.paused)  // captures advance time explicitly
+            model.applyBlueprint("demo-tower")
             model.leaseAllVacant()
             model.advanceSimulation(toTimeOfDay: 10)
             ScreenshotDirector.force("clear", 20, model: model)
-            if let office = model.world?.rooms.values.first(where: { $0.definitionID == "office-small" && $0.floors.lowest == 4 }) {
-                model.selectRoom(at: ScreenshotDirector.cell(of: office))
-                for _ in 0..<3 { model.adjustUnitRent(by: 0.1) }
-            }
+            model.showScenarioPanel = true
             model.refreshSimulationSummary()
             model.promotionNotice = nil
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4.5), zoom: 19) }
-            return "\(model.clockText): an office selected and its own rent raised three steps with the inspector's + (130 %)."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4), zoom: 11) }
+            return "\(model.clockText): Opening Day with the demo tower; the scenario panel shows the first news."
         },
-        Step(name: "02-staff-room", grid: false) { model, scene in
-            model.selectRoom(at: nil)
-            for role in [PersonRole.janitor, .janitor, .technician, .technician, .janitor] { model.changeStaff(role, by: 1) }
-            model.alert = nil                                     // the fifth hire is refused: shown in the note
-            model.advanceSimulation(toTimeOfDay: 11)
-            model.showFacilitiesPanel = true
-            model.refreshSimulationSummary()
-            model.promotionNotice = nil
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 24, floor: 3.5), zoom: 26) }
-            return "Five hires pressed: four fit the staff room, the fifth was refused. Idle staff wait in the staff room. "
-                + ScreenshotDirector.staffNote(model)
-        },
-        Step(name: "03-economy", grid: false) { model, scene in
-            model.showFacilitiesPanel = false
+        Step(name: "02-result", grid: false) { model, scene in
             model.advanceSimulation(ticks: SimClock.secondsPerDay)
             model.advanceSimulation(toTimeOfDay: 7)
+            model.refreshSimulationSummary()
+            model.promotionNotice = nil
+            let r = model.world?.scenario?.result
+            return "\(model.clockText): the closing decided it — " + (r.map { "\($0.won ? "won" : "lost"), \($0.stars ?? 0) stars, \($0.score ?? 0) points" } ?? "not yet decided")
+                + (model.scenarioNewBest ? " (a new best in the record)." : ".")
+        },
+        Step(name: "03-browser-record", grid: false) { model, scene in
+            model.selectedScenarioID = "opening-day"
+            model.openScenarioBrowser()
+            model.refreshSimulationSummary()
+            let r = model.scenarioRecords.record(for: "opening-day")
+            return "The scenario browser: Opening Day's record — " + (r.map { "\($0.bestStars) stars, best \($0.bestScore) points, \($0.wins) of \($0.attempts) won" } ?? "none") + "."
+        },
+        Step(name: "04-browser-rules", grid: false) { model, scene in
+            model.selectedScenarioID = "lean-tower"
+            model.refreshSimulationSummary()
+            return "The new Lean Tower scenario: its rules (no apartments, twelve floors, fixed rents, no staff) and its scripted events."
+        },
+        Step(name: "05-lean-tower", grid: false) { model, scene in
+            model.startScenario("lean-tower")
+            model.setSpeed(.paused)
+            model.applyBlueprint("demo-tower")
+            let refused = model.alert?.message ?? "no refusal"
+            model.alert = nil
+            model.advanceSimulation(toTimeOfDay: 9)
+            model.showScenarioPanel = true
             model.showEconomyPanel = true
             model.refreshSimulationSummary()
             model.promotionNotice = nil
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6), zoom: 9) }
-            return "\(model.clockText): the economy panel after a closing. " + ScreenshotDirector.closingNote(model)
-        },
-        Step(name: "04-breakdown", grid: false) { model, scene in
-            model.showEconomyPanel = false
-            model.advanceSimulation(toTimeOfDay: 8, minute: 15)
-            let broke = ScreenshotDirector.breakFirstCar(model)
-            model.showFacilitiesPanel = true
-            model.refreshSimulationSummary()
-            model.promotionNotice = nil
-            let floor = Double(ScreenshotDirector.firstCar(model)?.floor ?? 2)
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 17, floor: floor + 0.5), zoom: 19) }
-            return "\(model.clockText): the first car, worn out by the script, " + (broke ? "broke down and stands with its warning band; the others re-planned." : "did not break down within two hours.")
-        },
-        Step(name: "05-repaired", grid: false) { model, scene in
-            let repaired = ScreenshotDirector.waitForRepair(model)
-            model.refreshSimulationSummary()
-            model.promotionNotice = nil
-            return "\(model.clockText): " + (repaired ? "a technician repaired the shaft first; the car runs again." : "not yet repaired.")
-                + " Breakdowns so far: \(model.facilities.breakdowns)."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 3), zoom: 11) }
+            return "Lean Tower: the demo tower's blueprint stops at the first apartment (\(refused)); the palette's apartment is locked, rents are fixed."
         },
     ]
 

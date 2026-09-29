@@ -1,6 +1,7 @@
 import Foundation
 import SkylineContent
 import SkylineCore
+import SkylinePersistence
 
 extension AppModel {
     // MARK: Scenarios (Phase 16)
@@ -13,12 +14,33 @@ extension AppModel {
         scenario = ScenarioSummary.make(world: world, engine: simulation, library: library)
         if let result = world.scenario?.result, result != seenScenarioResult {
             seenScenarioResult = result
+            recordScenarioResult(result)
             showScenarioResult = true
             if speed != .paused { setSpeed(.paused) }
         }
     }
 
+    // MARK: Completion record (Phase C)
+
+    var scenarioRecordStore: ScenarioRecordStore { ScenarioRecordStore(directory: saveStore.directory) }
+
+    func loadScenarioRecords() {
+        scenarioRecords = scenarioRecordStore.load()
+    }
+
+    /// Counts a result just decided in this session (once; a loaded save's result is not).
+    private func recordScenarioResult(_ result: ScenarioResult) {
+        guard let s = world?.scenario else { return }
+        var records = scenarioRecordStore.load()
+        let days = Int(SimClock.day(result.tick)) - Int(s.startDay ?? 0)
+        scenarioNewBest = records.add(scenarioID: s.id, result: result, days: max(days, 0), at: Date()) && result.won
+        scenarioRecords = records
+        try? scenarioRecordStore.save(records)
+        if syncEnabled { syncSaves() }
+    }
+
     func openScenarioBrowser() {
+        loadScenarioRecords()
         if selectedScenarioID == nil { selectedScenarioID = scenarioBriefs.first?.id }
         showScenarioResult = false
         showScenarioBrowser = true

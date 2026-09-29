@@ -79,6 +79,10 @@ final class AppModel {
     var selectedScenarioID: String?
     var showScenarioResult = false
     @ObservationIgnored var seenScenarioResult: ScenarioResult?
+    /// The completion record (Phase C): best stars and points per scenario on this device;
+    /// `scenarioNewBest` when the announced result beat the previous best.
+    var scenarioRecords = ScenarioRecords()
+    var scenarioNewBest = false
     var showIncidentsPanel = false
     var incidentNotice: String?
     @ObservationIgnored var seenIncidentID: Int?

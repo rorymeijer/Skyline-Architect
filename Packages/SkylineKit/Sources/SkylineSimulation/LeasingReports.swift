@@ -36,6 +36,8 @@ public struct UnitReport: Equatable, Sendable {
     public var askingRent: Int?
     /// The unit's own rent setting (Phase E; 1 = the building's level).
     public var rentFactor = 1.0
+    /// The scenario fixes rents (Phase C).
+    public var rentFixed = false
     /// Rented, for sale or sold (0.20.3); whether it may be offered for sale, and its terms.
     public var tenure: Tenure = .rent
     public var canBeSold = false
@@ -57,7 +59,7 @@ public struct UnitReport: Equatable, Sendable {
             && a.utilities.map(\.name) == b.utilities.map(\.name) && a.utilities.map(\.served) == b.utilities.map(\.served)
             && a.cleanliness == b.cleanliness && a.condition == b.condition && a.askingRent == b.askingRent
             && a.tenure == b.tenure && a.canBeSold == b.canBeSold && a.salePrice == b.salePrice && a.serviceCharge == b.serviceCharge
-            && a.amenity == b.amenity && a.rentFactor == b.rentFactor
+            && a.amenity == b.amenity && a.rentFactor == b.rentFactor && a.rentFixed == b.rentFixed
     }
 
     public static func make(room: Room, world: GameWorld, engine: SimulationEngine) -> UnitReport? {
@@ -68,6 +70,7 @@ public struct UnitReport: Equatable, Sendable {
                                 leasable: spec.rentPerModule != nil, askingRent: Leasing.askingRent(room, world: world, catalog: engine.catalog))
         if report.leasable {
             report.rentFactor = room.rentFactor ?? 1
+            report.rentFixed = world.restrictions?.rentIsFixed == true
             report.tenure = room.tenure ?? .rent
             report.canBeSold = Leasing.canBeSold(room, rules: engine.rules)
             if report.canBeSold {
