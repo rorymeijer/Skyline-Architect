@@ -6,6 +6,7 @@ search box. Upload the folder as it is to any static host.
 | Path | What | Edited by |
 |------|------|-----------|
 | `index.html` | Landing page | hand |
+| `support.html`, `privacy.html` | Support page and privacy policy: the App Store Connect URLs (`Documentation/APP_STORE.md`) | hand |
 | `assets/style.css` | Styles for every page (light and dark) | hand |
 | `images/` | App icon and real game captures (from `Development/Screenshots/`) | hand |
 | `manual/` | **The player's manual**, one page per chapter plus a contents page with search | **generated, do not edit** |
