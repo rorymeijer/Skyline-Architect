@@ -26,9 +26,9 @@ view falls back to a compact form where the full one does not fit.
 - CI launches the iPhone build in an iPhone simulator (`Scripts/capture-simulator.sh`).
 
 Evidence: CI captures on the Mac, the iPad and the iPhone
-(`Development/Screenshots/iPhone-0.29/`). Found and fixed in the captures: the time bar over
+(`Development/Screenshots/iPhone-0.29/`, CI run 36565637497). Found and fixed in the captures: the time bar over
 the cash readout, wrapped speed labels, the picker behind a panel, one-paragraph manual pages,
-and the tutorial panel over the Floor tool. Not verified by a person: touch on a real iPhone;
+the tutorial panel over the Floor tool, and the chrome outgrowing the screen with a category open. Not verified by a person: touch on a real iPhone;
 touch targets are below Apple's 44 pt (OPEN_ITEMS V2).
 
 F4 (merged) made the game usable with larger text and a keyboard, and ran the iPad for the first
