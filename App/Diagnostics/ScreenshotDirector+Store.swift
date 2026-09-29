@@ -42,10 +42,9 @@ extension ScreenshotDirector {
             model.advanceSimulation(toTimeOfDay: 13, minute: 10)
             force("clear", 22, model: model)
             if let r = amenityRoom(model, "restaurant") { model.selectRoom(at: cell(of: r)) }
-            model.showLeasingPanel = true
             quiet(model)
             scene.withController { $0.jump(center: point(model, column: 16, floor: 2.2), zoom: 19) }
-            return "\(model.clockText): the restaurant selected, with the Leasing panel."
+            return "\(model.clockText): the restaurant selected: its tenant, takings and services."
         },
         Step(name: "05-tutorial", grid: false) { model, scene in
             closePanels(model)

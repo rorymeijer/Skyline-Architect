@@ -76,9 +76,10 @@ final class ScreenshotDirector {
         #if os(macOS)
         NSApplication.shared.activate(ignoringOtherApps: true)
         if configuration.set == "store", let window = NSApplication.shared.windows.first(where: { $0.isVisible }) {
-            // The Mac App Store takes 1440 × 900 (among others); CI screens are smaller, and
-            // setFrame, unlike a user's resize, is not held to the screen.
-            window.setFrame(window.frameRect(forContentRect: NSRect(x: 0, y: 0, width: 1440, height: 900)), display: true)
+            // The Mac App Store takes 1440 × 900 (among others). CI screens are smaller, and a
+            // titled window is held to the screen; a borderless one is not.
+            window.styleMask = [.borderless]
+            window.setFrame(NSRect(x: 0, y: 0, width: 1440, height: 900), display: true)
         }
         #endif
         try? FileManager.default.createDirectory(at: configuration.directory, withIntermediateDirectories: true)

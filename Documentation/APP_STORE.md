@@ -246,7 +246,7 @@ The set, in this order:
 1. `01-lunch`: the Demo Plaza at 12:40, restaurants and shops full ("Build upward")
 2. `02-evening`: 20:15, theatre and cinema, the city lit up ("Keep the building moving")
 3. `03-elevators`: the morning rush with the traffic overlay and the Elevator Banks panel ("Elevators that matter")
-4. `04-restaurant`: the restaurant's inspector and the Leasing panel ("Tenants with opinions")
+4. `04-restaurant`: the restaurant selected: its tenant, takings and services ("Tenants with opinions")
 5. `05-tutorial`: the tutorial panel over a first tower ("Learn as you build")
 6. `06-scenarios`: the scenario browser ("Scenarios against the clock")
 
