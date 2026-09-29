@@ -1,5 +1,197 @@
 [
   {
+    "id": "first-tower",
+    "name": "First Tower (Tutorial)",
+    "difficulty": "easy",
+    "summary": "Learn the basics step by step: floors, rooms, transport, tenants and staff.",
+    "briefing": "Quay Street has a foundation and $3M. The tutorial panel walks you through your first building one step at a time: floors, a lobby, stairs and an elevator, the plant, offices and flats, your first tenants and a janitor. Let four units and keep them through a closing to finish. There is plenty of time: nothing is lost by pausing to read.",
+    "startID": "standard-quay",
+    "startingCash": 3000000,
+    "days": 30,
+    "objectives": [
+      {
+        "metric": "occupiedUnits",
+        "target": 4
+      }
+    ],
+    "events": [
+      {
+        "day": 1,
+        "hour": 6,
+        "kind": "news",
+        "message": "Welcome to Quay Street. Follow the tutorial panel on the left; the game is paused until you press play."
+      },
+      {
+        "day": 2,
+        "hour": 6,
+        "kind": "news",
+        "message": "The first daily closing is done: the economy panel shows what came in and what went out."
+      }
+    ],
+    "tutorial": [
+      {
+        "id": "floors",
+        "title": "Build the ground floor and a basement",
+        "text": "Choose Floor in the build bar (F) and drag across the foundation, once at street level and once below it. Floors are the plates everything else stands on.",
+        "done": [
+          {
+            "kind": "floors",
+            "count": 2
+          }
+        ],
+        "chapter": "building"
+      },
+      {
+        "id": "lobby",
+        "title": "Open a lobby",
+        "text": "Pick Lobby and drag it across the ground floor. Everyone enters the building through the lobby.",
+        "done": [
+          {
+            "kind": "rooms",
+            "count": 1,
+            "rooms": [
+              "lobby"
+            ]
+          }
+        ],
+        "chapter": "building"
+      },
+      {
+        "id": "stairs",
+        "title": "Add a stairwell",
+        "text": "A Stairwell spans two floors or more: drag it upward from the basement. People can climb a few floors; more than that and they want an elevator.",
+        "done": [
+          {
+            "kind": "rooms",
+            "count": 1,
+            "rooms": [
+              "stairs"
+            ]
+          }
+        ],
+        "chapter": "transport"
+      },
+      {
+        "id": "plant",
+        "title": "Install the plant",
+        "text": "Put a Mechanical Room, an Electrical Room and a Telecom Room in the basement. Without water, climate, power and data no tenant will sign.",
+        "done": [
+          {
+            "kind": "rooms",
+            "count": 1,
+            "rooms": [
+              "mechanical"
+            ]
+          },
+          {
+            "kind": "rooms",
+            "count": 1,
+            "rooms": [
+              "electrical-room"
+            ]
+          },
+          {
+            "kind": "rooms",
+            "count": 1,
+            "rooms": [
+              "telecom-room"
+            ]
+          }
+        ],
+        "chapter": "facilities"
+      },
+      {
+        "id": "offices",
+        "title": "Build two offices",
+        "text": "Build floor 1, then place two Small Offices on it. Offices pay rent and bring workers on weekdays.",
+        "done": [
+          {
+            "kind": "rooms",
+            "count": 2,
+            "rooms": [
+              "office-small"
+            ]
+          }
+        ],
+        "chapter": "tenants"
+      },
+      {
+        "id": "elevator",
+        "title": "Add an elevator",
+        "text": "Drag an Elevator Shaft from the basement to the top floor. Resize it later by dragging its end, or with the buttons in the inspector.",
+        "done": [
+          {
+            "kind": "rooms",
+            "count": 1,
+            "rooms": [
+              "elevator-shaft",
+              "elevator-express"
+            ]
+          }
+        ],
+        "chapter": "transport"
+      },
+      {
+        "id": "flats",
+        "title": "Build two flats",
+        "text": "Add floor 2 with two Studio Apartments. Residents live there around the clock; you can rent flats out or sell them.",
+        "done": [
+          {
+            "kind": "rooms",
+            "count": 2,
+            "rooms": [
+              "apartment-studio"
+            ]
+          }
+        ],
+        "chapter": "tenants"
+      },
+      {
+        "id": "tenants",
+        "title": "Let the first units",
+        "text": "Press play (1× or faster). Every hour prospects look at your vacant units; the leasing panel shows who came and why others declined.",
+        "done": [
+          {
+            "kind": "tenants",
+            "count": 2
+          }
+        ],
+        "chapter": "tenants"
+      },
+      {
+        "id": "staff",
+        "title": "Hire a janitor",
+        "text": "Build a Staff Room in the basement, then hire a janitor in the facilities panel. Staff keep rooms clean and repair wear.",
+        "done": [
+          {
+            "kind": "rooms",
+            "count": 1,
+            "rooms": [
+              "staff-room"
+            ]
+          },
+          {
+            "kind": "staff",
+            "count": 1
+          }
+        ],
+        "chapter": "facilities"
+      },
+      {
+        "id": "closing",
+        "title": "Get through the first closing",
+        "text": "At 06:00 the day is closed: rent comes in, costs go out. Let all four units and keep them through a closing to finish the tutorial.",
+        "done": [
+          {
+            "kind": "scenarioDay",
+            "count": 2
+          }
+        ],
+        "chapter": "economy"
+      }
+    ]
+  },
+  {
     "id": "opening-day",
     "name": "Opening Day",
     "difficulty": "easy",

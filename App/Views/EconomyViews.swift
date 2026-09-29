@@ -121,6 +121,7 @@ struct MainMenuView: View {
                             model.continueLatest()
                         }
                     }
+                    MenuButton(title: "Tutorial", subtitle: "Your first tower, step by step") { model.startTutorial() }
                     MenuButton(title: "New Game", subtitle: "Quay Street, Port Calder · rooms unlock by class") {
                         model.startFromMenu()
                     }
@@ -132,6 +133,7 @@ struct MainMenuView: View {
                         model.openModManager()
                     }
                     MenuButton(title: "Load Game…", subtitle: nil) { model.openSavesPanel() }
+                    MenuButton(title: "Manual", subtitle: "How everything works") { model.openManual() }
                 }
                 .frame(width: 300)
                 .padding(.top, 8)

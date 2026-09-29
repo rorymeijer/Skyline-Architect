@@ -58,5 +58,6 @@ extension AppModel {
         newGame(startID: startID)
         showMainMenu = false
         setSpeed(.normal)
+        hint("welcome")
     }
 }

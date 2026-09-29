@@ -83,6 +83,18 @@ final class AppModel {
     /// `scenarioNewBest` when the announced result beat the previous best.
     var scenarioRecords = ScenarioRecords()
     var scenarioNewBest = false
+    /// Help (F3): the manual (loaded once), its sheet and chapter; the tutorial scenario's
+    /// steps (4 Hz); the first-time hint on screen and which ones this device has seen.
+    @ObservationIgnored var manual: ManualContent?
+    var showManual = false
+    var manualChapterID: String?
+    var manualQuery = ""
+    /// Page of the open chapter (the manual pages instead of scrolling, like the saves list).
+    var manualPage = 0
+    var tutorial: TutorialSummary?
+    var showTutorialPanel = true
+    var activeHint: ManualHint?
+    var hintMemory = HintMemory(persists: false)
     var showIncidentsPanel = false
     var incidentNotice: String?
     @ObservationIgnored var seenIncidentID: Int?
@@ -163,6 +175,8 @@ final class AppModel {
         enabledMods = enabled
         modDraft = enabled
         persistsModSettings = persists
+        hintMemory = HintMemory(persists: persists)
+        loadManual()
         do {
             try reloadContent()
             try startNewGame()
@@ -314,6 +328,7 @@ final class AppModel {
     func select(tool: ConstructionTool?) {
         activeTool = tool
         scene?.activeTool = tool
+        toolHint(tool)
     }
 
     func handleToolKey(_ key: String) {

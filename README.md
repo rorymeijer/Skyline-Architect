@@ -5,7 +5,7 @@ iPadOS. Swift · SwiftUI · SpriteKit. No third-party engines, no copied assets.
 
 <img src="App/Assets.xcassets/AppIcon.appiconset/mac-256.png" width="128" alt="App icon: a cut-away tower at dusk">
 
-## What the game does (0.26.0)
+## What the game does (0.27.0)
 
 Build a tower in cross-section and keep it running.
 
@@ -26,6 +26,7 @@ Build a tower in cross-section and keep it running.
 | **Modding** | JSON content packs over the base game, validated per mod, with a mod manager and an example mod. |
 | **Saves** | Versioned format (18) with migrations and golden fixtures, a content hash per pack; optional iCloud Drive sync that keeps both versions on a conflict. |
 | **Scale** | Profiled on generated towers up to 526 floors and 2,500 people; elevator shafts up to 1,000 floors. |
+| **Help** | A step-by-step tutorial scenario, first-time tips and a 14-chapter manual in the game; the same manual is on the website (`Website/`). |
 | **Polish** | Procedural art throughout, clouds, the app icon, VoiceOver labels and Reduce Motion. |
 
 **Honest status.** Every system above is implemented, tested and seen working in automated
@@ -51,5 +52,6 @@ See [Development/STATUS.md](Development/STATUS.md).
 - `Documentation/ARCHITECTURE.md` — module boundaries.
 - `Documentation/DECISIONS.md` — why things are the way they are.
 - `Documentation/OPEN_ITEMS.md` — everything still open, in one checklist.
-- One document per system in `Documentation/` (SIMULATION, ELEVATORS, TENANTS, ECONOMY, FACILITIES, PROGRESSION, LIGHTING, WEATHER, EMERGENCIES, ESTATE, SCENARIOS, MODDING, SAVE_FORMAT, PERFORMANCE, GRAPHICS, ACCESSIBILITY).
+- One document per system in `Documentation/` (SIMULATION, ELEVATORS, TENANTS, ECONOMY, FACILITIES, PROGRESSION, LIGHTING, WEATHER, EMERGENCIES, ESTATE, SCENARIOS, MANUAL, MODDING, SAVE_FORMAT, PERFORMANCE, GRAPHICS, ACCESSIBILITY).
 - `Development/Screenshots/Phase-XX/` — real captures of every phase, with notes.
+- `Website/` — the website for www.skyline-architect.com; the player's manual is in `Website/manual/` (generated, see `Website/README.md`).

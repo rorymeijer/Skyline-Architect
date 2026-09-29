@@ -118,7 +118,7 @@ struct LeasingPanel: View {
             if summary.owned + summary.forSale > 0 {
                 Text("\(summary.owned) flat\(summary.owned == 1 ? "" : "s") sold · \(summary.forSale) for sale").font(.caption)
             }
-            Text("Rent roll \(Money.format(summary.rentRoll)) / month (charged from Phase 9)").font(.caption.monospacedDigit())
+            Text("Rent roll \(Money.format(summary.rentRoll)) / month, paid at the daily closing").font(.caption.monospacedDigit())
             Meter(label: "Avg satisfaction", value: summary.averageSatisfaction)
             let m = summary.market
             Text("Prospects \(m.prospects) · signed \(m.signed) · moved out \(m.movedOut)").font(.caption.monospacedDigit())

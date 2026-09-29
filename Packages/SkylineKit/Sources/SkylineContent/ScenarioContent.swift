@@ -26,6 +26,8 @@ public struct ScenarioDefinition: Codable, Hashable, Sendable, Identifiable {
     /// Scripted events and scoring (Phase C).
     public var events: [ScenarioEvent]?
     public var scoring: ScenarioScoring?
+    /// Guided steps (F3): a tutorial scenario shows the first step not yet done.
+    public var tutorial: [TutorialStep]?
 }
 
 extension ContentLibrary {
@@ -79,6 +81,7 @@ extension ContentLibrary {
                     guard let w = e.weather, weatherIDs.contains(w) else { throw bad("unknown weather '\(e.weather ?? "")'") }
                 }
             }
+            if let problem = tutorialProblems(s.tutorial ?? []).first { throw fail(problem) }
             orderedScenarios.append(s)
         }
     }

@@ -16,13 +16,14 @@ let package = Package(
         .executable(name: "skyline-snapshot", targets: ["SkylineSnapshot"]),
         .executable(name: "skyline-bench", targets: ["SkylineBench"]),
         .executable(name: "skyline-balance", targets: ["SkylineBalance"]),
+        .executable(name: "skyline-website", targets: ["SkylineWebsite"]),
     ],
     targets: [
         .target(name: "SkylineCore"),
         .target(
             name: "SkylineContent",
             dependencies: ["SkylineCore", "SkylinePresentation", "SkylineSimulation"],
-            resources: [.copy("Resources/Base"), .copy("Resources/Examples")]
+            resources: [.copy("Resources/Base"), .copy("Resources/Examples"), .copy("Resources/Manual")]
         ),
         .target(name: "SkylinePresentation", dependencies: ["SkylineCore"]),
         .target(name: "SkylinePersistence", dependencies: ["SkylineCore"]),
@@ -38,6 +39,8 @@ let package = Package(
         // Balance bot (F1): plays scenarios through the construction engine; a developer tool.
         .target(name: "SkylineBot", dependencies: ["SkylineCore", "SkylineContent", "SkylineSimulation"]),
         .executableTarget(name: "SkylineBalance", dependencies: ["SkylineBot", "SkylineContent", "SkylineCore"]),
+        // Website generator (F3): writes the manual pages of Website/manual from Resources/Manual.
+        .executableTarget(name: "SkylineWebsite", dependencies: ["SkylineContent"]),
         .testTarget(name: "SkylineBotTests", dependencies: ["SkylineBot", "SkylineContent"]),
         .testTarget(name: "SkylineCoreTests", dependencies: ["SkylineCore"]),
         .testTarget(name: "SkylineSimulationTests", dependencies: ["SkylineSimulation", "SkylineContent"]),

@@ -72,6 +72,8 @@ extension AppModel {
         refreshIncidents()
         if showEstatePanel { refreshEstate() }
         refreshScenario()
+        refreshTutorial()
+        checkWorldHints()
     }
 
     // MARK: Elevator banks

@@ -67,6 +67,7 @@ All metrics cover the whole estate.
 
 | Scenario | Difficulty | Start | Days | Objectives |
 |----------|-----------|-------|-----:|------------|
+| First Tower (Tutorial, F3) | Easy | Quay Street, $3M | 30 | 4 units let; ten tutorial steps guide the player (MANUAL.md) |
 | Opening Day | Easy | Quay Street, $2.5M | 10 | 16 units let; daily profit ≥ $12,000 |
 | Harbour Revival | Medium | Harbour Row, Saltmere, $1.5M | 30 | population 100; daily profit ≥ $4,000; held 3 closings |
 | Three Properties | Medium | Quay Street, $2.5M | 60 | 3 properties; population 160; daily profit ≥ $10,000 |
@@ -78,6 +79,7 @@ Targets were tuned in F1 from the balance bot's plays (BALANCE.md).
 
 **Testing and balancing:**
 
+* First Tower is played step by step in `TutorialTests` and won after its first closing.
 * Opening Day is tested to be winnable: the demo tower wins it on day 3.
 * The other targets are first-pass balancing. They have not been played through.
 

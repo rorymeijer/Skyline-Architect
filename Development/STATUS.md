@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-29 (0.26.0 — F2: 500 floors)_
+_Last updated: 2026-09-29 (0.27.0 — F3: tutorial, manual, website)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -8,30 +8,29 @@ _Last updated: 2026-09-29 (0.26.0 — F2: 500 floors)_
 | Step | Content | State |
 |------|---------|-------|
 | F1 | Balance bot and tuning | COMPLETE (rorymeijer/Skyline-Architect#31) |
-| F2 | 500 floors running smoothly | COMPLETE on the branch |
-| F3 | Tutorial, in-game manual, website (`Website/`) | Planned |
+| F2 | 500 floors running smoothly | COMPLETE (rorymeijer/Skyline-Architect#32) |
+| F3 | Tutorial, in-game manual, website (`Website/`) | COMPLETE on the branch |
 | F4 | Accessibility and iPad | Planned |
 | F5 | iPhone | Planned |
 
-F2 profiled a 526-floor tower (2 511 people, 74 cars) with callgrind and removed the hot
-spots:
-- staff rooms are looked up once per call;
-- cars have graph nodes only at their stops;
-- routes use A* search;
-- breakdowns keep the route cache;
-- the cache is warmed on load;
-- night windows are drawn as strips when zoomed far out.
+F3 added the help a new player needs (MANUAL.md, D-058):
+- **Tutorial**: *First Tower*, ten guided steps measured on the world, with a panel. It starts
+  paused and is the first item of the main menu.
+- **Manual**: 14 chapters in the game (Help menu, `⌘?`, main menu, book button), with search.
+- **Tips**: 15 first-time tips, once per device, which can be turned off.
+- **Website**: `Website/` for www.skyline-architect.com, with the manual in `Website/manual/`,
+  generated from the same Markdown by `skyline-website`. It is not published yet; hosting is
+  the owner's decision.
 
-Two game days: 9.1 s → 3.6 s. Worst step: 400 → 134 ms. Daily closing: 826 → 65 ms.
-Details in PERFORMANCE.md and D-057.
+Evidence:
+- 366 tests, among them the tutorial played step by step to a win, the manual's references,
+  and the website pages being up to date.
+- The website was checked in Chromium at desktop and phone width, light and dark, with no
+  horizontal overflow and a working search.
+- The app side is verified by the macOS CI build and captures in `Development/Screenshots/Help-0.27/` (CI run 36546858116).
 
-Evidence: 357 tests (new: a warmed cache changes nothing; breakdowns keep the graph; night
-strips). `skyline-bench` numbers are in PERFORMANCE.md. The app side (strips, warming on load)
-is verified by CI: captures in `Development/Screenshots/Tall-Towers-0.26/` (Debug, 44–45 fps).
-
-F1 (merged) ran the `skyline-balance` bot on every scenario, fixed high-floor leasing, eased
-the class thresholds, tuned the targets and fixed an elevator-repair crash (BALANCE.md,
-D-056).
+F2 (merged): a 526-floor tower simulates 2.5× faster, with its worst step at 134 ms and the
+daily closing at 65 ms (PERFORMANCE.md, D-057).
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |

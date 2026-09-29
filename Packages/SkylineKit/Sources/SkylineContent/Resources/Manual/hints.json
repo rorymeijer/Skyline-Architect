@@ -1,0 +1,92 @@
+[
+  {
+    "id": "welcome",
+    "title": "Welcome to Quay Street",
+    "text": "Start with **Floor** (`F`) in the build bar: drag across the foundation for the ground floor and a basement. The game runs while you build; press `Space` to pause.",
+    "chapter": "building"
+  },
+  {
+    "id": "floor-tool",
+    "title": "Building floors",
+    "text": "Drag across the columns. Each floor must rest on the one below; basements only where the foundation has been dug. `Esc` puts the tool away.",
+    "chapter": "building"
+  },
+  {
+    "id": "room-tool",
+    "title": "Placing rooms",
+    "text": "Drag to set the width; the preview shows the price, or in red why it cannot go there. Rooms need a floor at their level.",
+    "chapter": "building"
+  },
+  {
+    "id": "shaft-tool",
+    "title": "Stairs and elevators",
+    "text": "Drag a shaft upward across the floors it should serve. Rooms in the way are cut to make room. Drag its top or bottom later to resize it.",
+    "chapter": "transport"
+  },
+  {
+    "id": "demolish-tool",
+    "title": "Demolishing",
+    "text": "Click a room to remove it, or an empty floor. You get 40 % of the cost back; `⌘Z` undoes it for the full amount.",
+    "chapter": "building"
+  },
+  {
+    "id": "first-tenant",
+    "title": "Your first tenant",
+    "text": "Someone signed a lease. Click the unit to see who moved in, what they pay and how happy they are. Rent comes in at the 06:00 closing.",
+    "chapter": "tenants"
+  },
+  {
+    "id": "poor-services",
+    "title": "Prospects missing services",
+    "text": "A prospect declined because a utility is missing or rooms are dirty or worn. Check the **Facilities** panel (`⌥⌘F`) and the **Services overlay** (`⌥⌘U`).",
+    "chapter": "facilities"
+  },
+  {
+    "id": "poor-access",
+    "title": "Hard to reach",
+    "text": "A prospect found a unit too slow to reach. Add an elevator, or check the waits in **Elevator Banks** (`⌥⌘E`).",
+    "chapter": "transport"
+  },
+  {
+    "id": "too-expensive",
+    "title": "Too expensive",
+    "text": "A prospect found the rent too high. Lower the **Rent level** in the Economy panel, or one unit's rent in its inspector.",
+    "chapter": "tenants"
+  },
+  {
+    "id": "first-closing",
+    "title": "The daily closing",
+    "text": "At 06:00 rent came in and the running costs went out. The **Economy** panel (`⌥⌘M`) shows every category for today and the last seven days.",
+    "chapter": "economy"
+  },
+  {
+    "id": "first-night",
+    "title": "Night falls",
+    "text": "Homes light up and offices go dark. Lighting costs electricity, billed at the closing. Tenants review their units every morning.",
+    "chapter": "environment"
+  },
+  {
+    "id": "cash-negative",
+    "title": "Cash below zero",
+    "text": "Seven closings in a row in the red means bankruptcy. Borrow in the Economy panel, sell a flat or let more units.",
+    "chapter": "economy"
+  },
+  {
+    "id": "first-fire",
+    "title": "Fire!",
+    "text": "Everyone leaves by the stairs and the brigade is on its way. A **Fire Control Room** runs sprinklers for 15 floors up and down.",
+    "chapter": "emergencies"
+  },
+  {
+    "id": "first-breakdown",
+    "title": "An elevator broke down",
+    "text": "A worn car stopped. A technician repairs it first thing; hire technicians in the Facilities panel and build a staff room for them.",
+    "chapter": "transport"
+  },
+  {
+    "id": "promotion",
+    "title": "A better class",
+    "text": "Your building went up a class: taller floors, new rooms and new tenants are unlocked. The **Standing** panel (`⌥⌘P`) shows what the next class needs.",
+    "chapter": "progression"
+  }
+]
