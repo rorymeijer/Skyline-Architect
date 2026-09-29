@@ -61,6 +61,10 @@ import Testing
     @Test func searchFindsEveryWord() {
         let hits = manual.document.search("sprinklers brigade")
         #expect(hits.map(\.chapter.id).contains("emergencies"))
+        // Snippets are a sentence or a table row, not a whole table.
+        let building = manual.document.search("sprinklers").first { $0.chapter.id == "building" }
+        #expect(building?.snippet.hasPrefix("Fire Control Room") == true)
+        #expect(hits.allSatisfy { $0.snippet.count < 260 })
         #expect(manual.document.search("zzzz-nothing").isEmpty)
         #expect(manual.document.search("   ").isEmpty)
     }

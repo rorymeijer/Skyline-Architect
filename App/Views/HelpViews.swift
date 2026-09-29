@@ -136,7 +136,7 @@ private struct PagerButton: View {
 /// Splits a chapter into pages that fit the manual's reading area, by an estimate of each
 /// block's height in lines (about 80 characters of body text per line).
 enum ManualPages {
-    static let linesPerPage = 21
+    static let linesPerPage = 27
 
     static func split(_ chapter: ManualChapter) -> [[ManualBlock]] {
         var pages: [[ManualBlock]] = [[]]
@@ -368,7 +368,7 @@ struct HintBubble: View {
             .font(.caption)
         }
         .padding(12)
-        .frame(width: 360, alignment: .leading)
+        .frame(width: 330, alignment: .leading)
         .panelCard()
         .environment(\.colorScheme, .dark)
         .accessibilityElement(children: .contain)

@@ -26,7 +26,9 @@ public struct ManualDocument: Sendable {
         return chapters.compactMap { chapter in
             let texts = [chapter.title] + chapter.blocks.map(\.plainText)
             guard words.allSatisfy({ w in texts.contains { has($0, w) } }) else { return nil }
-            let snippet = texts.dropFirst().first { t in words.contains { has(t, $0) } } ?? chapter.title
+            // The snippet: the first table row or sentence with a searched word.
+            let pieces = chapter.blocks.flatMap(\.searchPieces)
+            let snippet = pieces.first { t in words.contains { has(t, $0) } } ?? chapter.title
             return (chapter, snippet)
         }
     }
@@ -47,6 +49,27 @@ public enum ManualBlock: Sendable, Hashable {
     case numbered([String])
     case note(String)
     case table(header: [String], rows: [[String]])
+
+    /// Short pieces for search snippets: each table row, list item or sentence, plain.
+    public var searchPieces: [String] {
+        switch self {
+        case let .table(_, rows): return rows.map { ManualMarkdown.strip($0.joined(separator: " · ")) }
+        case let .bullets(items), let .numbered(items): return items.flatMap { Self.sentences(ManualMarkdown.strip($0)) }
+        case .heading, .paragraph, .note: return Self.sentences(plainText)
+        }
+    }
+
+    static func sentences(_ text: String) -> [String] {
+        var out: [String] = []
+        var current = ""
+        for c in text {
+            current.append(c)
+            if ".!?".contains(c) { out.append(current.trimmingCharacters(in: .whitespaces)); current = "" }
+        }
+        let rest = current.trimmingCharacters(in: .whitespaces)
+        if !rest.isEmpty { out.append(rest) }
+        return out
+    }
 
     /// Text without Markdown marks, for search.
     public var plainText: String {
