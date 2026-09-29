@@ -59,6 +59,7 @@ struct GameCommands: Commands {
             Button("Developer: Start a Fire") { model.igniteFirstOffice() }
             Button("Developer: Load Stress Tower (211 floors)") { model.loadStressTower(zones: 10) }
             Button("Developer: Load Stress Tower (400 floors)") { model.loadStressTower(zones: 19) }
+            Button("Developer: Load Stress Tower (526 floors)") { model.loadStressTower(zones: 25) }
             #endif
         }
         CommandGroup(after: .toolbar) {
