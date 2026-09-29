@@ -165,6 +165,10 @@ final class AppModel {
     var savesPage = 0
     /// Debug captures: a local folder standing in for iCloud Drive.
     @ObservationIgnored var syncFolderOverride: URL?
+    /// Whether the app has an iCloud container (needs the iCloud entitlement and a signed-in
+    /// account). Without one the saves panel hides the iCloud switch rather than show a
+    /// switch that cannot work.
+    @ObservationIgnored var iCloudAvailable = false
 
     static let autosaveInterval: TimeInterval = 120
 
@@ -215,6 +219,7 @@ final class AppModel {
             scene.onReady = { [weak director] in director?.start() }
         }
         #endif
+        iCloudAvailable = syncFolderOverride != nil || FileManager.default.url(forUbiquityContainerIdentifier: nil) != nil
         syncSaves()
         autosaveTimer = Timer.scheduledTimer(withTimeInterval: Self.autosaveInterval, repeats: true) { [weak self] _ in
             self?.autosaveIfNeeded()
