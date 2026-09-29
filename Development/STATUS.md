@@ -27,7 +27,7 @@ Details in PERFORMANCE.md and D-057.
 
 Evidence: 357 tests (new: a warmed cache changes nothing; breakdowns keep the graph; night
 strips). `skyline-bench` numbers are in PERFORMANCE.md. The app side (strips, warming on load)
-is verified by the CI build and captures only: no 500-floor app capture was taken.
+is verified by CI: captures in `Development/Screenshots/Tall-Towers-0.26/` (Debug, 44–45 fps).
 
 F1 (merged) ran the `skyline-balance` bot on every scenario, fixed high-floor leasing, eased
 the class thresholds, tuned the targets and fixed an elevator-repair crash (BALANCE.md,
