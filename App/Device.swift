@@ -7,9 +7,12 @@ import UIKit
 enum Device {
     /// An iPhone: the chrome takes its compact layout — the cash readout in the top-left
     /// corner, the narrow view controls.
-    @MainActor static var isPhone: Bool {
+    ///
+    /// Read on the main thread only (views and the capture script); callable from code the
+    /// compiler does not know to be isolated.
+    static var isPhone: Bool {
         #if os(iOS)
-        UIDevice.current.userInterfaceIdiom == .phone
+        MainActor.assumeIsolated { UIDevice.current.userInterfaceIdiom == .phone }
         #else
         false
         #endif
