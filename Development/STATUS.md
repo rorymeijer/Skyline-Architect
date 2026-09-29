@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-29 (0.27.0 — F3: tutorial, manual, website)_
+_Last updated: 2026-09-29 (0.28.0 — F4: accessibility and the iPad)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -9,25 +9,29 @@ _Last updated: 2026-09-29 (0.27.0 — F3: tutorial, manual, website)_
 |------|---------|-------|
 | F1 | Balance bot and tuning | COMPLETE (rorymeijer/Skyline-Architect#31) |
 | F2 | 500 floors running smoothly | COMPLETE (rorymeijer/Skyline-Architect#32) |
-| F3 | Tutorial, in-game manual, website (`Website/`) | COMPLETE on the branch |
-| F4 | Accessibility and iPad | Planned |
+| F3 | Tutorial, in-game manual, website (`Website/`) | COMPLETE (rorymeijer/Skyline-Architect#33) |
+| F4 | Accessibility and iPad | COMPLETE on the branch |
 | F5 | iPhone | Planned |
 
-F3 added the help a new player needs (MANUAL.md, D-058):
-- **Tutorial**: *First Tower*, ten guided steps measured on the world, with a panel. It starts
-  paused and is the first item of the main menu.
-- **Manual**: 14 chapters in the game (Help menu, `⌘?`, main menu, book button), with search.
-- **Tips**: 15 first-time tips, once per device, which can be turned off.
-- **Website**: `Website/` for www.skyline-architect.com, with the manual in `Website/manual/`,
-  generated from the same Markdown by `skyline-website`. It is not published yet; hosting is
-  the owner's decision.
+F4 made the game usable with larger text and a keyboard, and ran the iPad for the first
+time (ACCESSIBILITY.md, D-059):
+- **Text size** (Standard, Large, Larger, Largest) for all panels, menus and the manual.
+  - The first captures showed that SwiftUI on macOS ignores Dynamic Type. The Mac now sizes
+    its text styles itself (`Font.ui`).
+  - Panels widen with the text, so amounts no longer wrap mid-number (seen on the iPad).
+- **Esc** closes what is on top, one thing per press.
+- **Focus rings** on every button, for the system's Tab navigation.
+- **The iPad:**
+  - it runs in the simulator in CI with the Mac's capture script;
+  - with a keyboard, the game keys and the menu shortcuts work;
+  - Save and Main Menu buttons, and Resume in the menu over a running game.
 
-Evidence:
-- 366 tests, among them the tutorial played step by step to a win, the manual's references,
-  and the website pages being up to date.
-- The website was checked in Chromium at desktop and phone width, light and dark, with no
-  horizontal overflow and a working search.
-- The app side is verified by the macOS CI build and captures in `Development/Screenshots/Help-0.27/` (CI run 36546858116).
+Evidence: CI captures on the Mac and the iPad at three text sizes, the manual at Largest, the
+menu over a game, and Esc (`Development/Screenshots/Accessibility-0.28/`). Not verified by a
+person: Tab focus, the iPad keyboard, touch on a real iPad (OPEN_ITEMS V2).
+
+F3 (merged) added the tutorial *First Tower*, a 14-chapter manual in the game and on the
+website (`Website/`), and first-time tips (MANUAL.md, D-058).
 
 F2 (merged): a 526-floor tower simulates 2.5× faster, with its worst step at 134 ms and the
 daily closing at 65 ms (PERFORMANCE.md, D-057).

@@ -15,7 +15,7 @@ where they matter.
 | # | Item | Why it is open | Source |
 |---|------|----------------|--------|
 | V1 | Human play test | Nobody has played a full session: only scripted captures and tests have run. | STATUS |
-| V2 | iPad | The iPad Simulator build compiles in CI but has never been launched. We have no iPad screenshots and no touch testing. | STATUS, README |
+| V2 | iPad | Since F4 the iPad build runs in the iPad simulator in CI, with captures (`_ci-latest/ipad/`). It has not run on a real iPad, and touch, the on-screen keyboard and a hardware keyboard have not been tried by a person. | STATUS, ACCESSIBILITY |
 | V3 | iCloud sync | It needs a signing team and an iCloud container. Sync between two devices has never been verified. | SAVE_FORMAT, ROADMAP Phase 18 |
 | V4 | Real hardware performance | The figures come from CI runners (macOS VM) and Linux callgrind. Nothing was measured on a user's Mac or iPad. | PERFORMANCE |
 | V5 | VoiceOver | Checked by code review only, never with VoiceOver on a device. | ACCESSIBILITY, STATUS |
@@ -63,8 +63,7 @@ human (V1).
 
 ## 5. Accessibility
 
-* Full keyboard navigation inside panels.
-* Dynamic Type for panel text.
+* ~~Full keyboard navigation inside panels~~ and ~~Dynamic Type / text size~~ (F4, 0.28). Tab focus and the iPad keyboard still need a person with a keyboard to confirm them.
 * An increased-contrast panel style.
 * VoiceOver descriptions of the building itself. The SpriteKit world is not exposed to it.
 * A VoiceOver pass on a device (V5).
@@ -162,7 +161,7 @@ Update these lists when their systems are next touched.
 1. **Play test and fix (V1).** A human session on a Mac and then an iPad (V2). Fix what it shows first.
 2. **Balancing pass (section 3).** Use the play-test notes.
 3. **Signed build with iCloud (V3).** Verify sync between two devices, and add file coordination.
-4. **Accessibility (section 5).** Keyboard navigation in panels, Dynamic Type, and a VoiceOver pass on a device.
+4. **Accessibility (section 5).** ~~Keyboard navigation in panels, Dynamic Type~~ (F4). Still to do: a VoiceOver pass on a device.
 5. **Performance (P1, P2).** Build the background simulation actor only if the play test shows the daily-closing hitch.
 6. **Features by player value.** ~~Visitors, amenities and retail~~ (0.22). ~~Scenario scores and a completion record~~ (0.24).
 7. **External art (section 7).** Before any release.
