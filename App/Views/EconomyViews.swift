@@ -110,44 +110,70 @@ struct PanelButton: View {
 struct MainMenuView: View {
     let model: AppModel
 
+    private struct Item: Identifiable {
+        let title: String
+        let subtitle: String?
+        let action: () -> Void
+        var id: String { title }
+    }
+
+    private var items: [Item] {
+        var items: [Item] = []
+        if model.menuOverGame {
+            items.append(Item(title: "Resume", subtitle: model.propertyName) { model.resumeFromMenu() })
+        } else if let latest = model.latestSave {
+            items.append(Item(title: "Continue", subtitle: latest.metadata.map { "\($0.title) · \($0.savedAt.formatted(date: .abbreviated, time: .shortened))" }) {
+                model.continueLatest()
+            })
+        }
+        items += [
+            Item(title: "Tutorial", subtitle: "Your first tower, step by step") { model.startTutorial() },
+            Item(title: "New Game", subtitle: "Quay Street, Port Calder · rooms unlock by class") { model.startFromMenu() },
+            Item(title: "New Sandbox", subtitle: "Everything unlocked from the start") { model.startFromMenu(startID: NewGameFactory.defaultStartID) },
+            Item(title: "Scenarios…", subtitle: "Objectives against the clock") { model.openScenarioBrowser() },
+            Item(title: "Mods…", subtitle: model.enabledMods.isEmpty ? "Content packs" : "\(model.enabledMods.count) enabled") { model.openModManager() },
+            Item(title: "Load Game…", subtitle: nil) { model.openSavesPanel() },
+            Item(title: "Manual", subtitle: "How everything works") { model.openManual() },
+            Item(title: "Text Size: \(TextSizeSetting.name(model.textSize))", subtitle: "Panels and menus") {
+                model.textSize = TextSizeSetting.next(after: model.textSize)
+            },
+        ]
+        return items
+    }
+
     var body: some View {
         ZStack {
             Color.black.opacity(0.45).ignoresSafeArea()
-            VStack(spacing: 14) {
-                Text("SKYLINE ARCHITECT").font(.system(size: 34, weight: .heavy, design: .rounded)).kerning(4)
-                Text("Build upward. Keep the building moving.").font(.ui(.callout)).foregroundStyle(.secondary)
-                VStack(spacing: 8) {
-                    if model.menuOverGame {
-                        MenuButton(title: "Resume", subtitle: model.propertyName) { model.resumeFromMenu() }
-                    } else if let latest = model.latestSave {
-                        MenuButton(title: "Continue", subtitle: latest.metadata.map { "\($0.title) · \($0.savedAt.formatted(date: .abbreviated, time: .shortened))" }) {
-                            model.continueLatest()
-                        }
-                    }
-                    MenuButton(title: "Tutorial", subtitle: "Your first tower, step by step") { model.startTutorial() }
-                    MenuButton(title: "New Game", subtitle: "Quay Street, Port Calder · rooms unlock by class") {
-                        model.startFromMenu()
-                    }
-                    MenuButton(title: "New Sandbox", subtitle: "Everything unlocked from the start") {
-                        model.startFromMenu(startID: NewGameFactory.defaultStartID)
-                    }
-                    MenuButton(title: "Scenarios…", subtitle: "Objectives against the clock") { model.openScenarioBrowser() }
-                    MenuButton(title: "Mods…", subtitle: model.enabledMods.isEmpty ? "Content packs" : "\(model.enabledMods.count) enabled") {
-                        model.openModManager()
-                    }
-                    MenuButton(title: "Load Game…", subtitle: nil) { model.openSavesPanel() }
-                    MenuButton(title: "Manual", subtitle: "How everything works") { model.openManual() }
-                    MenuButton(title: "Text Size: \(TextSizeSetting.name(model.textSize))", subtitle: "Panels and menus") {
-                        model.textSize = TextSizeSetting.next(after: model.textSize)
-                    }
-                }
-                .scaledFrame(width: 300)
-                .padding(.top, 8)
+            // One column; where that is too tall (F5, an iPhone in landscape), two columns and
+            // a smaller title.
+            ViewThatFits(in: .vertical) {
+                menu(columns: 1, titleSize: 34, padding: 36)
+                menu(columns: 2, titleSize: 22, padding: 16)
             }
-            .padding(36)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
         }
         .environment(\.colorScheme, .dark)
+    }
+
+    private func menu(columns: Int, titleSize: CGFloat, padding: CGFloat) -> some View {
+        let items = self.items
+        let perColumn = (items.count + columns - 1) / columns
+        return VStack(spacing: columns == 1 ? 14 : 8) {
+            Text("SKYLINE ARCHITECT").font(.system(size: titleSize, weight: .heavy, design: .rounded)).kerning(columns == 1 ? 4 : 2)
+            Text("Build upward. Keep the building moving.").font(.ui(.callout)).foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 8) {
+                ForEach(0..<columns, id: \.self) { c in
+                    VStack(spacing: columns == 1 ? 8 : 6) {
+                        ForEach(items[(c * perColumn)..<min((c + 1) * perColumn, items.count)]) { item in
+                            MenuButton(title: item.title, subtitle: item.subtitle, action: item.action)
+                        }
+                    }
+                    .scaledFrame(width: columns == 1 ? 300 : 260)
+                }
+            }
+            .padding(.top, columns == 1 ? 8 : 2)
+        }
+        .padding(padding)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
     }
 }
 
