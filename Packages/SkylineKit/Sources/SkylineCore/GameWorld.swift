@@ -19,6 +19,9 @@ public struct City: Codable, Hashable, Sendable, Identifiable {
     /// Today's weather and the forecast here (per city since save format 14; nil until the
     /// simulation starts it).
     public var weather: WeatherState?
+    /// Today's energy price, as a multiplier (Phase E; nil = the city's base level). Moves
+    /// every morning around `economy.energy`.
+    public var energyPrice: Double?
 
     public init(id: CityID, definitionID: String, name: String, seed: UInt64, economy: CityEconomy = CityEconomy(),
                 weather: WeatherState? = nil) {
@@ -36,11 +39,16 @@ public struct CityEconomy: Codable, Hashable, Sendable {
     public var rent: Double
     public var construction: Double
     public var demand: Double
+    /// Property tax level and base energy price (Phase E; nil = 1).
+    public var tax: Double?
+    public var energy: Double?
 
-    public init(rent: Double = 1, construction: Double = 1, demand: Double = 1) {
+    public init(rent: Double = 1, construction: Double = 1, demand: Double = 1, tax: Double? = nil, energy: Double? = nil) {
         self.rent = rent
         self.construction = construction
         self.demand = demand
+        self.tax = tax
+        self.energy = energy
     }
 }
 
@@ -210,9 +218,21 @@ public struct GameWorld: Codable, Sendable, Equatable {
         cities.update(city) { $0.economy = economy }
     }
 
+    /// Player rent setting of one unit (0.22+), clamped to 0.6…1.6 in steps of 0.1. Not
+    /// construction: no command, no undo.
+    public mutating func setRentFactor(_ factor: Double, room: RoomID) {
+        let f = (min(max(factor, 0.6), 1.6) * 10).rounded() / 10
+        rooms.update(room) { $0.rentFactor = f == 1 ? nil : f }
+    }
+
     /// Offers a unit for rent or for sale (checks are the market's, `Leasing.setTenure`).
     public mutating func setTenure(_ tenure: Tenure?, room: RoomID) {
         rooms.update(room) { $0.tenure = tenure == .rent ? nil : tenure }
+    }
+
+    /// Sets a city's energy price (the simulation's 06:00 step; tests and captures).
+    public mutating func setEnergyPrice(_ price: Double?, city: CityID) {
+        cities.update(city) { $0.energyPrice = price }
     }
 
     /// Sets a city's weather (the simulation's 06:00 step; tests and captures).

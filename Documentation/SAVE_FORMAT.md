@@ -8,6 +8,7 @@ Status: **FUNCTIONAL** (Phases 2–18; format 14 after Phase 20). Implemented in
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 17 | 0.23 | Rooms may carry `rentFactor`; city economies may carry `tax` and `energy`, cities an `energyPrice`; cars may be `outOfService`; facilities may count `breakdowns`; ledger categories `taxes` and `waste` (daily totals grow by two) | v16→v17 pads daily totals to 14; older games start at the base energy price with every car running |
 | 16 | 0.22 | People may be `visitor`s with `visit` (their amenity) and have the goals `lunch`, `leisure`, `visit`; tenants may carry `sales` (visits, streetVisits, takings and yesterday's `last…`); ledger category `turnover` (daily totals grow by one) | v15→v16 pads daily totals to 12; older games have no amenities |
 | 15 | 0.20.3 | Rooms may carry `tenure` (`rent` / `forSale` / `owned`); tenants may carry `purchasePrice`; ledger category `sales` (daily totals grow by one) | v14→v15 pads daily totals to 11; older games rent every unit |
 | 14 | 0.20.1 | Cities may carry `weather` (each city its own); the world no longer does. Pack references may carry `hash` (FNV-1a of the pack's files) | v13→v14 moves the world's `weather` to the first city (whose seed drew it); other cities start their own on the next step. Older references have no hash: only versions are compared |
@@ -23,14 +24,14 @@ Status: **FUNCTIONAL** (Phases 2–18; format 14 after Phase 20). Implemented in
 | 4 | 0.7 | Cars gain `strategy` (`collective` / `zoning` / `destination`) and `stats` (boardings, totalWait, maxWait, abandoned, stops, day, hourly[24]); rides may carry `assigned` | v3→v4 adds `strategy: "collective"` and zeroed `stats` to every car |
 | 3 | 0.6 | World gains `elevators` (cars: floor, direction, motion, passengers, nextEventTick); people gain optional `pendingRide`; `place` may be `waiting` / `riding` | v2→v3 adds `elevators: []` (cars are created for existing shafts on the next simulation step) |
 
-Golden fixtures: `save-v1` … `save-v15` (frozen) and `save-v16.skylinesave` (the demo plaza on its second evening: visitors inside, yesterday's takings, a turnover share booked).
+Golden fixtures: `save-v1` … `save-v16` (frozen) and `save-v17.skylinesave` (the demo plaza after its first closing: an office's rent at 130 %, an energy price, taxes and waste booked, a broken-down car).
 
-## Envelope (format version 16)
+## Envelope (format version 17)
 
 ```json
 {
   "format": "skyline-architect-save",
-  "formatVersion": 16,
+  "formatVersion": 17,
   "game": {
     "metadata": { "title": "Quay Street Lot", "savedAt": "2026-09-27T10:00:00Z", "gameVersion": "0.2.0" },
     "contentPacks": [{ "id": "base", "version": "0.1.0", "hash": "9c2e41f0a7d3b518" }],

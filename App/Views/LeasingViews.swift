@@ -11,6 +11,8 @@ struct UnitInspector: View {
     var onResize: (BuildCommand) -> Void = { _ in }
     /// Offer the (vacant) unit for sale (true) or for rent (false).
     var onTenure: (Bool) -> Void = { _ in }
+    /// Change the unit's own rent setting by a step (Phase E).
+    var onUnitRent: (Double) -> Void = { _ in }
     let onClose: () -> Void
 
     var body: some View {
@@ -53,6 +55,18 @@ struct UnitInspector: View {
                 if let best = report.interest.first { Criteria(appraisal: best.appraisal) }
             } else {
                 Text("Not rentable — shared space or services.").font(.caption).foregroundStyle(.secondary)
+            }
+            if report.leasable, report.tenure == .rent {
+                HStack(spacing: 6) {
+                    Text("Unit rent \(Int((report.rentFactor * 100).rounded())) %").font(.caption.monospacedDigit())
+                    if let asking = report.askingRent {
+                        Text("· asks \(Money.format(asking)) / month").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    PanelButton(title: "−", enabled: report.rentFactor > 0.61) { onUnitRent(-0.1) }
+                    PanelButton(title: "+", enabled: report.rentFactor < 1.59) { onUnitRent(0.1) }
+                }
+                .help("This unit's rent on top of the building's rent level; for new tenants and how units are rated. Signed rents stay.")
             }
             if let a = report.amenity { AmenityDetails(info: a) }
             if !report.utilities.isEmpty {

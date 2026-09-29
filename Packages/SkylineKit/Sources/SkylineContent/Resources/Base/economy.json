@@ -9,5 +9,10 @@
  "lightingPricePerKWh": 7.5,
  "saleMonths": 100,
  "serviceChargeShare": 0.25,
- "ownerPatience": 9
+ "ownerPatience": 9,
+ "propertyTaxRate": 0.004,
+ "profitTaxRate": 0.15,
+ "wastePricePerKg": 0.8,
+ "energyVolatility": 0.06,
+ "energyReversion": 0.3
 }

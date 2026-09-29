@@ -82,12 +82,10 @@ Everything below is first-pass and has not been play-tested (it depends on V1).
 * Jerk-limited motion.
 
 ### Economy and facilities (ECONOMY, FACILITIES)
-* Taxes.
-* Per-unit rents instead of one rent level.
+* ~~Taxes.~~ ~~Per-unit rents instead of one rent level.~~ ~~Waste and energy prices.~~
+  ~~Staff rooms.~~ ~~Elevator wear and outages.~~ Done in 0.23 (Phase E, D-054).
 * Events that affect demand.
-* Waste and energy prices.
-* Staff rooms and staff skills.
-* Elevator wear and outages.
+* Staff skills.
 
 ### Progression (PROGRESSION)
 * City-wide reputation across several properties.

@@ -11,12 +11,15 @@ public enum ElevatorArt {
     /// Door animation is drawn in this many steps (textures are cached per step).
     public static let doorSteps = 4
 
-    public static func cab(width w: Double, opening: Double, palette p: ArtPalette = .standard) -> Drawing {
+    /// `outOfService` (Phase E): the cab is dark, doors shut, with a warning band.
+    public static func cab(width w: Double, opening: Double, outOfService: Bool = false, palette p: ArtPalette = .standard) -> Drawing {
         var d = Drawing()
         let h = cabHeight
         let frame = p.steel.shaded(0.7)
-        // Interior: warm lit back wall, floor, ceiling light, handrail.
-        d.verticalGradient(Rect(x: 0, y: 0, width: w, height: h), top: RGBA(hex: 0xF3E6C8), bottom: RGBA(hex: 0xD9C7A0))
+        // Interior: warm lit back wall, floor, ceiling light, handrail (dark when broken).
+        d.verticalGradient(Rect(x: 0, y: 0, width: w, height: h),
+                           top: outOfService ? RGBA(hex: 0x4A4640) : RGBA(hex: 0xF3E6C8),
+                           bottom: outOfService ? RGBA(hex: 0x36332F) : RGBA(hex: 0xD9C7A0))
         d.fill(Rect(x: 0.05, y: 0, width: w - 0.1, height: 0.08), RGBA(hex: 0x5B5046))
         d.fill(Rect(x: w * 0.25, y: h - 0.2, width: w * 0.5, height: 0.06), RGBA(hex: 0xFFF8E1))
         d.fill(Rect(x: 0.15, y: 0.95, width: w - 0.3, height: 0.04), p.steel.shaded(1.1), minDetail: 8)
@@ -33,6 +36,17 @@ public enum ElevatorArt {
         d.fill(Rect(x: w / 2 - 0.12, y: h + 0.12, width: 0.24, height: 0.18), frame.shaded(0.8))
         d.fill(Rect(x: 0, y: 0, width: 0.06, height: h), frame)
         d.fill(Rect(x: w - 0.06, y: 0, width: 0.06, height: h), frame)
+        if outOfService {
+            // Yellow-and-black warning band across the doors.
+            let band = Rect(x: 0.1, y: h * 0.45, width: w - 0.2, height: 0.3)
+            d.fill(band, RGBA(hex: 0xE0C23A))
+            var x = band.minX
+            while x < band.maxX - 0.1 {
+                d.add(DrawItem(shape: .polygon([Vec2(x, band.minY), Vec2(x + 0.12, band.minY), Vec2(x + 0.27, band.maxY), Vec2(x + 0.15, band.maxY)]),
+                               fill: .solid(RGBA(hex: 0x1E1F21))))
+                x += 0.3
+            }
+        }
         return d
     }
 }
@@ -46,6 +60,8 @@ public struct CarSprite: Hashable, Sendable {
     public var doorStep: Int
     /// Top of the hoistway (the hoist rope runs from the cab up to here).
     public var ropeTop: Double
+    /// Broken down (Phase E).
+    public var outOfService = false
 }
 
 /// Selects and positions visible cars at a (fractional) time. Pure view of simulation state.
@@ -66,7 +82,7 @@ public enum ElevatorView {
             guard rect.intersects(visible) || Rect(minX: x0, minY: y, maxX: x1, maxY: ropeTop).intersects(visible) else { continue }
             let opening = ElevatorMotion.doorOpening(of: car, at: time, doorSeconds: doorSeconds(car.id))
             sprites.append(CarSprite(id: car.id, rect: rect, doorStep: Int((opening * Double(ElevatorArt.doorSteps)).rounded()),
-                                     ropeTop: ropeTop))
+                                     ropeTop: ropeTop, outOfService: car.isOutOfService))
         }
         return sprites
     }

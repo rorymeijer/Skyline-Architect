@@ -113,7 +113,8 @@ public struct NavigationGraph: Sendable {
         }
         // Elevators: landing + car node per served floor; rides chain the car nodes.
         for room in Self.transportRooms(of: building, world: world, catalog: catalog, kind: "elevator") {
-            guard let spec = rules.elevator(for: room.definitionID) else { continue }
+            // A broken-down car takes nobody anywhere until it is repaired (Phase E).
+            guard let spec = rules.elevator(for: room.definitionID), world.elevators[room.id]?.isOutOfService != true else { continue }
             let x = Self.elevatorLandingX(room, grid: grid)
             let served = Set(spec.servedFloors(of: room.floors))
             elevatorShafts[room.id] = (served, x)
@@ -182,6 +183,7 @@ public struct NavigationGraph: Sendable {
         for room in world.rooms(in: building.id) where catalog.spec(room.definitionID)?.transport != nil {
             mix(Int(room.id.raw)); mix(room.columns.start); mix(room.columns.count)
             mix(room.floors.lowest); mix(room.floors.highest)
+            mix(world.elevators[room.id]?.isOutOfService == true ? 1 : 0)
         }
         return h
     }

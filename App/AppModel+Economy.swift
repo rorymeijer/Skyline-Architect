@@ -27,6 +27,15 @@ extension AppModel {
         refreshSimulationSummary()
     }
 
+    /// Raises or lowers the selected unit's own rent setting by one step (Phase E).
+    func adjustUnitRent(by delta: Double) {
+        guard var w = world, let id = selectedRoom, let room = w.rooms[id], let catalog else { return }
+        guard Economy.setRentFactor((room.rentFactor ?? 1) + delta, room: id, in: &w, catalog: catalog) else { return }
+        world = w
+        hasUnsavedChanges = true
+        refreshSimulationSummary()
+    }
+
     private func changeLedger(_ body: (inout GameWorld, EconomyRules) -> Bool) {
         guard var w = world, let rules = simulation?.rules.economy, body(&w, rules) else { return }
         world = w

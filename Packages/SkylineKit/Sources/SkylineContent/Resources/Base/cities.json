@@ -44,7 +44,9 @@
     "economy": {
       "rent": 1.35,
       "construction": 1.25,
-      "demand": 1.15
+      "demand": 1.15,
+      "tax": 1.2,
+      "energy": 1.15
     },
     "geology": [
       {
@@ -73,7 +75,9 @@
     "economy": {
       "rent": 0.75,
       "construction": 0.8,
-      "demand": 0.85
+      "demand": 0.85,
+      "tax": 0.85,
+      "energy": 0.9
     },
     "geology": [
       {

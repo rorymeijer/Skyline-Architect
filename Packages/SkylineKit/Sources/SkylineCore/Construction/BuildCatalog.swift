@@ -49,6 +49,12 @@ public struct RoomSpec: Codable, Hashable, Sendable {
     public var lighting: LightingSpec?
     /// Sprinkler coverage of a fire control room: floors above and below (Phase 14).
     public var fireProtection: Int?
+    /// Waste a waste room can store for collection, kg per module per day (Phase E).
+    public var wasteCapacityPerModule: Double?
+    /// Staff a staff room houses per module, and how many floors above and below it their
+    /// work counts as nearby (Phase E).
+    public var staffPerModule: Double?
+    public var staffRange: Int?
 
     public init(id: String, name: String, category: String, kind: RoomKind, appearance: String,
                 minWidth: Int, maxWidth: Int, minFloors: Int, maxFloors: Int,

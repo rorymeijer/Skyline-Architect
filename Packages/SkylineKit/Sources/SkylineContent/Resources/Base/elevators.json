@@ -9,7 +9,9 @@
   "transferSeconds": 1,
   "expectedWaitSeconds": 25,
   "stops": "all",
-  "patienceSeconds": 150
+  "patienceSeconds": 150,
+  "wearPerStop": 0.0012,
+  "breakdownChance": 0.04
  },
  {
   "room": "elevator-express",
@@ -21,7 +23,9 @@
   "transferSeconds": 1,
   "expectedWaitSeconds": 30,
   "stops": "ends",
-  "patienceSeconds": 240
+  "patienceSeconds": 240,
+  "wearPerStop": 0.0008,
+  "breakdownChance": 0.04
  },
  {
   "room": "service-elevator",
@@ -33,6 +37,8 @@
   "transferSeconds": 2,
   "expectedWaitSeconds": 20,
   "patienceSeconds": 600,
-  "serviceOnly": true
+  "serviceOnly": true,
+  "wearPerStop": 0.0015,
+  "breakdownChance": 0.04
  }
 ]

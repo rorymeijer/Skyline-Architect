@@ -7,6 +7,25 @@ bank panel. **PLANNED:** service/freight cars (with staff, Phase 10), mid-trip
 re-targeting, queue-aware route choice, jerk-limited motion.
 Elevators are a core feature and the main optimization puzzle.
 
+## Wear and breakdowns (Phase E, 0.23)
+
+Code: `SkylineSimulation/ElevatorWear.swift`.
+
+**Wear.** Each stop wears the shaft's `Upkeep` condition by `wearPerStop`: 0.0012 for
+passenger shafts, 0.0008 express, 0.0015 service. Below the facilities'
+`equipmentRepairBelow` (0.5), a repair job opens at once.
+
+**Breakdowns.** Each further stop risks a breakdown. The chance rises linearly to
+`breakdownChance` (4 %) at `failureBelow` (0.15), drawn from `SeededRandom` per car and
+tick. A broken car (`outOfService`):
+- stands at that floor, and its riders get out;
+- is left out of the navigation graph and of call assignment;
+- sends everyone who waited for it, rode it or walked to it on a new route (often the stairs).
+
+**Repair.** Technicians take a broken car's shaft before any other repair. Repairing it
+restores the condition and puts the car back in service; routes use it again from the next
+step. The cab is drawn dark with a warning band, and the Facilities panel counts broken cars.
+
 ## Implemented (Phase 7)
 
 Code: `SkylineSimulation/ElevatorBanks.swift` (banks, assignment, ETA),

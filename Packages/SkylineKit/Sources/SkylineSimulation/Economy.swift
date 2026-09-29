@@ -31,12 +31,24 @@ public enum Economy {
     }
 
     public static let rentLevels = 0.6...1.6
+
+    /// Player rent setting of one rentable unit (Phase E), on top of the building's level:
+    /// 0.6…1.6 in steps of 10 %. Like the building level it applies to new leases and to
+    /// appraisal; signed rents are contracts. Returns false for a room that is not a unit.
+    @discardableResult
+    public static func setRentFactor(_ factor: Double, room: RoomID, in world: inout GameWorld, catalog: BuildCatalog) -> Bool {
+        guard let r = world.rooms[room], catalog.spec(r.definitionID)?.rentPerModule != nil else { return false }
+        world.setRentFactor(factor, room: room)
+        return true
+    }
 }
 
 extension SimulationEngine {
     /// Daily closing at 06:00 (part of the market event): rent from every tenant, then per
-    /// building maintenance and utilities, then loan interest; then the bankruptcy check.
-    func closeDay(at now: Tick, world: inout GameWorld) {
+    /// building maintenance, utilities and property tax, then loan interest and the profit
+    /// tax on the closing's result (`before`: the day's totals when the closing began, so
+    /// wages count); then the bankruptcy check.
+    func closeDay(at now: Tick, since before: DayTotals, world: inout GameWorld) {
         guard let economy = rules.economy, !world.ledger.bankrupt else { return }
         for tenant in world.tenants.values {
             let daily = tenant.rent / economy.rentDaysPerMonth
@@ -46,6 +58,7 @@ extension SimulationEngine {
                                           building: tenant.buildingID, room: tenant.room, tenant: tenant.id))
         }
         postTurnover(at: now, world: &world)
+        collectWaste(at: now, world: &world)
         for building in world.buildings.values {
             let rooms = world.rooms(in: building.id)
             let upkeep = rooms.reduce(0) { sum, room in
@@ -59,7 +72,8 @@ extension SimulationEngine {
             let cars = world.elevators.values.filter { $0.buildingID == building.id }.count
             // Heating and cooling (Phase 13): the bill grows with the distance from comfort.
             let city = world.city(of: building.id)
-            let climate = energyFactor(city)
+            let energy = energyPrice(city)
+            let climate = energyFactor(city) * energy
             let utilities = Int((Double(people * economy.utilitiesPerPersonPerDay + cars * economy.elevatorCarPerDay) * climate).rounded())
             if utilities > 0 {
                 let weather = city?.weather.map { String(format: ", %.0f °C ×%.2f", $0.temperature, climate) } ?? ""
@@ -68,17 +82,23 @@ extension SimulationEngine {
                                               building: building.id))
             }
             let kWh = world.buildings[building.id]?.lightingKWh ?? 0
-            let lighting = Int((kWh * (economy.lightingPricePerKWh ?? 0)).rounded())
+            let lighting = Int((kWh * (economy.lightingPricePerKWh ?? 0) * energy).rounded())
             if lighting > 0 {
                 world.ledger.post(Transaction(tick: now, amount: -lighting, category: .utilities,
                                               detail: "Lighting — \(Int(kWh.rounded())) kWh, \(building.name)", building: building.id))
             }
             world.setLightingEnergy(0, building: building.id)
+            let tax = Taxes.propertyTax(building, world: world, catalog: catalog, rules: economy)
+            if tax > 0 {
+                world.ledger.post(Transaction(tick: now, amount: -tax, category: .taxes,
+                                              detail: "Property tax — \(building.name)", building: building.id))
+            }
         }
         let interest = Int((Double(world.ledger.loans) * economy.loanInterestRate / 365).rounded())
         if interest > 0 {
             world.ledger.post(Transaction(tick: now, amount: -interest, category: .interest, detail: "Loan interest"))
         }
+        postProfitTax(since: before, at: now, world: &world)
         world.ledger.negativeDays = world.ledger.cash < 0 ? world.ledger.negativeDays + 1 : 0
         if world.ledger.negativeDays >= economy.bankruptcyDays { world.ledger.bankrupt = true }
     }
@@ -95,6 +115,9 @@ public struct EconomySummary: Equatable, Sendable {
     public var lastDay = DayTotals(day: 0)
     public var week = DayTotals(day: 0)
     public var rentLevel = 1.0
+    /// The building's city: today's energy price and its tax level (Phase E).
+    public var energyPrice = 1.0
+    public var taxLevel = 1.0
     public var negativeDays = 0
     public var bankruptcyDays = 7
     public var bankrupt = false
@@ -118,6 +141,10 @@ public struct EconomySummary: Equatable, Sendable {
         s.lastDay = ledger.days.last(where: { $0.day == today }) ?? DayTotals(day: today)
         s.week = ledger.totals(lastDays: 7)
         s.rentLevel = building.flatMap { world.buildings[$0]?.rentLevel } ?? 1
+        if let city = building.flatMap({ world.city(of: $0) }) {
+            s.energyPrice = city.energyPrice ?? city.economy.energy ?? 1
+            s.taxLevel = city.economy.tax ?? 1
+        }
         s.negativeDays = ledger.negativeDays
         s.bankrupt = ledger.bankrupt
         s.recent = ledger.journal.suffix(limit).reversed()

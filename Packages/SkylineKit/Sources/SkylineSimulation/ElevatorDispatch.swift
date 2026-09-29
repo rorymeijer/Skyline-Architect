@@ -108,6 +108,7 @@ extension SimulationEngine {
     func handleCar(_ id: RoomID, at now: Tick, world: inout GameWorld, events: inout Events, report: inout SimulationReport) {
         guard var car = world.elevators[id], let shaft = world.rooms[id], let spec = rules.elevator(for: shaft.definitionID),
               let building = world.buildings[car.buildingID] else { return }
+        guard !car.isOutOfService else { return }                      // waits for a technician
         if case let .moving(_, to, _, _, _, _) = car.motion { car.floor = to }
         car.motion = .idle
         let f = car.floor
@@ -137,6 +138,10 @@ extension SimulationEngine {
         let boarding = direction == 0 ? [] : Array(here.filter { $0.ride.direction == direction }.prefix(free))
         car.direction = direction
 
+        if !alighting.isEmpty || !boarding.isEmpty, wearOnStop(id, spec: spec, at: now, world: &world) {
+            breakDown(id, at: f, now: now, world: &world, events: &events, report: &report)
+            return
+        }
         if !alighting.isEmpty || !boarding.isEmpty {
             // Doors open, people get out, people get in, doors close.
             let dwell = 2 * spec.doorSeconds + spec.transferSeconds * Tick(alighting.count + boarding.count)

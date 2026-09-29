@@ -99,6 +99,11 @@ public struct ElevatorCar: Codable, Hashable, Sendable, Identifiable {
     /// Dispatch strategy of the car's bank (Phase 7).
     public var strategy: DispatchStrategy
     public var stats: CarStats
+    /// Broken down (Phase E, save format 17; nil = running): the car stands until a
+    /// technician repairs its shaft.
+    public var outOfService: Bool?
+
+    public var isOutOfService: Bool { outOfService == true }
 
     public init(id: RoomID, buildingID: BuildingID, floor: Int, strategy: DispatchStrategy = .collective) {
         self.id = id

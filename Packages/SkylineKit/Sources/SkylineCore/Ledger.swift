@@ -5,6 +5,10 @@ public enum LedgerCategory: String, Codable, CaseIterable, Hashable, Sendable {
     case construction, demolition, rent, maintenance, utilities, loan, interest, grant, wages, land, sales
     /// The landlord's share of what amenities take from their customers (0.22).
     case turnover
+    /// Property tax on the buildings' value and profit tax on the day's result (Phase E).
+    case taxes
+    /// Waste collection (Phase E).
+    case waste
 }
 
 /// One traceable money movement: when, how much, why and for whom.
@@ -75,6 +79,11 @@ public struct Ledger: Codable, Hashable, Sendable {
             if days.count > Self.dayLimit { days.removeFirst(days.count - Self.dayLimit) }
         }
         days[days.count - 1].amounts[LedgerCategory.allCases.firstIndex(of: t.category)!] += t.amount
+    }
+
+    /// Totals of one day (zero if nothing was booked that day).
+    public func totals(onDay day: Tick) -> DayTotals {
+        days.last(where: { $0.day == day }) ?? DayTotals(day: day)
     }
 
     /// Totals over the last `n` days (including today).

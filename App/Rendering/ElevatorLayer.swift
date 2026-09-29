@@ -16,7 +16,7 @@ final class ElevatorLayer {
         for s in visible {
             seen.insert(s.id)
             let nodes = cabs[s.id] ?? makeNodes(s.id)
-            nodes.cab.texture = texture(width: s.rect.width, step: s.doorStep)
+            nodes.cab.texture = texture(width: s.rect.width, step: s.doorStep, broken: s.outOfService)
             nodes.cab.size = CGSize(width: s.rect.width, height: s.rect.height + 0.42)
             nodes.cab.position = CGPoint(x: s.rect.minX, y: s.rect.minY - 0.12)
             let ropeBottom = s.rect.maxY + 0.3
@@ -44,10 +44,10 @@ final class ElevatorLayer {
     }
 
     /// Cab texture covering x 0…width, y −0.12…cabHeight + 0.3 (sill below, crosshead above).
-    private func texture(width: Double, step: Int) -> SKTexture? {
-        let key = String(format: "%.2f-%d", width, step)
+    private func texture(width: Double, step: Int, broken: Bool) -> SKTexture? {
+        let key = String(format: "%.2f-%d-%d", width, step, broken ? 1 : 0)
         if let t = textures[key] { return t }
-        let drawing = ElevatorArt.cab(width: width, opening: Double(step) / Double(ElevatorArt.doorSteps))
+        let drawing = ElevatorArt.cab(width: width, opening: Double(step) / Double(ElevatorArt.doorSteps), outOfService: broken)
         let rect = Rect(x: 0, y: -0.12, width: width, height: ElevatorArt.cabHeight + 0.42)
         guard let image = DrawingRasterizer.rasterize(drawing, rect: rect, pixelsPerMeter: pixelsPerMeter) else { return nil }
         let t = SKTexture(cgImage: image)

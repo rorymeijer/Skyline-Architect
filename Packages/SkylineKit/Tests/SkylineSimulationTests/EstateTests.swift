@@ -44,7 +44,7 @@ import SkylineContent
         let property = try Estate.buy("harrowgate-crown-yard", world: &game.world, library: library)
         let p = try #require(game.world.properties[property])
         let city = try #require(game.world.cities[p.cityID])
-        #expect(city.definitionID == "harrowgate" && city.economy == CityEconomy(rent: 1.35, construction: 1.25, demand: 1.15))
+        #expect(city.definitionID == "harrowgate" && city.economy == CityEconomy(rent: 1.35, construction: 1.25, demand: 1.15, tax: 1.2, energy: 1.15))
         #expect(game.world.cities.count == 2 && p.plotID == "harrowgate-crown-yard")
         let building = try #require(game.world.buildings(on: property).first)
         #expect(building.foundation.basementFloors == 2 && building.name == "Crown Yard Chambers")

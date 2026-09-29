@@ -81,6 +81,11 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
     public var patienceSeconds: Double?
     /// Staff only (service elevator, Phase 10): tenants and visitors never board.
     public var serviceOnly: Bool?
+    /// Wear (Phase E; nil = none): condition the shaft loses per stop, and the chance per
+    /// stop of a breakdown once its condition is below the facilities' repair threshold
+    /// (rising to the full chance at the failure threshold).
+    public var wearPerStop: Double?
+    public var breakdownChance: Double?
 
     public init(room: String, name: String, capacity: Int, speed: Double, acceleration: Double,
                 doorSeconds: Tick, transferSeconds: Tick, expectedWaitSeconds: Double,
@@ -121,122 +126,9 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
         if expectedWaitSeconds < 0 { p.append("elevator '\(room)': expectedWaitSeconds must be ≥ 0") }
         if let s = stops, !["all", "ends"].contains(s) { p.append("elevator '\(room)': stops must be 'all' or 'ends'") }
         if let q = patienceSeconds, !(q >= 10 && q <= 3600) { p.append("elevator '\(room)': patienceSeconds must be 10…3600") }
-        return p
-    }
-}
-
-/// Money rules (`economy.json`, Phase 9).
-public struct EconomyRules: Codable, Hashable, Sendable {
-    /// Loans are taken and repaid in steps of this amount, up to `maxLoans` outstanding.
-    public var loanStep: Int
-    public var maxLoans: Int
-    /// Annual interest rate on outstanding loans (charged daily).
-    public var loanInterestRate: Double
-    /// Consecutive daily closings in the red that end the game.
-    public var bankruptcyDays: Int
-    public var utilitiesPerPersonPerDay: Int
-    public var elevatorCarPerDay: Int
-    /// Monthly rents are collected at each daily closing as rent / rentDaysPerMonth. The base
-    /// content uses 1: time is compressed so that one game day bills one rent month.
-    public var rentDaysPerMonth: Int
-    /// Price of the lighting energy used in one game day, per kWh (Phase 12; nil = free).
-    /// Like rent it is a month's worth per day (D-032).
-    public var lightingPricePerKWh: Double?
-    /// Selling flats (0.20.3). A flat sells for its asking rent × `saleMonths`; its owner
-    /// then pays `serviceChargeShare` × the asking rent every month, and moves out only
-    /// after `ownerPatience` bad reviews in a row (renters: 3). Defaults: 100, 0.25, 9.
-    public var saleMonths: Double?
-    public var serviceChargeShare: Double?
-    public var ownerPatience: Int?
-
-    public var salePriceMonths: Double { saleMonths ?? 100 }
-    public var serviceShare: Double { serviceChargeShare ?? 0.25 }
-    public var ownerReviews: Int { ownerPatience ?? 9 }
-
-    public init(loanStep: Int, maxLoans: Int, loanInterestRate: Double, bankruptcyDays: Int,
-                utilitiesPerPersonPerDay: Int, elevatorCarPerDay: Int, rentDaysPerMonth: Int, lightingPricePerKWh: Double? = nil) {
-        self.loanStep = loanStep
-        self.maxLoans = maxLoans
-        self.loanInterestRate = loanInterestRate
-        self.bankruptcyDays = bankruptcyDays
-        self.utilitiesPerPersonPerDay = utilitiesPerPersonPerDay
-        self.elevatorCarPerDay = elevatorCarPerDay
-        self.rentDaysPerMonth = rentDaysPerMonth
-        self.lightingPricePerKWh = lightingPricePerKWh
-    }
-
-    public var problems: [String] {
-        var p: [String] = []
-        if loanStep <= 0 || maxLoans < loanStep { p.append("economy: loanStep must be positive and ≤ maxLoans") }
-        if !(0...1).contains(loanInterestRate) { p.append("economy: loanInterestRate must be 0…1") }
-        if bankruptcyDays < 1 { p.append("economy: bankruptcyDays must be ≥ 1") }
-        if utilitiesPerPersonPerDay < 0 || elevatorCarPerDay < 0 { p.append("economy: daily costs must be ≥ 0") }
-        if rentDaysPerMonth < 1 { p.append("economy: rentDaysPerMonth must be ≥ 1") }
-        if (lightingPricePerKWh ?? 0) < 0 { p.append("economy: lightingPricePerKWh must be ≥ 0") }
-        if salePriceMonths <= 0 || !(0...1).contains(serviceShare) || ownerReviews < 1 {
-            p.append("economy: saleMonths > 0, serviceChargeShare 0…1, ownerPatience ≥ 1")
+        if !(0...0.1).contains(wearPerStop ?? 0) || !(0...1).contains(breakdownChance ?? 0) {
+            p.append("elevator '\(room)': wearPerStop must be 0…0.1 and breakdownChance 0…1")
         }
-        return p
-    }
-}
-
-/// Utilities, upkeep and staff rules (`facilities.json`, Phase 10).
-public struct FacilitiesRules: Codable, Hashable, Sendable {
-    public struct Utility: Codable, Hashable, Sendable {
-        public var id: String
-        public var name: String
-    }
-
-    public var utilities: [Utility]
-    public var janitorWagePerDay: Int
-    public var technicianWagePerDay: Int
-    /// Cleanliness lost per person belonging to a room, per day.
-    public var dirtPerPersonPerDay: Double
-    /// Cleanliness lost per day by shared rooms (lobbies, corridors).
-    public var circulationDirtPerDay: Double
-    /// Job thresholds: clean below, repair below (equipment earlier), equipment fails below.
-    public var cleanBelow: Double
-    public var repairBelow: Double
-    public var equipmentRepairBelow: Double
-    public var failureBelow: Double
-    public var cleanMinutes: Int
-    public var repairMinutes: Int
-    /// Staff shift, "HH:MM".
-    public var shiftStart: String
-    public var shiftEnd: String
-
-    public init(utilities: [Utility], janitorWagePerDay: Int, technicianWagePerDay: Int, dirtPerPersonPerDay: Double,
-                circulationDirtPerDay: Double, cleanBelow: Double, repairBelow: Double, equipmentRepairBelow: Double,
-                failureBelow: Double, cleanMinutes: Int, repairMinutes: Int, shiftStart: String, shiftEnd: String) {
-        self.utilities = utilities
-        self.janitorWagePerDay = janitorWagePerDay
-        self.technicianWagePerDay = technicianWagePerDay
-        self.dirtPerPersonPerDay = dirtPerPersonPerDay
-        self.circulationDirtPerDay = circulationDirtPerDay
-        self.cleanBelow = cleanBelow
-        self.repairBelow = repairBelow
-        self.equipmentRepairBelow = equipmentRepairBelow
-        self.failureBelow = failureBelow
-        self.cleanMinutes = cleanMinutes
-        self.repairMinutes = repairMinutes
-        self.shiftStart = shiftStart
-        self.shiftEnd = shiftEnd
-    }
-
-    var shift: (start: Tick, end: Tick)? {
-        guard let a = Schedule.Event(at: shiftStart, jitterMinutes: 0, goal: .work).secondOfDay,
-              let b = Schedule.Event(at: shiftEnd, jitterMinutes: 0, goal: .work).secondOfDay, a < b else { return nil }
-        return (a, b)
-    }
-
-    public var problems: [String] {
-        var p: [String] = []
-        if utilities.isEmpty || Set(utilities.map(\.id)).count != utilities.count { p.append("facilities: utilities must be unique and not empty") }
-        if janitorWagePerDay < 0 || technicianWagePerDay < 0 { p.append("facilities: wages must be ≥ 0") }
-        for v in [dirtPerPersonPerDay, circulationDirtPerDay, cleanBelow, repairBelow, equipmentRepairBelow, failureBelow]
-        where !(0...1).contains(v) { p.append("facilities: rates and thresholds must be 0…1") }
-        if cleanMinutes < 1 || repairMinutes < 1 { p.append("facilities: job durations must be ≥ 1 minute") }
-        if shift == nil { p.append("facilities: shiftStart must be a time before shiftEnd") }
         return p
     }
 }

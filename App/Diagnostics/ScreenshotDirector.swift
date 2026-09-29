@@ -57,61 +57,65 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Amenities and visitors (0.22): the demo plaza in the sandbox, leased with the developer
-    // tools; the simulation does the rest (lunch, evening, street visitors, the closing).
+    // Economy and facilities (Phase E, 0.23): the demo plaza in the sandbox, leased with the
+    // developer tools; rent and staff changes are the panels' own calls, the breakdown is
+    // forced by wearing a car out (labelled), the repair is the simulation's.
     let steps: [Step] = [
-        Step(name: "01-lunch", grid: false) { model, scene in
+        Step(name: "01-unit-rent", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.applyBlueprint("demo-plaza")
             model.leaseAllVacant()
-            model.advanceSimulation(toTimeOfDay: 12, minute: 40)
-            ScreenshotDirector.force("clear", 21, model: model)
+            model.advanceSimulation(toTimeOfDay: 10)
+            ScreenshotDirector.force("clear", 20, model: model)
+            if let office = model.world?.rooms.values.first(where: { $0.definitionID == "office-small" && $0.floors.lowest == 4 }) {
+                model.selectRoom(at: ScreenshotDirector.cell(of: office))
+                for _ in 0..<3 { model.adjustUnitRent(by: 0.1) }
+            }
+            model.refreshSimulationSummary()
             model.promotionNotice = nil
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 2.2), zoom: 19) }
-            return "\(model.clockText): lunch on the leisure podium. " + ScreenshotDirector.amenityNote(model)
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4.5), zoom: 19) }
+            return "\(model.clockText): an office selected and its own rent raised three steps with the inspector's + (130 %)."
         },
-        Step(name: "02-evening", grid: false) { model, scene in
-            model.advanceSimulation(toTimeOfDay: 20, minute: 15)
-            ScreenshotDirector.force("clear", 18, model: model)
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 2.2), zoom: 19) }
-            return "\(model.clockText): the evening — cinema, theatre and restaurant. " + ScreenshotDirector.amenityNote(model)
-        },
-        Step(name: "03-restaurant-inspector", grid: false) { model, scene in
-            model.advanceSimulation(ticks: SimClock.secondsPerDay)
-            ScreenshotDirector.force("clear", 18, model: model)
-            if let r = ScreenshotDirector.amenityRoom(model, "restaurant") { model.selectRoom(at: ScreenshotDirector.cell(of: r)) }
-            model.refreshSimulationSummary()
-            model.promotionNotice = nil                       // the overnight promotion is not the subject
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 2.2), zoom: 19) }
-            return "\(model.clockText), a day later: the restaurant selected — hours, customers, takings and the landlord's share. "
-                + ScreenshotDirector.amenityNote(model)
-        },
-        Step(name: "04-leasing", grid: false) { model, scene in
+        Step(name: "02-staff-room", grid: false) { model, scene in
             model.selectRoom(at: nil)
-            model.showLeasingPanel = true
+            for role in [PersonRole.janitor, .janitor, .technician, .technician, .janitor] { model.changeStaff(role, by: 1) }
+            model.alert = nil                                     // the fifth hire is refused: shown in the note
+            model.advanceSimulation(toTimeOfDay: 11)
+            model.showFacilitiesPanel = true
             model.refreshSimulationSummary()
             model.promotionNotice = nil
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6), zoom: 9) }
-            return "The leasing panel with the amenity totals: open venues, visitors inside, yesterday's customers, takings and share."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 24, floor: 3.5), zoom: 26) }
+            return "Five hires pressed: four fit the staff room, the fifth was refused. Idle staff wait in the staff room. "
+                + ScreenshotDirector.staffNote(model)
         },
-        Step(name: "05-economy", grid: false) { model, scene in
-            model.showLeasingPanel = false
+        Step(name: "03-economy", grid: false) { model, scene in
+            model.showFacilitiesPanel = false
+            model.advanceSimulation(ticks: SimClock.secondsPerDay)
+            model.advanceSimulation(toTimeOfDay: 7)
             model.showEconomyPanel = true
             model.refreshSimulationSummary()
             model.promotionNotice = nil
-            return "The economy panel: the Turnover row and the turnover-share bookings of the 06:00 closing."
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 6), zoom: 9) }
+            return "\(model.clockText): the economy panel after a closing. " + ScreenshotDirector.closingNote(model)
         },
-        Step(name: "06-sky-bar", grid: false) { model, scene in
+        Step(name: "04-breakdown", grid: false) { model, scene in
             model.showEconomyPanel = false
-            model.advanceSimulation(toTimeOfDay: 22)
-            ScreenshotDirector.force("clear", 16, model: model)
+            model.advanceSimulation(toTimeOfDay: 8, minute: 15)
+            let broke = ScreenshotDirector.breakFirstCar(model)
+            model.showFacilitiesPanel = true
             model.refreshSimulationSummary()
             model.promotionNotice = nil
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 16), zoom: 19) }
-            return "\(model.clockText): the sky bar on floor 17 at night. " + ScreenshotDirector.amenityNote(model)
+            let floor = Double(ScreenshotDirector.firstCar(model)?.floor ?? 2)
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 17, floor: floor + 0.5), zoom: 19) }
+            return "\(model.clockText): the first car, worn out by the script, " + (broke ? "broke down and stands with its warning band; the others re-planned." : "did not break down within two hours.")
+        },
+        Step(name: "05-repaired", grid: false) { model, scene in
+            let repaired = ScreenshotDirector.waitForRepair(model)
+            model.refreshSimulationSummary()
+            model.promotionNotice = nil
+            return "\(model.clockText): " + (repaired ? "a technician repaired the shaft first; the car runs again." : "not yet repaired.")
+                + " Breakdowns so far: \(model.facilities.breakdowns)."
         },
     ]
 

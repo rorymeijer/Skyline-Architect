@@ -33,11 +33,12 @@ public enum Leasing {
     }
 
     /// Monthly asking rent: base rent per module × width, +1 % per storey above ground, ×
-    /// the building's rent level (player setting, Phase 9) × the city's rent level (Phase 15).
+    /// the building's rent level (player setting, Phase 9) × the unit's own rent setting
+    /// (Phase E) × the city's rent level (Phase 15).
     public static func askingRent(_ room: Room, world: GameWorld, catalog: BuildCatalog) -> Int? {
         guard let base = catalog.spec(room.definitionID)?.rentPerModule else { return nil }
         let premium = 1 + 0.01 * Double(max(room.floors.lowest, 0))
-        let level = world.buildings[room.buildingID]?.rentLevel ?? 1
+        let level = (world.buildings[room.buildingID]?.rentLevel ?? 1) * (room.rentFactor ?? 1)
         let city = world.city(of: room.buildingID)?.economy.rent ?? 1
         return Int((Double(base * room.columns.count) * premium * level * city).rounded())
     }
@@ -252,8 +253,10 @@ extension SimulationEngine {
         }
         added += spawnVisitors(at: now, world: &world)
         if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
+            let before = world.ledger.totals(onDay: SimClock.day(now))
             facilitiesDaily(at: now, world: &world)
-            closeDay(at: now, world: &world)
+            closeDay(at: now, since: before, world: &world)
+            advanceEnergyPrices(at: now, world: &world)
             let moveOuts = reviewTenants(at: now, world: &world)
             standingDaily(at: now, moveOuts: moveOuts, world: &world)
             scenarioDaily(at: now, world: &world)

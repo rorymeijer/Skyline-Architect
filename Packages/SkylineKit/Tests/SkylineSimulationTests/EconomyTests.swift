@@ -70,4 +70,30 @@ import SkylineContent
         #expect(expensive.declines(.tooExpensive) > normal.declines(.tooExpensive))
         #expect(expensive.signed < normal.signed)
     }
+
+    /// Phase E: a unit's own rent setting multiplies the building's level, in 10 % steps
+    /// within 60…160 %; signed rents stay; only rentable units have one.
+    @Test func unitRentFactorAdjustsOneUnit() throws {
+        var f = try SimFixture()
+        let catalog = f.library.buildCatalog
+        let offices = f.world.rooms.values.filter { $0.definitionID == "office-small" }
+        let office = offices[0], other = offices[1]
+        let base = Leasing.askingRent(office, world: f.world, catalog: catalog)!
+        let otherBase = Leasing.askingRent(other, world: f.world, catalog: catalog)!
+        let signed = f.world.tenants.values.first { $0.room == office.id }!.rent
+        #expect(Economy.setRentFactor(1.33, room: office.id, in: &f.world, catalog: catalog))
+        #expect(f.world.rooms[office.id]?.rentFactor == 1.3)
+        Economy.setRentLevel(1.2, building: f.building, in: &f.world)
+        let rent = Leasing.askingRent(f.world.rooms[office.id]!, world: f.world, catalog: catalog)!
+        #expect(abs(Double(rent) - Double(base) * 1.3 * 1.2) <= 1)
+        #expect(abs(Double(Leasing.askingRent(other, world: f.world, catalog: catalog)!) - Double(otherBase) * 1.2) <= 1)
+        #expect(f.world.tenants.values.first { $0.room == office.id }!.rent == signed)
+        Economy.setRentFactor(0.1, room: office.id, in: &f.world, catalog: catalog)
+        #expect(f.world.rooms[office.id]?.rentFactor == 0.6)
+        Economy.setRentFactor(1, room: office.id, in: &f.world, catalog: catalog)
+        #expect(f.world.rooms[office.id]?.rentFactor == nil)
+        let lobby = f.world.rooms.values.first { $0.definitionID == "lobby" }!
+        #expect(!Economy.setRentFactor(1.2, room: lobby.id, in: &f.world, catalog: catalog))
+        #expect(UnitReport.make(room: f.world.rooms[office.id]!, world: f.world, engine: f.engine)?.rentFactor == 1)
+    }
 }

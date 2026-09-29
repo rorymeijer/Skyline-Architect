@@ -1,22 +1,21 @@
 # Development Status
 
-_Last updated: 2026-09-28 (0.22.0 — Phase B: amenities and visitors)_
+_Last updated: 2026-09-29 (0.23.0 — Phase E: economy and facilities)_
 
 ## Current phase
-**Phase B — Amenities and visitors: COMPLETE on the branch.**
-- Six amenity rooms (shop, restaurant, fitness club, cinema, theatre, sky bar), each rented
-  by an operator.
-- Street visitors spawn hourly. Workers lunch and residents spend free time at amenities in
-  their own building.
-- The landlord gets a share of the takings at the closing (ledger category `turnover`).
-- Open amenities add appeal to the building's other units.
-- Save format 16. See AMENITIES.md and D-053.
-- Earlier: Phase A (foundations, 0.21.0) and 0.21.1 (no pile height limit, D-052).
+**Phase E — Economy and facilities: COMPLETE on the branch.** Everything is in D-054,
+ECONOMY.md, FACILITIES.md and ELEVATORS.md. Save format 17.
+- Rent per unit.
+- Property and profit taxes, with a tax level per city.
+- Daily energy prices per city.
+- Waste production and waste rooms.
+- Staff rooms: capacity, range, idle staff wait there.
+- Elevator wear, breakdowns and repairs.
 
-Next, in the player's order: E (economy and facilities), then C (scenarios). Each is a
-phase with its own PR.
+Earlier: Phase B (amenities, 0.22.0), Phase A (foundations, 0.21.x).
+Next, in the player's order: C (scenarios).
 
-Evidence: 328 tests, CI run 36484523958, captures in `Development/Screenshots/Amenities-0.22/`.
+Evidence: 343 tests, CI run 36524083998, captures in `Development/Screenshots/Operations-0.23/`.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |

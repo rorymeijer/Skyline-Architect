@@ -15,6 +15,9 @@ public struct Room: Codable, Hashable, Sendable, Identifiable {
     public var floors: FloorSpan
     /// Rented or sold (save format 15; nil = rented, the default of every unit).
     public var tenure: Tenure?
+    /// Player rent setting of this unit on top of the building's rent level (0.6…1.6,
+    /// save format 17; nil = 1). For new leases and appraisal; signed rents stay.
+    public var rentFactor: Double?
 
     public init(id: RoomID, buildingID: BuildingID, definitionID: String, columns: ColumnSpan, floors: FloorSpan, tenure: Tenure? = nil) {
         self.id = id

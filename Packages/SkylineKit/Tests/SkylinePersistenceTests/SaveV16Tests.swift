@@ -25,14 +25,8 @@ import SkylineSimulation
                         activePropertyID: game.activePropertyID, world: game.world)
     }
 
-    /// Golden fixture v16. Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV16`.
+    /// Golden fixture v16. Frozen since format 17: daily totals gain the taxes and waste columns.
     @Test func goldenFixtureV16StillLoads() throws {
-        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v16.skylinesave")
-            try SaveCodec.encode(makeAmenitySave()).write(to: source)
-            return
-        }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v16.skylinesave")), availablePacks: basePacks)
         let visitors = save.world.people.values.filter { $0.role == .visitor }

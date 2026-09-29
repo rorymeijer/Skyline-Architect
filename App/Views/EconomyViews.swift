@@ -39,6 +39,9 @@ struct EconomyPanel: View {
                 PanelButton(title: "−", enabled: e.rentLevel > 0.61) { model.adjustRentLevel(by: -0.1) }
                 PanelButton(title: "+", enabled: e.rentLevel < 1.59) { model.adjustRentLevel(by: 0.1) }
             }
+            Text(String(format: "Energy price %.2f× today · tax level %.0f %%", e.energyPrice, e.taxLevel * 100))
+                .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                .help("Energy prices move every morning and scale utilities and lighting; taxes follow the city's level (Phase E).")
             Divider()
             Text("Today and last 7 days").font(.caption.weight(.semibold))
             ForEach(LedgerCategory.allCases, id: \.self) { c in

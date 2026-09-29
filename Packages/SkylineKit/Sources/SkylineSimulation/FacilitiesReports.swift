@@ -22,6 +22,15 @@ public struct FacilitiesSummary: Equatable, Sendable {
     public var averageCondition = 1.0
     public var cleaned = 0
     public var repaired = 0
+    /// Places in the building's staff rooms (Phase E; nil = no staff rooms in the content).
+    public var staffCapacity: Int?
+    public var staffCount = 0
+    /// Waste per day and what the waste rooms take (Phase E).
+    public var wastePerDay = 0.0
+    public var wasteCapacity = 0.0
+    /// Elevators broken down now, and breakdowns so far (Phase E).
+    public var brokenElevators = 0
+    public var breakdowns = 0
 
     public init() {}
 
@@ -48,6 +57,12 @@ public struct FacilitiesSummary: Equatable, Sendable {
         }
         s.cleaned = world.facilities.cleaned
         s.repaired = world.facilities.repaired
+        s.staffCapacity = FacilitiesManagement.staffCapacity(of: building, world: world, catalog: engine.catalog)
+        s.staffCount = FacilitiesManagement.staffCount(of: building, world: world)
+        s.wastePerDay = Waste.produced(in: building, world: world, rules: engine.rules)
+        s.wasteCapacity = Waste.capacity(of: building, world: world, catalog: engine.catalog)
+        s.brokenElevators = world.elevators.values.filter { $0.buildingID == building && $0.isOutOfService }.count
+        s.breakdowns = world.facilities.breakdowns ?? 0
         return s
     }
 }

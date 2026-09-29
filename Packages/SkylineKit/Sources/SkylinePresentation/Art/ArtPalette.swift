@@ -76,6 +76,8 @@ public struct ArtPalette: Sendable {
         case "cinema": (RGBA(hex: 0x2F2B3B), RGBA(hex: 0x3B2F40), RGBA(hex: 0x1E1B26))
         case "theater": (RGBA(hex: 0x5C2029), RGBA(hex: 0x6B4A30), RGBA(hex: 0x2A1A1E))
         case "skyBar": (RGBA(hex: 0x2B303B), RGBA(hex: 0x4A3A30), RGBA(hex: 0x1F2229))
+        case "waste": (RGBA(hex: 0xA9ADA6), RGBA(hex: 0x6F726C), RGBA(hex: 0xB9BCB5))
+        case "staffRoom": (RGBA(hex: 0xDAD6CC), RGBA(hex: 0x8A7F70), RGBA(hex: 0xEFECE6))
         case "stairs": (RGBA(hex: 0x86847E), RGBA(hex: 0x6F6D68), RGBA(hex: 0x86847E))
         case "elevatorShaft": (RGBA(hex: 0x44484B), RGBA(hex: 0x303336), RGBA(hex: 0x44484B))
         case "expressElevatorShaft": (RGBA(hex: 0x3A4450), RGBA(hex: 0x2A3038), RGBA(hex: 0x3A4450))

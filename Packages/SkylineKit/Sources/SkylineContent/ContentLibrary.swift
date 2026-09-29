@@ -93,7 +93,7 @@ public struct ContentLibrary: Sendable {
             guard c.geology.allSatisfy({ $0.thickness > 0 }) else {
                 throw fail("cities", "City '\(c.id)' has a stratum with non-positive thickness")
             }
-            if let e = c.economy, [e.rent, e.construction, e.demand].contains(where: { $0 <= 0 || $0 > 5 }) {
+            if let e = c.economy, [e.rent, e.construction, e.demand, e.tax ?? 1, e.energy ?? 1].contains(where: { $0 <= 0 || $0 > 5 }) {
                 throw fail("cities", "City '\(c.id)': economy multipliers must be 0…5")
             }
             cityIndex[c.id] = orderedCities.count
@@ -218,6 +218,9 @@ public struct ContentLibrary: Sendable {
             if room.utilitySupply != nil, (room.utilityRange ?? 0) < 0 { problems.append("room '\(room.id)': utilityRange must be ≥ 0") }
             if let w = room.wearPerDay, !(0...1).contains(w) { problems.append("room '\(room.id)': wearPerDay must be 0…1") }
             if let f = room.fireProtection, f < 0 || room.kind != .room { problems.append("room '\(room.id)': fireProtection needs a room and ≥ 0") }
+            if (room.wasteCapacityPerModule ?? 0) < 0 || (room.staffPerModule ?? 1) <= 0 || (room.staffRange ?? 0) < 0 {
+                problems.append("room '\(room.id)': wasteCapacityPerModule ≥ 0, staffPerModule > 0, staffRange ≥ 0")
+            }
             if let l = room.lighting {
                 problems += l.problems.map { "room '\(room.id)': \($0)" }
                 if ArtCatalog.parseColor(l.color) == nil { problems.append("room '\(room.id)': invalid lighting colour '\(l.color)'") }
