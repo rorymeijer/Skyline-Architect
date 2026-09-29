@@ -25,10 +25,13 @@ import AppKit
 final class ScreenshotDirector {
     struct Configuration {
         let directory: URL
+        /// `--capture-set store`: the App Store screenshots instead of the screen tour.
+        let set: String
 
         init?(arguments: [String]) {
             guard let i = arguments.firstIndex(of: "--capture-screenshots"), i + 1 < arguments.count else { return nil }
             directory = URL(fileURLWithPath: arguments[i + 1], isDirectory: true)
+            if let j = arguments.firstIndex(of: "--capture-set"), j + 1 < arguments.count { set = arguments[j + 1] } else { set = "tour" }
         }
     }
 
@@ -57,12 +60,14 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // 0.29.2: the screen tour (ScreenshotDirector+Tour) on the Mac, the iPad and the iPhone.
-    let steps: [Step] = ScreenshotDirector.tourSteps
+    // 0.29.2: the screen tour (ScreenshotDirector+Tour) on the Mac, the iPad and the iPhone,
+    // or the App Store set (ScreenshotDirector+Store).
+    let steps: [Step]
 
     init(configuration: Configuration, model: AppModel) {
         self.configuration = configuration
         self.model = model
+        steps = configuration.set == "store" ? ScreenshotDirector.storeSteps : ScreenshotDirector.tourSteps
     }
 
     func start() {
@@ -70,6 +75,11 @@ final class ScreenshotDirector {
         started = true
         #if os(macOS)
         NSApplication.shared.activate(ignoringOtherApps: true)
+        if configuration.set == "store", let window = NSApplication.shared.windows.first(where: { $0.isVisible }) {
+            // The Mac App Store takes 1440 × 900 (among others); CI screens are smaller, and
+            // setFrame, unlike a user's resize, is not held to the screen.
+            window.setFrame(window.frameRect(forContentRect: NSRect(x: 0, y: 0, width: 1440, height: 900)), display: true)
+        }
         #endif
         try? FileManager.default.createDirectory(at: configuration.directory, withIntermediateDirectories: true)
         log("capturing \(steps.count) screenshots to \(configuration.directory.path)")
