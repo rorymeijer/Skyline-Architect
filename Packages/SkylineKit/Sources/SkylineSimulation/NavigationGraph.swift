@@ -20,7 +20,8 @@ public enum RouteMode: Hashable, Sendable {
 /// * **Vertical level** — every stair shaft contributes one portal per floor it serves (at its
 ///   landing) and an edge per storey between them. Every elevator shaft contributes a landing
 ///   portal and an in-car node per served floor: boarding (landing → car) costs the expected
-///   wait plus door time, riding costs travel time per storey, alighting costs the transfer.
+///   wait plus door time, riding costs travel time per storey between stops, alighting costs
+///   the transfer.
 ///
 /// A route is then: walk to a portal on the start floor, ride/climb, possibly walk across a
 /// floor to another shaft (a *transfer*), … , walk to the target. The graph is immutable
@@ -126,15 +127,18 @@ public struct NavigationGraph: Sendable {
             let perFloor = grid.floorHeight / spec.speed
             secondsPerFloorBound = min(secondsPerFloorBound, perFloor)
             let boarding = spec.expectedWaitSeconds + Double(2 * spec.doorSeconds + spec.transferSeconds) + spec.speed / spec.acceleration
-            var previousCar: Int?
-            for floor in room.floors.lowest...room.floors.highest {
+            // Car nodes only where the car stops (F2): an express shuttle passing 400 floors
+            // is one ride edge, not 400.
+            var previousCar: (index: Int, floor: Int)?
+            for floor in served.sorted() {
                 let car = addPortal(Portal(floor: floor, x: x, shaft: room.id, kind: .elevatorCar), walkable: false)
                 if let p = previousCar {
-                    link(p, car, perFloor, .ride(shaft: room.id))
-                    link(car, p, perFloor, .ride(shaft: room.id))
+                    let cost = Double(floor - p.floor) * perFloor
+                    link(p.index, car, cost, .ride(shaft: room.id))
+                    link(car, p.index, cost, .ride(shaft: room.id))
                 }
-                previousCar = car
-                guard walkable[floor] != nil, served.contains(floor) else { continue }
+                previousCar = (car, floor)
+                guard walkable[floor] != nil else { continue }
                 let landing = addPortal(Portal(floor: floor, x: x, shaft: room.id, kind: .elevatorLanding), walkable: true)
                 link(landing, car, boarding, .board(shaft: room.id))
                 link(car, landing, Double(spec.transferSeconds), .alight(shaft: room.id))
