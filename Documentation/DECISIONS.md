@@ -424,6 +424,33 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-054 — Phase E: operating costs reuse the closing, upkeep and navigation
+- **Date:** 2026-09-29
+- **Decision:**
+  - **Taxes:** property tax on the assessed value (the build cost) per closing, and profit tax
+    on the closing's result, measured as the change in the day's ledger totals.
+  - **Energy:** a mean-reverting daily energy price per city scales utilities and lighting.
+  - **Waste:** collection is billed for what waste rooms take; the overflow dirties the building.
+  - **Staff rooms** cap hiring, and set where idle staff wait and how far their work reaches
+    (the player chose "needed + range").
+  - **Elevators** wear their shaft's `Upkeep` per stop and may break down. The player chose
+    moderate outages: one car, riders get out, a technician repairs it (about an hour).
+  - **Unit rent** is a factor on the building's level, in the inspector's steps (the player's choice).
+- **Alternatives:**
+  - Separate wear state on cars.
+  - Removing broken cars.
+  - Profit tax from the journal, which is truncated at 400 entries.
+  - Live energy markets.
+- **Reason:**
+  - Everything reuses systems that are already tested: the ledger, the facilities jobs, the
+    `Upkeep` of rooms, and graph rebuilding by signature (a broken car changes the signature).
+  - Every result stays deterministic.
+- **Consequences:**
+  - Save format 17.
+  - The demo tower and highrise gained a waste room (a narrower basement plant room), and the
+    plaza gained a staff room and a waste room.
+  - The game's own hiring needs a staff room.
+
 ## D-053 — Amenities are rented; visitors are transient; seats by share
 - **Date:** 2026-09-28
 - **Decision:**

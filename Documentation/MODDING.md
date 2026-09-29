@@ -198,6 +198,18 @@ closing before opening means after midnight), `occasions` (`lunch`, `leisure`),
 `lunch` (an amenity, else out) and `leisure` (an amenity, else stay), with an optional
 `chance` (0…1). See AMENITIES.md.
 
+### Phase E fields (0.23)
+- `economy.json`: `propertyTaxRate`, `profitTaxRate`, `wastePricePerKg`,
+  `energyVolatility`, `energyReversion`.
+- `cities.json` economy: `tax`, `energy` (multipliers).
+- `facilities.json`: `wastePerPersonPerDay`, `wastePerVisit`, `overflowDirtPerDay`,
+  `outOfRangeFactor`.
+- `rooms.json`: `wasteCapacityPerModule` (waste rooms); `staffPerModule` and `staffRange`
+  (staff rooms). Content with any staff room makes hiring need a place.
+- `elevators.json`: `wearPerStop`, `breakdownChance`.
+
+All are optional: without them the game behaves as before Phase E.
+
 ### TenantType (tenants.json)
 `id, name, kind ("household" | "business"), rooms [room ids with rentPerModule], role,
 members {fixed | perModule}, schedules [schedule ids of that role], budgetPerModule,

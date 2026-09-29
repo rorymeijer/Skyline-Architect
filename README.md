@@ -5,7 +5,7 @@ iPadOS. Swift · SwiftUI · SpriteKit. No third-party engines, no copied assets.
 
 <img src="App/Assets.xcassets/AppIcon.appiconset/mac-256.png" width="128" alt="App icon: a cut-away tower at dusk">
 
-## What the game does (0.22.0)
+## What the game does (0.23.0)
 
 Build a tower in cross-section and keep it running.
 
@@ -16,15 +16,15 @@ Build a tower in cross-section and keep it running.
 | **Elevators** | Cars, banks, express shuttles, and three dispatch strategies with statistics and a traffic overlay. |
 | **Amenities** | Shops, a restaurant, a fitness club, a cinema, a theatre and a sky bar, run by operators; visitors from the street and the building's own people; a share of the takings. |
 | **Tenants** | A rental market with flats for sale beside flats for rent, where prospects appraise rent, access, noise, view and services, with satisfaction and move-outs. |
-| **Economy** | Ledger, rent, running costs, loans and bankruptcy. |
-| **Facilities** | Utilities with a reach and a capacity, wear and dirt, and janitors and technicians. |
+| **Economy** | Ledger, rent per building and per unit, running costs, taxes, energy prices, waste collection, loans and bankruptcy. |
+| **Facilities** | Utilities with a reach and a capacity, wear and dirt, janitors and technicians housed in staff rooms, and elevator wear with breakdowns. |
 | **Progression** | Reputation and building classes that unlock rooms, height and tenants. |
 | **Environment** | Day and night with lighting energy, and weather with seasons, forecasts and effects. |
 | **Emergencies** | Fires, sprinklers, evacuation, and storm damage. |
 | **Estate** | Three cities with their own markets, ground and weather, land for sale, and the whole estate simulating at once. |
 | **Scenarios** | Objectives against the clock, from Opening Day to Skyline. |
 | **Modding** | JSON content packs over the base game, validated per mod, with a mod manager and an example mod. |
-| **Saves** | Versioned format (16) with migrations and golden fixtures, a content hash per pack; optional iCloud Drive sync that keeps both versions on a conflict. |
+| **Saves** | Versioned format (17) with migrations and golden fixtures, a content hash per pack; optional iCloud Drive sync that keeps both versions on a conflict. |
 | **Scale** | Profiled on generated towers up to 400 floors and 2,000+ people. |
 | **Polish** | Procedural art throughout, clouds, the app icon, VoiceOver labels and Reduce Motion. |
 

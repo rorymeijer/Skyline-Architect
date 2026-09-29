@@ -39,12 +39,35 @@ visible "Developer grant".)
 5. Bankruptcy: seven closings in a row with negative cash → the game ends (screen with New
    Game / Load).
 
+### Phase E (0.23) additions to the closing
+
+Wages are paid first, in the facilities step. The closing then continues:
+
+- **Amenity turnover share** (0.22).
+- **Waste collection:**
+  - The building produces 1.2 kg per resident or worker and 0.3 kg per amenity customer a day.
+  - Waste rooms take 80 kg per module a day. What they take is billed at $0.80/kg (`waste`).
+  - The overflow dirties every room of the building: up to 0.25 cleanliness at full overflow.
+- **Utilities and lighting** are multiplied by the city's **energy price**. It moves every
+  morning by up to ±6 % of the city's base level, is pulled 30 % back toward it, and stays
+  within half to twice the base. It is deterministic per city and day.
+- **Property tax** per building: 0.4 % of its assessed value (what its plates and rooms
+  cost to build at the city's prices) per closing, times the city's tax level. Levels:
+  Harrowgate 120 %, Saltmere 85 %.
+- **Profit tax:** 15 % of the closing's positive result (everything the closing booked,
+  wages included). Nothing is charged on a loss.
+
+Taxes are booked in the ledger category `taxes`.
+
 ## Player controls
 
 * **Loans**: borrow / repay in steps of 500 k up to 5 M (economy panel).
 * **Rent level** per building, 60–160 %: multiplies asking rents, so it changes how
   prospects and tenants appraise units (tested: at 150 % more prospects decline as too
   expensive and fewer sign). Signed rents are contracts and stay.
+* **Unit rent** (Phase E), 60–160 % in 10 % steps, set in the unit inspector. It multiplies
+  the building's level for that unit only (`Room.rentFactor`) and works the same way: for
+  new leases and appraisal.
 
 ## Measured (demo tower, M1 capture run)
 

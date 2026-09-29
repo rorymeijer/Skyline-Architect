@@ -2,6 +2,33 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.23.0] — Phase E: Economy and facilities
+
+### Added
+- **Rent per unit:** the inspector's − / + sets one unit's rent (60–160 %) on top of the
+  building's rent level. It applies to new tenants; signed rents stay.
+- **Taxes:**
+  - property tax on each building's value (what it cost to build), with a level per city;
+  - profit tax (15 %) on the daily closing's result, and nothing on a loss.
+- **Energy prices:** each city's price moves every morning (Harrowgate is dearer, Saltmere
+  cheaper) and scales the utilities and lighting bills.
+- **Waste:** people and amenity customers leave waste. **Waste Rooms** take it for
+  collection (billed per kg); what does not fit makes the building dirty.
+- **Staff Rooms:** janitors and technicians need a place in one to be hired. Idle staff
+  wait there, and jobs far from any staff room take longer.
+- **Elevator wear and breakdowns:** every stop wears the shaft. A worn car may break down
+  (dark cab with a warning band); its riders get out and everyone re-routes. Technicians
+  repair broken cars first.
+- **Panels:**
+  - the economy panel shows the energy price, tax level, and Taxes and Waste rows;
+  - the facilities panel shows staff-room places, waste against capacity, and broken
+    elevators.
+
+### Changed
+- The demo tower and highrise have a waste room; the demo plaza has a staff room and a
+  waste room.
+- Save format 17; older saves are migrated.
+
 ## [0.22.0] — Phase B: Amenities and visitors
 
 ### Added

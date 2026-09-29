@@ -47,6 +47,23 @@ then the oldest), travel there with stairs, public and **service elevators** (ro
 (repair), restore the room and take the next job; after the shift they go home. A job
 whose room is demolished disappears; a dismissed employee's job returns to the list.
 
+### Staff rooms (Phase E)
+
+- A **Staff Room** houses 0.75 staff per module, rounded down (a 6-module room holds 4).
+- The Facilities panel can hire only while a place is free. Existing staff in older saves
+  keep working.
+- Staff with nothing to do on their shift wait in the nearest staff room.
+- A job more than `staffRange` (10) floors from every staff room takes
+  `outOfRangeFactor` (1.5×) as long.
+- Content without staff rooms keeps unlimited hiring.
+
+### Waste rooms (Phase E)
+See ECONOMY.md → closing. The Facilities panel shows the daily waste against what the
+waste rooms take.
+
+### Elevator wear (Phase E)
+See ELEVATORS.md → Wear and breakdowns. A broken car's shaft is the most urgent repair job.
+
 ## Effect on tenants
 
 Appraisals gain a **services** criterion: 60 % utilities supplied, 20 % cleanliness, 20 %
