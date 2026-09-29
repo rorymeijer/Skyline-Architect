@@ -89,7 +89,10 @@ final class AppModel {
     /// Text size of the panels and menus (F4). nil follows the system (Dynamic Type on an
     /// iPad); a Mac has no system setting, so the player picks one here.
     var textSize: DynamicTypeSize? = nil {
-        didSet { if persistsModSettings { UserDefaults.standard.set(textSize.map(TextSizeSetting.key), forKey: TextSizeSetting.defaultsKey) } }
+        didSet {
+            UIText.macScale = UIText.factor(textSize)
+            if persistsModSettings { UserDefaults.standard.set(textSize.map(TextSizeSetting.key), forKey: TextSizeSetting.defaultsKey) }
+        }
     }
     /// Help (F3): the manual (loaded once), its sheet and chapter; the tutorial scenario's
     /// steps (4 Hz); the first-time hint on screen and which ones this device has seen.

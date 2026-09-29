@@ -9,23 +9,23 @@ struct FoundationPanel: View {
         if let f = model.foundation {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text("Foundation").font(.headline)
+                    Text("Foundation").font(.ui(.headline))
                     Spacer()
                     CloseButton { model.showFoundationPanel = false }
                 }
-                Text(f.building).font(.caption).foregroundStyle(.secondary)
+                Text(f.building).font(.ui(.caption)).foregroundStyle(.secondary)
                 Text("\(f.widthMeters) m wide · \(f.basements) of \(f.maxBasements) basement level\(f.maxBasements == 1 ? "" : "s") · piles \(f.pileDepth) m")
-                    .font(.caption.monospacedDigit())
+                    .font(.ui(.caption).monospacedDigit())
                 if let carries = f.carries {
-                    Text("The piles carry \(carries) storeys; \(f.built) built.").font(.caption.monospacedDigit())
+                    Text("The piles carry \(carries) storeys; \(f.built) built.").font(.ui(.caption).monospacedDigit())
                         .foregroundStyle(f.built >= carries ? Color.orange : Color.secondary)
                 }
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 6) {
                     ForEach(f.options) { o in
                         Button { if let c = o.command { model.perform(c) } } label: {
                             VStack(alignment: .leading, spacing: 1) {
-                                Label(o.title, systemImage: o.symbol).font(.caption.weight(.semibold))
-                                Text(o.detail).font(.caption2.monospacedDigit()).foregroundStyle(.secondary).lineLimit(2)
+                                Label(o.title, systemImage: o.symbol).font(.ui(.caption).weight(.semibold))
+                                Text(o.detail).font(.ui(.caption2).monospacedDigit()).foregroundStyle(.secondary).lineLimit(2)
                             }
                             .padding(6)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -42,7 +42,7 @@ struct FoundationPanel: View {
                 }
             }
             .padding(12)
-            .frame(width: 320, alignment: .leading)
+            .scaledFrame(width: 320, alignment: .leading)
             .panelCard()
             .environment(\.colorScheme, .dark)
         }

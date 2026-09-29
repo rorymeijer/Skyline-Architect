@@ -12,7 +12,7 @@ struct DevHUDView: View {
         let d = diagnostics
         VStack(alignment: .leading, spacing: 3) {
             Text("DEVELOPER")
-                .font(.caption2.weight(.bold))
+                .font(.ui(.caption2).weight(.bold))
                 .foregroundStyle(.secondary)
             row("FPS", String(format: "%.0f  (%.1f ms)", d.fps, d.frameTimeMs))
             row("Scene update", String(format: "%.2f ms", d.sceneUpdateMs))

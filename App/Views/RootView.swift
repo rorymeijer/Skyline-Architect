@@ -13,6 +13,7 @@ struct RootView: View {
                 EscapeShortcut(model: model)
                 ChromeOverlay(model: model)
                     .textSize(model.textSize)
+                    .id(model.textSize)                              // Mac fonts are read when views are built
             }
             .alert(model.alert?.title ?? "", isPresented: Binding(get: { model.alert != nil }, set: { if !$0 { model.alert = nil } })) {
                 Button("OK", role: .cancel) { model.alert = nil }
@@ -22,11 +23,11 @@ struct RootView: View {
         } else {
             VStack(spacing: 12) {
                 Image(systemName: "exclamationmark.triangle")
-                    .font(.largeTitle)
+                    .font(.ui(.largeTitle))
                 Text("Skyline Architect could not start")
-                    .font(.headline)
+                    .font(.ui(.headline))
                 Text(model.loadError ?? "Unknown error")
-                    .font(.callout.monospaced())
+                    .font(.ui(.callout).monospaced())
                     .textSelection(.enabled)
             }
             .padding(40)
@@ -113,9 +114,9 @@ struct TitleBadge: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
-                .font(.headline)
+                .font(.ui(.headline))
             Text("\(model.cityName) · \(mode)")
-                .font(.caption)
+                .font(.ui(.caption))
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 12)
