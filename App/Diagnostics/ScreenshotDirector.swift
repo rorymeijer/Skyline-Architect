@@ -105,7 +105,7 @@ final class ScreenshotDirector {
             model.handleEscape()                       // closes the menu (resumes)
             model.setSpeed(.paused)
             model.handleEscape()                       // closes the lowest panel (Leasing)
-            let open = SidePanel.allCases.filter { $0.isOpen(model) }.map(\.title)
+            let open = MainActor.assumeIsolated { SidePanel.allCases.filter { $0.isOpen(model) }.map(\.title) }
             return "After Esc twice: menu closed, then the lowest panel; open now: \(open.joined(separator: ", "))."
         },
     ]
