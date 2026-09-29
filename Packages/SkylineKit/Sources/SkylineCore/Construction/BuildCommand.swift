@@ -80,9 +80,14 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
     case outsidePlot
     /// Standard game: the room type or height needs a higher building class (Phase 11).
     case locked(className: String)
+    /// The scenario forbids this room type, or building this high (Phase C).
+    case forbiddenInScenario
+    case aboveScenarioHeight(max: Int)
 
     public var description: String {
         switch self {
+        case .forbiddenInScenario: "Not allowed in this scenario"
+        case let .aboveScenarioHeight(max): "This scenario allows floors up to \(FloorLabel.label(for: max))"
         case .unknownBuilding: "No building here"
         case .unknownRoom: "Nothing to demolish"
         case .unknownDefinition(let id): "Unknown room type \(id)"

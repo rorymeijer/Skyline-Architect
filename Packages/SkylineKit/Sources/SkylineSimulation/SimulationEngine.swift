@@ -71,6 +71,7 @@ public struct SimulationEngine: Sendable {
                 amenities = AmenityDirectory(world: world, rules: rules)          // leases may have changed
                 checkWeatherIncidents(at: tick, world: &world)
                 checkIgnition(at: tick, world: &world, events: &events)
+                scenarioEvents(at: tick, world: &world, events: &events)
                 events.push(world.market.nextTick, .market)
             case .fires:
                 guard world.incidents.fires.contains(where: { $0.nextStep == tick }) else { continue }

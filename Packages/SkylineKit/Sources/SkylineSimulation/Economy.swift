@@ -8,10 +8,16 @@ public enum Economy {
     /// Borrows one loan step if the limit allows. Returns whether it did.
     @discardableResult
     public static func borrow(_ world: inout GameWorld, rules: EconomyRules) -> Bool {
-        guard world.ledger.loans + rules.loanStep <= rules.maxLoans else { return false }
+        guard canBorrow(world, rules: rules) else { return false }
         world.ledger.loans += rules.loanStep
         world.ledger.post(Transaction(tick: world.clock.tick, amount: rules.loanStep, category: .loan, detail: "Loan taken"))
         return true
+    }
+
+    /// Whether one more loan step fits the limit (and the scenario's, Phase C).
+    public static func canBorrow(_ world: GameWorld, rules: EconomyRules) -> Bool {
+        let total = world.ledger.loans + rules.loanStep
+        return total <= rules.maxLoans && total <= (world.restrictions?.maxLoans ?? .max)
     }
 
     /// Repays one loan step if there is cash and debt. Returns whether it did.
@@ -26,8 +32,12 @@ public enum Economy {
 
     /// Player rent setting per building (0.6…1.6). Applies to new leases and to how
     /// prospects and tenants appraise units; signed rents are contracts and do not change.
-    public static func setRentLevel(_ level: Double, building: BuildingID, in world: inout GameWorld) {
+    /// Returns false when the scenario fixes rents (Phase C).
+    @discardableResult
+    public static func setRentLevel(_ level: Double, building: BuildingID, in world: inout GameWorld) -> Bool {
+        guard world.restrictions?.rentIsFixed != true else { return false }
         world.setRentLevel(level, building: building)
+        return true
     }
 
     public static let rentLevels = 0.6...1.6
@@ -37,7 +47,8 @@ public enum Economy {
     /// appraisal; signed rents are contracts. Returns false for a room that is not a unit.
     @discardableResult
     public static func setRentFactor(_ factor: Double, room: RoomID, in world: inout GameWorld, catalog: BuildCatalog) -> Bool {
-        guard let r = world.rooms[room], catalog.spec(r.definitionID)?.rentPerModule != nil else { return false }
+        guard let r = world.rooms[room], catalog.spec(r.definitionID)?.rentPerModule != nil,
+              world.restrictions?.rentIsFixed != true else { return false }
         world.setRentFactor(factor, room: room)
         return true
     }
@@ -133,7 +144,7 @@ public struct EconomySummary: Equatable, Sendable {
         s.loans = ledger.loans
         if let e = rules.economy {
             s.loanStep = e.loanStep
-            s.canBorrow = ledger.loans + e.loanStep <= e.maxLoans
+            s.canBorrow = Economy.canBorrow(world, rules: e)
             s.canRepay = ledger.loans > 0 && ledger.cash >= min(e.loanStep, ledger.loans)
             s.bankruptcyDays = e.bankruptcyDays
         }

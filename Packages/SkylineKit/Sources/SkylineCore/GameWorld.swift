@@ -187,6 +187,9 @@ public struct GameWorld: Codable, Sendable, Equatable {
         buildings.update(building) { $0.rentLevel = min(max(level, 0.6), 1.6) }
     }
 
+    /// The active scenario's restrictions (Phase C; nil in free play).
+    public var restrictions: ScenarioRestrictions? { scenario?.restrictions }
+
     /// Allocates a fresh tenant id (used by the simulation's leasing system).
     public mutating func makeTenantID() -> TenantID { ids.make() }
 

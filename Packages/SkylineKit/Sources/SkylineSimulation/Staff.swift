@@ -63,7 +63,8 @@ public enum FacilitiesManagement {
     @discardableResult
     public static func hire(_ role: PersonRole, building: BuildingID, world: inout GameWorld, rules: SimulationRules,
                             catalog: BuildCatalog? = nil) -> PersonID? {
-        guard role.isStaff, let shift = rules.facilities?.shift, world.buildings.contains(building) else { return nil }
+        guard role.isStaff, let shift = rules.facilities?.shift, world.buildings.contains(building),
+              world.restrictions?.staffForbidden != true else { return nil }
         if let catalog, let capacity = staffCapacity(of: building, world: world, catalog: catalog),
            staffCount(of: building, world: world) >= capacity { return nil }
         let id = world.makePersonID()
