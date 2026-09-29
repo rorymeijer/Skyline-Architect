@@ -225,24 +225,33 @@ does ask: **"None of the algorithms mentioned above"** / uses no encryption.
 
 Up to 10 per size; the first three matter most. The sizes App Store Connect needs:
 
-| Device | Size (landscape, pixels) | Our captures today |
+| Device | Size (landscape, pixels) | Our captures |
 |--------|--------------------------|--------------------|
-| iPhone 6.9" (required) | 2868 × 1320 (or 2796 × 1290) | ✗ CI uses a 6.1" iPhone (2556 × 1179) |
-| iPad 13" (required) | 2752 × 2064 (or 2732 × 2048) | ✗ CI uses an 11" iPad (2420 × 1668) |
-| Mac (required) | 2880 × 1800, 2560 × 1600, 1440 × 900 or 1280 × 800 | ✗ CI window is 1024 × 681 |
+| iPhone 6.9" (required) | 2868 × 1320 (or 2796 × 1290) | ✓ store workflow (iPhone 16 Pro Max simulator) |
+| iPad 13" (required) | 2752 × 2064 (or 2732 × 2048) | ✓ store workflow (iPad Pro 13-inch simulator) |
+| Mac (required) | 2880 × 1800, 2560 × 1600, 1440 × 900 or 1280 × 800 | ✓ store workflow (1440 × 900 window) |
 
-The CI captures show the right game but at the wrong sizes. The honest way to fill this in is
-to run the same capture script on an iPhone 16 Pro Max and an iPad Pro 13" simulator and in a
-1440 × 900 window. **▶ DECIDE**: ask for it and CI can produce real store screenshots.
+The *App Store screenshots* workflow (`.github/workflows/store-screenshots.yml`, 0.29.2)
+makes them for real: the same capture script, with its store set (`--capture-set store`), on
+a Mac window of 1440 × 900, an iPhone 6.9" simulator (iPhone 16 Pro Max) and an iPad 13"
+simulator (iPad Pro 13-inch). It runs from *Actions ▸ App Store screenshots ▸ Run workflow*
+once the workflow is on `main`, and whenever the store script changes on a development
+branch. It produces:
 
-Suggested order and captions:
+- the PNG originals, as the run's artifact *app-store-screenshots*;
+- JPEG copies at the same pixel size, in `Development/Screenshots/AppStore/`.
 
-1. The cut-away tower at lunchtime (offices, theatre, restaurant, elevators) — "Build upward"
-2. The same tower in the evening, lit up — "Keep the building moving"
-3. Elevator banks and waiting traffic — "Elevators that matter"
-4. The leasing panel with prospects — "Tenants with opinions"
-5. The tutorial — "Learn as you build"
-6. The scenario browser with stars — "Scenarios against the clock"
+The set, in this order:
+
+1. `01-lunch`: the Demo Plaza at 12:40, restaurants and shops full ("Build upward")
+2. `02-evening`: 20:15, theatre and cinema, the city lit up ("Keep the building moving")
+3. `03-elevators`: the morning rush with the traffic overlay and the Elevator Banks panel ("Elevators that matter")
+4. `04-restaurant`: the restaurant's inspector and the Leasing panel ("Tenants with opinions")
+5. `05-tutorial`: the tutorial panel over a first tower ("Learn as you build")
+6. `06-scenarios`: the scenario browser ("Scenarios against the clock")
+
+The Demo Plaza is built and leased by developer tools, and the weather is set clear by the
+script. Every picture is the game's own rendering, with nothing painted in afterwards.
 
 App previews (video): optional; skip for the first release.
 
@@ -251,7 +260,7 @@ App previews (video): optional; skip for the first release.
 - [ ] Website published with `support.html` and `privacy.html` reachable
 - [ ] Version number set in Xcode (`MARKETING_VERSION`) and the same on the version page
 - [ ] Builds uploaded for iOS (iPhone and iPad) and macOS, and picked on each version page
-- [ ] Screenshots for iPhone 6.9", iPad 13" and Mac
+- [ ] Screenshots for iPhone 6.9", iPad 13" and Mac (from `Development/Screenshots/AppStore/`)
 - [ ] Price and countries
 - [ ] App Privacy answered ("Data Not Collected")
 - [ ] Age rating questionnaire answered (4+)
