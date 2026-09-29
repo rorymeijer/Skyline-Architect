@@ -7,25 +7,26 @@ import SkylineContent
 /// (`transport.md`) open them in place.
 struct ManualView: View {
     let model: AppModel
+    @Environment(\.dynamicTypeSize) private var dynamicType
 
     var body: some View {
         let document = model.manual?.document ?? ManualDocument(chapters: [])
         let chapter = model.manualChapterID.flatMap { document.chapter($0) } ?? document.chapters.first
-        let pages = chapter.map(ManualPages.split) ?? []
+        let scale = UIText.current(dynamicType)
+        let pages = chapter.map { ManualPages.split($0, linesPerPage: Int((Double(ManualPages.linesPerPage) / scale).rounded(.down))) } ?? []
         let page = min(model.manualPage, max(pages.count - 1, 0))
         ZStack {
             Color.black.opacity(0.5).ignoresSafeArea()
                 .onTapGesture { model.showManual = false }
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Label("Manual", systemImage: "book").font(.title2.weight(.bold))
+                    Label("Manual", systemImage: "book").font(.ui(.title2).weight(.bold))
                     Spacer()
                     CloseButton { model.showManual = false }
-                        .keyboardShortcut(.cancelAction)
                 }
                 HStack(alignment: .top, spacing: 16) {
                     sidebar(document, current: chapter?.id)
-                        .frame(width: 220)
+                        .scaledFrame(width: 220)
                     Divider()
                     VStack(alignment: .leading, spacing: 10) {
                         if let chapter, !pages.isEmpty {
@@ -45,7 +46,7 @@ struct ManualView: View {
                 }
             }
             .padding(20)
-            .frame(maxWidth: 880, maxHeight: 600)
+            .frame(maxWidth: 880 * scale, maxHeight: 600 * scale)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
             .padding(24)
         }
@@ -62,13 +63,13 @@ struct ManualView: View {
             } else {
                 let hits = document.search(model.manualQuery)
                 if hits.isEmpty {
-                    Text("No chapter mentions that.").font(.caption).foregroundStyle(.secondary).padding(6)
+                    Text("No chapter mentions that.").font(.ui(.caption)).foregroundStyle(.secondary).padding(6)
                 }
                 ForEach(hits.prefix(7), id: \.chapter.id) { hit in
                     row(title: hit.chapter.title, detail: hit.snippet, selected: hit.chapter.id == current) { model.showChapter(hit.chapter.id) }
                 }
                 if hits.count > 7 {
-                    Text("\(hits.count - 7) more — add a word").font(.caption).foregroundStyle(.secondary).padding(.horizontal, 8)
+                    Text("\(hits.count - 7) more — add a word").font(.ui(.caption)).foregroundStyle(.secondary).padding(.horizontal, 8)
                 }
             }
             Spacer(minLength: 0)
@@ -78,15 +79,16 @@ struct ManualView: View {
     private func row(title: String, detail: String?, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.callout.weight(selected ? .semibold : .regular))
+                Text(title).font(.ui(.callout).weight(selected ? .semibold : .regular))
                 if let detail {
-                    Text(ManualMarkdown.strip(detail)).font(.caption2).foregroundStyle(.secondary).lineLimit(2)
+                    Text(ManualMarkdown.strip(detail)).font(.ui(.caption2)).foregroundStyle(.secondary).lineLimit(2)
                 }
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(selected ? 0.2 : 0)))
+            .focusRing(cornerRadius: 7)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -106,7 +108,7 @@ struct ManualView: View {
             }
             Spacer()
             if count > 1 {
-                Text("Page \(page + 1) of \(count)").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                Text("Page \(page + 1) of \(count)").font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
             }
             Spacer()
             if page + 1 < count {
@@ -124,9 +126,10 @@ private struct PagerButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(title).font(.callout.weight(.medium))
+            Text(title).font(.ui(.callout).weight(.medium))
                 .padding(.horizontal, 10).padding(.vertical, 5)
                 .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(0.12)))
+                .focusRing(cornerRadius: 7)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -139,7 +142,7 @@ private struct PagerButton: View {
 enum ManualPages {
     static let linesPerPage = 26
 
-    static func split(_ chapter: ManualChapter) -> [[ManualBlock]] {
+    static func split(_ chapter: ManualChapter, linesPerPage: Int = linesPerPage) -> [[ManualBlock]] {
         var pages: [[ManualBlock]] = [[]]
         var used = 3                                              // the chapter title
         for block in chapter.blocks {
@@ -179,7 +182,7 @@ struct ManualPageView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
             if let title {
-                Text(title).font(.title.weight(.bold)).accessibilityAddTraits(.isHeader)
+                Text(title).font(.ui(.title).weight(.bold)).accessibilityAddTraits(.isHeader)
             }
             ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
                 blockView(block)
@@ -195,7 +198,7 @@ struct ManualPageView: View {
                 .padding(.top, level <= 2 ? 4 : 2)
                 .accessibilityAddTraits(.isHeader)
         case let .paragraph(text):
-            Text(Self.inline(text)).font(.callout).fixedSize(horizontal: false, vertical: true)
+            Text(Self.inline(text)).font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
         case let .bullets(items):
             VStack(alignment: .leading, spacing: 3) {
                 ForEach(Array(items.enumerated()), id: \.offset) { _, item in
@@ -203,7 +206,7 @@ struct ManualPageView: View {
                         Text("•")
                         Text(Self.inline(item)).fixedSize(horizontal: false, vertical: true)
                     }
-                    .font(.callout)
+                    .font(.ui(.callout))
                 }
             }
         case let .numbered(items):
@@ -213,25 +216,25 @@ struct ManualPageView: View {
                         Text("\(i + 1).").monospacedDigit()
                         Text(Self.inline(item)).fixedSize(horizontal: false, vertical: true)
                     }
-                    .font(.callout)
+                    .font(.ui(.callout))
                 }
             }
         case let .note(text):
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Image(systemName: "lightbulb").foregroundStyle(.yellow)
-                Text(Self.inline(text)).font(.callout).fixedSize(horizontal: false, vertical: true)
+                Text(Self.inline(text)).font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
             }
             .padding(10)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(RoundedRectangle(cornerRadius: 8).fill(Color.yellow.opacity(0.12)))
         case let .table(header, rows):
             Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 3) {
-                GridRow { ForEach(Array(header.enumerated()), id: \.offset) { _, h in Text(Self.inline(h)).font(.caption.weight(.semibold)) } }
+                GridRow { ForEach(Array(header.enumerated()), id: \.offset) { _, h in Text(Self.inline(h)).font(.ui(.caption).weight(.semibold)) } }
                 Divider()
                 ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
                     GridRow {
                         ForEach(Array(row.enumerated()), id: \.offset) { _, cell in
-                            Text(Self.inline(cell)).font(.caption).fixedSize(horizontal: false, vertical: true)
+                            Text(Self.inline(cell)).font(.ui(.caption)).fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
@@ -245,15 +248,46 @@ struct ManualPageView: View {
     }
 }
 
-/// The manual's search box. On a Mac it is drawn in SwiftUI and takes typed keys while
-/// focused (click it), so captures show it like the window does; on an iPad it is a text
-/// field for the on-screen keyboard.
+/// The manual's search box, drawn in SwiftUI so captures show it like the window does. On a
+/// Mac it takes typed keys while focused (click it); on an iPad a nearly transparent text
+/// field on top brings up the on-screen keyboard.
 struct ManualSearchField: View {
     @Binding var text: String
     @FocusState private var focused: Bool
 
     var body: some View {
         #if os(macOS)
+        drawn
+            .focusable()
+            .focused($focused)
+            .focusEffectDisabled()
+            .onTapGesture { focused = true }
+            .onKeyPress(phases: .down) { press in
+                if press.key == .delete {
+                    if !text.isEmpty { text.removeLast() }
+                    return .handled
+                }
+                let typed = press.characters
+                guard !typed.isEmpty, press.modifiers.isDisjoint(with: [.command, .control]),
+                      typed.allSatisfy({ $0.isLetter || $0.isNumber || $0 == " " || $0 == "-" || $0 == "'" }) else { return .ignored }
+                text += typed
+                return .handled
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Search the manual")
+            .accessibilityValue(text)
+        #else
+        drawn
+            .overlay {
+                TextField("", text: $text)
+                    .focused($focused)
+                    .opacity(0.02)                                  // UIKit field: invisible, still typable
+                    .accessibilityLabel("Search the manual")
+            }
+        #endif
+    }
+
+    private var drawn: some View {
         HStack(spacing: 6) {
             Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
             Text(text.isEmpty ? (focused ? "|" : "Search") : text + (focused ? "|" : ""))
@@ -265,34 +299,11 @@ struct ManualSearchField: View {
                     .buttonStyle(.plain).foregroundStyle(.secondary).accessibilityLabel("Clear search")
             }
         }
-        .font(.callout)
+        .font(.ui(.callout))
         .padding(.horizontal, 8)
         .padding(.vertical, 5)
         .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(focused ? 0.16 : 0.1)))
         .contentShape(Rectangle())
-        .focusable()
-        .focused($focused)
-        .focusEffectDisabled()
-        .onTapGesture { focused = true }
-        .onKeyPress(phases: .down) { press in
-            if press.key == .delete {
-                if !text.isEmpty { text.removeLast() }
-                return .handled
-            }
-            let typed = press.characters
-            guard !typed.isEmpty, press.modifiers.isDisjoint(with: [.command, .control]),
-                  typed.allSatisfy({ $0.isLetter || $0.isNumber || $0 == " " || $0 == "-" || $0 == "'" }) else { return .ignored }
-            text += typed
-            return .handled
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Search the manual")
-        .accessibilityValue(text)
-        #else
-        TextField("Search", text: $text)
-            .textFieldStyle(.roundedBorder)
-            .accessibilityLabel("Search the manual")
-        #endif
     }
 }
 
@@ -304,24 +315,24 @@ struct TutorialPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Label("Tutorial", systemImage: "graduationcap").font(.headline)
+                Label("Tutorial", systemImage: "graduationcap").font(.ui(.headline))
                 Spacer()
                 Text("\(tutorial.progress.completed) of \(tutorial.steps.count)")
-                    .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                    .font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
                 CloseButton { model.showTutorialPanel = false }
             }
             ProgressBar(value: Double(tutorial.progress.completed) / Double(max(tutorial.steps.count, 1)), tint: .green)
                 .accessibilityLabel("Tutorial progress")
                 .accessibilityValue("\(tutorial.progress.completed) of \(tutorial.steps.count) steps")
             if let step = tutorial.current {
-                Text(step.title).font(.callout.weight(.semibold))
-                Text(ManualPageView.inline(step.text)).font(.callout).fixedSize(horizontal: false, vertical: true)
+                Text(step.title).font(.ui(.callout).weight(.semibold))
+                Text(ManualPageView.inline(step.text)).font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
                 if let chapter = step.chapter {
                     LinkButton(title: "Read more in the manual") { model.openManual(chapter: chapter) }
                 }
             } else {
                 Text("Every step done. Keep the units let through a closing to finish.")
-                    .font(.callout).fixedSize(horizontal: false, vertical: true)
+                    .font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
             }
             Divider()
             VStack(alignment: .leading, spacing: 3) {
@@ -329,14 +340,14 @@ struct TutorialPanel: View {
                     let done = tutorial.progress.done[i]
                     let now = i == tutorial.progress.current
                     Label(step.title, systemImage: done ? "checkmark.circle.fill" : (now ? "arrow.right.circle" : "circle"))
-                        .font(.caption.weight(now ? .semibold : .regular))
+                        .font(.ui(.caption).weight(now ? .semibold : .regular))
                         .foregroundStyle(done ? Color.green : (now ? Color.primary : Color.secondary))
                         .accessibilityValue(done ? "Done" : (now ? "Current step" : "To do"))
                 }
             }
         }
         .padding(12)
-        .frame(width: 290, alignment: .leading)
+        .scaledFrame(width: 290, alignment: .leading)
         .panelCard()
         .environment(\.colorScheme, .dark)
     }
@@ -350,11 +361,11 @@ struct HintBubble: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .firstTextBaseline) {
-                Label(hint.title, systemImage: "lightbulb").font(.callout.weight(.semibold))
+                Label(hint.title, systemImage: "lightbulb").font(.ui(.callout).weight(.semibold))
                 Spacer()
                 CloseButton { model.dismissHint() }
             }
-            Text(ManualPageView.inline(hint.text)).font(.callout).fixedSize(horizontal: false, vertical: true)
+            Text(ManualPageView.inline(hint.text)).font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
             HStack(spacing: 12) {
                 if let chapter = hint.chapter {
                     LinkButton(title: "Read more") {
@@ -366,10 +377,10 @@ struct HintBubble: View {
                 LinkButton(title: "Turn off tips", muted: true) { model.setHintsEnabled(false) }
                 PagerButton(title: "Got it") { model.dismissHint() }
             }
-            .font(.caption)
+            .font(.ui(.caption))
         }
         .padding(12)
-        .frame(width: 330, alignment: .leading)
+        .scaledFrame(width: 330, alignment: .leading)
         .panelCard()
         .environment(\.colorScheme, .dark)
         .accessibilityElement(children: .contain)
@@ -385,7 +396,9 @@ private struct LinkButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(title).font(.caption.weight(.medium)).foregroundStyle(muted ? Color.secondary : Color.accentColor)
+            Text(title).font(.ui(.caption).weight(.medium)).foregroundStyle(muted ? Color.secondary : Color.accentColor)
+                .padding(.horizontal, 2)
+                .focusRing(cornerRadius: 4)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

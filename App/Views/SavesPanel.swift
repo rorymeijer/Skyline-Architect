@@ -18,18 +18,18 @@ struct SavesPanel: View {
             Color.black.opacity(0.5).ignoresSafeArea()
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("Saves").font(.title2.weight(.bold))
+                    Text("Saves").font(.ui(.title2).weight(.bold))
                     Spacer()
                     Button { model.setSyncEnabled(!model.syncEnabled) } label: {
                         Label(model.syncEnabled ? "iCloud Drive: On" : "iCloud Drive: Off",
                               systemImage: model.syncEnabled ? "icloud.fill" : "icloud.slash")
-                            .font(.callout.weight(.semibold))
+                            .font(.ui(.callout).weight(.semibold))
                             .padding(.horizontal, 10).padding(.vertical, 5)
                             .background(Capsule().fill(model.syncEnabled ? Color.accentColor.opacity(0.35) : Color.white.opacity(0.1)))
                     }
                     .buttonStyle(.plain)
                 }
-                Text(model.syncStatus).font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                Text(model.syncStatus).font(.ui(.caption)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 if saves.isEmpty {
                     Text("No saves yet. Use File ▸ Save (⌘S).").foregroundStyle(.secondary)
                 }
@@ -39,7 +39,7 @@ struct SavesPanel: View {
                 if pages > 1 {
                     HStack {
                         PanelButton(title: "Newer", enabled: page > 0) { model.savesPage = page - 1 }
-                        Text("Page \(page + 1) of \(pages)").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                        Text("Page \(page + 1) of \(pages)").font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
                         PanelButton(title: "Older", enabled: page + 1 < pages) { model.savesPage = page + 1 }
                     }
                 }
@@ -66,8 +66,8 @@ private struct SaveRow: View {
         HStack(spacing: 10) {
             Image(systemName: badge.symbol).foregroundStyle(badge.color).frame(width: 22)
             VStack(alignment: .leading, spacing: 2) {
-                Text(info.metadata?.title ?? info.slot).font(.headline)
-                Text("\(info.slot) · \(date) · \(badge.text)").font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                Text(info.metadata?.title ?? info.slot).font(.ui(.headline))
+                Text("\(info.slot) · \(date) · \(badge.text)").font(.ui(.caption)).foregroundStyle(.secondary).lineLimit(1)
             }
             Spacer()
             if confirmDelete == info.slot {

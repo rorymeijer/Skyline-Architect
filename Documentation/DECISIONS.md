@@ -424,6 +424,36 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-059 — F4: text size on the chrome, Esc as "close", the iPad in CI
+- **Date:** 2026-09-29
+- **Decision:**
+  - Larger text is `.dynamicTypeSize` on the whole chrome. On an iPad it follows the
+    system's Dynamic Type unless the player picks a size. On a Mac, whose system has no
+    Dynamic Type, the player picks one (View ▸ Text Size, main menu).
+  - Esc closes one thing per press, in a fixed order: tool, tip, full-screen view, selection,
+    panels from the bottom.
+  - Keyboard focus uses the system's own navigation (Keyboard navigation or Full Keyboard
+    Access), plus a focus ring drawn on every custom button.
+  - The iPad build runs in CI in an iPad simulator with the same capture script as the Mac.
+    Captures are written inside the app's container and copied out.
+  - The iPad gets the game's menu commands with a keyboard, and Save and Main Menu buttons
+    for touch.
+- **Alternatives:**
+  - Scaling fonts by hand with our own factor (every view would change).
+  - An in-app focus system with arrow keys.
+  - Only building the iPad app, as before.
+  - XCUITest for the iPad (a second test target to maintain, and slower).
+- **Reason:**
+  - Text styles were already used almost everywhere, so one modifier scales them.
+  - The system's keyboard navigation is what keyboard users already have turned on.
+  - The capture script already worked on both platforms, so launching it in the simulator
+    was the smallest way to see the iPad at all.
+- **Consequences:**
+  - The icons of the palette and the view controls keep their size.
+  - Tab focus and the iPad keyboard compile and are wired, but only a person with a
+    keyboard can confirm they work (OPEN_ITEMS).
+  - CI takes about 8 minutes longer: the simulator boots.
+
 ## D-058 — F3: one manual for game and website; tutorial steps are guidance
 - **Date:** 2026-09-29
 - **Decision:**

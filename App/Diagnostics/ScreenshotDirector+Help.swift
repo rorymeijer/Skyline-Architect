@@ -29,6 +29,14 @@ extension ScreenshotDirector {
         return refused
     }
 
+    static var platform: String {
+        #if os(macOS)
+        "Mac"
+        #else
+        "iPad"
+        #endif
+    }
+
     static func tutorialNote(_ model: AppModel) -> String {
         guard let t = model.tutorial else { return "no tutorial" }
         return "tutorial \(t.progress.completed) of \(t.steps.count) done, current step: \(t.current?.title ?? "none")"

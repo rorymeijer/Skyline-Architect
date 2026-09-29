@@ -9,7 +9,7 @@
 | `E` / `=` | Zoom in |
 | `F` | Floor tool on or off |
 | `X` | Demolish tool on or off |
-| `Esc` | Put the tool away and clear the selection |
+| `Esc` | Close what is on top: the tool, a tip, a window, the selection, then the panels one by one |
 | `G` | Architectural grid |
 | `Space` | Pause or resume |
 | `1` – `6` | 1×, 2×, 4×, 10×, 30×, 60× |
@@ -30,6 +30,7 @@
 | Shortcut | Command |
 |---|---|
 | `⌘N` | New Game |
+| `⇧⌘M` | Main Menu (with Resume) |
 | `⌘S` | Save |
 | `⌘O` | Load Game… |
 | `⌘Z` / `⇧⌘Z` | Undo / Redo construction |
@@ -60,4 +61,10 @@
 | With a build tool: tap | Place at the usual size |
 | With a build tool: two fingers | Pan |
 
-The buttons at the bottom right open every panel and overlay. Keyboard shortcuts on an iPad keyboard are not supported yet.
+The buttons at the bottom right open every panel and overlay, save the game and bring back the main menu.
+
+With a keyboard attached to the iPad, the keys of the game view and the menu shortcuts work as on a Mac. Hold `⌘` to see the shortcuts.
+
+## Moving through panels with the keyboard
+
+Turn on **Keyboard navigation** (Mac: System Settings ▸ Keyboard) or **Full Keyboard Access** (iPad: Settings ▸ Accessibility ▸ Keyboards). Then `Tab` moves from button to button in the panels and menus, a blue ring shows where you are, and `Space` presses the button. `Esc` closes the panel at the bottom, one per press.

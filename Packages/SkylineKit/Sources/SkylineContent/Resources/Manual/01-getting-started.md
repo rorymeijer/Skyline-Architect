@@ -62,7 +62,11 @@ Zoom in far enough and rooms show their furniture and tenants' names; zoom out a
 - The game **autosaves** every two minutes when something changed, keeping the last three autosaves.
 - Turn on **iCloud Drive** in the saves panel to use your saves on your other devices. When the same save changed on two devices, both versions are kept. Autosaves stay on the device.
 
-On an iPad there is no Save command yet: the game relies on its autosaves.
+On an iPad, the **Save** button in the view controls saves to the quick-save slot. The **Main Menu** button (three lines) brings back the main menu over your game, with **Resume** at the top; on a Mac use **File ▸ Main Menu** (`⇧⌘M`).
+
+## Text size
+
+**Text Size** in the main menu (or **View ▸ Text Size** on a Mac) makes the panels, menus and the manual larger: Standard, Large, Larger or Largest. On an iPad, Standard follows the text size you chose in the iPad's settings.
 
 ## Help while you play
 

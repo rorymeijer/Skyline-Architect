@@ -13,27 +13,27 @@ struct AmenityDetails: View {
         HStack {
             Label(info.operated ? (info.isOpenNow ? "Open" : "Closed") : "Closed — no operator",
                   systemImage: info.isOpenNow ? "door.left.hand.open" : "door.left.hand.closed")
-                .font(.caption.weight(.semibold))
+                .font(.ui(.caption).weight(.semibold))
                 .foregroundStyle(info.isOpenNow ? Color.green : Color.secondary)
             Spacer()
-            Text("\(info.hours) · \(info.seats) seats").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+            Text("\(info.hours) · \(info.seats) seats").font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
         }
         if info.operated {
-            Text("\(info.customers) customer\(info.customers == 1 ? "" : "s") inside now").font(.caption)
+            Text("\(info.customers) customer\(info.customers == 1 ? "" : "s") inside now").font(.ui(.caption))
             let s = info.today
             row("Today", visits: s.visits, street: s.streetVisits, takings: s.takings)
             row("Yesterday", visits: s.lastVisits, street: s.lastStreetVisits, takings: s.lastTakings)
             Text("Your share: \(Int((info.share * 100).rounded())) % of the takings, paid at the 06:00 closing (yesterday \(Money.format(Int((Double(s.lastTakings) * info.share).rounded()))))")
-                .font(.caption2).foregroundStyle(.secondary)
+                .font(.ui(.caption2)).foregroundStyle(.secondary)
         }
     }
 
     private func row(_ title: String, visits: Int, street: Int, takings: Int) -> some View {
         HStack {
-            Text(title).font(.caption2).foregroundStyle(.secondary).frame(width: 64, alignment: .leading)
-            Text("\(visits) customers · \(street) from the street").font(.caption2.monospacedDigit())
+            Text(title).font(.ui(.caption2)).foregroundStyle(.secondary).scaledFrame(width: 64, alignment: .leading)
+            Text("\(visits) customers · \(street) from the street").font(.ui(.caption2).monospacedDigit())
             Spacer()
-            Text(Money.format(takings)).font(.caption2.monospacedDigit())
+            Text(Money.format(takings)).font(.ui(.caption2).monospacedDigit())
         }
     }
 }
@@ -44,11 +44,11 @@ struct AmenityTotals: View {
 
     var body: some View {
         Divider()
-        Text("Amenities").font(.caption.weight(.semibold))
+        Text("Amenities").font(.ui(.caption).weight(.semibold))
         Text("\(summary.open) of \(summary.venues) open now · \(summary.visitorsNow) visitor\(summary.visitorsNow == 1 ? "" : "s") inside")
-            .font(.caption.monospacedDigit())
+            .font(.ui(.caption).monospacedDigit())
         Text("Yesterday \(summary.lastVisits) customers (\(summary.lastStreetVisits) from the street) · takings \(Money.format(summary.lastTakings)) · your share \(Money.format(summary.lastShare))")
-            .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+            .font(.ui(.caption2).monospacedDigit()).foregroundStyle(.secondary)
             .fixedSize(horizontal: false, vertical: true)
     }
 }

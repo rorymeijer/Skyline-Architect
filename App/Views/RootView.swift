@@ -10,7 +10,10 @@ struct RootView: View {
                 WorldView(scene: scene, onToggleGrid: { model.toggleGrid() }, onToolKey: { model.handleToolKey($0) })
                     .ignoresSafeArea()
                 DeveloperShortcut(model: model)
+                EscapeShortcut(model: model)
                 ChromeOverlay(model: model)
+                    .textSize(model.textSize)
+                    .id(model.textSize)                              // Mac fonts are read when views are built
             }
             .alert(model.alert?.title ?? "", isPresented: Binding(get: { model.alert != nil }, set: { if !$0 { model.alert = nil } })) {
                 Button("OK", role: .cancel) { model.alert = nil }
@@ -20,11 +23,11 @@ struct RootView: View {
         } else {
             VStack(spacing: 12) {
                 Image(systemName: "exclamationmark.triangle")
-                    .font(.largeTitle)
+                    .font(.ui(.largeTitle))
                 Text("Skyline Architect could not start")
-                    .font(.headline)
+                    .font(.ui(.headline))
                 Text(model.loadError ?? "Unknown error")
-                    .font(.callout.monospaced())
+                    .font(.ui(.callout).monospaced())
                     .textSelection(.enabled)
             }
             .padding(40)
@@ -111,9 +114,9 @@ struct TitleBadge: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
-                .font(.headline)
+                .font(.ui(.headline))
             Text("\(model.cityName) · \(mode)")
-                .font(.caption)
+                .font(.ui(.caption))
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 12)
@@ -130,6 +133,9 @@ struct ViewControls: View {
 
     var body: some View {
         HStack(spacing: 2) {
+            ControlButton(symbol: "line.3.horizontal", help: "Main Menu (⇧⌘M)") { model.openMainMenu() }
+            ControlButton(symbol: "square.and.arrow.down", help: "Save (⌘S)") { model.save() }
+            separator
             ControlButton(symbol: "minus.magnifyingglass", help: "Zoom Out (⌘−)") { model.zoom(by: 1 / 1.5) }
             ControlButton(symbol: "plus.magnifyingglass", help: "Zoom In (⌘=)") { model.zoom(by: 1.5) }
             separator
@@ -195,6 +201,7 @@ private struct ControlButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(configuration.isPressed ? 0.18 : 0)))
+            .focusRing(cornerRadius: 7)
     }
 }
 
@@ -207,6 +214,21 @@ private struct DeveloperShortcut: View {
     var body: some View {
         Button("") { model.showDeveloperHUD.toggle() }
             .keyboardShortcut("d", modifiers: [.command, .option])
+            .buttonStyle(.plain)
+            .frame(width: 0, height: 0)
+            .opacity(0)
+            .accessibilityHidden(true)
+    }
+}
+
+/// Esc closes what is on top (F4, `AppModel.handleEscape`), wherever the keyboard focus is:
+/// an invisible button carries the shortcut, like the developer HUD's.
+private struct EscapeShortcut: View {
+    let model: AppModel
+
+    var body: some View {
+        Button("") { model.handleEscape() }
+            .keyboardShortcut(.cancelAction)
             .buttonStyle(.plain)
             .frame(width: 0, height: 0)
             .opacity(0)

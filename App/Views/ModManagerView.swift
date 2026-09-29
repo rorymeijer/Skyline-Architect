@@ -11,9 +11,9 @@ struct ModManagerView: View {
             Color.black.opacity(0.5).ignoresSafeArea()
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("Mods").font(.title2.weight(.bold))
+                    Text("Mods").font(.ui(.title2).weight(.bold))
                     Spacer()
-                    Text("Data-only content packs, loaded in this order").font(.caption).foregroundStyle(.secondary)
+                    Text("Data-only content packs, loaded in this order").font(.ui(.caption)).foregroundStyle(.secondary)
                 }
                 ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
                     ModRowView(model: model, row: row, canMoveUp: row.enabled && index > 1,
@@ -21,9 +21,9 @@ struct ModManagerView: View {
                 }
                 if rows.count == 1 {
                     Text("No mods installed. Put pack folders into the mods folder, or install the examples.")
-                        .font(.callout).foregroundStyle(.secondary)
+                        .font(.ui(.callout)).foregroundStyle(.secondary)
                 }
-                Text(model.modsDirectory.path).font(.caption2.monospaced()).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                Text(model.modsDirectory.path).font(.ui(.caption2).monospaced()).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
                 HStack {
                     MenuButton(title: "Install Examples", subtitle: nil) { model.installExampleMods() }
                     #if os(macOS)
@@ -59,15 +59,15 @@ private struct ModRowView: View {
         let s = row.status
         let isBase = s.folder.isEmpty
         HStack(alignment: .top, spacing: 10) {
-            Image(systemName: icon).font(.title3).foregroundStyle(tint).frame(width: 22)
+            Image(systemName: icon).font(.ui(.title3)).foregroundStyle(tint).frame(width: 22)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    Text(s.name).font(.headline)
-                    Text(s.version).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
-                    if let author = s.author { Text("· \(author)").font(.caption).foregroundStyle(.secondary) }
+                    Text(s.name).font(.ui(.headline))
+                    Text(s.version).font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
+                    if let author = s.author { Text("· \(author)").font(.ui(.caption)).foregroundStyle(.secondary) }
                 }
-                if !s.description.isEmpty { Text(s.description).font(.caption).foregroundStyle(.secondary) }
-                Text(detail).font(.caption2.monospacedDigit()).foregroundStyle(stateColor)
+                if !s.description.isEmpty { Text(s.description).font(.ui(.caption)).foregroundStyle(.secondary) }
+                Text(detail).font(.ui(.caption2).monospacedDigit()).foregroundStyle(stateColor)
                     .lineLimit(3).fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
@@ -129,7 +129,7 @@ private struct SmallButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) { Image(systemName: symbol).frame(width: 22, height: 22) }
+        Button(action: action) { Image(systemName: symbol).frame(width: 22, height: 22).focusRing(cornerRadius: 5) }
             .accessibilityLabel(symbol == "chevron.up" ? "Load earlier" : "Load later")
             .buttonStyle(.plain)
             .disabled(!enabled)

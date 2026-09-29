@@ -2,6 +2,23 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.28.0] — F4: Accessibility and the iPad
+
+### Added
+- **Text size** for panels, menus and the manual: Standard, Large, Larger or Largest, in the
+  main menu and View ▸ Text Size. On an iPad, Standard follows Dynamic Type.
+- **Esc** closes what is on top, one thing per press: the tool, a tip, a window, the
+  selection, then the side panels.
+- **Keyboard focus:** with the system's keyboard navigation on, Tab moves through the panels
+  and menus, and a ring shows the focused button.
+- **iPad:**
+  - with a keyboard, the game view's keys and the menu shortcuts work as on a Mac;
+  - **Save** and **Main Menu** buttons in the view controls;
+  - the main menu can be opened over a running game, with **Resume**.
+- **File ▸ Main Menu** (`⇧⌘M`) on the Mac.
+- **CI** launches the iPad build in the iPad simulator and captures it with the same script as
+  the Mac.
+
 ## [0.27.0] — F3: Tutorial, manual and website
 
 ### Added

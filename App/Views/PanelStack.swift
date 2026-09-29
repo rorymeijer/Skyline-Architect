@@ -81,9 +81,10 @@ struct PanelStack: View {
             HStack(spacing: 4) {
                 ForEach(open) { panel in
                     Button { front = panel } label: {
-                        Text(panel.title).font(.caption.weight(panel == shown ? .semibold : .regular))
+                        Text(panel.title).font(.ui(.caption).weight(panel == shown ? .semibold : .regular))
                             .padding(.horizontal, 8).padding(.vertical, 4)
                             .background(Capsule().fill(Color.white.opacity(panel == shown ? 0.28 : 0.1)))
+                            .focusRing(cornerRadius: 10)
                             .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)

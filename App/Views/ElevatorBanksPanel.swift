@@ -10,13 +10,13 @@ struct ElevatorBanksPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("Elevator Banks").font(.headline)
+                Text("Elevator Banks").font(.ui(.headline))
                 Spacer()
                 CloseButton { model.showBanksPanel = false }
             }
             if model.banks.isEmpty {
                 Text("No elevators yet. Place elevator shafts side by side to form a bank.")
-                    .font(.callout)
+                    .font(.ui(.callout))
                     .foregroundStyle(.secondary)
             }
             ForEach(model.banks) { bank in
@@ -24,7 +24,7 @@ struct ElevatorBanksPanel: View {
             }
         }
         .padding(12)
-        .frame(width: 330, alignment: .leading)
+        .scaledFrame(width: 330, alignment: .leading)
         .panelCard()
         .environment(\.colorScheme, .dark)
     }
@@ -37,16 +37,16 @@ private struct BankRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Bank \(bank.name)").font(.subheadline.weight(.semibold))
+                Text("Bank \(bank.name)").font(.ui(.subheadline).weight(.semibold))
                 Text("\(bank.floors) · \(bank.cars) car\(bank.cars == 1 ? "" : "s")")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(.ui(.caption)).foregroundStyle(.secondary)
             }
             // SwiftUI-drawn segments (AppKit pickers render as placeholders in captures).
             HStack(spacing: 2) {
                 ForEach(DispatchStrategy.allCases, id: \.self) { strategy in
                     Button { onStrategy(strategy) } label: {
                         Text(strategy.rawValue.capitalized)
-                            .font(.caption.weight(.medium))
+                            .font(.ui(.caption).weight(.medium))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 4)
                             .background(RoundedRectangle(cornerRadius: 6)
@@ -60,9 +60,9 @@ private struct BankRow: View {
             .opacity(bank.cars < 2 ? 0.5 : 1)
             let s = bank.stats
             Text("Avg wait \(Int(s.averageWait.rounded())) s · max \(s.maxWait) s · \(bank.passengersLastHour) pax last hour")
-                .font(.caption.monospacedDigit())
+                .font(.ui(.caption).monospacedDigit())
             Text("\(s.boardings) boardings · \(s.stops) stops · \(s.abandoned) took the stairs · \(bank.waitingNow) waiting")
-                .font(.caption.monospacedDigit())
+                .font(.ui(.caption).monospacedDigit())
                 .foregroundStyle(.secondary)
         }
         .padding(8)

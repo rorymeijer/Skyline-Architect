@@ -18,6 +18,8 @@ struct SkylineArchitectApp: App {
         WindowGroup {
             RootView(model: model)
         }
+        // With a keyboard attached, iPadOS shows these commands (hold ⌘) and their shortcuts.
+        .commands { GameCommands(model: model) }
         #endif
     }
 }
@@ -33,6 +35,8 @@ struct GameCommands: Commands {
             Button("New Sandbox Game") { model.newGame(startID: NewGameFactory.defaultStartID) }
             Button("Scenarios…") { model.openScenarioBrowser() }
             Button("Mods…") { model.openModManager() }
+            Button("Main Menu") { model.openMainMenu() }
+                .keyboardShortcut("m", modifiers: [.command, .shift])
         }
         CommandGroup(replacing: .saveItem) {
             Button("Save") { model.save() }
@@ -98,6 +102,10 @@ struct GameCommands: Commands {
             Button(model.showNavigationOverlay ? "Hide Navigation Overlay" : "Show Navigation Overlay") { model.toggleNavigationOverlay() }
                 .keyboardShortcut("n", modifiers: [.command, .option])
             #endif
+            Divider()
+            Picker("Text Size", selection: Binding(get: { model.textSize }, set: { model.textSize = $0 })) {
+                ForEach(TextSizeSetting.choices, id: \.name) { choice in Text(choice.name).tag(choice.size) }
+            }
             Divider()
             Button("Zoom In") { model.zoom(by: 1.5) }
                 .keyboardShortcut("=", modifiers: .command)

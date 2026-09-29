@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SwiftUI
 import SkylineCore
 import SkylineContent
 import SkylinePersistence
@@ -83,6 +84,16 @@ final class AppModel {
     /// `scenarioNewBest` when the announced result beat the previous best.
     var scenarioRecords = ScenarioRecords()
     var scenarioNewBest = false
+    /// The main menu was opened over a running game: it offers Resume (F4).
+    var menuOverGame = false
+    /// Text size of the panels and menus (F4). nil follows the system (Dynamic Type on an
+    /// iPad); a Mac has no system setting, so the player picks one here.
+    var textSize: DynamicTypeSize? = nil {
+        didSet {
+            UIText.macScale = UIText.factor(textSize)
+            if persistsModSettings { UserDefaults.standard.set(textSize.map(TextSizeSetting.key), forKey: TextSizeSetting.defaultsKey) }
+        }
+    }
     /// Help (F3): the manual (loaded once), its sheet and chapter; the tutorial scenario's
     /// steps (4 Hz); the first-time hint on screen and which ones this device has seen.
     @ObservationIgnored var manual: ManualContent?
@@ -176,6 +187,7 @@ final class AppModel {
         modDraft = enabled
         persistsModSettings = persists
         hintMemory = HintMemory(persists: persists)
+        if persists { textSize = TextSizeSetting.load() }
         loadManual()
         do {
             try reloadContent()
@@ -257,6 +269,7 @@ final class AppModel {
         self.world = world
         self.activePropertyID = activePropertyID
         showMainMenu = false
+        menuOverGame = false
         seenPromotions = nil
         promotionNotice = nil
         seenIncidentID = nil
@@ -343,8 +356,7 @@ final class AppModel {
         case "speed5": setSpeed(.faster)
         case "speed6": setSpeed(.fastest)
         default:
-            select(tool: nil)
-            selectRoom(at: nil)
+            handleEscape()
         }
     }
 
