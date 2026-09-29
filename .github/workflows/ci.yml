@@ -44,6 +44,8 @@ jobs:
         run: |
           set -o pipefail
           Scripts/build-app.sh --ipad 2>&1 | tee build-ipad.log | grep -E "warning:|error:|\*\* BUILD"
+      - name: Check the Files app folder (iPad, iPhone)
+        run: Scripts/check-files-app.sh
       - name: Check the App Sandbox (Mac App Store)
         run: Scripts/check-sandbox.sh
       - name: Capture screenshots
