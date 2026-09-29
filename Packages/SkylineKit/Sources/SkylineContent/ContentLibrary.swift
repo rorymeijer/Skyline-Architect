@@ -93,7 +93,7 @@ public struct ContentLibrary: Sendable {
             guard c.geology.allSatisfy({ $0.thickness > 0 }) else {
                 throw fail("cities", "City '\(c.id)' has a stratum with non-positive thickness")
             }
-            if let e = c.economy, [e.rent, e.construction, e.demand].contains(where: { $0 <= 0 || $0 > 5 }) {
+            if let e = c.economy, [e.rent, e.construction, e.demand, e.tax ?? 1, e.energy ?? 1].contains(where: { $0 <= 0 || $0 > 5 }) {
                 throw fail("cities", "City '\(c.id)': economy multipliers must be 0…5")
             }
             cityIndex[c.id] = orderedCities.count

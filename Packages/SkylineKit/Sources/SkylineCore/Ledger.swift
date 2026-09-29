@@ -81,6 +81,11 @@ public struct Ledger: Codable, Hashable, Sendable {
         days[days.count - 1].amounts[LedgerCategory.allCases.firstIndex(of: t.category)!] += t.amount
     }
 
+    /// Totals of one day (zero if nothing was booked that day).
+    public func totals(onDay day: Tick) -> DayTotals {
+        days.last(where: { $0.day == day }) ?? DayTotals(day: day)
+    }
+
     /// Totals over the last `n` days (including today).
     public func totals(lastDays n: Int) -> DayTotals {
         var sum = DayTotals(day: days.last?.day ?? 0)

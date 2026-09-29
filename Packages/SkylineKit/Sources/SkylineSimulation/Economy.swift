@@ -45,8 +45,10 @@ public enum Economy {
 
 extension SimulationEngine {
     /// Daily closing at 06:00 (part of the market event): rent from every tenant, then per
-    /// building maintenance and utilities, then loan interest; then the bankruptcy check.
-    func closeDay(at now: Tick, world: inout GameWorld) {
+    /// building maintenance, utilities and property tax, then loan interest and the profit
+    /// tax on the closing's result (`before`: the day's totals when the closing began, so
+    /// wages count); then the bankruptcy check.
+    func closeDay(at now: Tick, since before: DayTotals, world: inout GameWorld) {
         guard let economy = rules.economy, !world.ledger.bankrupt else { return }
         for tenant in world.tenants.values {
             let daily = tenant.rent / economy.rentDaysPerMonth
@@ -84,11 +86,17 @@ extension SimulationEngine {
                                               detail: "Lighting — \(Int(kWh.rounded())) kWh, \(building.name)", building: building.id))
             }
             world.setLightingEnergy(0, building: building.id)
+            let tax = Taxes.propertyTax(building, world: world, catalog: catalog, rules: economy)
+            if tax > 0 {
+                world.ledger.post(Transaction(tick: now, amount: -tax, category: .taxes,
+                                              detail: "Property tax — \(building.name)", building: building.id))
+            }
         }
         let interest = Int((Double(world.ledger.loans) * economy.loanInterestRate / 365).rounded())
         if interest > 0 {
             world.ledger.post(Transaction(tick: now, amount: -interest, category: .interest, detail: "Loan interest"))
         }
+        postProfitTax(since: before, at: now, world: &world)
         world.ledger.negativeDays = world.ledger.cash < 0 ? world.ledger.negativeDays + 1 : 0
         if world.ledger.negativeDays >= economy.bankruptcyDays { world.ledger.bankrupt = true }
     }

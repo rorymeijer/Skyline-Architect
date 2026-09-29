@@ -253,8 +253,9 @@ extension SimulationEngine {
         }
         added += spawnVisitors(at: now, world: &world)
         if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
+            let before = world.ledger.totals(onDay: SimClock.day(now))
             facilitiesDaily(at: now, world: &world)
-            closeDay(at: now, world: &world)
+            closeDay(at: now, since: before, world: &world)
             let moveOuts = reviewTenants(at: now, world: &world)
             standingDaily(at: now, moveOuts: moveOuts, world: &world)
             scenarioDaily(at: now, world: &world)

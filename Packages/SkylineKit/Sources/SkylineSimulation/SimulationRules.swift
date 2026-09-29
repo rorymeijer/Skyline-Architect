@@ -148,6 +148,11 @@ public struct EconomyRules: Codable, Hashable, Sendable {
     public var saleMonths: Double?
     public var serviceChargeShare: Double?
     public var ownerPatience: Int?
+    /// Taxes (Phase E; nil = none). Property tax: this share of a building's assessed value
+    /// (what it cost to build) per rent month — like rent, one game day — times the city's
+    /// tax level. Profit tax: this share of the daily closing's positive result.
+    public var propertyTaxRate: Double?
+    public var profitTaxRate: Double?
 
     public var salePriceMonths: Double { saleMonths ?? 100 }
     public var serviceShare: Double { serviceChargeShare ?? 0.25 }
@@ -173,6 +178,9 @@ public struct EconomyRules: Codable, Hashable, Sendable {
         if utilitiesPerPersonPerDay < 0 || elevatorCarPerDay < 0 { p.append("economy: daily costs must be ≥ 0") }
         if rentDaysPerMonth < 1 { p.append("economy: rentDaysPerMonth must be ≥ 1") }
         if (lightingPricePerKWh ?? 0) < 0 { p.append("economy: lightingPricePerKWh must be ≥ 0") }
+        if !(0...0.1).contains(propertyTaxRate ?? 0) || !(0...0.9).contains(profitTaxRate ?? 0) {
+            p.append("economy: propertyTaxRate must be 0…0.1 and profitTaxRate 0…0.9")
+        }
         if salePriceMonths <= 0 || !(0...1).contains(serviceShare) || ownerReviews < 1 {
             p.append("economy: saleMonths > 0, serviceChargeShare 0…1, ownerPatience ≥ 1")
         }
