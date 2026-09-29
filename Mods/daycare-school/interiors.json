@@ -1,0 +1,76 @@
+[
+  {
+    "room": "daycare-school-daycare",
+    "items": [
+      {
+        "furniture": "door-office",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "furniture": "daycare-school-cubbies",
+        "anchor": "left",
+        "offset": 1.5
+      },
+      {
+        "furniture": "daycare-school-play-corner",
+        "anchor": "right",
+        "offset": 0.2
+      },
+      {
+        "repeat": {
+          "spacing": 2.2,
+          "margin": 0.35,
+          "items": [
+            {
+              "furniture": "daycare-school-kids-table",
+              "offset": 0
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "room": "daycare-school-family-flat",
+    "items": [
+      {
+        "furniture": "door-apartment",
+        "anchor": "left",
+        "offset": 0.25
+      },
+      {
+        "furniture": "kitchen-unit",
+        "anchor": "left",
+        "offset": 1.4
+      },
+      {
+        "furniture": "fridge",
+        "anchor": "left",
+        "offset": 4.05
+      },
+      {
+        "furniture": "daycare-school-kids-table",
+        "anchor": "center",
+        "offset": 0
+      },
+      {
+        "furniture": "bathroom-pod",
+        "anchor": "right",
+        "offset": 0
+      },
+      {
+        "furniture": "bed-double",
+        "anchor": "right",
+        "offset": 2.15
+      },
+      {
+        "furniture": "wall-art",
+        "anchor": "right",
+        "offset": 2.7,
+        "elevation": 1.45,
+        "reserve": false
+      }
+    ]
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "id": "cafe-bakery",
+  "name": "Café-Bakery",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A small bakery café that opens at 06:30 for breakfast and lunch.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "amenities": "amenities.json",
+    "schedules": "schedules.json",
+    "tenants": "tenants.json"
+  }
+}

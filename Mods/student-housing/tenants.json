@@ -1,0 +1,27 @@
+[
+  {
+    "id": "student-housing-student",
+    "name": "Student",
+    "kind": "household",
+    "rooms": [
+      "student-housing-room"
+    ],
+    "role": "resident",
+    "members": {
+      "fixed": 1
+    },
+    "schedules": [
+      "student-housing-student"
+    ],
+    "budgetPerModule": 200,
+    "weights": {
+      "rent": 0.55,
+      "access": 0.3,
+      "noise": 0.05,
+      "view": 0.1
+    },
+    "minScore": 0.52,
+    "leaveBelow": 0.38,
+    "prospectsPerDay": 5
+  }
+]

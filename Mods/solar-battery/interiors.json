@@ -1,0 +1,51 @@
+[
+  {
+    "room": "solar-battery-array",
+    "items": [
+      {
+        "furniture": "solar-battery-inverter",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "repeat": {
+          "spacing": 2.4,
+          "margin": 1.2,
+          "items": [
+            {
+              "furniture": "solar-battery-panel-rack",
+              "offset": 0
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "room": "solar-battery-battery",
+    "items": [
+      {
+        "furniture": "fire-extinguisher",
+        "anchor": "left",
+        "offset": 0.2
+      },
+      {
+        "furniture": "solar-battery-inverter",
+        "anchor": "right",
+        "offset": 0.3
+      },
+      {
+        "repeat": {
+          "spacing": 1.15,
+          "margin": 0.7,
+          "items": [
+            {
+              "furniture": "solar-battery-battery-cabinet",
+              "offset": 0
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

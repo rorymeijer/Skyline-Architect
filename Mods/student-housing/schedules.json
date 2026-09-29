@@ -1,0 +1,29 @@
+[
+  {
+    "id": "student-housing-student",
+    "role": "resident",
+    "events": [
+      {
+        "at": "09:45",
+        "jitterMinutes": 60,
+        "goal": "outside"
+      },
+      {
+        "at": "16:30",
+        "jitterMinutes": 90,
+        "goal": "home"
+      },
+      {
+        "at": "21:30",
+        "jitterMinutes": 45,
+        "goal": "leisure",
+        "chance": 0.6
+      },
+      {
+        "at": "00:45",
+        "jitterMinutes": 45,
+        "goal": "home"
+      }
+    ]
+  }
+]

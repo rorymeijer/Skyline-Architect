@@ -1,0 +1,16 @@
+{
+  "id": "daycare-school",
+  "name": "Daycare & School Wing",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "Daycare and after-school rooms, plus young families who want them nearby.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "schedules": "schedules.json",
+    "tenants": "tenants.json"
+  }
+}

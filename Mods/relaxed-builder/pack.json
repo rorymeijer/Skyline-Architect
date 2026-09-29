@@ -1,0 +1,11 @@
+{
+  "id": "relaxed-builder",
+  "name": "Relaxed Builder",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "Cheaper slabs and foundations, 75 % demolition refund and 2-module cantilevers.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "buildRules": "build-rules.json"
+  }
+}

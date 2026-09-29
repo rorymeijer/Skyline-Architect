@@ -1,0 +1,36 @@
+[
+  {
+    "id": "ember-coast-sandbox",
+    "name": "Sandbox — Promenade Lot",
+    "mode": "sandbox",
+    "cityID": "ember-coast",
+    "plotID": "ember-coast-promenade",
+    "propertyName": "Promenade Lot",
+    "startingFoundation": {
+      "buildingName": "Promenade House",
+      "footprintOffsetModules": 6,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 16,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  },
+  {
+    "id": "ember-coast-standard",
+    "name": "Standard — Promenade Lot",
+    "mode": "standard",
+    "cityID": "ember-coast",
+    "plotID": "ember-coast-promenade",
+    "propertyName": "Promenade Lot",
+    "startingFoundation": {
+      "buildingName": "Promenade House",
+      "footprintOffsetModules": 6,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 16,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  }
+]

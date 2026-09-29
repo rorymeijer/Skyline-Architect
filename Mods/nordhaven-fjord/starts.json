@@ -1,0 +1,36 @@
+[
+  {
+    "id": "nordhaven-fjord-sandbox",
+    "name": "Sandbox — Harbour Quay",
+    "mode": "sandbox",
+    "cityID": "nordhaven-fjord",
+    "plotID": "nordhaven-fjord-harbour-quay",
+    "propertyName": "Harbour Quay",
+    "startingFoundation": {
+      "buildingName": "Fjordside House",
+      "footprintOffsetModules": 6,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 8,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  },
+  {
+    "id": "nordhaven-fjord-standard",
+    "name": "Standard — Harbour Quay",
+    "mode": "standard",
+    "cityID": "nordhaven-fjord",
+    "plotID": "nordhaven-fjord-harbour-quay",
+    "propertyName": "Harbour Quay",
+    "startingFoundation": {
+      "buildingName": "Fjordside House",
+      "footprintOffsetModules": 6,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 8,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  }
+]

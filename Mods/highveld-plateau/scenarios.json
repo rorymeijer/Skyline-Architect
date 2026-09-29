@@ -1,0 +1,41 @@
+[
+  {
+    "id": "highveld-plateau-prime-address",
+    "name": "Prime Address",
+    "difficulty": "hard",
+    "summary": "Turn an avenue lot into a Class A office address.",
+    "briefing": "Highveld pays the best rents on the continent, but it only rents to the best buildings. Building is dear and tax is high. Reach Class A with a reputation of 70 within 40 days.",
+    "startID": "highveld-plateau-standard",
+    "days": 40,
+    "objectives": [
+      {
+        "metric": "buildingClass",
+        "target": 2
+      },
+      {
+        "metric": "reputation",
+        "target": 70
+      }
+    ],
+    "startingCash": 4000000,
+    "events": [
+      {
+        "day": 1,
+        "hour": 8,
+        "kind": "news",
+        "message": "Exchange Avenue: the city's brokers are watching your lot."
+      },
+      {
+        "day": 20,
+        "hour": 10,
+        "kind": "fine",
+        "message": "The avenue board inspects the frontage: reputation 50 expected",
+        "amount": 300000,
+        "when": {
+          "metric": "reputation",
+          "target": 50
+        }
+      }
+    ]
+  }
+]

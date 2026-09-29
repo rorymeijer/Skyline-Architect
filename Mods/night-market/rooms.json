@@ -1,0 +1,31 @@
+[
+  {
+    "id": "night-market-hall",
+    "name": "Night Market Food Hall",
+    "category": "amenity",
+    "kind": "room",
+    "appearance": "restaurant",
+    "minWidth": 12,
+    "maxWidth": 28,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1500,
+    "lowestLevel": -1,
+    "highestLevel": 2,
+    "noise": 0.5,
+    "rentPerModule": 260,
+    "maintenancePerModulePerDay": 8,
+    "utilityDemand": {
+      "electricity": 3,
+      "hvac": 2,
+      "water": 2.5
+    },
+    "wearPerDay": 0.018,
+    "lighting": {
+      "color": "#FFA95E",
+      "occupied": 0.9,
+      "empty": 0.1,
+      "wattsPerModule": 10
+    }
+  }
+]

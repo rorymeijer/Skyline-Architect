@@ -1,0 +1,54 @@
+[
+  {
+    "room": "coworking-hub-space",
+    "items": [
+      {
+        "furniture": "door-office",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "furniture": "coworking-hub-phone-booth",
+        "anchor": "right",
+        "offset": 0.2
+      },
+      {
+        "furniture": "coffee-station",
+        "anchor": "left",
+        "offset": 1.5
+      },
+      {
+        "furniture": "coworking-hub-bean-bag",
+        "anchor": "right",
+        "offset": 1.6,
+        "minRoomWidth": 12
+      },
+      {
+        "furniture": "plant-tall",
+        "anchor": "right",
+        "offset": 2.6,
+        "minRoomWidth": 12
+      },
+      {
+        "repeat": {
+          "spacing": 3.4,
+          "margin": 0.35,
+          "items": [
+            {
+              "furniture": "coworking-hub-bench-desk",
+              "offset": 0
+            },
+            {
+              "furniture": "office-chair",
+              "offset": 0.5
+            },
+            {
+              "furniture": "office-chair",
+              "offset": 1.9
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "cafe-bakery-bakery",
+    "name": "Neighbourhood bakery",
+    "kind": "business",
+    "rooms": [
+      "cafe-bakery-shop"
+    ],
+    "role": "worker",
+    "members": {
+      "perModule": 0.3
+    },
+    "schedules": [
+      "cafe-bakery-baker"
+    ],
+    "budgetPerModule": 380,
+    "weights": {
+      "rent": 0.35,
+      "access": 0.5,
+      "noise": 0.05,
+      "view": 0.1
+    },
+    "minScore": 0.55,
+    "leaveBelow": 0.4,
+    "prospectsPerDay": 2
+  }
+]

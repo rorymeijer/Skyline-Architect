@@ -1,0 +1,54 @@
+[
+  {
+    "id": "solar-battery-array",
+    "name": "Solar Array",
+    "category": "infrastructure",
+    "kind": "room",
+    "appearance": "mechanical",
+    "minWidth": 4,
+    "maxWidth": 16,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 2600,
+    "lowestLevel": 1,
+    "noise": 0.05,
+    "maintenancePerModulePerDay": 3,
+    "wearPerDay": 0.01,
+    "utilitySupply": {
+      "electricity": 45
+    },
+    "utilityRange": 12,
+    "lighting": {
+      "color": "#DCE7FF",
+      "occupied": 1.0,
+      "empty": 0.1,
+      "wattsPerModule": 1
+    }
+  },
+  {
+    "id": "solar-battery-battery",
+    "name": "Battery Room",
+    "category": "infrastructure",
+    "kind": "room",
+    "appearance": "electrical",
+    "minWidth": 3,
+    "maxWidth": 10,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 4400,
+    "highestLevel": 0,
+    "noise": 0.1,
+    "maintenancePerModulePerDay": 6,
+    "wearPerDay": 0.02,
+    "utilitySupply": {
+      "electricity": 100
+    },
+    "utilityRange": 22,
+    "lighting": {
+      "color": "#DCE7FF",
+      "occupied": 1.0,
+      "empty": 0.15,
+      "wattsPerModule": 2
+    }
+  }
+]

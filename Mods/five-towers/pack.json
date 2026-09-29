@@ -1,0 +1,11 @@
+{
+  "id": "five-towers",
+  "name": "Five Towers",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "Five new scenarios on the base-game lots, from easy to hard.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "scenarios": "scenarios.json"
+  }
+}

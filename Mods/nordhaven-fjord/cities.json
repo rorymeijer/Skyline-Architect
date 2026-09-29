@@ -1,0 +1,33 @@
+[
+  {
+    "id": "nordhaven-fjord",
+    "name": "Nordhaven",
+    "description": "A cold fjord port: a thin skin of gravel over hard granite, long winters and steady trade.",
+    "seed": 6603,
+    "geology": [
+      {
+        "material": "paving",
+        "thickness": 0.3
+      },
+      {
+        "material": "topsoil",
+        "thickness": 0.5
+      },
+      {
+        "material": "gravel",
+        "thickness": 1.5
+      },
+      {
+        "material": "bedrock",
+        "thickness": 1.0
+      }
+    ],
+    "economy": {
+      "rent": 1.05,
+      "construction": 1.2,
+      "demand": 0.95,
+      "tax": 1.0,
+      "energy": 1.3
+    }
+  }
+]

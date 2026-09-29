@@ -1,0 +1,31 @@
+[
+  {
+    "id": "rooftop-pool-spa-club",
+    "name": "Rooftop Pool & Spa",
+    "category": "amenity",
+    "kind": "room",
+    "appearance": "fitness",
+    "minWidth": 12,
+    "maxWidth": 24,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 2300,
+    "lowestLevel": 10,
+    "unlockClass": 2,
+    "noise": 0.35,
+    "rentPerModule": 300,
+    "maintenancePerModulePerDay": 11,
+    "utilityDemand": {
+      "electricity": 3,
+      "hvac": 3,
+      "water": 4
+    },
+    "wearPerDay": 0.018,
+    "lighting": {
+      "color": "#BFEFFF",
+      "occupied": 0.9,
+      "empty": 0.15,
+      "wattsPerModule": 10
+    }
+  }
+]

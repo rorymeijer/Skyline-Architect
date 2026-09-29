@@ -1,0 +1,16 @@
+[
+  {
+    "room": "hyperlift-express-shaft",
+    "name": "Hyperlift (16 persons, 10 m/s, stops at its ends)",
+    "capacity": 16,
+    "speed": 10.0,
+    "acceleration": 1.5,
+    "doorSeconds": 3,
+    "transferSeconds": 1,
+    "expectedWaitSeconds": 30,
+    "stops": "ends",
+    "patienceSeconds": 240,
+    "wearPerStop": 0.0018,
+    "breakdownChance": 0.07
+  }
+]

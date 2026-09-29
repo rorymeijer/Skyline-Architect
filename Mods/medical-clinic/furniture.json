@@ -1,0 +1,179 @@
+[
+  {
+    "id": "medical-clinic-exam-bed",
+    "name": "Examination bed",
+    "width": 1.9,
+    "height": 0.9,
+    "parts": [
+      {
+        "shape": "rect",
+        "x": 0.1,
+        "y": 0,
+        "w": 0.06,
+        "h": 0.65,
+        "material": "chrome"
+      },
+      {
+        "shape": "rect",
+        "x": 1.74,
+        "y": 0,
+        "w": 0.06,
+        "h": 0.65,
+        "material": "chrome"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0.62,
+        "w": 1.9,
+        "h": 0.14,
+        "material": "medicalClinicMint"
+      },
+      {
+        "shape": "rect",
+        "x": 0.05,
+        "y": 0.76,
+        "w": 1.8,
+        "h": 0.05,
+        "material": "paperWhite"
+      },
+      {
+        "shape": "polygon",
+        "points": [
+          [
+            1.4,
+            0.76
+          ],
+          [
+            1.9,
+            0.76
+          ],
+          [
+            1.9,
+            0.9
+          ],
+          [
+            1.5,
+            0.9
+          ]
+        ],
+        "material": "medicalClinicMint"
+      }
+    ]
+  },
+  {
+    "id": "medical-clinic-cabinet",
+    "name": "Medicine cabinet",
+    "width": 1.0,
+    "height": 1.9,
+    "parts": [
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0,
+        "w": 1.0,
+        "h": 1.9,
+        "material": "plasticWhite"
+      },
+      {
+        "shape": "rect",
+        "x": 0.05,
+        "y": 1.0,
+        "w": 0.9,
+        "h": 0.85,
+        "material": "glassBlue"
+      },
+      {
+        "shape": "rect",
+        "x": 0.4,
+        "y": 1.35,
+        "w": 0.2,
+        "h": 0.06,
+        "material": "medicalClinicCross"
+      },
+      {
+        "shape": "rect",
+        "x": 0.47,
+        "y": 1.28,
+        "w": 0.06,
+        "h": 0.2,
+        "material": "medicalClinicCross"
+      },
+      {
+        "shape": "rect",
+        "x": 0.05,
+        "y": 0.05,
+        "w": 0.43,
+        "h": 0.9,
+        "material": "cabinetLight"
+      },
+      {
+        "shape": "rect",
+        "x": 0.52,
+        "y": 0.05,
+        "w": 0.43,
+        "h": 0.9,
+        "material": "cabinetLight"
+      }
+    ]
+  },
+  {
+    "id": "medical-clinic-waiting-chairs",
+    "name": "Waiting chairs",
+    "width": 2.0,
+    "height": 0.85,
+    "parts": [
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0.42,
+        "w": 2.0,
+        "h": 0.08,
+        "material": "medicalClinicMint"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0.5,
+        "w": 0.62,
+        "h": 0.35,
+        "material": "medicalClinicMint",
+        "shade": 0.9
+      },
+      {
+        "shape": "rect",
+        "x": 0.69,
+        "y": 0.5,
+        "w": 0.62,
+        "h": 0.35,
+        "material": "medicalClinicMint",
+        "shade": 0.9
+      },
+      {
+        "shape": "rect",
+        "x": 1.38,
+        "y": 0.5,
+        "w": 0.62,
+        "h": 0.35,
+        "material": "medicalClinicMint",
+        "shade": 0.9
+      },
+      {
+        "shape": "rect",
+        "x": 0.1,
+        "y": 0,
+        "w": 0.05,
+        "h": 0.42,
+        "material": "chrome"
+      },
+      {
+        "shape": "rect",
+        "x": 1.85,
+        "y": 0,
+        "w": 0.05,
+        "h": 0.42,
+        "material": "chrome"
+      }
+    ]
+  }
+]

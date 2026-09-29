@@ -1,0 +1,34 @@
+[
+  {
+    "id": "reedwater-delta-boomtown",
+    "name": "Delta Boomtown",
+    "difficulty": "easy",
+    "summary": "Newcomers flood into Reedwater: house them fast.",
+    "briefing": "Everyone wants to live in Reedwater, but the soft delta clay only allows one basement and the piles go deep. Rents are low, so build wide and build many. Reach 150 residents and workers within 25 days.",
+    "startID": "reedwater-delta-standard",
+    "days": 25,
+    "objectives": [
+      {
+        "metric": "population",
+        "target": 150
+      }
+    ],
+    "events": [
+      {
+        "day": 3,
+        "hour": 9,
+        "kind": "demand",
+        "message": "A new ferry line brings a wave of young households",
+        "multiplier": 2.0,
+        "days": 3
+      },
+      {
+        "day": 14,
+        "hour": 6,
+        "kind": "weather",
+        "message": "Heavy rain: the river rises",
+        "weather": "rain"
+      }
+    ]
+  }
+]

@@ -1,0 +1,292 @@
+[
+  {
+    "id": "modern-living-modular-sofa",
+    "name": "Modular sofa",
+    "width": 2.6,
+    "height": 0.8,
+    "parts": [
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0.05,
+        "w": 2.6,
+        "h": 0.35,
+        "material": "$c"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0.4,
+        "w": 0.85,
+        "h": 0.38,
+        "material": "$c",
+        "shade": 0.9
+      },
+      {
+        "shape": "rect",
+        "x": 0.87,
+        "y": 0.4,
+        "w": 0.85,
+        "h": 0.38,
+        "material": "$c",
+        "shade": 0.9
+      },
+      {
+        "shape": "rect",
+        "x": 1.74,
+        "y": 0.4,
+        "w": 0.86,
+        "h": 0.38,
+        "material": "$c",
+        "shade": 0.9
+      },
+      {
+        "shape": "rect",
+        "x": 0.1,
+        "y": 0,
+        "w": 0.06,
+        "h": 0.05,
+        "material": "modernLivingWalnut"
+      },
+      {
+        "shape": "rect",
+        "x": 2.44,
+        "y": 0,
+        "w": 0.06,
+        "h": 0.05,
+        "material": "modernLivingWalnut"
+      }
+    ],
+    "variants": [
+      {
+        "c": "modernLivingSage"
+      },
+      {
+        "c": "modernLivingBlush"
+      },
+      {
+        "c": "fabricCharcoal"
+      }
+    ]
+  },
+  {
+    "id": "modern-living-arc-lamp",
+    "name": "Arc floor lamp",
+    "width": 1.4,
+    "height": 2.1,
+    "parts": [
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0,
+        "w": 0.35,
+        "h": 0.08,
+        "material": "modernLivingConcrete"
+      },
+      {
+        "shape": "line",
+        "points": [
+          [
+            0.17,
+            0.08
+          ],
+          [
+            0.3,
+            1.6
+          ],
+          [
+            0.8,
+            2.05
+          ],
+          [
+            1.2,
+            1.8
+          ]
+        ],
+        "material": "modernLivingBrass",
+        "lineWidth": 0.03
+      },
+      {
+        "shape": "ellipse",
+        "x": 1.0,
+        "y": 1.55,
+        "w": 0.4,
+        "h": 0.3,
+        "material": "modernLivingBrass"
+      },
+      {
+        "shape": "ellipse",
+        "x": 1.1,
+        "y": 1.52,
+        "w": 0.2,
+        "h": 0.1,
+        "material": "lampGlow"
+      }
+    ]
+  },
+  {
+    "id": "modern-living-shelf-wall",
+    "name": "Open shelf wall",
+    "width": 1.8,
+    "height": 2.0,
+    "parts": [
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0,
+        "w": 0.04,
+        "h": 2.0,
+        "material": "modernLivingWalnut"
+      },
+      {
+        "shape": "rect",
+        "x": 1.76,
+        "y": 0,
+        "w": 0.04,
+        "h": 2.0,
+        "material": "modernLivingWalnut"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0.5,
+        "w": 1.8,
+        "h": 0.04,
+        "material": "modernLivingWalnut"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 1.0,
+        "w": 1.8,
+        "h": 0.04,
+        "material": "modernLivingWalnut"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 1.5,
+        "w": 1.8,
+        "h": 0.04,
+        "material": "modernLivingWalnut"
+      },
+      {
+        "shape": "rect",
+        "x": 0.15,
+        "y": 0.54,
+        "w": 0.3,
+        "h": 0.3,
+        "material": "modernLivingSage",
+        "minDetail": 16
+      },
+      {
+        "shape": "rect",
+        "x": 0.9,
+        "y": 1.04,
+        "w": 0.2,
+        "h": 0.35,
+        "material": "ceramic",
+        "minDetail": 16
+      },
+      {
+        "shape": "rect",
+        "x": 1.3,
+        "y": 0.54,
+        "w": 0.35,
+        "h": 0.22,
+        "material": "artOchre",
+        "minDetail": 16
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.3,
+        "y": 1.54,
+        "w": 0.3,
+        "h": 0.35,
+        "material": "leafGreen",
+        "minDetail": 16
+      }
+    ]
+  },
+  {
+    "id": "modern-living-standing-desk",
+    "name": "Standing desk",
+    "width": 1.6,
+    "height": 1.1,
+    "parts": [
+      {
+        "shape": "rect",
+        "x": 0.15,
+        "y": 0,
+        "w": 0.35,
+        "h": 0.04,
+        "material": "metalDark"
+      },
+      {
+        "shape": "rect",
+        "x": 1.1,
+        "y": 0,
+        "w": 0.35,
+        "h": 0.04,
+        "material": "metalDark"
+      },
+      {
+        "shape": "rect",
+        "x": 0.3,
+        "y": 0.04,
+        "w": 0.06,
+        "h": 1.0,
+        "material": "metalDark"
+      },
+      {
+        "shape": "rect",
+        "x": 1.25,
+        "y": 0.04,
+        "w": 0.06,
+        "h": 1.0,
+        "material": "metalDark"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 1.04,
+        "w": 1.6,
+        "h": 0.05,
+        "material": "modernLivingWalnut"
+      },
+      {
+        "shape": "rect",
+        "x": 0.55,
+        "y": 1.09,
+        "w": 0.5,
+        "h": 0.01,
+        "material": "plasticBlack",
+        "minDetail": 18
+      }
+    ]
+  },
+  {
+    "id": "modern-living-round-rug",
+    "name": "Round rug",
+    "width": 2.0,
+    "height": 0.03,
+    "parts": [
+      {
+        "shape": "ellipse",
+        "x": 0,
+        "y": 0,
+        "w": 2.0,
+        "h": 0.03,
+        "material": "$r"
+      }
+    ],
+    "variants": [
+      {
+        "r": "modernLivingBlush"
+      },
+      {
+        "r": "modernLivingSage"
+      }
+    ]
+  }
+]

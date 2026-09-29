@@ -1,0 +1,54 @@
+[
+  {
+    "id": "daycare-school-operator",
+    "name": "Daycare operator",
+    "kind": "business",
+    "rooms": [
+      "daycare-school-daycare"
+    ],
+    "role": "worker",
+    "members": {
+      "perModule": 0.2
+    },
+    "schedules": [
+      "daycare-school-carer"
+    ],
+    "budgetPerModule": 330,
+    "weights": {
+      "rent": 0.35,
+      "access": 0.45,
+      "noise": 0.0,
+      "view": 0.2
+    },
+    "minScore": 0.55,
+    "leaveBelow": 0.4,
+    "prospectsPerDay": 1.5
+  },
+  {
+    "id": "daycare-school-young-family",
+    "name": "Young family",
+    "kind": "household",
+    "rooms": [
+      "daycare-school-family-flat",
+      "apartment-studio"
+    ],
+    "role": "resident",
+    "members": {
+      "fixed": 4
+    },
+    "schedules": [
+      "daycare-school-parent"
+    ],
+    "budgetPerModule": 250,
+    "weights": {
+      "rent": 0.3,
+      "access": 0.25,
+      "noise": 0.15,
+      "view": 0.1,
+      "services": 0.2
+    },
+    "minScore": 0.6,
+    "leaveBelow": 0.45,
+    "prospectsPerDay": 3
+  }
+]

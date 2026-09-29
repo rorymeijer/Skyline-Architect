@@ -1,0 +1,44 @@
+[
+  {
+    "room": "medical-clinic-practice",
+    "items": [
+      {
+        "furniture": "door-office",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "furniture": "reception-desk",
+        "anchor": "left",
+        "offset": 1.5
+      },
+      {
+        "furniture": "medical-clinic-cabinet",
+        "anchor": "right",
+        "offset": 0.15
+      },
+      {
+        "furniture": "medical-clinic-waiting-chairs",
+        "anchor": "left",
+        "offset": 4.5,
+        "minRoomWidth": 11
+      },
+      {
+        "repeat": {
+          "spacing": 3.0,
+          "margin": 0.35,
+          "items": [
+            {
+              "furniture": "medical-clinic-exam-bed",
+              "offset": 0
+            },
+            {
+              "furniture": "floor-lamp",
+              "offset": 2.1
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "id": "nordhaven-fjord",
+  "name": "Nordhaven Fjord",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A cold fjord port on granite: dear energy, shallow piles and the scenario \"The Long Winter\".",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "cities": "cities.json",
+    "plots": "plots.json",
+    "starts": "starts.json",
+    "scenarios": "scenarios.json"
+  }
+}

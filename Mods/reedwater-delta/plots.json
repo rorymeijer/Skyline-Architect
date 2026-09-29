@@ -1,0 +1,35 @@
+[
+  {
+    "id": "reedwater-delta-dyke-road",
+    "name": "Dyke Road Lot",
+    "cityID": "reedwater-delta",
+    "frontageModules": 56,
+    "maxBasementFloors": 1,
+    "siteMarginModules": 40,
+    "foundation": {
+      "buildingName": "Delta Court",
+      "footprintOffsetModules": 8,
+      "footprintModules": 40,
+      "basementFloors": 1,
+      "pileDepthMeters": 30,
+      "pileSpacingModules": 4
+    }
+  },
+  {
+    "id": "reedwater-delta-canal-corner",
+    "name": "Canal Corner",
+    "cityID": "reedwater-delta",
+    "frontageModules": 40,
+    "maxBasementFloors": 1,
+    "siteMarginModules": 40,
+    "price": 380000,
+    "foundation": {
+      "buildingName": "Canal House",
+      "footprintOffsetModules": 4,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 28,
+      "pileSpacingModules": 4
+    }
+  }
+]

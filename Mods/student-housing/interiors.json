@@ -1,0 +1,30 @@
+[
+  {
+    "room": "student-housing-room",
+    "items": [
+      {
+        "furniture": "door-apartment",
+        "anchor": "left",
+        "offset": 0.25
+      },
+      {
+        "furniture": "student-housing-bunk-desk",
+        "anchor": "right",
+        "offset": 0.1
+      },
+      {
+        "furniture": "student-housing-poster",
+        "anchor": "left",
+        "offset": 1.5,
+        "elevation": 1.3,
+        "reserve": false
+      },
+      {
+        "furniture": "kitchenette",
+        "anchor": "left",
+        "offset": 1.35,
+        "minRoomWidth": 5.5
+      }
+    ]
+  }
+]

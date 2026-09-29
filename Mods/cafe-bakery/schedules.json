@@ -1,0 +1,18 @@
+[
+  {
+    "id": "cafe-bakery-baker",
+    "role": "worker",
+    "events": [
+      {
+        "at": "05:30",
+        "jitterMinutes": 10,
+        "goal": "work"
+      },
+      {
+        "at": "16:30",
+        "jitterMinutes": 15,
+        "goal": "outside"
+      }
+    ]
+  }
+]

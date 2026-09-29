@@ -1,0 +1,16 @@
+[
+  {
+    "room": "panorama-elevator-shaft",
+    "name": "Panorama elevator (24 persons, 1.4 m/s, glass car)",
+    "capacity": 24,
+    "speed": 1.4,
+    "acceleration": 0.7,
+    "doorSeconds": 3,
+    "transferSeconds": 1,
+    "expectedWaitSeconds": 35,
+    "stops": "all",
+    "patienceSeconds": 260,
+    "wearPerStop": 0.001,
+    "breakdownChance": 0.03
+  }
+]

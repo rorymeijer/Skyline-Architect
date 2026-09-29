@@ -1,0 +1,15 @@
+{
+  "id": "student-housing",
+  "name": "Student Housing",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "Small, cheap rooms for students: low rent, late nights, a bit of noise.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "schedules": "schedules.json",
+    "tenants": "tenants.json"
+  }
+}

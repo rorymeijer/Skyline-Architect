@@ -1,0 +1,36 @@
+[
+  {
+    "id": "reedwater-delta-sandbox",
+    "name": "Sandbox — Dyke Road Lot",
+    "mode": "sandbox",
+    "cityID": "reedwater-delta",
+    "plotID": "reedwater-delta-dyke-road",
+    "propertyName": "Dyke Road Lot",
+    "startingFoundation": {
+      "buildingName": "Delta Court",
+      "footprintOffsetModules": 8,
+      "footprintModules": 40,
+      "basementFloors": 1,
+      "pileDepthMeters": 30,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  },
+  {
+    "id": "reedwater-delta-standard",
+    "name": "Standard — Dyke Road Lot",
+    "mode": "standard",
+    "cityID": "reedwater-delta",
+    "plotID": "reedwater-delta-dyke-road",
+    "propertyName": "Dyke Road Lot",
+    "startingFoundation": {
+      "buildingName": "Delta Court",
+      "footprintOffsetModules": 8,
+      "footprintModules": 40,
+      "basementFloors": 1,
+      "pileDepthMeters": 30,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "id": "bowling-arcade",
+  "name": "Bowling & Arcade",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A loud bowling alley and arcade for the basement or ground floor, open late.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "amenities": "amenities.json",
+    "tenants": "tenants.json"
+  }
+}

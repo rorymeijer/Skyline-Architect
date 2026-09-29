@@ -1,0 +1,39 @@
+[
+  {
+    "room": "rooftop-pool-spa-club",
+    "items": [
+      {
+        "furniture": "door-office",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "furniture": "rooftop-pool-spa-sauna",
+        "anchor": "right",
+        "offset": 0.2
+      },
+      {
+        "furniture": "rooftop-pool-spa-pool",
+        "anchor": "center",
+        "offset": 0
+      },
+      {
+        "furniture": "rooftop-pool-spa-lounger",
+        "anchor": "left",
+        "offset": 1.5
+      },
+      {
+        "furniture": "rooftop-pool-spa-lounger",
+        "anchor": "right",
+        "offset": 2.6,
+        "minRoomWidth": 16
+      },
+      {
+        "furniture": "plant-tall",
+        "anchor": "left",
+        "offset": 3.5,
+        "minRoomWidth": 14
+      }
+    ]
+  }
+]

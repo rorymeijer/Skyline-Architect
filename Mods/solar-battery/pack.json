@@ -1,0 +1,14 @@
+{
+  "id": "solar-battery",
+  "name": "Solar & Battery Room",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "Solar arrays for the upper floors and a battery room for the basement: cheap power.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json"
+  }
+}

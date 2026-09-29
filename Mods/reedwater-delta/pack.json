@@ -1,0 +1,14 @@
+{
+  "id": "reedwater-delta",
+  "name": "Reedwater Delta",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A booming river-delta town on deep clay: low rents, high demand, long piles and the scenario \"Delta Boomtown\".",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "cities": "cities.json",
+    "plots": "plots.json",
+    "starts": "starts.json",
+    "scenarios": "scenarios.json"
+  }
+}

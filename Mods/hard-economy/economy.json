@@ -1,0 +1,18 @@
+{
+  "loanStep": 500000,
+  "maxLoans": 3000000,
+  "loanInterestRate": 0.12,
+  "bankruptcyDays": 5,
+  "utilitiesPerPersonPerDay": 5,
+  "elevatorCarPerDay": 80,
+  "rentDaysPerMonth": 1,
+  "lightingPricePerKWh": 9.5,
+  "saleMonths": 100,
+  "serviceChargeShare": 0.25,
+  "ownerPatience": 7,
+  "propertyTaxRate": 0.006,
+  "profitTaxRate": 0.22,
+  "wastePricePerKg": 1.1,
+  "energyVolatility": 0.09,
+  "energyReversion": 0.3
+}

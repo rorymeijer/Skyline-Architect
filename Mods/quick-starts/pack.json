@@ -1,0 +1,11 @@
+{
+  "id": "quick-starts",
+  "name": "Quick Starts",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "Ready-made blueprints for 32-module lots: a starter office, a residential tower and a mixed tower.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "blueprints": "blueprints.json"
+  }
+}

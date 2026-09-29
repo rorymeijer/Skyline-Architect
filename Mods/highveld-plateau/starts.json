@@ -1,0 +1,36 @@
+[
+  {
+    "id": "highveld-plateau-sandbox",
+    "name": "Sandbox — Exchange Avenue Lot",
+    "mode": "sandbox",
+    "cityID": "highveld-plateau",
+    "plotID": "highveld-plateau-avenue-lot",
+    "propertyName": "Exchange Avenue Lot",
+    "startingFoundation": {
+      "buildingName": "Plateau Exchange",
+      "footprintOffsetModules": 8,
+      "footprintModules": 40,
+      "basementFloors": 2,
+      "pileDepthMeters": 12,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  },
+  {
+    "id": "highveld-plateau-standard",
+    "name": "Standard — Exchange Avenue Lot",
+    "mode": "standard",
+    "cityID": "highveld-plateau",
+    "plotID": "highveld-plateau-avenue-lot",
+    "propertyName": "Exchange Avenue Lot",
+    "startingFoundation": {
+      "buildingName": "Plateau Exchange",
+      "footprintOffsetModules": 8,
+      "footprintModules": 40,
+      "basementFloors": 2,
+      "pileDepthMeters": 12,
+      "pileSpacingModules": 4
+    },
+    "startingCash": 2500000
+  }
+]

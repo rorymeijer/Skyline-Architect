@@ -1,0 +1,31 @@
+[
+  {
+    "id": "rooftop-greenhouse-farm",
+    "name": "Rooftop Greenhouse",
+    "category": "office",
+    "kind": "room",
+    "appearance": "office",
+    "minWidth": 8,
+    "maxWidth": 20,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1350,
+    "lowestLevel": 2,
+    "noise": 0.05,
+    "rentPerModule": 300,
+    "maintenancePerModulePerDay": 6,
+    "utilityDemand": {
+      "electricity": 3.5,
+      "water": 3,
+      "hvac": 1.5,
+      "data": 0.3
+    },
+    "wearPerDay": 0.012,
+    "lighting": {
+      "color": "#E9B8FF",
+      "occupied": 1.0,
+      "empty": 0.35,
+      "wattsPerModule": 12
+    }
+  }
+]

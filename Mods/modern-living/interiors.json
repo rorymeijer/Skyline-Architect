@@ -1,0 +1,88 @@
+[
+  {
+    "room": "modern-living-apartment",
+    "items": [
+      {
+        "furniture": "door-apartment",
+        "anchor": "left",
+        "offset": 0.25
+      },
+      {
+        "furniture": "kitchenette",
+        "anchor": "left",
+        "offset": 1.4
+      },
+      {
+        "furniture": "modern-living-modular-sofa",
+        "anchor": "center",
+        "offset": 0
+      },
+      {
+        "furniture": "modern-living-round-rug",
+        "anchor": "center",
+        "offset": 0.3,
+        "reserve": false
+      },
+      {
+        "furniture": "modern-living-arc-lamp",
+        "anchor": "center",
+        "offset": 1.8,
+        "minRoomWidth": 10
+      },
+      {
+        "furniture": "bed-double",
+        "anchor": "right",
+        "offset": 0.15
+      },
+      {
+        "furniture": "modern-living-shelf-wall",
+        "anchor": "left",
+        "offset": 3.4,
+        "minRoomWidth": 10.5
+      }
+    ]
+  },
+  {
+    "room": "modern-living-office",
+    "items": [
+      {
+        "furniture": "door-office",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "furniture": "modern-living-shelf-wall",
+        "anchor": "left",
+        "offset": 1.5
+      },
+      {
+        "furniture": "plant-tall",
+        "anchor": "right",
+        "offset": 0.15
+      },
+      {
+        "furniture": "modern-living-modular-sofa",
+        "anchor": "right",
+        "offset": 1.0,
+        "minRoomWidth": 11
+      },
+      {
+        "repeat": {
+          "spacing": 2.2,
+          "margin": 0.35,
+          "items": [
+            {
+              "furniture": "modern-living-standing-desk",
+              "offset": 0
+            },
+            {
+              "furniture": "monitor",
+              "offset": 0.5,
+              "elevation": 1.09
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

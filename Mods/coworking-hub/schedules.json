@@ -1,0 +1,35 @@
+[
+  {
+    "id": "coworking-hub-flex-worker",
+    "role": "worker",
+    "events": [
+      {
+        "at": "09:30",
+        "jitterMinutes": 60,
+        "goal": "work"
+      },
+      {
+        "at": "12:45",
+        "jitterMinutes": 30,
+        "goal": "lunch",
+        "chance": 0.7
+      },
+      {
+        "at": "13:30",
+        "jitterMinutes": 20,
+        "goal": "work"
+      },
+      {
+        "at": "18:30",
+        "jitterMinutes": 90,
+        "goal": "outside"
+      },
+      {
+        "at": "19:00",
+        "jitterMinutes": 30,
+        "goal": "leisure",
+        "chance": 0.2
+      }
+    ]
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "modern-living-apartment",
+    "name": "Designer Apartment",
+    "category": "residential",
+    "kind": "room",
+    "appearance": "apartment",
+    "minWidth": 8,
+    "maxWidth": 12,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1600,
+    "lowestLevel": 3,
+    "noise": 0.04,
+    "rentPerModule": 250,
+    "maintenancePerModulePerDay": 5,
+    "unlockClass": 1,
+    "utilityDemand": {
+      "electricity": 2,
+      "hvac": 1.5,
+      "water": 2,
+      "data": 1.2
+    },
+    "wearPerDay": 0.01,
+    "lighting": {
+      "color": "#FFCF94",
+      "occupied": 1.0,
+      "empty": 0.0,
+      "wattsPerModule": 7,
+      "quietHours": {
+        "from": "23:00",
+        "to": "06:30",
+        "level": 0.06,
+        "spreadMinutes": 90
+      }
+    }
+  },
+  {
+    "id": "modern-living-office",
+    "name": "Designer Office",
+    "category": "office",
+    "kind": "room",
+    "appearance": "office",
+    "minWidth": 8,
+    "maxWidth": 16,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1450,
+    "lowestLevel": 1,
+    "noise": 0.08,
+    "rentPerModule": 420,
+    "maintenancePerModulePerDay": 6,
+    "unlockClass": 1,
+    "utilityDemand": {
+      "electricity": 3,
+      "hvac": 2,
+      "water": 0.5,
+      "data": 2.2
+    },
+    "wearPerDay": 0.012,
+    "lighting": {
+      "color": "#F4F1EA",
+      "occupied": 1.0,
+      "empty": 0.0,
+      "wattsPerModule": 11
+    }
+  }
+]

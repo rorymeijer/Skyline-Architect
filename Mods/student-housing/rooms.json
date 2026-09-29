@@ -1,0 +1,37 @@
+[
+  {
+    "id": "student-housing-room",
+    "name": "Student Room",
+    "category": "residential",
+    "kind": "room",
+    "appearance": "apartment",
+    "minWidth": 4,
+    "maxWidth": 6,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1100,
+    "lowestLevel": 1,
+    "noise": 0.2,
+    "rentPerModule": 170,
+    "maintenancePerModulePerDay": 4,
+    "utilityDemand": {
+      "electricity": 2,
+      "hvac": 1.2,
+      "water": 1.5,
+      "data": 1.5
+    },
+    "wearPerDay": 0.014,
+    "lighting": {
+      "color": "#FFD9A0",
+      "occupied": 1.0,
+      "empty": 0.0,
+      "wattsPerModule": 6,
+      "quietHours": {
+        "from": "01:00",
+        "to": "08:30",
+        "level": 0.08,
+        "spreadMinutes": 90
+      }
+    }
+  }
+]

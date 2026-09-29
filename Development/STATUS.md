@@ -24,6 +24,13 @@ _Last updated: 2026-09-29 (0.29.2 — every screen on the iPhone; App Store prep
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
 
+**Mods:** `Mods/` holds 24 community content mods: cities, rooms and tenants, amenities,
+elevators, rule changes, scenarios, furniture and blueprints (see `Mods/README.md`).
+None of them changes the base pack. FUNCTIONAL: `CommunityModsTests` loads each mod on its own
+and all together, places every new room, starts every scenario and builds the blueprints.
+Not verified: in-game screenshots of the new interiors, and long-game balance. Mod blueprints
+cannot be picked in the game yet.
+
 **Docs:** `Documentation/MOD_AUTHORING_PROMPT.md` is a shareable brief/AI prompt for making
 content mods (format version 1), with a headless validation snippet. Documentation only.
 

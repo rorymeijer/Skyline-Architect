@@ -1,0 +1,150 @@
+[
+  {
+    "id": "five-towers-corner-shop",
+    "name": "Corner Shop Row",
+    "difficulty": "easy",
+    "summary": "Open a street of shops and cafés on Quay Street.",
+    "briefing": "The quay needs life at street level. Let 10 units, at least a few of them shops or restaurants, and reach a daily profit of $6,000 within 12 days.",
+    "startID": "standard-quay",
+    "days": 12,
+    "objectives": [
+      {
+        "metric": "occupiedUnits",
+        "target": 10
+      },
+      {
+        "metric": "dailyProfit",
+        "target": 6000
+      }
+    ],
+    "events": [
+      {
+        "day": 5,
+        "hour": 9,
+        "kind": "demand",
+        "message": "Market day: retailers are looking for space",
+        "multiplier": 2.0,
+        "days": 2,
+        "tenantType": "boutique"
+      }
+    ]
+  },
+  {
+    "id": "five-towers-no-lifts",
+    "name": "Walk-Up",
+    "difficulty": "medium",
+    "summary": "Build a profitable tower without a single elevator.",
+    "briefing": "The harbour board has banned elevators on Quay Street after a string of breakdowns. Build no higher than floor 6, house or employ 70 people and keep a daily profit of $4,000.",
+    "startID": "standard-quay",
+    "days": 20,
+    "objectives": [
+      {
+        "metric": "population",
+        "target": 70
+      },
+      {
+        "metric": "dailyProfit",
+        "target": 4000
+      }
+    ],
+    "restrictions": {
+      "forbiddenRooms": [
+        "elevator-shaft",
+        "elevator-express",
+        "service-elevator"
+      ],
+      "maxFloor": 6
+    }
+  },
+  {
+    "id": "five-towers-marsh-hotel",
+    "name": "Marsh Mansions",
+    "difficulty": "medium",
+    "summary": "Fill a Saltmere block with households on a tight loan limit.",
+    "briefing": "Saltmere's harbour row needs homes. The bank only lends $1M and rents stay fixed by the town. Reach 60 residents and a reputation of 55.",
+    "startID": "scenario-saltmere",
+    "days": 30,
+    "objectives": [
+      {
+        "metric": "population",
+        "target": 60
+      },
+      {
+        "metric": "reputation",
+        "target": 55
+      }
+    ],
+    "startingCash": 1800000,
+    "restrictions": {
+      "maxLoans": 1000000,
+      "fixedRent": true
+    }
+  },
+  {
+    "id": "five-towers-crown-jewel",
+    "name": "Crown Jewel",
+    "difficulty": "hard",
+    "summary": "Take a Crown Yard tower to the Prime class.",
+    "briefing": "Harrowgate's old money wants a new landmark. Reach the Prime class with 250 people and a reputation of 75 in 60 days. The city expects reputation 60 by day 30.",
+    "startID": "scenario-harrowgate",
+    "days": 60,
+    "objectives": [
+      {
+        "metric": "buildingClass",
+        "target": 3
+      },
+      {
+        "metric": "population",
+        "target": 250
+      }
+    ],
+    "startingCash": 5000000,
+    "events": [
+      {
+        "day": 30,
+        "hour": 10,
+        "kind": "fine",
+        "message": "City inspection: reputation 60 expected",
+        "amount": 500000,
+        "when": {
+          "metric": "reputation",
+          "target": 60
+        }
+      },
+      {
+        "day": 15,
+        "hour": 9,
+        "kind": "grant",
+        "message": "Heritage grant for reaching Class B",
+        "amount": 400000,
+        "when": {
+          "metric": "buildingClass",
+          "target": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "five-towers-short-waits",
+    "name": "Rush Hour",
+    "difficulty": "hard",
+    "summary": "Move 150 people with an average wait under 25 seconds, with no staff.",
+    "briefing": "A transport consultancy bets you can't keep waits short in a busy tower. House or employ 150 people and keep the average wait below 25 seconds for three closings, without hiring any staff.",
+    "startID": "standard-quay",
+    "days": 30,
+    "objectives": [
+      {
+        "metric": "population",
+        "target": 150
+      },
+      {
+        "metric": "averageWait",
+        "target": 25
+      }
+    ],
+    "holdDays": 3,
+    "restrictions": {
+      "noStaff": true
+    }
+  }
+]
