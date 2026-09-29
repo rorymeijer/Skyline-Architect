@@ -163,8 +163,8 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				"INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIFileSharingEnabled[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIFileSharingEnabled[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "Config/Info-iOS.plist";
+				"INFOPLIST_FILE[sdk=iphonesimulator*]" = "Config/Info-iOS.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
@@ -206,8 +206,8 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				"INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIFileSharingEnabled[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIFileSharingEnabled[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "Config/Info-iOS.plist";
+				"INFOPLIST_FILE[sdk=iphonesimulator*]" = "Config/Info-iOS.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
