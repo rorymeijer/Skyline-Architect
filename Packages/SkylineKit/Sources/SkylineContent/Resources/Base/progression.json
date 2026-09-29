@@ -11,8 +11,8 @@
   "classes": [
     { "id": "class-c", "name": "Class C", "population": 0, "reputation": 0, "requiredRooms": [], "maxFloor": 12 },
     { "id": "class-b", "name": "Class B", "population": 35, "reputation": 55, "requiredRooms": ["elevator-shaft"], "maxFloor": 25 },
-    { "id": "class-a", "name": "Class A", "population": 150, "reputation": 65,
+    { "id": "class-a", "name": "Class A", "population": 100, "reputation": 65,
       "requiredRooms": ["service-elevator", "telecom-room"], "maxFloor": 45 },
-    { "id": "prime", "name": "Prime", "population": 400, "reputation": 75, "requiredRooms": ["elevator-express", "sky-lobby"] }
+    { "id": "prime", "name": "Prime", "population": 250, "reputation": 75, "requiredRooms": ["elevator-express", "sky-lobby"] }
   ]
 }

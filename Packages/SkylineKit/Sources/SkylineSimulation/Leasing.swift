@@ -37,11 +37,14 @@ public enum Leasing {
     /// (Phase E) × the city's rent level (Phase 15).
     public static func askingRent(_ room: Room, world: GameWorld, catalog: BuildCatalog) -> Int? {
         guard let base = catalog.spec(room.definitionID)?.rentPerModule else { return nil }
-        let premium = 1 + 0.01 * Double(max(room.floors.lowest, 0))
+        let premium = floorPremium(room)
         let level = (world.buildings[room.buildingID]?.rentLevel ?? 1) * (room.rentFactor ?? 1)
         let city = world.city(of: room.buildingID)?.economy.rent ?? 1
         return Int((Double(base * room.columns.count) * premium * level * city).rounded())
     }
+
+    /// +1 % rent per storey above ground: height is worth paying for.
+    static func floorPremium(_ room: Room) -> Double { 1 + 0.01 * Double(max(room.floors.lowest, 0)) }
 
     // MARK: Appraisal
 
@@ -56,7 +59,9 @@ public enum Leasing {
         let perModule = Double(rent) / Double(max(room.columns.count, 1))
         // Budgets follow the local price level (Phase 16 fix): a Harrowgate firm pays
         // Harrowgate rents, so the city's rent level alone does not price everyone out.
-        let budget = Double(type.budgetPerModule) * (world.city(of: room.buildingID)?.economy.rent ?? 1)
+        // Tenants pay the height premium too (F1 balance fix): without it every office above
+        // the 12th floor priced itself out of the market, and tall towers stood empty.
+        let budget = Double(type.budgetPerModule) * (world.city(of: room.buildingID)?.economy.rent ?? 1) * floorPremium(room)
         let rentScore = clamp((budget - perModule) / budget * 2 + 0.3)
         let seconds = accessSeconds(to: room, building: building, world: world, engine: engine)
         let accessScore = seconds.map { clamp(1 - ($0 - 30) / 270) } ?? 0

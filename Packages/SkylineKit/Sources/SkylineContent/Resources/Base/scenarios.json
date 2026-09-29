@@ -3,18 +3,18 @@
     "id": "opening-day",
     "name": "Opening Day",
     "difficulty": "easy",
-    "summary": "Let a dozen units on Quay Street and turn a daily profit.",
-    "briefing": "The Quay Street lot has a foundation and $2.5M. The harbour board wants to see a working building before the season ends: at least twelve units let and a daily closing in the black by $5,000 or more.",
+    "summary": "Let sixteen units on Quay Street and turn a daily profit.",
+    "briefing": "The Quay Street lot has a foundation and $2.5M. The harbour board wants to see a working building before the season ends: at least sixteen units let and a daily closing in the black by $12,000 or more.",
     "startID": "standard-quay",
     "days": 10,
     "objectives": [
       {
         "metric": "occupiedUnits",
-        "target": 12
+        "target": 16
       },
       {
         "metric": "dailyProfit",
-        "target": 5000
+        "target": 12000
       }
     ],
     "events": [
@@ -22,7 +22,7 @@
         "day": 1,
         "hour": 8,
         "kind": "news",
-        "message": "The harbour board is watching: twelve units let and a profitable closing within ten days."
+        "message": "The harbour board is watching: sixteen units let and a profitable closing within ten days."
       },
       {
         "day": 4,
@@ -50,8 +50,8 @@
     "id": "harbour-revival",
     "name": "Harbour Revival",
     "difficulty": "medium",
-    "summary": "Bring 120 people back to the Saltmere waterfront on a tight budget.",
-    "briefing": "Saltmere's harbour front has been empty for years. Land is cheap and building is cheap, but tenants are few and pay little. With $1.5M, house or employ 120 people and keep the building profitable for three days in a row.",
+    "summary": "Bring 100 people back to the Saltmere waterfront on a tight budget.",
+    "briefing": "Saltmere's harbour front has been empty for years. Land is cheap and building is cheap, but tenants are few and pay little. With $1.5M, house or employ 100 people and keep the building profitable for three days in a row.",
     "startID": "scenario-saltmere",
     "startingCash": 1500000,
     "days": 30,
@@ -59,7 +59,7 @@
     "objectives": [
       {
         "metric": "population",
-        "target": 120
+        "target": 100
       },
       {
         "metric": "dailyProfit",
@@ -111,7 +111,7 @@
     "name": "Three Properties",
     "difficulty": "medium",
     "summary": "Grow from Quay Street into an estate of three properties.",
-    "briefing": "Start with the Quay Street lot and build an estate: own three properties (Ferry Lane, Crown Yard or Harbour Row are for sale), house or employ 250 people and earn $10,000 a day across the estate.",
+    "briefing": "Start with the Quay Street lot and build an estate: own three properties (Ferry Lane, Crown Yard or Harbour Row are for sale), house or employ 160 people and earn $10,000 a day across the estate.",
     "startID": "standard-quay",
     "days": 60,
     "objectives": [
@@ -121,7 +121,7 @@
       },
       {
         "metric": "population",
-        "target": 250
+        "target": 160
       },
       {
         "metric": "dailyProfit",
@@ -157,11 +157,11 @@
     "id": "crown-prestige",
     "name": "Crown Prestige",
     "difficulty": "hard",
-    "summary": "Raise a Class A address in Harrowgate with short elevator waits.",
-    "briefing": "Harrowgate's tenants are demanding and building is dear. With $5M, raise Crown Yard to Class A, earn a reputation of 70 and keep the average elevator wait under 45 seconds.",
+    "summary": "Raise a Class A address in Harrowgate with short elevator waits, and hold it.",
+    "briefing": "Harrowgate's tenants are demanding and building is dear. With $5M, raise Crown Yard to Class A, earn a reputation of 75 and keep the average elevator wait under 30 seconds — for five closings in a row, within a month.",
     "startID": "scenario-harrowgate",
     "startingCash": 5000000,
-    "days": 45,
+    "days": 30,
     "objectives": [
       {
         "metric": "buildingClass",
@@ -169,11 +169,11 @@
       },
       {
         "metric": "reputation",
-        "target": 70
+        "target": 75
       },
       {
         "metric": "averageWait",
-        "target": 45
+        "target": 30
       }
     ],
     "events": [
@@ -194,7 +194,7 @@
         "weather": "heat"
       },
       {
-        "day": 30,
+        "day": 20,
         "hour": 11,
         "kind": "fine",
         "message": "Lift inspection: average waits must stay under 60 seconds",
@@ -204,14 +204,15 @@
           "target": 60
         }
       }
-    ]
+    ],
+    "holdDays": 5
   },
   {
     "id": "skyline",
     "name": "Skyline",
     "difficulty": "hard",
-    "summary": "1,500 people, short waits, in profit — for a week.",
-    "briefing": "The big one. Grow Quay Street into a tower of at least 1,500 residents and workers, keep the average elevator wait under a minute and stay profitable, all for seven days running.",
+    "summary": "600 people, short waits, in profit — for a week.",
+    "briefing": "The big one. Grow Quay Street into a tower of at least 600 residents and workers, keep the average elevator wait under a minute and stay profitable, all for seven days running.",
     "startID": "standard-quay",
     "startingCash": 3000000,
     "days": 120,
@@ -219,7 +220,7 @@
     "objectives": [
       {
         "metric": "population",
-        "target": 1500
+        "target": 600
       },
       {
         "metric": "averageWait",
@@ -250,11 +251,11 @@
     "name": "Lean Tower",
     "difficulty": "hard",
     "summary": "An office tower of twelve floors at fixed rents, with no staff to hire.",
-    "briefing": "The owners want offices only, at the standard rent, and no cleaning or maintenance crew on the payroll. Build at most twelve floors on Quay Street, keep 20 units let and close the day with at least $15,000 profit for three days running. Elevators wear out and nobody can repair them — plan your banks with spare cars.",
+    "briefing": "The owners want offices only, at the standard rent, and no cleaning or maintenance crew on the payroll. Build at most twelve floors on Quay Street, keep 20 units let and close the day with at least $40,000 profit for ten days running. Elevators wear out and nobody can repair them — plan your banks with spare cars.",
     "startID": "standard-quay",
     "startingCash": 3000000,
     "days": 30,
-    "holdDays": 3,
+    "holdDays": 10,
     "objectives": [
       {
         "metric": "occupiedUnits",
@@ -262,7 +263,7 @@
       },
       {
         "metric": "dailyProfit",
-        "target": 15000
+        "target": 40000
       }
     ],
     "restrictions": {
