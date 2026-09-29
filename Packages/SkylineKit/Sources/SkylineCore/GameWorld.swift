@@ -210,6 +210,13 @@ public struct GameWorld: Codable, Sendable, Equatable {
         cities.update(city) { $0.economy = economy }
     }
 
+    /// Player rent setting of one unit (0.22+), clamped to 0.6…1.6 in steps of 0.1. Not
+    /// construction: no command, no undo.
+    public mutating func setRentFactor(_ factor: Double, room: RoomID) {
+        let f = (min(max(factor, 0.6), 1.6) * 10).rounded() / 10
+        rooms.update(room) { $0.rentFactor = f == 1 ? nil : f }
+    }
+
     /// Offers a unit for rent or for sale (checks are the market's, `Leasing.setTenure`).
     public mutating func setTenure(_ tenure: Tenure?, room: RoomID) {
         rooms.update(room) { $0.tenure = tenure == .rent ? nil : tenure }

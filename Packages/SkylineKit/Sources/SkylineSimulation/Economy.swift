@@ -31,6 +31,16 @@ public enum Economy {
     }
 
     public static let rentLevels = 0.6...1.6
+
+    /// Player rent setting of one rentable unit (Phase E), on top of the building's level:
+    /// 0.6…1.6 in steps of 10 %. Like the building level it applies to new leases and to
+    /// appraisal; signed rents are contracts. Returns false for a room that is not a unit.
+    @discardableResult
+    public static func setRentFactor(_ factor: Double, room: RoomID, in world: inout GameWorld, catalog: BuildCatalog) -> Bool {
+        guard let r = world.rooms[room], catalog.spec(r.definitionID)?.rentPerModule != nil else { return false }
+        world.setRentFactor(factor, room: room)
+        return true
+    }
 }
 
 extension SimulationEngine {

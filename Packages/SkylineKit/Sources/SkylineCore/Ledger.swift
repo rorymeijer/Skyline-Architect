@@ -5,6 +5,10 @@ public enum LedgerCategory: String, Codable, CaseIterable, Hashable, Sendable {
     case construction, demolition, rent, maintenance, utilities, loan, interest, grant, wages, land, sales
     /// The landlord's share of what amenities take from their customers (0.22).
     case turnover
+    /// Property tax on the buildings' value and profit tax on the day's result (Phase E).
+    case taxes
+    /// Waste collection (Phase E).
+    case waste
 }
 
 /// One traceable money movement: when, how much, why and for whom.
