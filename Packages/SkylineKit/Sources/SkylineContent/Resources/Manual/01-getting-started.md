@@ -61,6 +61,7 @@ The screen is small, so a few things fold up:
 - The build palette shows **categories** (Circulation, Offices, Homes, Plant, Amenities). Tap one to open its rooms in a row above it.
 - The view controls keep the camera buttons. The panels and overlays are behind the **Panels** button (four squares), with their names.
 - When several panels are open, they become tabs above the panel in front.
+- Cash and standing sit at the bottom left, beside the view controls.
 - The manual has a **Contents** button in place of the chapter list.
 
 Zoom in far enough and rooms show their furniture and tenants' names; zoom out and the tower becomes a façade with lit windows at night.
