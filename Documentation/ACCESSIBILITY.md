@@ -13,13 +13,17 @@ Status:
   * **focus rings** on every custom button for Tab navigation;
   * the **iPad keyboard**: the game view's keys and the menu shortcuts;
   * **Save** and **Main Menu** by touch on the iPad.
+* **FUNCTIONAL (F5, 0.29):** the **iPhone** in landscape: every control stays reachable by
+  touch in the compact layout (grouped palette, panel picker, manual contents). Touch targets
+  are smaller than Apple's 44 pt guideline (palette tools 40 pt, view controls 28 pt, speed
+  buttons 22 pt); not yet tried on a device.
 * **PLANNED:**
   * an increased-contrast panel style;
   * VoiceOver descriptions of the building itself (the SpriteKit world is not exposed).
 
 | Area | What it does | Code |
 |------|--------------|------|
-| View controls (bottom right) | Each icon button reads its name without the shortcut ("Elevator Traffic"); toggles report "On". Main Menu and Save come first (F4). | `RootView.ControlButton` |
+| View controls (bottom right) | Each icon button reads its name without the shortcut ("Elevator Traffic"); toggles report "On". Main Menu and Save come first (F4). On an iPhone the toggles are named buttons in the panel picker (F5). | `ViewControls.swift` |
 | Build palette | Each tool reads its name, the hint from its tooltip, and "Locked" or "Selected". This matters most in the icon-only palette (Phase 17). | `BuildPalette.ToolButton` |
 | Speed buttons | "Pause" or "Speed 2×", marked selected. | `SimulationControls` |
 | Panels | One card style (`panelCard()`), grouped as a container; the close button is named "Close". | `Views/PanelChrome.swift` |

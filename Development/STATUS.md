@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-29 (0.28.0 — F4: accessibility and the iPad)_
+_Last updated: 2026-09-29 (0.29.0 — F5: the iPhone)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -10,10 +10,28 @@ _Last updated: 2026-09-29 (0.28.0 — F4: accessibility and the iPad)_
 | F1 | Balance bot and tuning | COMPLETE (rorymeijer/Skyline-Architect#31) |
 | F2 | 500 floors running smoothly | COMPLETE (rorymeijer/Skyline-Architect#32) |
 | F3 | Tutorial, in-game manual, website (`Website/`) | COMPLETE (rorymeijer/Skyline-Architect#33) |
-| F4 | Accessibility and iPad | COMPLETE on the branch |
-| F5 | iPhone | Planned |
+| F4 | Accessibility and iPad | COMPLETE (rorymeijer/Skyline-Architect#34) |
+| F5 | iPhone | COMPLETE on the branch |
 
-F4 made the game usable with larger text and a keyboard, and ran the iPad for the first
+F5 runs the game on an iPhone in landscape (D-060). It is not a separate interface: each
+view falls back to a compact form where the full one does not fit.
+- **Build palette:** tools grouped under five categories; a tap opens one category's tools
+  in a row above.
+- **View controls:** camera buttons only; the panels and overlays sit in a picker, by name.
+- **Cash and standing:** bottom left beside the view controls, clear of the time bar.
+- **Main menu:** two columns. **Manual:** a Contents button in place of the chapter list;
+  pages hold as many lines as the window allows.
+- **Tutorial panel:** the current step only, ending above the palette so its tools stay free.
+- Panels are now drawn above the palette on every platform.
+- CI launches the iPhone build in an iPhone simulator (`Scripts/capture-simulator.sh`).
+
+Evidence: CI captures on the Mac, the iPad and the iPhone
+(`Development/Screenshots/iPhone-0.29/`, CI run 36565637497). Found and fixed in the captures: the time bar over
+the cash readout, wrapped speed labels, the picker behind a panel, one-paragraph manual pages,
+the tutorial panel over the Floor tool, and the chrome outgrowing the screen with a category open. Not verified by a person: touch on a real iPhone;
+touch targets are below Apple's 44 pt (OPEN_ITEMS V2).
+
+F4 (merged) made the game usable with larger text and a keyboard, and ran the iPad for the first
 time (ACCESSIBILITY.md, D-059):
 - **Text size** (Standard, Large, Larger, Largest) for all panels, menus and the manual.
   - The first captures showed that SwiftUI on macOS ignores Dynamic Type. The Mac now sizes

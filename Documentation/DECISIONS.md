@@ -424,6 +424,35 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-060 — F5: the iPhone as a compact layout of the same chrome
+- **Date:** 2026-09-29
+- **Decision:**
+  - The iPhone runs the same app target (device family iPhone and iPad), in landscape only.
+  - No separate phone UI. The existing views fall back to compact forms where they do not
+    fit, mostly with `ViewThatFits`:
+    - the build palette groups its tools under five categories and shows one category's
+      tools at a time;
+    - the view controls put the panel and overlay toggles behind one button (a picker);
+    - the main menu uses two columns;
+    - the manual shows its contents in place of the page;
+    - the tutorial panel drops its step list.
+  - Where the fallback depends on the device rather than the space (the cash readout beside the
+    view controls, the narrow view controls), `Device.isPhone` decides. It reads the
+    device idiom, because captures render outside the window and get no size class.
+  - Panels are drawn above the build palette.
+  - CI launches the iPhone build in an iPhone simulator with the same capture script
+    (`Scripts/capture-simulator.sh iphone`).
+- **Alternatives:**
+  - A separate phone interface (a second UI to keep in step).
+  - Portrait (a tower is tall, but the palette, the panels and the time bar need width).
+  - Size classes (not available to the capture renderer).
+- **Reason:** Every view already existed and worked; a compact fallback per view is the
+  smallest change, and the Mac and iPad keep their layout because the full form still fits
+  there.
+- **Consequences:**
+  - On a phone the panels cover much of the building; one or two at a time is practical.
+  - Touch on a real iPhone has not been tried by a person (OPEN_ITEMS V2).
+
 ## D-059 — F4: text size on the chrome, Esc as "close", the iPad in CI
 - **Date:** 2026-09-29
 - **Decision:**

@@ -57,56 +57,49 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // F4 (0.28): the same script on the Mac and in the iPad simulator — the main menu with
-    // the text size; the demo tower's panels at the standard, larger and largest text; the
-    // manual at the largest; the menu over a running game (Resume); Esc closing things.
+    // F5 (0.29): the same script on the Mac, the iPad and the iPhone — the main menu, the
+    // tutorial with its construction steps and the palette's category row, the panel picker
+    // with a panel open, and the manual with its contents.
     let steps: [Step] = [
         Step(name: "01-main-menu", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.showMainMenu = true
-            return "The main menu (\(ScreenshotDirector.platform)), text size \(TextSizeSetting.name(model.textSize))."
+            return "The main menu (\(ScreenshotDirector.platform))."
         },
-        Step(name: "02-panels-standard", grid: false) { model, scene in
-            model.newGame(startID: NewGameFactory.defaultStartID)
-            model.showMainMenu = false
-            model.setSpeed(.paused)
-            model.applyBlueprint("demo-tower")
-            model.leaseAllVacant()
-            model.advanceSimulation(toTimeOfDay: 10)
+        Step(name: "02-tutorial-start", grid: false) { model, scene in
+            model.startTutorial()
+            model.refreshSimulationSummary()
+            return "First Tower started: \(ScreenshotDirector.tutorialNote(model))"
+        },
+        Step(name: "03-tutorial-built", grid: false) { model, scene in
+            let refused = ScreenshotDirector.buildTutorialSteps(model)
             model.activeHint = nil
-            model.showEconomyPanel = true
+            model.paletteCategory = "circulation"
+            model.refreshSimulationSummary()
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 1), zoom: 11) }
+            return "After the construction steps (\(refused) refused): \(ScreenshotDirector.tutorialNote(model)); the palette's Circulation category is open where the palette is grouped."
+        },
+        Step(name: "04-panel-picker", grid: false) { model, scene in
+            model.advanceSimulation(ticks: 3 * 3600)
+            model.activeHint = nil
+            model.paletteCategory = nil
+            model.showTutorialPanel = false
+            model.showScenarioPanel = false
             model.showLeasingPanel = true
-            model.showFacilitiesPanel = true
+            model.showPanelPicker = true
             model.refreshSimulationSummary()
             model.activeHint = nil
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4), zoom: 11) }
-            return "\(model.clockText): the demo tower with the Economy, Facilities and Leasing panels, standard text (\(ScreenshotDirector.platform))."
+            return "\(model.clockText): the Leasing panel open; the panel picker open (it shows where the view controls are narrow)."
         },
-        Step(name: "03-panels-larger", grid: false) { model, scene in
-            model.textSize = .xxLarge
-            return "The same panels at text size Larger (xxLarge)."
-        },
-        Step(name: "04-panels-largest", grid: false) { model, scene in
-            model.textSize = .xxxLarge
-            return "The same panels at text size Largest (xxxLarge)."
-        },
-        Step(name: "05-manual-largest", grid: false) { model, scene in
+        Step(name: "05-manual", grid: false) { model, scene in
+            model.showPanelPicker = false
             model.openManual(chapter: "transport")
-            return "The manual at text size Largest."
+            return "The manual at 'Stairs and elevators'."
         },
-        Step(name: "06-menu-over-game", grid: false) { model, scene in
-            model.showManual = false
-            model.textSize = nil
-            model.openMainMenu()
-            return "The main menu opened over the running game (Menu button or ⇧⌘M): Resume first; speed \(model.speed)."
-        },
-        Step(name: "07-escape", grid: false) { model, scene in
-            model.handleEscape()                       // closes the menu (resumes)
-            model.setSpeed(.paused)
-            model.handleEscape()                       // closes the lowest panel (Leasing)
-            let open = MainActor.assumeIsolated { SidePanel.allCases.filter { $0.isOpen(model) }.map(\.title) }
-            return "After Esc twice: menu closed, then the lowest panel; open now: \(open.joined(separator: ", "))."
+        Step(name: "06-manual-contents", grid: false) { model, scene in
+            model.manualShowContents = true
+            return "The manual's contents (a Contents button shows them where the chapter list does not fit beside the page)."
         },
     ]
 

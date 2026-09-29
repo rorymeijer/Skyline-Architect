@@ -86,6 +86,10 @@ final class AppModel {
     var scenarioNewBest = false
     /// The main menu was opened over a running game: it offers Resume (F4).
     var menuOverGame = false
+    /// The narrow build palette's open category (F5, iPhone).
+    var paletteCategory: String?
+    /// The panel picker of the narrow view controls (F5, iPhone).
+    var showPanelPicker = false
     /// Text size of the panels and menus (F4). nil follows the system (Dynamic Type on an
     /// iPad); a Mac has no system setting, so the player picks one here.
     var textSize: DynamicTypeSize? = nil {
@@ -102,6 +106,8 @@ final class AppModel {
     var manualQuery = ""
     /// Page of the open chapter (the manual pages instead of scrolling, like the saves list).
     var manualPage = 0
+    /// The compact manual shows its chapter list instead of the page (F5, iPhone).
+    var manualShowContents = false
     var tutorial: TutorialSummary?
     var showTutorialPanel = true
     var activeHint: ManualHint?

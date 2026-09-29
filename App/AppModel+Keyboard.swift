@@ -12,6 +12,8 @@ extension AppModel {
             select(tool: nil)
         } else if activeHint != nil {
             dismissHint()
+        } else if showPanelPicker {
+            showPanelPicker = false
         } else if showManual {
             showManual = false
         } else if showLoadSheet {

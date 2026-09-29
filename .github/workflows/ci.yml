@@ -20,7 +20,7 @@ jobs:
       - run: Scripts/test-package.sh
 
   macos:
-    name: macOS build, tests, iPad build, screenshots (Mac and iPad)
+    name: macOS build, tests, iPad build, screenshots (Mac, iPad, iPhone)
     runs-on: macos-15
     permissions:
       contents: write  # publish-ci-screenshots.sh commits captures to claude/** branches
@@ -44,10 +44,12 @@ jobs:
         run: |
           if [ -x Scripts/capture-screenshots.sh ]; then Scripts/capture-screenshots.sh ci-output/screenshots; else echo "capture script not present yet"; fi
       - name: Capture iPad screenshots (simulator)
-        run: Scripts/capture-ipad.sh ci-output/screenshots-ipad
+        run: Scripts/capture-simulator.sh ipad ci-output/screenshots-ipad
+      - name: Capture iPhone screenshots (simulator)
+        run: Scripts/capture-simulator.sh iphone ci-output/screenshots-iphone
       - name: Commit latest screenshots to the development branch
         if: github.event_name == 'push' && startsWith(github.ref_name, 'claude/')
-        run: Scripts/publish-ci-screenshots.sh ci-output/screenshots ci-output/screenshots-ipad
+        run: Scripts/publish-ci-screenshots.sh ci-output/screenshots ci-output/screenshots-ipad ci-output/screenshots-iphone
       - name: Upload screenshots and logs
         if: always()
         uses: actions/upload-artifact@v4

@@ -50,7 +50,7 @@
 | `⌥⌘F` | Facilities |
 | `⌥⌘U` | Services overlay |
 
-## iPad
+## iPad and iPhone
 
 | Input | Action |
 |---|---|
@@ -63,7 +63,7 @@
 
 The buttons at the bottom right open every panel and overlay, save the game and bring back the main menu.
 
-With a keyboard attached to the iPad, the keys of the game view and the menu shortcuts work as on a Mac. Hold `⌘` to see the shortcuts.
+With a keyboard attached to the iPad or iPhone, the keys of the game view and the menu shortcuts work as on a Mac. Hold `⌘` to see the shortcuts.
 
 ## Moving through panels with the keyboard
 

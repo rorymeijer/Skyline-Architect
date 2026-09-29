@@ -47,7 +47,7 @@ struct SimulationControls: View {
         } label: {
             HStack(spacing: 2) {
                 Image(systemName: symbol).font(.system(size: 9))
-                if speed != .paused { Text("\(speed.rawValue)×").font(.system(size: 10, weight: .semibold)) }
+                if speed != .paused { Text("\(speed.rawValue)×").font(.system(size: 10, weight: .semibold)).lineLimit(1).fixedSize() }
             }
             .frame(minWidth: 30, minHeight: 22)
             .background(RoundedRectangle(cornerRadius: 6).fill(isOn ? Color.accentColor : Color.clear))

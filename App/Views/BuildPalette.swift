@@ -14,8 +14,55 @@ struct BuildPalette: View {
         ViewThatFits(in: .horizontal) {
             tools(compact: false)
             tools(compact: true)
+            grouped                                                 // F5: a phone's width
         }
         .environment(\.colorScheme, .dark)
+    }
+
+    /// The narrowest palette (F5, an iPhone): one button per category; the picked
+    /// category's tools open in a row above.
+    private var grouped: some View {
+        let groups = groupedSpecs
+        let open = groups.first { $0.id == model.paletteCategory }
+        return VStack(spacing: 6) {
+            if let open {
+                HStack(spacing: 2) { ForEach(open.specs, id: \.id) { specButton($0) } }
+                    .padding(.horizontal, 8).padding(.vertical, 5)
+                    .background(RoundedRectangle(cornerRadius: 14).fill(Color.black.opacity(0.6)))
+                    .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.white.opacity(0.12)))
+            }
+            HStack(spacing: 2) {
+                floorButton
+                foundationButton
+                divider
+                ForEach(groups) { group in
+                    let holdsTool = group.specs.contains { model.activeTool == .room($0.id) }
+                    ToolButton(symbol: Self.symbol(for: group.specs.first?.appearance ?? ""), title: Self.categoryName(group.id),
+                               help: "\(Self.categoryName(group.id)): \(group.specs.map(\.name).joined(separator: ", "))",
+                               isOn: open?.id == group.id || holdsTool) {
+                        model.paletteCategory = open?.id == group.id ? nil : group.id
+                    }
+                }
+                divider
+                demolishButton
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(RoundedRectangle(cornerRadius: 14).fill(Color.black.opacity(0.6)))
+            .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.white.opacity(0.12)))
+        }
+    }
+
+    /// A category's name on its button (content ids; a mod's own category shows capitalised).
+    static func categoryName(_ id: String) -> String {
+        switch id {
+        case "circulation": "Circulation"
+        case "office": "Offices"
+        case "residential": "Homes"
+        case "infrastructure": "Plant"
+        case "amenity": "Amenities"
+        default: id.prefix(1).uppercased() + id.dropFirst()
+        }
     }
 
     private func tools(compact: Bool) -> some View {
@@ -195,6 +242,8 @@ private struct PressableStyle: ButtonStyle {
 /// Session status: cash, save state, active-tool hint.
 struct StatusPill: View {
     let model: AppModel
+    /// Beside an iPhone's view controls (F5): cash and standing only.
+    var compact = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -203,10 +252,10 @@ struct StatusPill: View {
                 .help("Cash. Construction is paid immediately; rent and costs settle daily at 06:00 (⌥⌘M).")
             Label("\(model.progression.className) · \(Int(model.progression.reputation.rounded()))", systemImage: "rosette")
                 .help("Building class and reputation (⌥⌘P).")
-            if let save = model.lastSaveDescription {
+            if !compact, let save = model.lastSaveDescription {
                 Text(save).foregroundStyle(.secondary)
             }
-            if model.activeTool != nil {
+            if !compact, model.activeTool != nil {
                 Text("Esc to stop building").foregroundStyle(.secondary)
             }
         }

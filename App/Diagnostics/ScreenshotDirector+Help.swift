@@ -33,7 +33,7 @@ extension ScreenshotDirector {
         #if os(macOS)
         "Mac"
         #else
-        "iPad"
+        Device.isPhone ? "iPhone" : "iPad"
         #endif
     }
 
