@@ -28,5 +28,9 @@
  "cleanMinutes": 20,
  "repairMinutes": 45,
  "shiftStart": "07:00",
- "shiftEnd": "19:00"
+ "shiftEnd": "19:00",
+ "wastePerPersonPerDay": 1.2,
+ "wastePerVisit": 0.3,
+ "overflowDirtPerDay": 0.25,
+ "outOfRangeFactor": 1.5
 }

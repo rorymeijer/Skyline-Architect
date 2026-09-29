@@ -105,7 +105,16 @@
     "room": {
      "definition": "mechanical",
      "start": 19,
-     "count": 8,
+     "count": 5,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "waste-room",
+     "start": 24,
+     "count": 3,
      "lowest": -1,
      "highest": -1
     }
@@ -608,7 +617,16 @@
     "room": {
      "definition": "mechanical",
      "start": 19,
-     "count": 8,
+     "count": 5,
+     "lowest": -1,
+     "highest": -1
+    }
+   },
+   {
+    "room": {
+     "definition": "waste-room",
+     "start": 24,
+     "count": 3,
      "lowest": -1,
      "highest": -1
     }
@@ -2103,7 +2121,7 @@
  {
   "id": "demo-plaza",
   "name": "Demo Plaza",
-  "description": "19 storeys with a leisure podium: shops, a restaurant, a cinema, a fitness club and a theatre on the lower floors, offices above, apartments in the tower and a sky bar on floor 17. Two elevators and a stairwell. Used for the amenity captures and tests.",
+  "description": "19 storeys with a leisure podium: shops, a restaurant, a cinema, a fitness club and a theatre on the lower floors, offices above, a waste room and a staff room, apartments in the tower and a sky bar on floor 17. Two elevators and a stairwell. Used for the amenity captures and tests.",
   "steps": [
    {
     "floor": {
@@ -2366,18 +2384,18 @@
    },
    {
     "room": {
-     "definition": "corridor",
+     "definition": "waste-room",
      "start": 22,
-     "count": 2,
+     "count": 4,
      "lowest": 3,
      "highest": 3
     }
    },
    {
     "room": {
-     "definition": "office-small",
-     "start": 24,
-     "count": 8,
+     "definition": "staff-room",
+     "start": 26,
+     "count": 6,
      "lowest": 3,
      "highest": 3
     }

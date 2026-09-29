@@ -508,5 +508,58 @@
   },
   "wearPerDay": 0.015,
   "unlockClass": 2
+ },
+ {
+  "id": "waste-room",
+  "lighting": {
+   "color": "#E8EEF2",
+   "occupied": 1.0,
+   "empty": 0.3,
+   "wattsPerModule": 3
+  },
+  "name": "Waste Room",
+  "category": "infrastructure",
+  "kind": "room",
+  "appearance": "waste",
+  "minWidth": 2,
+  "maxWidth": 8,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 700,
+  "noise": 0.15,
+  "maintenancePerModulePerDay": 2,
+  "utilityDemand": {
+   "electricity": 0.3
+  },
+  "wearPerDay": 0.01,
+  "wasteCapacityPerModule": 80
+ },
+ {
+  "id": "staff-room",
+  "lighting": {
+   "color": "#F2EEE4",
+   "occupied": 1.0,
+   "empty": 0.2,
+   "wattsPerModule": 6
+  },
+  "name": "Staff Room",
+  "category": "infrastructure",
+  "kind": "room",
+  "appearance": "staffRoom",
+  "minWidth": 4,
+  "maxWidth": 10,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 1000,
+  "noise": 0.1,
+  "maintenancePerModulePerDay": 3,
+  "utilityDemand": {
+   "electricity": 1,
+   "hvac": 1,
+   "water": 0.5
+  },
+  "wearPerDay": 0.01,
+  "staffPerModule": 0.75,
+  "staffRange": 10
  }
 ]

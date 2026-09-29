@@ -58,6 +58,7 @@ extension SimulationEngine {
                                           building: tenant.buildingID, room: tenant.room, tenant: tenant.id))
         }
         postTurnover(at: now, world: &world)
+        collectWaste(at: now, world: &world)
         for building in world.buildings.values {
             let rooms = world.rooms(in: building.id)
             let upkeep = rooms.reduce(0) { sum, room in
@@ -71,7 +72,8 @@ extension SimulationEngine {
             let cars = world.elevators.values.filter { $0.buildingID == building.id }.count
             // Heating and cooling (Phase 13): the bill grows with the distance from comfort.
             let city = world.city(of: building.id)
-            let climate = energyFactor(city)
+            let energy = energyPrice(city)
+            let climate = energyFactor(city) * energy
             let utilities = Int((Double(people * economy.utilitiesPerPersonPerDay + cars * economy.elevatorCarPerDay) * climate).rounded())
             if utilities > 0 {
                 let weather = city?.weather.map { String(format: ", %.0f °C ×%.2f", $0.temperature, climate) } ?? ""
@@ -80,7 +82,7 @@ extension SimulationEngine {
                                               building: building.id))
             }
             let kWh = world.buildings[building.id]?.lightingKWh ?? 0
-            let lighting = Int((kWh * (economy.lightingPricePerKWh ?? 0)).rounded())
+            let lighting = Int((kWh * (economy.lightingPricePerKWh ?? 0) * energy).rounded())
             if lighting > 0 {
                 world.ledger.post(Transaction(tick: now, amount: -lighting, category: .utilities,
                                               detail: "Lighting — \(Int(kWh.rounded())) kWh, \(building.name)", building: building.id))

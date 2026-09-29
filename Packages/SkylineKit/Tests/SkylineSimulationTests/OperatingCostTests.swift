@@ -48,3 +48,51 @@ import SkylineContent
         #expect(f.world.ledger.journal.last?.amount == -1_500)
     }
 }
+
+@Suite struct WasteAndEnergyTests {
+    /// The waste room takes up to its capacity; collection is billed per kg.
+    @Test func wasteIsCollectedAndBilled() throws {
+        var f = try SimFixture()
+        let produced = Waste.produced(in: f.building, world: f.world, rules: f.engine.rules)
+        let capacity = Waste.capacity(of: f.building, world: f.world, catalog: f.library.buildCatalog)
+        #expect(capacity == 240 && produced > 0)                      // one 3-module waste room
+        f.engine.advance(&f.world, by: 86_400)
+        let bill = try #require(f.world.ledger.journal.first { $0.category == .waste })
+        let collected = min(Waste.produced(in: f.building, world: f.world, rules: f.engine.rules), capacity)
+        #expect(abs(Double(-bill.amount) - collected * 0.8) <= 1)
+    }
+
+    /// Without a waste room everything overflows and the building gets dirtier.
+    @Test func overflowDirtiesTheBuilding() throws {
+        func cleanliness(wasteRoom: Bool) throws -> Double {
+            var f = try SimFixture()
+            if !wasteRoom, let room = f.world.rooms.values.first(where: { $0.definitionID == "waste-room" }) {
+                try ConstructionEngine(catalog: f.library.buildCatalog).apply(.demolishRoom(room.id), to: &f.world)
+                PopulationSync.sync(&f.world, catalog: f.library.buildCatalog, rules: f.engine.rules)
+            }
+            f.engine.advance(&f.world, by: 86_400)
+            let rooms = f.world.rooms.values.filter { $0.definitionID == "lobby" }
+            return rooms.map { f.world.upkeep[$0.id]!.cleanliness }.reduce(0, +)
+        }
+        #expect(try cleanliness(wasteRoom: false) < cleanliness(wasteRoom: true) - 0.2)
+    }
+
+    /// Energy prices move each morning, deterministically, within half to twice the base,
+    /// and scale the utilities bill.
+    @Test func energyPricesMoveAndScaleUtilities() throws {
+        var a = try SimFixture(), b = try SimFixture()
+        a.engine.advance(&a.world, by: 5 * 86_400)
+        b.engine.advance(&b.world, by: 5 * 86_400)
+        let price = try #require(a.world.cities.values[0].energyPrice)
+        #expect(price == b.world.cities.values[0].energyPrice && price != 1 && (0.5...2).contains(price))
+        func utilities(_ p: Double) throws -> Int {
+            var f = try SimFixture()
+            f.world.setEnergyPrice(p, city: f.world.cities.values[0].id)
+            let before = f.world.ledger.totals(onDay: 1)
+            f.engine.advance(&f.world, by: 86_400)
+            return f.world.ledger.totals(onDay: 1).amount(.utilities) - before.amount(.utilities)
+        }
+        let normal = try utilities(1), double = try utilities(2)
+        #expect(abs(Double(double) - 2 * Double(normal)) <= 3)
+    }
+}
