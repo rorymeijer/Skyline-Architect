@@ -1,0 +1,62 @@
+[
+  {
+    "id": "nordhaven-fjord-long-winter",
+    "name": "The Long Winter",
+    "difficulty": "medium",
+    "summary": "Keep a fjord tower warm, let and profitable through a hard winter.",
+    "briefing": "Nordhaven's harbour quay is yours, but the fjord freezes early this year. Energy is dear and the rock under the quay is hard to dig. House or employ 80 people and keep a daily profit of $3,000 for two closings in a row before the ice breaks.",
+    "startID": "nordhaven-fjord-standard",
+    "days": 28,
+    "objectives": [
+      {
+        "metric": "population",
+        "target": 80
+      },
+      {
+        "metric": "dailyProfit",
+        "target": 3000
+      }
+    ],
+    "holdDays": 2,
+    "events": [
+      {
+        "day": 2,
+        "hour": 7,
+        "kind": "news",
+        "message": "The first snow falls on the fjord."
+      },
+      {
+        "day": 5,
+        "hour": 6,
+        "kind": "weather",
+        "message": "A snowstorm closes the harbour road",
+        "weather": "snow"
+      },
+      {
+        "day": 10,
+        "hour": 6,
+        "kind": "weather",
+        "message": "Heavy snow again over Nordhaven",
+        "weather": "snow"
+      },
+      {
+        "day": 12,
+        "hour": 9,
+        "kind": "grant",
+        "message": "Heating subsidy from the port authority for 40 people housed",
+        "amount": 200000,
+        "when": {
+          "metric": "population",
+          "target": 40
+        }
+      },
+      {
+        "day": 18,
+        "hour": 6,
+        "kind": "weather",
+        "message": "A winter storm rolls in from the sea",
+        "weather": "storm"
+      }
+    ]
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "id": "rooftop-pool-spa",
+  "name": "Rooftop Pool & Spa",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A high-floor pool and spa: better with every floor, unlocks at Class A.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "amenities": "amenities.json",
+    "tenants": "tenants.json"
+  }
+}

@@ -1,0 +1,274 @@
+{
+  "seasons": [
+    {
+      "id": "spring",
+      "name": "Spring",
+      "temperature": 14
+    },
+    {
+      "id": "summer",
+      "name": "Summer",
+      "temperature": 23
+    },
+    {
+      "id": "autumn",
+      "name": "Autumn",
+      "temperature": 12
+    },
+    {
+      "id": "winter",
+      "name": "Winter",
+      "temperature": 2
+    }
+  ],
+  "daysPerYear": 28,
+  "startSeason": "summer",
+  "persistence": 0.5,
+  "temperatureSpread": 5,
+  "energyPerDegree": 0.04,
+  "comfortTemperature": 19,
+  "kinds": [
+    {
+      "id": "clear",
+      "name": "Clear",
+      "symbol": "sun.max",
+      "weights": {
+        "spring": 4,
+        "summer": 6,
+        "autumn": 3,
+        "winter": 3
+      },
+      "effects": {
+        "demand": 1.1,
+        "wear": 1.0,
+        "dirt": 1.0,
+        "temperature": 2
+      },
+      "look": {
+        "cloud": 0.0,
+        "fog": 0.0,
+        "intensity": 0.0,
+        "lightning": false,
+        "heat": false
+      }
+    },
+    {
+      "id": "overcast",
+      "name": "Overcast",
+      "symbol": "cloud",
+      "weights": {
+        "spring": 3,
+        "summer": 2,
+        "autumn": 4,
+        "winter": 4
+      },
+      "effects": {
+        "demand": 1.0,
+        "wear": 1.0,
+        "dirt": 1.0,
+        "temperature": -1
+      },
+      "look": {
+        "cloud": 0.6,
+        "fog": 0.05,
+        "intensity": 0.0,
+        "lightning": false,
+        "heat": false
+      }
+    },
+    {
+      "id": "rain",
+      "persistence": 0.3,
+      "name": "Rain",
+      "symbol": "cloud.rain",
+      "weights": {
+        "spring": 3,
+        "summer": 1.5,
+        "autumn": 4,
+        "winter": 2
+      },
+      "effects": {
+        "demand": 0.8,
+        "wear": 1.2,
+        "dirt": 1.8,
+        "temperature": -3
+      },
+      "look": {
+        "cloud": 0.8,
+        "fog": 0.12,
+        "precipitation": "rain",
+        "intensity": 0.6,
+        "lightning": false,
+        "heat": false
+      }
+    },
+    {
+      "id": "storm",
+      "persistence": 0.1,
+      "name": "Storm",
+      "symbol": "cloud.bolt.rain",
+      "weights": {
+        "spring": 1.5,
+        "summer": 2.0,
+        "autumn": 2.5,
+        "winter": 1.0
+      },
+      "effects": {
+        "demand": 0.4,
+        "wear": 3.2,
+        "dirt": 2.2,
+        "temperature": -4
+      },
+      "look": {
+        "cloud": 1.0,
+        "fog": 0.15,
+        "precipitation": "rain",
+        "intensity": 1.0,
+        "lightning": true,
+        "heat": false
+      }
+    },
+    {
+      "id": "snow",
+      "persistence": 0.5,
+      "name": "Snow",
+      "symbol": "cloud.snow",
+      "weights": {
+        "autumn": 0.8,
+        "winter": 4
+      },
+      "effects": {
+        "demand": 0.65,
+        "wear": 1.8,
+        "dirt": 1.6,
+        "temperature": -8
+      },
+      "look": {
+        "cloud": 0.7,
+        "fog": 0.2,
+        "precipitation": "snow",
+        "intensity": 0.7,
+        "lightning": false,
+        "heat": false
+      }
+    },
+    {
+      "id": "heat",
+      "persistence": 0.55,
+      "name": "Heatwave",
+      "symbol": "thermometer.sun",
+      "weights": {
+        "spring": 0.5,
+        "summer": 3.5
+      },
+      "effects": {
+        "demand": 0.9,
+        "wear": 1.4,
+        "dirt": 1.0,
+        "temperature": 14
+      },
+      "look": {
+        "cloud": 0.0,
+        "fog": 0.1,
+        "intensity": 0.0,
+        "lightning": false,
+        "heat": true
+      }
+    },
+    {
+      "id": "fog",
+      "persistence": 0.25,
+      "name": "Fog",
+      "symbol": "cloud.fog",
+      "weights": {
+        "spring": 1,
+        "summer": 0.3,
+        "autumn": 2,
+        "winter": 1.5
+      },
+      "effects": {
+        "demand": 0.9,
+        "wear": 1.0,
+        "dirt": 1.1,
+        "temperature": -2
+      },
+      "look": {
+        "cloud": 0.4,
+        "fog": 0.75,
+        "intensity": 0.0,
+        "lightning": false,
+        "heat": false
+      }
+    },
+    {
+      "id": "extreme-weather-blizzard",
+      "persistence": 0.35,
+      "name": "Blizzard",
+      "symbol": "wind.snow",
+      "weights": {
+        "winter": 1.2,
+        "autumn": 0.2
+      },
+      "effects": {
+        "demand": 0.35,
+        "wear": 2.8,
+        "dirt": 2.0,
+        "temperature": -12
+      },
+      "look": {
+        "cloud": 1.0,
+        "fog": 0.45,
+        "precipitation": "snow",
+        "intensity": 1.0,
+        "lightning": false,
+        "heat": false
+      }
+    },
+    {
+      "id": "extreme-weather-gale",
+      "persistence": 0.2,
+      "name": "Gale",
+      "symbol": "wind",
+      "weights": {
+        "spring": 0.8,
+        "autumn": 1.5,
+        "winter": 1.0
+      },
+      "effects": {
+        "demand": 0.6,
+        "wear": 2.2,
+        "dirt": 1.4,
+        "temperature": -3
+      },
+      "look": {
+        "cloud": 0.7,
+        "fog": 0.0,
+        "intensity": 0.0,
+        "lightning": false,
+        "heat": false
+      }
+    },
+    {
+      "id": "extreme-weather-drought",
+      "persistence": 0.6,
+      "name": "Drought",
+      "symbol": "sun.dust",
+      "weights": {
+        "summer": 1.2
+      },
+      "effects": {
+        "demand": 0.85,
+        "wear": 1.1,
+        "dirt": 1.5,
+        "temperature": 9
+      },
+      "look": {
+        "cloud": 0.0,
+        "fog": 0.25,
+        "intensity": 0.0,
+        "lightning": false,
+        "heat": true
+      }
+    }
+  ]
+}

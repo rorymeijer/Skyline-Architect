@@ -1,0 +1,33 @@
+[
+  {
+    "id": "ember-coast",
+    "name": "Ember Coast",
+    "description": "A sun-baked resort coast: sand dunes over limestone, busy promenades and high cooling bills.",
+    "seed": 3317,
+    "geology": [
+      {
+        "material": "paving",
+        "thickness": 0.3
+      },
+      {
+        "material": "sand",
+        "thickness": 5.0
+      },
+      {
+        "material": "gravel",
+        "thickness": 3.0
+      },
+      {
+        "material": "bedrock",
+        "thickness": 1.0
+      }
+    ],
+    "economy": {
+      "rent": 1.15,
+      "construction": 1.0,
+      "demand": 1.2,
+      "tax": 0.95,
+      "energy": 1.4
+    }
+  }
+]

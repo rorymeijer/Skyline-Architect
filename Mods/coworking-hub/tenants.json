@@ -1,0 +1,27 @@
+[
+  {
+    "id": "coworking-hub-operator",
+    "name": "Co-working operator",
+    "kind": "business",
+    "rooms": [
+      "coworking-hub-space"
+    ],
+    "role": "worker",
+    "members": {
+      "perModule": 0.5
+    },
+    "schedules": [
+      "coworking-hub-flex-worker"
+    ],
+    "budgetPerModule": 420,
+    "weights": {
+      "rent": 0.3,
+      "access": 0.4,
+      "noise": 0.15,
+      "view": 0.15
+    },
+    "minScore": 0.57,
+    "leaveBelow": 0.42,
+    "prospectsPerDay": 2
+  }
+]

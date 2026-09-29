@@ -1,0 +1,35 @@
+[
+  {
+    "id": "nordhaven-fjord-harbour-quay",
+    "name": "Harbour Quay",
+    "cityID": "nordhaven-fjord",
+    "frontageModules": 44,
+    "maxBasementFloors": 2,
+    "siteMarginModules": 40,
+    "foundation": {
+      "buildingName": "Fjordside House",
+      "footprintOffsetModules": 6,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 8,
+      "pileSpacingModules": 4
+    }
+  },
+  {
+    "id": "nordhaven-fjord-ridge-lot",
+    "name": "Ridge Street Lot",
+    "cityID": "nordhaven-fjord",
+    "frontageModules": 36,
+    "maxBasementFloors": 1,
+    "siteMarginModules": 40,
+    "price": 800000,
+    "foundation": {
+      "buildingName": "Ridge House",
+      "footprintOffsetModules": 6,
+      "footprintModules": 24,
+      "basementFloors": 1,
+      "pileDepthMeters": 6,
+      "pileSpacingModules": 4
+    }
+  }
+]

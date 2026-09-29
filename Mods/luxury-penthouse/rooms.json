@@ -1,0 +1,38 @@
+[
+  {
+    "id": "luxury-penthouse-suite",
+    "name": "Penthouse",
+    "category": "residential",
+    "kind": "room",
+    "appearance": "apartment",
+    "minWidth": 14,
+    "maxWidth": 24,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 2400,
+    "lowestLevel": 20,
+    "unlockClass": 3,
+    "noise": 0.03,
+    "rentPerModule": 420,
+    "maintenancePerModulePerDay": 8,
+    "utilityDemand": {
+      "electricity": 3,
+      "hvac": 2.5,
+      "water": 2.5,
+      "data": 1.5
+    },
+    "wearPerDay": 0.009,
+    "lighting": {
+      "color": "#FFD39A",
+      "occupied": 1.0,
+      "empty": 0.0,
+      "wattsPerModule": 9,
+      "quietHours": {
+        "from": "22:30",
+        "to": "06:15",
+        "level": 0.06,
+        "spreadMinutes": 90
+      }
+    }
+  }
+]

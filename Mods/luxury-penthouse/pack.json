@@ -1,0 +1,15 @@
+{
+  "id": "luxury-penthouse",
+  "name": "Luxury Penthouse",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "Wide high-floor penthouses for wealthy households; unlocks at the Prime class.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "tenants": "tenants.json"
+  }
+}

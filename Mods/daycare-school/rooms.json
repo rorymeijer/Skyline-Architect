@@ -1,0 +1,67 @@
+[
+  {
+    "id": "daycare-school-daycare",
+    "name": "Daycare Centre",
+    "category": "amenity",
+    "kind": "room",
+    "appearance": "office",
+    "minWidth": 8,
+    "maxWidth": 16,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1300,
+    "lowestLevel": 0,
+    "highestLevel": 3,
+    "noise": 0.45,
+    "rentPerModule": 260,
+    "maintenancePerModulePerDay": 6,
+    "utilityDemand": {
+      "electricity": 2,
+      "hvac": 2,
+      "water": 2,
+      "data": 0.5
+    },
+    "wearPerDay": 0.018,
+    "lighting": {
+      "color": "#FFF4D6",
+      "occupied": 1.0,
+      "empty": 0.0,
+      "wattsPerModule": 10
+    }
+  },
+  {
+    "id": "daycare-school-family-flat",
+    "name": "Family Apartment",
+    "category": "residential",
+    "kind": "room",
+    "appearance": "apartment",
+    "minWidth": 10,
+    "maxWidth": 14,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1450,
+    "lowestLevel": 1,
+    "noise": 0.12,
+    "rentPerModule": 220,
+    "maintenancePerModulePerDay": 5,
+    "utilityDemand": {
+      "electricity": 2,
+      "hvac": 1.5,
+      "water": 2,
+      "data": 1
+    },
+    "wearPerDay": 0.012,
+    "lighting": {
+      "color": "#FFC47E",
+      "occupied": 1.0,
+      "empty": 0.0,
+      "wattsPerModule": 7,
+      "quietHours": {
+        "from": "21:30",
+        "to": "06:30",
+        "level": 0.06,
+        "spreadMinutes": 90
+      }
+    }
+  }
+]

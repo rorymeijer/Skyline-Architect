@@ -1,0 +1,15 @@
+{
+  "id": "modern-living",
+  "name": "Modern Living",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "New furniture and colours in two designer rooms: a designer apartment and a designer office.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "tenants": "tenants.json"
+  }
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "room": "cafe-bakery-shop",
+    "items": [
+      {
+        "furniture": "door-office",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "furniture": "cafe-bakery-display",
+        "anchor": "right",
+        "offset": 0.9
+      },
+      {
+        "furniture": "cafe-bakery-bread-rack",
+        "anchor": "right",
+        "offset": 0.0,
+        "reserve": false,
+        "minRoomWidth": 7
+      },
+      {
+        "furniture": "coffee-station",
+        "anchor": "left",
+        "offset": 1.5,
+        "minRoomWidth": 8
+      },
+      {
+        "repeat": {
+          "spacing": 1.6,
+          "margin": 0.35,
+          "items": [
+            {
+              "furniture": "cafe-bakery-cafe-table",
+              "offset": 0
+            },
+            {
+              "furniture": "pendant-lamp",
+              "offset": 0.38,
+              "elevation": 2.4
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

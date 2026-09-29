@@ -1,0 +1,27 @@
+[
+  {
+    "id": "rooftop-greenhouse-city-farm",
+    "name": "City farm",
+    "kind": "business",
+    "rooms": [
+      "rooftop-greenhouse-farm"
+    ],
+    "role": "worker",
+    "members": {
+      "perModule": 0.15
+    },
+    "schedules": [
+      "rooftop-greenhouse-grower"
+    ],
+    "budgetPerModule": 380,
+    "weights": {
+      "rent": 0.4,
+      "access": 0.2,
+      "noise": 0.1,
+      "view": 0.3
+    },
+    "minScore": 0.55,
+    "leaveBelow": 0.4,
+    "prospectsPerDay": 2
+  }
+]

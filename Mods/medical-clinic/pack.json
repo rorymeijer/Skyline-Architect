@@ -1,0 +1,16 @@
+{
+  "id": "medical-clinic",
+  "name": "Medical Clinic",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A general practice as office tenant: steady rent, heavy water and climate use.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "schedules": "schedules.json",
+    "tenants": "tenants.json"
+  }
+}

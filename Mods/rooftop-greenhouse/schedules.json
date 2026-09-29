@@ -1,0 +1,29 @@
+[
+  {
+    "id": "rooftop-greenhouse-grower",
+    "role": "worker",
+    "events": [
+      {
+        "at": "06:00",
+        "jitterMinutes": 20,
+        "goal": "work"
+      },
+      {
+        "at": "11:30",
+        "jitterMinutes": 15,
+        "goal": "lunch",
+        "chance": 0.5
+      },
+      {
+        "at": "12:15",
+        "jitterMinutes": 10,
+        "goal": "work"
+      },
+      {
+        "at": "15:00",
+        "jitterMinutes": 30,
+        "goal": "outside"
+      }
+    ]
+  }
+]

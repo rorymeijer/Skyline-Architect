@@ -1,0 +1,11 @@
+{
+  "id": "extreme-weather",
+  "name": "Extreme Weather",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "Harsher seasons: more storms and heatwaves, plus blizzards, gales and droughts.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "weather": "weather.json"
+  }
+}

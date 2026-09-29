@@ -1,0 +1,27 @@
+[
+  {
+    "id": "rooftop-pool-spa-operator",
+    "name": "Spa operator",
+    "kind": "business",
+    "rooms": [
+      "rooftop-pool-spa-club"
+    ],
+    "role": "worker",
+    "members": {
+      "perModule": 0.12
+    },
+    "schedules": [
+      "early-staff"
+    ],
+    "budgetPerModule": 400,
+    "weights": {
+      "rent": 0.3,
+      "access": 0.3,
+      "noise": 0.05,
+      "view": 0.35
+    },
+    "minScore": 0.55,
+    "leaveBelow": 0.4,
+    "prospectsPerDay": 1
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "night-market-collective",
+    "name": "Street-food collective",
+    "kind": "business",
+    "rooms": [
+      "night-market-hall"
+    ],
+    "role": "worker",
+    "members": {
+      "perModule": 0.3
+    },
+    "schedules": [
+      "night-market-stall-staff"
+    ],
+    "budgetPerModule": 360,
+    "weights": {
+      "rent": 0.35,
+      "access": 0.5,
+      "noise": 0.0,
+      "view": 0.15
+    },
+    "minScore": 0.55,
+    "leaveBelow": 0.4,
+    "prospectsPerDay": 1.5
+  }
+]

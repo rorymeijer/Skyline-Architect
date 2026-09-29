@@ -1,0 +1,16 @@
+{
+  "id": "coworking-hub",
+  "name": "Co-working Hub",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "Flexible desks for freelancers and start-ups: many people per module, long hours.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "schedules": "schedules.json",
+    "tenants": "tenants.json"
+  }
+}

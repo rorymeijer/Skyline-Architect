@@ -1,0 +1,68 @@
+[
+  {
+    "room": "luxury-penthouse-suite",
+    "items": [
+      {
+        "furniture": "door-apartment",
+        "anchor": "left",
+        "offset": 0.25
+      },
+      {
+        "furniture": "kitchen-unit",
+        "anchor": "left",
+        "offset": 1.4
+      },
+      {
+        "furniture": "luxury-penthouse-marble-island",
+        "anchor": "left",
+        "offset": 4.3
+      },
+      {
+        "furniture": "luxury-penthouse-grand-piano",
+        "anchor": "center",
+        "offset": 0
+      },
+      {
+        "furniture": "luxury-penthouse-chandelier",
+        "anchor": "center",
+        "offset": 1.8,
+        "elevation": 2.9,
+        "reserve": false
+      },
+      {
+        "furniture": "sofa",
+        "anchor": "center",
+        "offset": 3.2,
+        "minRoomWidth": 17
+      },
+      {
+        "furniture": "bathroom-pod",
+        "anchor": "right",
+        "offset": 0
+      },
+      {
+        "furniture": "bed-double",
+        "anchor": "right",
+        "offset": 2.15
+      },
+      {
+        "furniture": "nightstand-lamp",
+        "anchor": "right",
+        "offset": 4.4
+      },
+      {
+        "furniture": "wall-art",
+        "anchor": "right",
+        "offset": 2.7,
+        "elevation": 1.6,
+        "reserve": false
+      },
+      {
+        "furniture": "plant-tall",
+        "anchor": "left",
+        "offset": 7.0,
+        "minRoomWidth": 17
+      }
+    ]
+  }
+]

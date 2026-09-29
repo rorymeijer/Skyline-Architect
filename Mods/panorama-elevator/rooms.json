@@ -1,0 +1,21 @@
+[
+  {
+    "id": "panorama-elevator-shaft",
+    "name": "Panorama Elevator Shaft",
+    "category": "circulation",
+    "kind": "shaft",
+    "appearance": "elevatorShaft",
+    "minWidth": 4,
+    "maxWidth": 4,
+    "minFloors": 2,
+    "maxFloors": 30,
+    "costPerModule": 5600,
+    "transport": "elevator",
+    "noise": 0.15,
+    "maintenancePerModulePerDay": 14,
+    "utilityDemand": {
+      "electricity": 2.5
+    },
+    "unlockClass": 1
+  }
+]

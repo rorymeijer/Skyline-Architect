@@ -1,0 +1,17 @@
+{
+  "id": "night-market",
+  "name": "Night Market Food Hall",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A late-night food hall with street-food stalls, open 17:00–02:00.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "amenities": "amenities.json",
+    "schedules": "schedules.json",
+    "tenants": "tenants.json"
+  }
+}

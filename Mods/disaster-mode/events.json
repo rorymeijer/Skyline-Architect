@@ -1,0 +1,106 @@
+{
+  "fire": {
+    "ignitionPerRoomPerDay": 0.004,
+    "wornBelow": 0.45,
+    "wornMultiplier": 4,
+    "equipmentMultiplier": 3,
+    "protectedIgnitionFactor": 0.5,
+    "stepSeconds": 60,
+    "startIntensity": 0.15,
+    "growthPerStep": 0.065,
+    "spreadAbove": 0.45,
+    "spreadChancePerStep": 0.06,
+    "protectedSpreadFactor": 0.2,
+    "sprinklerSuppressionPerStep": 0.09,
+    "brigadeResponseMinutes": 28,
+    "brigadeSuppressionPerStep": 0.08,
+    "damagePerStep": 0.045,
+    "destroyedBelow": 0.25,
+    "repairCostPerModule": 900,
+    "reputationPenalty": 12
+  },
+  "incidents": [
+    {
+      "id": "storm-damage",
+      "name": "Storm damage",
+      "weather": [
+        "storm"
+      ],
+      "chancePerDay": 0.72,
+      "target": "room",
+      "condition": -0.35,
+      "cleanliness": -0.4,
+      "cost": 4000,
+      "reputation": 0
+    },
+    {
+      "id": "power-outage",
+      "name": "Power outage",
+      "weather": [
+        "storm",
+        "heat"
+      ],
+      "chancePerDay": 0.32,
+      "target": "supplies:electricity",
+      "condition": -1.0,
+      "cleanliness": 0,
+      "cost": 0,
+      "reputation": 2
+    },
+    {
+      "id": "burst-pipe",
+      "name": "Burst pipe",
+      "weather": [
+        "snow"
+      ],
+      "maxTemperature": 0,
+      "chancePerDay": 0.56,
+      "target": "supplies:water",
+      "condition": -0.6,
+      "cleanliness": -0.5,
+      "cost": 2500,
+      "reputation": 1
+    },
+    {
+      "id": "disaster-mode-cooling-failure",
+      "name": "Cooling failure",
+      "weather": [
+        "heat"
+      ],
+      "chancePerDay": 0.3,
+      "target": "supplies:hvac",
+      "condition": -0.8,
+      "cleanliness": 0,
+      "cost": 3000,
+      "reputation": 2
+    },
+    {
+      "id": "disaster-mode-flooded-basement",
+      "name": "Flooded basement",
+      "weather": [
+        "rain",
+        "storm"
+      ],
+      "chancePerDay": 0.15,
+      "target": "room",
+      "condition": -0.4,
+      "cleanliness": -0.7,
+      "cost": 6000,
+      "reputation": 1
+    },
+    {
+      "id": "disaster-mode-network-outage",
+      "name": "Network outage",
+      "weather": [
+        "storm",
+        "fog"
+      ],
+      "chancePerDay": 0.12,
+      "target": "supplies:data",
+      "condition": -0.9,
+      "cleanliness": 0,
+      "cost": 1500,
+      "reputation": 1
+    }
+  ]
+}

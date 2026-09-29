@@ -1,0 +1,45 @@
+[
+  {
+    "room": "night-market-hall",
+    "items": [
+      {
+        "furniture": "door-office",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "furniture": "night-market-food-stall",
+        "anchor": "left",
+        "offset": 1.5
+      },
+      {
+        "furniture": "night-market-food-stall",
+        "anchor": "right",
+        "offset": 0.2
+      },
+      {
+        "furniture": "night-market-food-stall",
+        "anchor": "right",
+        "offset": 2.8,
+        "minRoomWidth": 16
+      },
+      {
+        "repeat": {
+          "spacing": 2.5,
+          "margin": 0.35,
+          "items": [
+            {
+              "furniture": "dining-set",
+              "offset": 0
+            },
+            {
+              "furniture": "night-market-lantern-string",
+              "offset": 0,
+              "elevation": 2.9
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

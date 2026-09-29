@@ -1,0 +1,16 @@
+{
+  "id": "rooftop-greenhouse",
+  "name": "Rooftop Greenhouse",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "An urban farm room under grow lights, run by a city-farming business.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "materials": "materials.json",
+    "furniture": "furniture.json",
+    "rooms": "rooms.json",
+    "interiors": "interiors.json",
+    "schedules": "schedules.json",
+    "tenants": "tenants.json"
+  }
+}

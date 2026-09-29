@@ -1,0 +1,56 @@
+[
+  {
+    "id": "daycare-school-carer",
+    "role": "worker",
+    "events": [
+      {
+        "at": "06:45",
+        "jitterMinutes": 15,
+        "goal": "work"
+      },
+      {
+        "at": "12:00",
+        "jitterMinutes": 15,
+        "goal": "lunch",
+        "chance": 0.3
+      },
+      {
+        "at": "12:30",
+        "jitterMinutes": 10,
+        "goal": "work"
+      },
+      {
+        "at": "18:30",
+        "jitterMinutes": 15,
+        "goal": "outside"
+      }
+    ]
+  },
+  {
+    "id": "daycare-school-parent",
+    "role": "resident",
+    "events": [
+      {
+        "at": "07:30",
+        "jitterMinutes": 25,
+        "goal": "outside"
+      },
+      {
+        "at": "17:45",
+        "jitterMinutes": 45,
+        "goal": "home"
+      },
+      {
+        "at": "19:30",
+        "jitterMinutes": 30,
+        "goal": "leisure",
+        "chance": 0.2
+      },
+      {
+        "at": "21:00",
+        "jitterMinutes": 20,
+        "goal": "home"
+      }
+    ]
+  }
+]

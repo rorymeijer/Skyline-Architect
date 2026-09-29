@@ -1,0 +1,27 @@
+[
+  {
+    "id": "bowling-arcade-operator",
+    "name": "Bowling operator",
+    "kind": "business",
+    "rooms": [
+      "bowling-arcade-hall"
+    ],
+    "role": "worker",
+    "members": {
+      "perModule": 0.1
+    },
+    "schedules": [
+      "hospitality-staff"
+    ],
+    "budgetPerModule": 300,
+    "weights": {
+      "rent": 0.4,
+      "access": 0.5,
+      "noise": 0.0,
+      "view": 0.1
+    },
+    "minScore": 0.55,
+    "leaveBelow": 0.4,
+    "prospectsPerDay": 1.5
+  }
+]

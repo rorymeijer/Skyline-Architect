@@ -1,0 +1,31 @@
+[
+  {
+    "id": "coworking-hub-space",
+    "name": "Co-working Space",
+    "category": "office",
+    "kind": "room",
+    "appearance": "office",
+    "minWidth": 8,
+    "maxWidth": 24,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1250,
+    "lowestLevel": 1,
+    "noise": 0.2,
+    "rentPerModule": 360,
+    "maintenancePerModulePerDay": 7,
+    "utilityDemand": {
+      "electricity": 3.5,
+      "hvac": 2.5,
+      "water": 0.8,
+      "data": 3
+    },
+    "wearPerDay": 0.016,
+    "lighting": {
+      "color": "#F3F6FF",
+      "occupied": 1.0,
+      "empty": 0.0,
+      "wattsPerModule": 11
+    }
+  }
+]

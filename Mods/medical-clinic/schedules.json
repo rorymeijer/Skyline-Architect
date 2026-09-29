@@ -1,0 +1,29 @@
+[
+  {
+    "id": "medical-clinic-staff",
+    "role": "worker",
+    "events": [
+      {
+        "at": "07:45",
+        "jitterMinutes": 15,
+        "goal": "work"
+      },
+      {
+        "at": "12:30",
+        "jitterMinutes": 15,
+        "goal": "lunch",
+        "chance": 0.5
+      },
+      {
+        "at": "13:15",
+        "jitterMinutes": 10,
+        "goal": "work"
+      },
+      {
+        "at": "18:00",
+        "jitterMinutes": 20,
+        "goal": "outside"
+      }
+    ]
+  }
+]

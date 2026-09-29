@@ -1,0 +1,31 @@
+[
+  {
+    "id": "cafe-bakery-shop",
+    "name": "Café-Bakery",
+    "category": "amenity",
+    "kind": "room",
+    "appearance": "restaurant",
+    "minWidth": 5,
+    "maxWidth": 12,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1400,
+    "lowestLevel": 0,
+    "highestLevel": 1,
+    "noise": 0.2,
+    "rentPerModule": 290,
+    "maintenancePerModulePerDay": 6,
+    "utilityDemand": {
+      "electricity": 3,
+      "hvac": 1.5,
+      "water": 1.5
+    },
+    "wearPerDay": 0.013,
+    "lighting": {
+      "color": "#FFD7A3",
+      "occupied": 1.0,
+      "empty": 0.05,
+      "wattsPerModule": 10
+    }
+  }
+]

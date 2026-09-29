@@ -1,0 +1,35 @@
+[
+  {
+    "id": "ember-coast-promenade",
+    "name": "Promenade Lot",
+    "cityID": "ember-coast",
+    "frontageModules": 44,
+    "maxBasementFloors": 2,
+    "siteMarginModules": 40,
+    "foundation": {
+      "buildingName": "Promenade House",
+      "footprintOffsetModules": 6,
+      "footprintModules": 32,
+      "basementFloors": 1,
+      "pileDepthMeters": 16,
+      "pileSpacingModules": 4
+    }
+  },
+  {
+    "id": "ember-coast-dune-row",
+    "name": "Dune Row",
+    "cityID": "ember-coast",
+    "frontageModules": 32,
+    "maxBasementFloors": 1,
+    "siteMarginModules": 40,
+    "price": 650000,
+    "foundation": {
+      "buildingName": "Dune House",
+      "footprintOffsetModules": 4,
+      "footprintModules": 24,
+      "basementFloors": 1,
+      "pileDepthMeters": 14,
+      "pileSpacingModules": 4
+    }
+  }
+]

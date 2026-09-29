@@ -1,0 +1,18 @@
+[
+  {
+    "id": "night-market-stall-staff",
+    "role": "worker",
+    "events": [
+      {
+        "at": "16:00",
+        "jitterMinutes": 20,
+        "goal": "work"
+      },
+      {
+        "at": "02:30",
+        "jitterMinutes": 10,
+        "goal": "outside"
+      }
+    ]
+  }
+]

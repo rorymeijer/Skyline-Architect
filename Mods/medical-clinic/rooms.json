@@ -1,0 +1,31 @@
+[
+  {
+    "id": "medical-clinic-practice",
+    "name": "Medical Clinic",
+    "category": "office",
+    "kind": "room",
+    "appearance": "office",
+    "minWidth": 8,
+    "maxWidth": 16,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1500,
+    "lowestLevel": 0,
+    "noise": 0.05,
+    "rentPerModule": 360,
+    "maintenancePerModulePerDay": 8,
+    "utilityDemand": {
+      "electricity": 3,
+      "hvac": 3,
+      "water": 2.5,
+      "data": 2
+    },
+    "wearPerDay": 0.013,
+    "lighting": {
+      "color": "#F2FFFB",
+      "occupied": 1.0,
+      "empty": 0.0,
+      "wattsPerModule": 12
+    }
+  }
+]

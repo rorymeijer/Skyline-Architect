@@ -1,0 +1,14 @@
+{
+  "id": "ember-coast",
+  "name": "Ember Coast",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A hot resort coast with busy promenades, dear cooling and the scenario \"High Season\".",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "cities": "cities.json",
+    "plots": "plots.json",
+    "starts": "starts.json",
+    "scenarios": "scenarios.json"
+  }
+}

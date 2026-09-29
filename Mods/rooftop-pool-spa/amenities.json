@@ -1,0 +1,23 @@
+[
+  {
+    "room": "rooftop-pool-spa-club",
+    "opens": "07:00",
+    "closes": "22:00",
+    "occasions": [
+      "leisure"
+    ],
+    "capacityPerModule": 0.7,
+    "stayMinutes": 90,
+    "spendPerVisit": 38,
+    "turnoverShare": 0.1,
+    "streetVisitorsPerModulePerHour": 0.15,
+    "busyHours": [
+      7,
+      18,
+      19,
+      20
+    ],
+    "heightBonusPerFloor": 0.025,
+    "appeal": 0.04
+  }
+]

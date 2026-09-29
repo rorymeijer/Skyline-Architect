@@ -1,0 +1,41 @@
+[
+  {
+    "id": "reedwater-delta",
+    "name": "Reedwater",
+    "description": "A fast-growing delta town on deep river clay and sand: cheap land, many newcomers, long piles.",
+    "seed": 2281,
+    "geology": [
+      {
+        "material": "paving",
+        "thickness": 0.3
+      },
+      {
+        "material": "topsoil",
+        "thickness": 1.8
+      },
+      {
+        "material": "clay",
+        "thickness": 14.0
+      },
+      {
+        "material": "sand",
+        "thickness": 9.0
+      },
+      {
+        "material": "gravel",
+        "thickness": 3.0
+      },
+      {
+        "material": "bedrock",
+        "thickness": 1.0
+      }
+    ],
+    "economy": {
+      "rent": 0.85,
+      "construction": 0.85,
+      "demand": 1.3,
+      "tax": 0.9,
+      "energy": 0.95
+    }
+  }
+]

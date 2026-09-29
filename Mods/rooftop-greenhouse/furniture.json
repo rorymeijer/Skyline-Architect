@@ -1,0 +1,260 @@
+[
+  {
+    "id": "rooftop-greenhouse-planter-bed",
+    "name": "Raised planter bed",
+    "width": 2.0,
+    "height": 1.1,
+    "parts": [
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0,
+        "w": 0.08,
+        "h": 0.6,
+        "material": "metalDark"
+      },
+      {
+        "shape": "rect",
+        "x": 1.92,
+        "y": 0,
+        "w": 0.08,
+        "h": 0.6,
+        "material": "metalDark"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0.6,
+        "w": 2.0,
+        "h": 0.28,
+        "material": "woodOak",
+        "shade": 0.9
+      },
+      {
+        "shape": "rect",
+        "x": 0.05,
+        "y": 0.84,
+        "w": 1.9,
+        "h": 0.06,
+        "material": "rooftopGreenhouseSoil"
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.1,
+        "y": 0.86,
+        "w": 0.45,
+        "h": 0.24,
+        "material": "leafGreen"
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.55,
+        "y": 0.86,
+        "w": 0.45,
+        "h": 0.22,
+        "material": "leafDark"
+      },
+      {
+        "shape": "ellipse",
+        "x": 1.0,
+        "y": 0.86,
+        "w": 0.45,
+        "h": 0.24,
+        "material": "leafLight"
+      },
+      {
+        "shape": "ellipse",
+        "x": 1.45,
+        "y": 0.86,
+        "w": 0.45,
+        "h": 0.22,
+        "material": "leafGreen"
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.3,
+        "y": 0.98,
+        "w": 0.08,
+        "h": 0.08,
+        "material": "rooftopGreenhouseTomato",
+        "minDetail": 20
+      },
+      {
+        "shape": "ellipse",
+        "x": 1.2,
+        "y": 0.97,
+        "w": 0.08,
+        "h": 0.08,
+        "material": "rooftopGreenhouseTomato",
+        "minDetail": 20
+      }
+    ]
+  },
+  {
+    "id": "rooftop-greenhouse-grow-light",
+    "name": "Grow light",
+    "width": 1.6,
+    "height": 0.25,
+    "parts": [
+      {
+        "shape": "line",
+        "points": [
+          [
+            0.2,
+            0.25
+          ],
+          [
+            0.2,
+            0.12
+          ]
+        ],
+        "material": "metalDark",
+        "lineWidth": 0.02
+      },
+      {
+        "shape": "line",
+        "points": [
+          [
+            1.4,
+            0.25
+          ],
+          [
+            1.4,
+            0.12
+          ]
+        ],
+        "material": "metalDark",
+        "lineWidth": 0.02
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0,
+        "w": 1.6,
+        "h": 0.12,
+        "material": "metalDark"
+      },
+      {
+        "shape": "rect",
+        "x": 0.05,
+        "y": 0.0,
+        "w": 1.5,
+        "h": 0.05,
+        "material": "rooftopGreenhouseGrowLight",
+        "opacity": 0.9
+      }
+    ]
+  },
+  {
+    "id": "rooftop-greenhouse-hydro-rack",
+    "name": "Hydroponic rack",
+    "width": 1.1,
+    "height": 2.1,
+    "parts": [
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0,
+        "w": 0.05,
+        "h": 2.1,
+        "material": "steel"
+      },
+      {
+        "shape": "rect",
+        "x": 1.05,
+        "y": 0,
+        "w": 0.05,
+        "h": 2.1,
+        "material": "steel"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 0.3,
+        "w": 1.1,
+        "h": 0.06,
+        "material": "plasticWhite"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 1.0,
+        "w": 1.1,
+        "h": 0.06,
+        "material": "plasticWhite"
+      },
+      {
+        "shape": "rect",
+        "x": 0,
+        "y": 1.7,
+        "w": 1.1,
+        "h": 0.06,
+        "material": "plasticWhite"
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.08,
+        "y": 0.36,
+        "w": 0.45,
+        "h": 0.3,
+        "material": "leafLight"
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.55,
+        "y": 0.36,
+        "w": 0.45,
+        "h": 0.28,
+        "material": "leafGreen"
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.08,
+        "y": 1.06,
+        "w": 0.45,
+        "h": 0.3,
+        "material": "leafGreen"
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.55,
+        "y": 1.06,
+        "w": 0.45,
+        "h": 0.28,
+        "material": "leafLight"
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.08,
+        "y": 1.76,
+        "w": 0.45,
+        "h": 0.28,
+        "material": "leafDark"
+      },
+      {
+        "shape": "ellipse",
+        "x": 0.55,
+        "y": 1.76,
+        "w": 0.45,
+        "h": 0.3,
+        "material": "leafGreen"
+      },
+      {
+        "shape": "line",
+        "points": [
+          [
+            0.02,
+            0.2
+          ],
+          [
+            1.08,
+            0.2
+          ]
+        ],
+        "material": "pipeBlue",
+        "lineWidth": 0.03,
+        "minDetail": 18
+      }
+    ]
+  }
+]

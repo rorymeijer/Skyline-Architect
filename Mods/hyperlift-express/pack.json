@@ -1,0 +1,12 @@
+{
+  "id": "hyperlift-express",
+  "name": "Hyperlift Express",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A very fast shuttle elevator that only stops at its ends; dear and wears quickly.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "rooms": "rooms.json",
+    "elevators": "elevators.json"
+  }
+}

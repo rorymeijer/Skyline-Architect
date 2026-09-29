@@ -1,0 +1,21 @@
+[
+  {
+    "id": "hyperlift-express-shaft",
+    "name": "Hyperlift Shaft",
+    "category": "circulation",
+    "kind": "shaft",
+    "appearance": "expressElevatorShaft",
+    "minWidth": 3,
+    "maxWidth": 3,
+    "minFloors": 2,
+    "maxFloors": 1000,
+    "costPerModule": 11000,
+    "transport": "elevator",
+    "noise": 0.4,
+    "maintenancePerModulePerDay": 26,
+    "utilityDemand": {
+      "electricity": 4.5
+    },
+    "unlockClass": 3
+  }
+]

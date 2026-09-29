@@ -1,0 +1,27 @@
+[
+  {
+    "id": "medical-clinic-practice",
+    "name": "Family practice",
+    "kind": "business",
+    "rooms": [
+      "medical-clinic-practice"
+    ],
+    "role": "worker",
+    "members": {
+      "perModule": 0.2
+    },
+    "schedules": [
+      "medical-clinic-staff"
+    ],
+    "budgetPerModule": 430,
+    "weights": {
+      "rent": 0.25,
+      "access": 0.5,
+      "noise": 0.2,
+      "view": 0.05
+    },
+    "minScore": 0.58,
+    "leaveBelow": 0.43,
+    "prospectsPerDay": 1.5
+  }
+]

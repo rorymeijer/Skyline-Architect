@@ -1,0 +1,23 @@
+[
+  {
+    "room": "cafe-bakery-shop",
+    "opens": "06:30",
+    "closes": "16:00",
+    "occasions": [
+      "lunch",
+      "leisure"
+    ],
+    "capacityPerModule": 1.2,
+    "stayMinutes": 25,
+    "spendPerVisit": 11,
+    "turnoverShare": 0.09,
+    "streetVisitorsPerModulePerHour": 0.5,
+    "busyHours": [
+      7,
+      8,
+      12,
+      13
+    ],
+    "appeal": 0.03
+  }
+]

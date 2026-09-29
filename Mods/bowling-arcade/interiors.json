@@ -1,0 +1,45 @@
+[
+  {
+    "room": "bowling-arcade-hall",
+    "items": [
+      {
+        "furniture": "door-office",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "furniture": "bar-counter",
+        "anchor": "left",
+        "offset": 1.5
+      },
+      {
+        "furniture": "bowling-arcade-arcade-cabinet",
+        "anchor": "right",
+        "offset": 0.2
+      },
+      {
+        "furniture": "bowling-arcade-arcade-cabinet",
+        "anchor": "right",
+        "offset": 1.1
+      },
+      {
+        "furniture": "bowling-arcade-arcade-cabinet",
+        "anchor": "right",
+        "offset": 2.0,
+        "minRoomWidth": 18
+      },
+      {
+        "repeat": {
+          "spacing": 6.4,
+          "margin": 0.35,
+          "items": [
+            {
+              "furniture": "bowling-arcade-lane",
+              "offset": 0
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

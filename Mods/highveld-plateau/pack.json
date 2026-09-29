@@ -1,0 +1,14 @@
+{
+  "id": "highveld-plateau",
+  "name": "Highveld Plateau",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A high-rent plateau business city with wide lots and the hard scenario \"Prime Address\".",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "cities": "cities.json",
+    "plots": "plots.json",
+    "starts": "starts.json",
+    "scenarios": "scenarios.json"
+  }
+}

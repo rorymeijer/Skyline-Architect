@@ -1,0 +1,46 @@
+[
+  {
+    "id": "ember-coast-high-season",
+    "name": "High Season",
+    "difficulty": "medium",
+    "summary": "Fill the promenade before the summer crowds leave.",
+    "briefing": "The Ember Coast lives from its promenade. Shops, restaurants and bars fill up with visitors, but cooling costs bite in the heat. Earn a daily profit of $15,000 and let 20 units within 20 days.",
+    "startID": "ember-coast-standard",
+    "days": 20,
+    "objectives": [
+      {
+        "metric": "dailyProfit",
+        "target": 15000
+      },
+      {
+        "metric": "occupiedUnits",
+        "target": 20
+      }
+    ],
+    "events": [
+      {
+        "day": 4,
+        "hour": 6,
+        "kind": "weather",
+        "message": "A heatwave settles over the coast",
+        "weather": "heat"
+      },
+      {
+        "day": 6,
+        "hour": 9,
+        "kind": "demand",
+        "message": "Festival week: shops and restaurants want in",
+        "multiplier": 2.5,
+        "days": 3,
+        "tenantType": "bistro"
+      },
+      {
+        "day": 12,
+        "hour": 6,
+        "kind": "weather",
+        "message": "Another heatwave on the coast",
+        "weather": "heat"
+      }
+    ]
+  }
+]

@@ -1,0 +1,40 @@
+[
+  {
+    "room": "rooftop-greenhouse-farm",
+    "items": [
+      {
+        "furniture": "door-office",
+        "anchor": "left",
+        "offset": 0.3
+      },
+      {
+        "furniture": "rooftop-greenhouse-hydro-rack",
+        "anchor": "right",
+        "offset": 0.15
+      },
+      {
+        "furniture": "pump-set",
+        "anchor": "left",
+        "offset": 1.5,
+        "minRoomWidth": 10
+      },
+      {
+        "repeat": {
+          "spacing": 2.3,
+          "margin": 0.35,
+          "items": [
+            {
+              "furniture": "rooftop-greenhouse-planter-bed",
+              "offset": 0
+            },
+            {
+              "furniture": "rooftop-greenhouse-grow-light",
+              "offset": 0.2,
+              "elevation": 2.7
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

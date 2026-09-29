@@ -1,0 +1,31 @@
+[
+  {
+    "id": "bowling-arcade-hall",
+    "name": "Bowling & Arcade",
+    "category": "amenity",
+    "kind": "room",
+    "appearance": "cinema",
+    "minWidth": 14,
+    "maxWidth": 28,
+    "minFloors": 1,
+    "maxFloors": 1,
+    "costPerModule": 1600,
+    "lowestLevel": -2,
+    "highestLevel": 0,
+    "noise": 0.75,
+    "rentPerModule": 210,
+    "maintenancePerModulePerDay": 8,
+    "utilityDemand": {
+      "electricity": 4,
+      "hvac": 2
+    },
+    "wearPerDay": 0.016,
+    "unlockClass": 1,
+    "lighting": {
+      "color": "#C9A6FF",
+      "occupied": 0.7,
+      "empty": 0.05,
+      "wattsPerModule": 9
+    }
+  }
+]

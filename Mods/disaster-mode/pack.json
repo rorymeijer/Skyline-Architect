@@ -1,0 +1,11 @@
+{
+  "id": "disaster-mode",
+  "name": "Disaster Mode",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "More fires, a slower fire brigade and extra incidents: flooding, cooling and network failures.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "events": "events.json"
+  }
+}

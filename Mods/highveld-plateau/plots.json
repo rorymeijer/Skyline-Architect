@@ -1,0 +1,35 @@
+[
+  {
+    "id": "highveld-plateau-avenue-lot",
+    "name": "Exchange Avenue Lot",
+    "cityID": "highveld-plateau",
+    "frontageModules": 56,
+    "maxBasementFloors": 4,
+    "siteMarginModules": 40,
+    "foundation": {
+      "buildingName": "Plateau Exchange",
+      "footprintOffsetModules": 8,
+      "footprintModules": 40,
+      "basementFloors": 2,
+      "pileDepthMeters": 12,
+      "pileSpacingModules": 4
+    }
+  },
+  {
+    "id": "highveld-plateau-summit-block",
+    "name": "Summit Block",
+    "cityID": "highveld-plateau",
+    "frontageModules": 64,
+    "maxBasementFloors": 4,
+    "siteMarginModules": 40,
+    "price": 3200000,
+    "foundation": {
+      "buildingName": "Summit Towers",
+      "footprintOffsetModules": 8,
+      "footprintModules": 48,
+      "basementFloors": 2,
+      "pileDepthMeters": 12,
+      "pileSpacingModules": 4
+    }
+  }
+]

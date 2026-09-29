@@ -1,0 +1,29 @@
+[
+  {
+    "id": "luxury-penthouse-wealthy-household",
+    "name": "Wealthy household",
+    "kind": "household",
+    "rooms": [
+      "luxury-penthouse-suite"
+    ],
+    "role": "resident",
+    "members": {
+      "fixed": 3
+    },
+    "schedules": [
+      "resident-late",
+      "resident-commuter"
+    ],
+    "budgetPerModule": 560,
+    "weights": {
+      "rent": 0.05,
+      "access": 0.3,
+      "noise": 0.25,
+      "view": 0.4
+    },
+    "minScore": 0.68,
+    "leaveBelow": 0.52,
+    "prospectsPerDay": 1,
+    "minClass": 3
+  }
+]

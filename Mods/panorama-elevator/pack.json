@@ -1,0 +1,12 @@
+{
+  "id": "panorama-elevator",
+  "name": "Glass Panorama Elevator",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "A wide glass scenic elevator: slow, roomy, and people wait for it patiently.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "rooms": "rooms.json",
+    "elevators": "elevators.json"
+  }
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "modern-living-design-lover",
+    "name": "Design-minded couple",
+    "kind": "household",
+    "rooms": [
+      "modern-living-apartment"
+    ],
+    "role": "resident",
+    "members": {
+      "fixed": 2
+    },
+    "schedules": [
+      "resident-late"
+    ],
+    "budgetPerModule": 300,
+    "weights": {
+      "rent": 0.2,
+      "access": 0.3,
+      "noise": 0.2,
+      "view": 0.3
+    },
+    "minScore": 0.62,
+    "leaveBelow": 0.47,
+    "prospectsPerDay": 3,
+    "minClass": 1
+  },
+  {
+    "id": "modern-living-creative-agency",
+    "name": "Creative agency",
+    "kind": "business",
+    "rooms": [
+      "modern-living-office"
+    ],
+    "role": "worker",
+    "members": {
+      "perModule": 0.28
+    },
+    "schedules": [
+      "office-late"
+    ],
+    "budgetPerModule": 470,
+    "weights": {
+      "rent": 0.2,
+      "access": 0.3,
+      "noise": 0.25,
+      "view": 0.25
+    },
+    "minScore": 0.6,
+    "leaveBelow": 0.45,
+    "prospectsPerDay": 2,
+    "minClass": 1
+  }
+]

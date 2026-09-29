@@ -1,0 +1,11 @@
+{
+  "id": "hard-economy",
+  "name": "Hard Economy",
+  "version": "1.0.0",
+  "formatVersion": 1,
+  "description": "For veterans: dearer loans, higher taxes and bills, less time before bankruptcy.",
+  "author": "Skyline Architect community pack",
+  "files": {
+    "economy": "economy.json"
+  }
+}
