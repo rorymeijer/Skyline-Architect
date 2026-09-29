@@ -134,9 +134,10 @@ private struct PagerButton: View {
 }
 
 /// Splits a chapter into pages that fit the manual's reading area, by an estimate of each
-/// block's height in lines (about 80 characters of body text per line).
+/// block's height in lines (about 100 characters of callout text per line, measured in
+/// the captures; tables in caption type).
 enum ManualPages {
-    static let linesPerPage = 27
+    static let linesPerPage = 26
 
     static func split(_ chapter: ManualChapter) -> [[ManualBlock]] {
         var pages: [[ManualBlock]] = [[]]
@@ -157,15 +158,15 @@ enum ManualPages {
     }
 
     static func height(_ block: ManualBlock) -> Int {
-        func lines(_ text: String, per: Int = 80) -> Int { max(1, (ManualMarkdown.strip(text).count + per - 1) / per) }
+        func lines(_ text: String, per: Int = 100) -> Int { max(1, (ManualMarkdown.strip(text).count + per - 1) / per) }
         switch block {
         case .heading: return 2
         case let .paragraph(t): return lines(t) + 1
-        case let .note(t): return lines(t, per: 72) + 2
-        case let .bullets(items), let .numbered(items): return items.reduce(1) { $0 + lines($1, per: 76) }
+        case let .note(t): return lines(t, per: 90) + 2
+        case let .bullets(items), let .numbered(items): return items.reduce(1) { $0 + lines($1, per: 95) }
         case let .table(header, rows):
             let columns = max(header.count, 1)
-            return rows.reduce(3) { total, row in total + (row.map { lines($0, per: 90 / columns) }.max() ?? 1) }
+            return rows.reduce(3) { total, row in total + (row.map { lines($0, per: 110 / columns) }.max() ?? 1) }
         }
     }
 }
