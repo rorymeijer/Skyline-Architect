@@ -6,23 +6,23 @@
       "centerX" : 24,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 59.995320365009704,
-      "frameTimeMs" : 16.667966666667176,
-      "memoryMB" : 157.84375,
+      "fps" : 59.74287661619056,
+      "frameTimeMs" : 16.738397222222073,
+      "memoryMB" : 150.328125,
       "nodeCount" : 85,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
         "light" : 0,
         "overlays" : 0,
-        "people" : 0.2,
+        "people" : 0.1,
         "sim" : 0,
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.526436111105492,
+      "sceneUpdateMs" : 0.4304694444651128,
       "tileLevel" : 2,
-      "tileRasterMs" : 9.013341666673115,
+      "tileRasterMs" : 9.275563888869934,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -37,7 +37,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0906509160995483
+    "waitSeconds" : 1.0796719789505005
   },
   {
     "diagnostics" : {
@@ -46,9 +46,9 @@
       "centerX" : 24,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 59.590859093268534,
-      "frameTimeMs" : 16.78109722222416,
-      "memoryMB" : 174.171875,
+      "fps" : 59.99884002241552,
+      "frameTimeMs" : 16.666988888891865,
+      "memoryMB" : 166.9375,
       "nodeCount" : 75,
       "sceneSections" : {
         "cars" : 0.1,
@@ -60,9 +60,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.38999166667963436,
+      "sceneUpdateMs" : 0.5050972222306882,
       "tileLevel" : 2,
-      "tileRasterMs" : 9.013341666673115,
+      "tileRasterMs" : 9.275563888869934,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -73,11 +73,11 @@
     },
     "file" : "02-result.png",
     "grid" : false,
-    "note" : "Day 3 · 07:00: the closing decided it — won, 3 stars, 1885 points (a new best in the record).",
+    "note" : "Day 3 · 07:00: the closing decided it — not yet decided.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0860000848770142
+    "waitSeconds" : 1.0574079751968384
   },
   {
     "diagnostics" : {
@@ -86,9 +86,9 @@
       "centerX" : 24,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 59.999240634612846,
-      "frameTimeMs" : 16.666877604166075,
-      "memoryMB" : 177.265625,
+      "fps" : 59.74991672355662,
+      "frameTimeMs" : 16.736424999999144,
+      "memoryMB" : 171.9375,
       "nodeCount" : 75,
       "sceneSections" : {
         "cars" : 0.1,
@@ -100,9 +100,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.3566718750036557,
+      "sceneUpdateMs" : 0.4895583333336617,
       "tileLevel" : 2,
-      "tileRasterMs" : 9.013341666673115,
+      "tileRasterMs" : 9.275563888869934,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -113,11 +113,11 @@
     },
     "file" : "03-browser-record.png",
     "grid" : false,
-    "note" : "The scenario browser: Opening Day's record — 3 stars, best 1885 points, 1 of 1 won.",
+    "note" : "The scenario browser: Opening Day's record — none.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0761220455169678
+    "waitSeconds" : 1.0697649717330933
   },
   {
     "diagnostics" : {
@@ -126,9 +126,9 @@
       "centerX" : 24,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 59.52056187411675,
-      "frameTimeMs" : 16.800916666663095,
-      "memoryMB" : 179.40625,
+      "fps" : 59.99502228800093,
+      "frameTimeMs" : 16.668049479164893,
+      "memoryMB" : 177.015625,
       "nodeCount" : 75,
       "sceneSections" : {
         "cars" : 0.1,
@@ -140,9 +140,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.508241666655825,
+      "sceneUpdateMs" : 0.38273697916935134,
       "tileLevel" : 2,
-      "tileRasterMs" : 9.013341666673115,
+      "tileRasterMs" : 9.275563888869934,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -157,7 +157,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0358580350875854
+    "waitSeconds" : 1.0006450414657593
   },
   {
     "diagnostics" : {
@@ -166,9 +166,9 @@
       "centerX" : 24,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 60.45341953820347,
-      "frameTimeMs" : 16.541661458340684,
-      "memoryMB" : 179.015625,
+      "fps" : 59.944082162038285,
+      "frameTimeMs" : 16.68221388888469,
+      "memoryMB" : 172.53125,
       "nodeCount" : 61,
       "sceneSections" : {
         "cars" : 0.1,
@@ -180,9 +180,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.3364453124916622,
+      "sceneUpdateMs" : 0.46245833332250186,
       "tileLevel" : 2,
-      "tileRasterMs" : 9.3324083333376,
+      "tileRasterMs" : 9.426747222209995,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -197,6 +197,6 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0824310779571533
+    "waitSeconds" : 1.0914710760116577
   }
 ]
