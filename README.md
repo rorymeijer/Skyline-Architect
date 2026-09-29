@@ -5,7 +5,7 @@ and iPhone (landscape). Swift · SwiftUI · SpriteKit. No third-party engines, n
 
 <img src="App/Assets.xcassets/AppIcon.appiconset/mac-256.png" width="128" alt="App icon: a cut-away tower at dusk">
 
-## What the game does (0.29.0)
+## What the game does (0.29.1)
 
 Build a tower in cross-section and keep it running.
 

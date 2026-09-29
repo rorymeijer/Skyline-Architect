@@ -424,6 +424,33 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-061 — The Mac app runs in the App Sandbox
+- **Date:** 2026-09-29
+- **Decision:**
+  - The macOS build is signed with `Config/SkylineArchitect-macOS.entitlements`, which turns
+    on `com.apple.security.app-sandbox` (the Mac App Store refuses apps without it). It is set
+    for the macOS SDK only (`CODE_SIGN_ENTITLEMENTS[sdk=macosx*]`); iOS apps are always
+    sandboxed and take no such key.
+  - No other entitlements. The app reads its bundle and writes only in Application Support
+    (saves, mods, settings), which the sandbox redirects into the app's container. Opening the
+    mods folder in Finder is allowed.
+  - iCloud Drive sync still needs the iCloud entitlement and container (a later step); until
+    then it reports iCloud as unavailable, as before.
+  - CI builds a Release app with ad-hoc signing and checks the entitlement in its signature
+    (`Scripts/check-sandbox.sh`).
+- **Alternatives:**
+  - `ENABLE_APP_SANDBOX` as a build setting (the file is explicit and easy to review).
+  - Sandboxing Release only (Debug runs would then behave unlike the shipped app).
+- **Reason:** It is required for the Mac App Store, and the app already keeps all its files in
+  places the sandbox allows.
+- **Consequences:**
+  - A signed build keeps its files in
+    `~/Library/Containers/app.skylinearchitect.SkylineArchitect/Data/Library/Application Support/`.
+    Saves made by earlier unsandboxed builds stay in `~/Library/Application Support/` and are
+    not moved (no players yet, so there is no migration).
+  - The capture scripts build unsigned apps (`CODE_SIGNING_ALLOWED=NO`), so they are not
+    sandboxed and can still write their screenshots anywhere.
+
 ## D-060 — F5: the iPhone as a compact layout of the same chrome
 - **Date:** 2026-09-29
 - **Decision:**

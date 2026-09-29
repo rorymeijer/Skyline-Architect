@@ -2,6 +2,15 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.29.1] — App Sandbox
+
+### Changed
+- **macOS:** the app runs in the App Sandbox, as the Mac App Store requires. Saves, mods and
+  settings now live in the app's container
+  (`~/Library/Containers/app.skylinearchitect.SkylineArchitect/`); saves from earlier
+  development builds are not moved there.
+- **CI** checks that the signed Release build carries the sandbox entitlement.
+
 ## [0.29.0] — F5: iPhone
 
 ### Added
