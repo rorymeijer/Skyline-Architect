@@ -28,6 +28,14 @@ public struct NavigationMetrics: Equatable, Sendable {
 public final class NavigationService: @unchecked Sendable {
     struct RouteKey: Hashable {
         var fromFloor: Int, fromX: UInt64, toFloor: Int, toX: UInt64, mode: RouteMode
+        /// Broken-down cars at query time (sorted ids): routes around them are cached apart,
+        /// and the usual ones are there again once they run.
+        var excluded: [RoomID]
+    }
+
+    /// Elevator shafts of a building whose car is out of service now (id order).
+    static func brokenShafts(in building: BuildingID, world: GameWorld) -> [RoomID] {
+        world.elevators.values.compactMap { $0.buildingID == building && $0.isOutOfService ? $0.id : nil }.sorted()
     }
 
     struct BuildingNavigation {
@@ -88,13 +96,14 @@ public final class NavigationService: @unchecked Sendable {
         lock.lock(); defer { lock.unlock() }
         let graph = buildings[building.id]?.graph ?? build(building, world: world, catalog: catalog, rules: rules)
         counters.queries += 1
-        let key = RouteKey(fromFloor: from.floor, fromX: from.x.bitPattern, toFloor: to.floor, toX: to.x.bitPattern, mode: mode)
+        let broken = Self.brokenShafts(in: building.id, world: world)
+        let key = RouteKey(fromFloor: from.floor, fromX: from.x.bitPattern, toFloor: to.floor, toX: to.x.bitPattern, mode: mode, excluded: broken)
         let found: [Int]?
         if let cached = buildings[building.id]?.routes[key] {
             counters.cacheHits += 1
             found = cached
         } else {
-            found = graph.shortestPath(from: from, to: to, walkSpeed: rules.walkSpeed, mode: mode)
+            found = graph.shortestPath(from: from, to: to, walkSpeed: rules.walkSpeed, mode: mode, excluded: Set(broken))
             if buildings[building.id]!.routes.count >= Self.cacheLimit {
                 buildings[building.id]!.routes.removeAll(keepingCapacity: true)
             }
@@ -137,5 +146,19 @@ public final class NavigationService: @unchecked Sendable {
         buildings[building.id] = BuildingNavigation(graph: graph)
         counters.graphBuilds += 1
         return graph
+    }
+}
+
+extension SimulationEngine {
+    /// Fills the route cache with the trips the daily review and the market measure (street
+    /// to every rentable unit). Safe to run on a background queue right after a world is
+    /// installed or loaded: the cache is locked and never changes a result, so the first
+    /// closing after a load no longer plans ~1,000 routes at once (F2).
+    public func warmRouteCache(_ world: GameWorld) {
+        navigation.refresh(world: world, catalog: catalog)
+        for room in world.rooms where catalog.spec(room.definitionID)?.rentPerModule != nil {
+            guard let building = world.buildings[room.buildingID] else { continue }
+            _ = Leasing.accessSeconds(to: room, building: building, world: world, engine: self)
+        }
     }
 }
