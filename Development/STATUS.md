@@ -27,7 +27,7 @@ Evidence:
   and the website pages being up to date.
 - The website was checked in Chromium at desktop and phone width, light and dark, with no
   horizontal overflow and a working search.
-- The app side is verified by the macOS CI build and captures (see below).
+- The app side is verified by the macOS CI build and captures in `Development/Screenshots/Help-0.27/` (CI run 36546858116).
 
 F2 (merged): a 526-floor tower simulates 2.5× faster, with its worst step at 134 ms and the
 daily closing at 65 ms (PERFORMANCE.md, D-057).
