@@ -24,6 +24,12 @@ _Last updated: 2026-09-29 (0.29.2 — every screen on the iPhone; App Store prep
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
 
+**Fix (after 0.29.2):** on iPad and iPhone the mods folder did not show in the Files app.
+`INFOPLIST_KEY_UIFileSharingEnabled` is not a build setting Xcode knows, so the key was
+dropped without an error. It now comes from `Config/Info-iOS.plist`, and CI checks the built
+Info.plist (`Scripts/check-files-app.sh`, green). Not verified on a device yet: this needs a
+new TestFlight build.
+
 **Mods:** `Mods/` holds 24 community content mods: cities, rooms and tenants, amenities,
 elevators, rule changes, scenarios, furniture and blueprints (see `Mods/README.md`).
 None of them changes the base pack. FUNCTIONAL: `CommunityModsTests` loads each mod on its own

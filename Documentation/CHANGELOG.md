@@ -2,6 +2,17 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [Unreleased]
+
+### Fixed
+- **iPad and iPhone:** the mods folder now shows in the Files app (*On My iPhone/iPad ▸
+  Skyline Architect ▸ Mods*). In 0.29.2 the `UIFileSharingEnabled` key never reached the
+  built app, so the folder did not appear. The key now comes from `Config/Info-iOS.plist`,
+  and CI checks the built Info.plist (`Scripts/check-files-app.sh`).
+
+### Added
+- `Mods/`: 24 community content mods (see `Mods/README.md`).
+
 ## [0.29.2] — Every screen on the iPhone; App Store preparation
 
 ### Changed
