@@ -19,6 +19,10 @@ Status: **FUNCTIONAL (Phase 17)**. Implemented:
 * hot reload without a new game;
 * sharing mods through a catalogue.
 
+To brief someone (or an AI assistant) on making a mod, share
+[MOD_AUTHORING_PROMPT.md](MOD_AUTHORING_PROMPT.md): a self-contained prompt with the format,
+the merge rules, the base ids and a checklist.
+
 ## Rules
 
 * Mods are **data only**: JSON, and later images and sprite sheets. There are no scripts, no
