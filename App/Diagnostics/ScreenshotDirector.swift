@@ -57,51 +57,8 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // F5 (0.29): the same script on the Mac, the iPad and the iPhone — the main menu, the
-    // tutorial with its construction steps and the palette's category row, the panel picker
-    // with a panel open, and the manual with its contents.
-    let steps: [Step] = [
-        Step(name: "01-main-menu", grid: false) { model, scene in
-            model.setSpeed(.paused)  // captures advance time explicitly
-            model.showDeveloperHUD = false
-            model.showMainMenu = true
-            return "The main menu (\(ScreenshotDirector.platform))."
-        },
-        Step(name: "02-tutorial-start", grid: false) { model, scene in
-            model.startTutorial()
-            model.refreshSimulationSummary()
-            return "First Tower started: \(ScreenshotDirector.tutorialNote(model))"
-        },
-        Step(name: "03-tutorial-built", grid: false) { model, scene in
-            let refused = ScreenshotDirector.buildTutorialSteps(model)
-            model.activeHint = nil
-            model.paletteCategory = "circulation"
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 1), zoom: 11) }
-            return "After the construction steps (\(refused) refused): \(ScreenshotDirector.tutorialNote(model)); the palette's Circulation category is open where the palette is grouped."
-        },
-        Step(name: "04-panel-picker", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 3 * 3600)
-            model.activeHint = nil
-            model.paletteCategory = nil
-            model.showTutorialPanel = false
-            model.showScenarioPanel = false
-            model.showLeasingPanel = true
-            model.showPanelPicker = true
-            model.refreshSimulationSummary()
-            model.activeHint = nil
-            return "\(model.clockText): the Leasing panel open; the panel picker open (it shows where the view controls are narrow)."
-        },
-        Step(name: "05-manual", grid: false) { model, scene in
-            model.showPanelPicker = false
-            model.openManual(chapter: "transport")
-            return "The manual at 'Stairs and elevators'."
-        },
-        Step(name: "06-manual-contents", grid: false) { model, scene in
-            model.manualShowContents = true
-            return "The manual's contents (a Contents button shows them where the chapter list does not fit beside the page)."
-        },
-    ]
+    // 0.29.2: the screen tour (ScreenshotDirector+Tour) on the Mac, the iPad and the iPhone.
+    let steps: [Step] = ScreenshotDirector.tourSteps
 
     init(configuration: Configuration, model: AppModel) {
         self.configuration = configuration
