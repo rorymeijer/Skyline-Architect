@@ -25,10 +25,13 @@ import AppKit
 final class ScreenshotDirector {
     struct Configuration {
         let directory: URL
+        /// `--capture-set store`: the App Store screenshots instead of the screen tour.
+        let set: String
 
         init?(arguments: [String]) {
             guard let i = arguments.firstIndex(of: "--capture-screenshots"), i + 1 < arguments.count else { return nil }
             directory = URL(fileURLWithPath: arguments[i + 1], isDirectory: true)
+            if let j = arguments.firstIndex(of: "--capture-set"), j + 1 < arguments.count { set = arguments[j + 1] } else { set = "tour" }
         }
     }
 
@@ -57,55 +60,14 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // F5 (0.29): the same script on the Mac, the iPad and the iPhone — the main menu, the
-    // tutorial with its construction steps and the palette's category row, the panel picker
-    // with a panel open, and the manual with its contents.
-    let steps: [Step] = [
-        Step(name: "01-main-menu", grid: false) { model, scene in
-            model.setSpeed(.paused)  // captures advance time explicitly
-            model.showDeveloperHUD = false
-            model.showMainMenu = true
-            return "The main menu (\(ScreenshotDirector.platform))."
-        },
-        Step(name: "02-tutorial-start", grid: false) { model, scene in
-            model.startTutorial()
-            model.refreshSimulationSummary()
-            return "First Tower started: \(ScreenshotDirector.tutorialNote(model))"
-        },
-        Step(name: "03-tutorial-built", grid: false) { model, scene in
-            let refused = ScreenshotDirector.buildTutorialSteps(model)
-            model.activeHint = nil
-            model.paletteCategory = "circulation"
-            model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 1), zoom: 11) }
-            return "After the construction steps (\(refused) refused): \(ScreenshotDirector.tutorialNote(model)); the palette's Circulation category is open where the palette is grouped."
-        },
-        Step(name: "04-panel-picker", grid: false) { model, scene in
-            model.advanceSimulation(ticks: 3 * 3600)
-            model.activeHint = nil
-            model.paletteCategory = nil
-            model.showTutorialPanel = false
-            model.showScenarioPanel = false
-            model.showLeasingPanel = true
-            model.showPanelPicker = true
-            model.refreshSimulationSummary()
-            model.activeHint = nil
-            return "\(model.clockText): the Leasing panel open; the panel picker open (it shows where the view controls are narrow)."
-        },
-        Step(name: "05-manual", grid: false) { model, scene in
-            model.showPanelPicker = false
-            model.openManual(chapter: "transport")
-            return "The manual at 'Stairs and elevators'."
-        },
-        Step(name: "06-manual-contents", grid: false) { model, scene in
-            model.manualShowContents = true
-            return "The manual's contents (a Contents button shows them where the chapter list does not fit beside the page)."
-        },
-    ]
+    // 0.29.2: the screen tour (ScreenshotDirector+Tour) on the Mac, the iPad and the iPhone,
+    // or the App Store set (ScreenshotDirector+Store).
+    let steps: [Step]
 
     init(configuration: Configuration, model: AppModel) {
         self.configuration = configuration
         self.model = model
+        steps = configuration.set == "store" ? ScreenshotDirector.storeSteps : ScreenshotDirector.tourSteps
     }
 
     func start() {
@@ -113,6 +75,12 @@ final class ScreenshotDirector {
         started = true
         #if os(macOS)
         NSApplication.shared.activate(ignoringOtherApps: true)
+        if configuration.set == "store", let window = NSApplication.shared.windows.first(where: { $0.isVisible }) {
+            // The Mac App Store takes 1440 × 900 (among others). CI screens are smaller, and a
+            // titled window is held to the screen; a borderless one is not.
+            window.styleMask = [.borderless]
+            window.setFrame(NSRect(x: 0, y: 0, width: 1440, height: 900), display: true)
+        }
         #endif
         try? FileManager.default.createDirectory(at: configuration.directory, withIntermediateDirectories: true)
         log("capturing \(steps.count) screenshots to \(configuration.directory.path)")

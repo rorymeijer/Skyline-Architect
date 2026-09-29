@@ -193,6 +193,7 @@ struct BankruptcyView: View {
             }
             .padding(32)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
+            .shrinkToFit()                                       // an iPhone (0.29.2)
         }
         .environment(\.colorScheme, .dark)
     }

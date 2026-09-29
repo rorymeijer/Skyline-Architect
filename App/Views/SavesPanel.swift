@@ -5,6 +5,12 @@ import SkylinePersistence
 /// Phase 2 load sheet; drawn in plain SwiftUI so it looks the same in captures and on iPad.
 struct SavesPanel: View {
     let model: AppModel
+
+    #if os(macOS)
+    static let noSavesText = "No saves yet. Use File ▸ Save (⌘S)."
+    #else
+    static let noSavesText = "No saves yet. Use the Save button in the view controls."
+    #endif
     @State private var confirmDelete: String?
 
     static let pageSize = 6
@@ -20,18 +26,22 @@ struct SavesPanel: View {
                 HStack {
                     Text("Saves").font(.ui(.title2).weight(.bold))
                     Spacer()
-                    Button { model.setSyncEnabled(!model.syncEnabled) } label: {
-                        Label(model.syncEnabled ? "iCloud Drive: On" : "iCloud Drive: Off",
-                              systemImage: model.syncEnabled ? "icloud.fill" : "icloud.slash")
-                            .font(.ui(.callout).weight(.semibold))
-                            .padding(.horizontal, 10).padding(.vertical, 5)
-                            .background(Capsule().fill(model.syncEnabled ? Color.accentColor.opacity(0.35) : Color.white.opacity(0.1)))
+                    if model.iCloudAvailable {
+                        Button { model.setSyncEnabled(!model.syncEnabled) } label: {
+                            Label(model.syncEnabled ? "iCloud Drive: On" : "iCloud Drive: Off",
+                                  systemImage: model.syncEnabled ? "icloud.fill" : "icloud.slash")
+                                .font(.ui(.callout).weight(.semibold))
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(Capsule().fill(model.syncEnabled ? Color.accentColor.opacity(0.35) : Color.white.opacity(0.1)))
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
-                Text(model.syncStatus).font(.ui(.caption)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                if model.iCloudAvailable {
+                    Text(model.syncStatus).font(.ui(.caption)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                }
                 if saves.isEmpty {
-                    Text("No saves yet. Use File ▸ Save (⌘S).").foregroundStyle(.secondary)
+                    Text(Self.noSavesText).foregroundStyle(.secondary)
                 }
                 ForEach(shown, id: \.slot) { info in
                     SaveRow(model: model, info: info, confirmDelete: $confirmDelete)
@@ -44,7 +54,7 @@ struct SavesPanel: View {
                     }
                 }
                 HStack {
-                    if model.syncEnabled { MenuButton(title: "Sync Now", subtitle: nil) { model.syncSaves() } }
+                    if model.syncEnabled && model.iCloudAvailable { MenuButton(title: "Sync Now", subtitle: nil) { model.syncSaves() } }
                     MenuButton(title: "Close", subtitle: nil) { model.showLoadSheet = false }
                 }
             }
@@ -52,6 +62,7 @@ struct SavesPanel: View {
             .frame(width: 560)
             .fixedSize(horizontal: false, vertical: true)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
+            .shrinkToFit()                                       // an iPhone (0.29.2)
         }
         .environment(\.colorScheme, .dark)
     }

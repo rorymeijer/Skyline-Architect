@@ -5,7 +5,7 @@ Mods are **content packs**: folders of JSON files that add or change cities, plo
 ## Installing
 
 1. Open **Mods…** from the main menu or the File menu.
-2. Press **Open Folder** (Mac) to open the mods folder, and put each mod's folder there. Or press **Install Examples** to add the example mod, *Kestrel Bay*.
+2. Put each mod's folder into the mods folder. On a Mac, **Open Folder** shows it in Finder. On an iPad or iPhone, open the **Files** app and go to *On My iPad* (or *iPhone*) ▸ *Skyline Architect* ▸ *Mods*. Or press **Install Examples** to add the example mod, *Kestrel Bay*.
 3. Press **Rescan**, turn the mods you want **On**, and put them in order with the arrows: later mods win.
 4. Press **Apply**. The game reloads its content and starts a new game, so save first.
 

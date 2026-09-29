@@ -2,6 +2,22 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.29.2] — Every screen on the iPhone; App Store preparation
+
+### Changed
+- **iPhone:** every screen fits: side panels and cards shrink in steps where they are too
+  tall; the scenario browser and the result screen have compact forms.
+- **iPad and iPhone:** the mods folder is in the Files app (*On My iPhone/iPad ▸ Skyline
+  Architect ▸ Mods*).
+- **Saves:** the iCloud switch only shows when iCloud is available; the empty-saves hint
+  names the Save button on iPad and iPhone.
+
+### Added
+- **App Store:** a document with every App Store Connect field and the notes for App Review
+  (`Documentation/APP_STORE.md`); support and privacy pages for the website; real App Store
+  screenshots from a new workflow (Mac 1440 × 900, iPhone 6.9", iPad 13").
+- The Info.plist declares that the app uses no non-exempt encryption.
+
 ## [0.29.1] — App Sandbox
 
 ### Changed

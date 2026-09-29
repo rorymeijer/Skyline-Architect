@@ -13,8 +13,9 @@ authoritative reference stays [MODDING.md](MODDING.md) and the base pack in
 3. If the assistant can read this repository, tell it to read the files listed under
    "Reference files" first. If not, attach `rooms.json`, `tenants.json`, `schedules.json`
    and the Kestrel Bay example files so it can copy real field values.
-4. Put the resulting folder in the mods folder (main menu → *Mods…* → *Open Folder*),
-   press *Rescan*, turn it on, press *Apply*. If it shows *Not loaded: …*, paste that
+4. Put the resulting folder in the mods folder: on a Mac, main menu → *Mods…* → *Open
+   Folder*; on an iPad or iPhone, the Files app → *On My iPad/iPhone ▸ Skyline Architect ▸
+   Mods*. Then press *Rescan*, turn it on, press *Apply*. If it shows *Not loaded: …*, paste that
    message back to the assistant — the message names the pack, file and entry.
 5. Optional, with the repository checked out: validate headlessly with the test snippet in
    "Headless validation" below.

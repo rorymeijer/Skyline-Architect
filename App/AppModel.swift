@@ -165,6 +165,10 @@ final class AppModel {
     var savesPage = 0
     /// Debug captures: a local folder standing in for iCloud Drive.
     @ObservationIgnored var syncFolderOverride: URL?
+    /// Whether the app has an iCloud container (needs the iCloud entitlement and a signed-in
+    /// account). Without one the saves panel hides the iCloud switch rather than show a
+    /// switch that cannot work.
+    @ObservationIgnored var iCloudAvailable = false
 
     static let autosaveInterval: TimeInterval = 120
 
@@ -215,16 +219,25 @@ final class AppModel {
             scene.onReady = { [weak director] in director?.start() }
         }
         #endif
+        iCloudAvailable = syncFolderOverride != nil || FileManager.default.url(forUbiquityContainerIdentifier: nil) != nil
         syncSaves()
         autosaveTimer = Timer.scheduledTimer(withTimeInterval: Self.autosaveInterval, repeats: true) { [weak self] _ in
             self?.autosaveIfNeeded()
         }
     }
 
+    /// On a Mac in Application Support (Open Folder shows it in Finder). On an iPad or iPhone
+    /// in Documents, which the Files app shows as Skyline Architect ▸ Mods (0.29.2).
     static func defaultModsDirectory() -> URL {
+        #if os(iOS)
+        let base = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        return base.appendingPathComponent("Mods", isDirectory: true)
+        #else
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
         return base.appendingPathComponent("Skyline Architect", isDirectory: true).appendingPathComponent("Mods", isDirectory: true)
+        #endif
     }
 
     /// Loads the base pack and the enabled mods (a failing mod is skipped and reported) and

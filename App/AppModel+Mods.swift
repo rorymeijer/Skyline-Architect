@@ -45,6 +45,8 @@ extension AppModel {
 
     /// Re-reads the mods folder (new or edited packs) without changing the running game.
     func rescanMods() {
+        // The folder exists before anything is in it, so the Files app (iOS) lists it.
+        try? FileManager.default.createDirectory(at: modsDirectory, withIntermediateDirectories: true)
         if let result = try? ModLoader.load(mods: ModLoader.discover(in: modsDirectory), enabled: enabledMods) {
             packStatuses = result.packs
         }

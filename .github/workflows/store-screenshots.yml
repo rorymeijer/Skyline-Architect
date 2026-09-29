@@ -1,0 +1,44 @@
+name: App Store screenshots
+
+# Real captures at the App Store's sizes: Mac 1440 × 900, iPhone 6.9" and iPad 13" simulators.
+# They are kept as PNG artifacts and as JPEGs committed to Development/Screenshots/AppStore/
+# (Documentation/APP_STORE.md §8). Runs by hand only (Actions ▸ App Store screenshots ▸
+# Run workflow), so ordinary pushes start one workflow, not two.
+on:
+  workflow_dispatch:
+
+jobs:
+  store:
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_16*.app | sort -V | tail -1)"
+          xcodebuild -version
+      - name: Build macOS app
+        run: |
+          set -o pipefail
+          Scripts/build-app.sh 2>&1 | tee build-macos.log | grep -E "error:|\*\* BUILD"
+      - name: Build iOS app (Simulator)
+        run: |
+          set -o pipefail
+          Scripts/build-app.sh --ipad 2>&1 | tee build-ios.log | grep -E "error:|\*\* BUILD"
+      - name: Mac (1440 × 900)
+        run: Scripts/capture-screenshots.sh ci-output/store-mac store
+      - name: iPhone 6.9"
+        run: Scripts/capture-simulator.sh iphone-69 ci-output/store-iphone store
+      - name: iPad 13"
+        run: Scripts/capture-simulator.sh ipad-13 ci-output/store-ipad store
+      - name: Commit the screenshots
+        run: Scripts/publish-store-screenshots.sh ci-output
+      - name: Upload PNGs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-screenshots
+          path: |
+            ci-output/store-*/
+            build-*.log

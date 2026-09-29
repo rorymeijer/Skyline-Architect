@@ -5,6 +5,12 @@ import SkylineContent
 struct ModManagerView: View {
     let model: AppModel
 
+    #if os(iOS)
+    static let emptyText = "No mods installed. In the Files app, put pack folders into On My \(Device.isPhone ? "iPhone" : "iPad") ▸ Skyline Architect ▸ Mods, or install the examples."
+    #else
+    static let emptyText = "No mods installed. Put pack folders into the mods folder (Open Folder), or install the examples."
+    #endif
+
     var body: some View {
         let rows = model.modRows
         ZStack {
@@ -20,10 +26,12 @@ struct ModManagerView: View {
                                canMoveDown: row.enabled && index + 1 < rows.count && rows[index + 1].enabled)
                 }
                 if rows.count == 1 {
-                    Text("No mods installed. Put pack folders into the mods folder, or install the examples.")
+                    Text(Self.emptyText)
                         .font(.ui(.callout)).foregroundStyle(.secondary)
                 }
+                #if os(macOS)
                 Text(model.modsDirectory.path).font(.ui(.caption2).monospaced()).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                #endif
                 HStack {
                     MenuButton(title: "Install Examples", subtitle: nil) { model.installExampleMods() }
                     #if os(macOS)
@@ -44,6 +52,7 @@ struct ModManagerView: View {
             .frame(width: 600)
             .fixedSize(horizontal: false, vertical: true)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
+            .shrinkToFit()                                       // an iPhone (0.29.2)
         }
         .environment(\.colorScheme, .dark)
     }

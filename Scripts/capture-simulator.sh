@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Launches the Debug iOS build in an iPad or iPhone simulator in screenshot-capture mode and
 # copies the captures out of the app's container.
-# Usage: Scripts/capture-simulator.sh ipad|iphone <output-dir>
+# Usage: Scripts/capture-simulator.sh ipad|iphone|ipad-13|iphone-69 <output-dir> [tour|store]
+# ipad-13 and iphone-69 are the App Store's screenshot sizes (13" iPad Pro, 6.9" iPhone Pro Max).
 # (build first: Scripts/build-app.sh --ipad; one build runs on both). macOS with Xcode only.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 KIND="${1:-ipad}"
 OUT="${2:-ci-output/screenshots-$KIND}"
+SET="${3:-tour}"
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 APP="build/DerivedData/Build/Products/Debug-iphonesimulator/SkylineArchitect.app"
@@ -18,7 +20,16 @@ BUNDLE="app.skylinearchitect.SkylineArchitect"
 DEVICE=$(xcrun simctl list devices available -j | KIND="$KIND" python3 -c '
 import json, os, sys
 devices = [d for runtime, ds in json.load(sys.stdin)["devices"].items() if "iOS" in runtime for d in ds]
-if os.environ["KIND"] == "iphone":
+kind = os.environ["KIND"]
+def number(name):
+    digits = "".join(c if c.isdigit() else " " for c in name).split()
+    return -int(digits[0]) if digits else 0
+if kind == "iphone-69":
+    pick = sorted([d for d in devices if d["name"].startswith("iPhone") and "Pro Max" in d["name"]], key=lambda d: number(d["name"]))
+elif kind == "ipad-13":
+    pick = [d for d in devices if d["name"].startswith("iPad Pro") and ("13-inch" in d["name"] or "12.9-inch" in d["name"])]
+    pick.sort(key=lambda d: (0 if "13-inch" in d["name"] else 1, d["name"]))
+elif kind == "iphone":
     phones = [d for d in devices if d["name"].startswith("iPhone")]
     phones.sort(key=lambda d: (any(w in d["name"] for w in ("Plus", "Max", "mini", "SE", "Air")), "Pro" in d["name"], d["name"]))
     pick = phones
@@ -35,7 +46,7 @@ xcrun simctl install "$DEVICE" "$APP"
 DATA=$(xcrun simctl get_app_container "$DEVICE" "$BUNDLE" data)
 DIR="$DATA/Documents/captures"
 rm -rf "$DIR"
-xcrun simctl launch --terminate-running-process "$DEVICE" "$BUNDLE" --capture-screenshots "$DIR"
+xcrun simctl launch --terminate-running-process "$DEVICE" "$BUNDLE" --capture-screenshots "$DIR" --capture-set "$SET"
 
 # The app exits after writing capture-report.json.
 STATUS=1
