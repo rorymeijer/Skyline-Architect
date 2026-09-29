@@ -10,47 +10,98 @@ struct ManualView: View {
     @Environment(\.dynamicTypeSize) private var dynamicType
 
     var body: some View {
-        let document = model.manual?.document ?? ManualDocument(chapters: [])
-        let chapter = model.manualChapterID.flatMap { document.chapter($0) } ?? document.chapters.first
-        let scale = UIText.current(dynamicType)
-        let pages = chapter.map { ManualPages.split($0, linesPerPage: Int((Double(ManualPages.linesPerPage) / scale).rounded(.down))) } ?? []
-        let page = min(model.manualPage, max(pages.count - 1, 0))
         ZStack {
             Color.black.opacity(0.5).ignoresSafeArea()
                 .onTapGesture { model.showManual = false }
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Label("Manual", systemImage: "book").font(.ui(.title2).weight(.bold))
-                    Spacer()
-                    CloseButton { model.showManual = false }
+            GeometryReader { geo in
+                card(height: geo.size.height)
+            }
+            .padding(20)
+            .frame(maxWidth: 880 * UIText.current(dynamicType), maxHeight: 600 * UIText.current(dynamicType))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
+            .padding(16)
+        }
+        .environment(\.colorScheme, .dark)
+    }
+
+    /// The card's content for its height: the chapter list beside the page, or — where the
+    /// list does not fit (F5, an iPhone in landscape) — a Contents button that shows the list
+    /// in place of the page. Pages hold as many lines as the height allows.
+    private func card(height: CGFloat) -> some View {
+        let document = model.manual?.document ?? ManualDocument(chapters: [])
+        let chapter = model.manualChapterID.flatMap { document.chapter($0) } ?? document.chapters.first
+        let scale = UIText.current(dynamicType)
+        #if os(macOS)
+        let lineHeight = 17.5 * scale
+        #else
+        let lineHeight = 22 * scale
+        #endif
+        let compact = height < 440 * scale
+        let lines = max(Int(((height - 100) / lineHeight).rounded(.down)), 6)
+        let pages = chapter.map { ManualPages.split($0, linesPerPage: lines) } ?? []
+        let page = min(model.manualPage, max(pages.count - 1, 0))
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("Manual", systemImage: "book").font(.ui(compact ? .headline : .title2).weight(.bold))
+                if compact {
+                    PagerButton(title: model.manualShowContents ? "Back to the page" : "Contents") { model.manualShowContents.toggle() }
                 }
-                HStack(alignment: .top, spacing: 16) {
+                Spacer()
+                CloseButton { model.showManual = false }
+            }
+            HStack(alignment: .top, spacing: 16) {
+                if !compact {
                     sidebar(document, current: chapter?.id)
                         .scaledFrame(width: 220)
                     Divider()
-                    VStack(alignment: .leading, spacing: 10) {
-                        if let chapter, !pages.isEmpty {
-                            ManualPageView(title: page == 0 ? chapter.title : nil, blocks: pages[page])
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                                .clipped()
-                            pager(page: page, count: pages.count, chapter: chapter, document: document)
-                        } else {
-                            Text("The manual is missing from this build.").foregroundStyle(.secondary)
+                }
+                VStack(alignment: .leading, spacing: 10) {
+                    if compact && model.manualShowContents {
+                        contents(document, current: chapter?.id)
+                    } else if let chapter, !pages.isEmpty {
+                        ManualPageView(title: page == 0 ? chapter.title : nil, blocks: pages[page])
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                            .clipped()
+                        pager(page: page, count: pages.count, chapter: chapter, document: document)
+                    } else {
+                        Text("The manual is missing from this build.").foregroundStyle(.secondary)
+                    }
+                }
+                .environment(\.openURL, OpenURLAction { url in
+                    guard url.pathExtension == "md" else { return .systemAction }
+                    model.showChapter(url.deletingPathExtension().lastPathComponent)
+                    return .handled
+                })
+            }
+        }
+    }
+
+    /// The compact chapter list: search, then the chapters (or the hits) in two columns.
+    private func contents(_ document: ManualDocument, current: String?) -> some View {
+        let query = model.manualQuery.trimmingCharacters(in: .whitespaces)
+        let entries: [(id: String, title: String)] = query.isEmpty
+            ? document.chapters.map { ($0.id, $0.title) }
+            : document.search(query).map { ($0.chapter.id, $0.chapter.title) }
+        let half = (entries.count + 1) / 2
+        return VStack(alignment: .leading, spacing: 6) {
+            ManualSearchField(text: Binding(get: { model.manualQuery }, set: { model.manualQuery = $0 }))
+            if entries.isEmpty {
+                Text("No chapter mentions that.").font(.ui(.caption)).foregroundStyle(.secondary)
+            }
+            HStack(alignment: .top, spacing: 8) {
+                ForEach([Array(entries.prefix(half)), Array(entries.dropFirst(half))], id: \.first?.id) { column in
+                    VStack(alignment: .leading, spacing: 1) {
+                        ForEach(column, id: \.id) { e in
+                            row(title: e.title, detail: nil, selected: e.id == current) {
+                                model.showChapter(e.id)
+                                model.manualShowContents = false
+                            }
                         }
                     }
-                    .environment(\.openURL, OpenURLAction { url in
-                        guard url.pathExtension == "md" else { return .systemAction }
-                        model.showChapter(url.deletingPathExtension().lastPathComponent)
-                        return .handled
-                    })
                 }
             }
-            .padding(20)
-            .frame(maxWidth: 880 * scale, maxHeight: 600 * scale)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
-            .padding(24)
+            Spacer(minLength: 0)
         }
-        .environment(\.colorScheme, .dark)
     }
 
     private func sidebar(_ document: ManualDocument, current: String?) -> some View {
@@ -120,7 +171,7 @@ struct ManualView: View {
     }
 }
 
-private struct PagerButton: View {
+struct PagerButton: View {
     let title: String
     let action: () -> Void
 
@@ -304,103 +355,5 @@ struct ManualSearchField: View {
         .padding(.vertical, 5)
         .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(focused ? 0.16 : 0.1)))
         .contentShape(Rectangle())
-    }
-}
-
-/// The tutorial scenario's guide (F3): the step to do now, with the list of steps.
-struct TutorialPanel: View {
-    let model: AppModel
-    let tutorial: TutorialSummary
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Label("Tutorial", systemImage: "graduationcap").font(.ui(.headline))
-                Spacer()
-                Text("\(tutorial.progress.completed) of \(tutorial.steps.count)")
-                    .font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
-                CloseButton { model.showTutorialPanel = false }
-            }
-            ProgressBar(value: Double(tutorial.progress.completed) / Double(max(tutorial.steps.count, 1)), tint: .green)
-                .accessibilityLabel("Tutorial progress")
-                .accessibilityValue("\(tutorial.progress.completed) of \(tutorial.steps.count) steps")
-            if let step = tutorial.current {
-                Text(step.title).font(.ui(.callout).weight(.semibold))
-                Text(ManualPageView.inline(step.text)).font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
-                if let chapter = step.chapter {
-                    LinkButton(title: "Read more in the manual") { model.openManual(chapter: chapter) }
-                }
-            } else {
-                Text("Every step done. Keep the units let through a closing to finish.")
-                    .font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
-            }
-            Divider()
-            VStack(alignment: .leading, spacing: 3) {
-                ForEach(Array(tutorial.steps.enumerated()), id: \.element.id) { i, step in
-                    let done = tutorial.progress.done[i]
-                    let now = i == tutorial.progress.current
-                    Label(step.title, systemImage: done ? "checkmark.circle.fill" : (now ? "arrow.right.circle" : "circle"))
-                        .font(.ui(.caption).weight(now ? .semibold : .regular))
-                        .foregroundStyle(done ? Color.green : (now ? Color.primary : Color.secondary))
-                        .accessibilityValue(done ? "Done" : (now ? "Current step" : "To do"))
-                }
-            }
-        }
-        .padding(12)
-        .scaledFrame(width: 290, alignment: .leading)
-        .panelCard()
-        .environment(\.colorScheme, .dark)
-    }
-}
-
-/// A first-time hint (F3): shown once per device, below the time controls.
-struct HintBubble: View {
-    let model: AppModel
-    let hint: ManualHint
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .firstTextBaseline) {
-                Label(hint.title, systemImage: "lightbulb").font(.ui(.callout).weight(.semibold))
-                Spacer()
-                CloseButton { model.dismissHint() }
-            }
-            Text(ManualPageView.inline(hint.text)).font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
-            HStack(spacing: 12) {
-                if let chapter = hint.chapter {
-                    LinkButton(title: "Read more") {
-                        model.dismissHint()
-                        model.openManual(chapter: chapter)
-                    }
-                }
-                Spacer()
-                LinkButton(title: "Turn off tips", muted: true) { model.setHintsEnabled(false) }
-                PagerButton(title: "Got it") { model.dismissHint() }
-            }
-            .font(.ui(.caption))
-        }
-        .padding(12)
-        .scaledFrame(width: 330, alignment: .leading)
-        .panelCard()
-        .environment(\.colorScheme, .dark)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Tip: \(hint.title)")
-    }
-}
-
-/// A text button in the accent colour (plain SwiftUI, so captures render it).
-private struct LinkButton: View {
-    let title: String
-    var muted = false
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title).font(.ui(.caption).weight(.medium)).foregroundStyle(muted ? Color.secondary : Color.accentColor)
-                .padding(.horizontal, 2)
-                .focusRing(cornerRadius: 4)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
     }
 }
