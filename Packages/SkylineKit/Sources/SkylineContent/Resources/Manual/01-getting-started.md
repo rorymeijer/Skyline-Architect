@@ -52,7 +52,16 @@ On a Mac:
 - `⌘1` Site Overview, `⌘2` Foundation, `⌘3` Detail Close-up, `⌘4` Skyline; `⌘0` resets the view.
 - Click a room to open its inspector.
 
-On an iPad, drag with one or two fingers to pan, pinch to zoom and tap a room to inspect it. The view controls at the bottom right replace the menus.
+On an iPad or iPhone, drag with one or two fingers to pan, pinch to zoom and tap a room to inspect it. The view controls at the bottom right replace the menus. The game plays in landscape.
+
+## On an iPhone
+
+The screen is small, so a few things fold up:
+
+- The build palette shows **categories** (Circulation, Offices, Homes, Plant, Amenities). Tap one to open its rooms in a row above it.
+- The view controls keep the camera buttons. The panels and overlays are behind the **Panels** button (four squares), with their names.
+- When several panels are open, they become tabs above the panel in front.
+- The manual has a **Contents** button in place of the chapter list.
 
 Zoom in far enough and rooms show their furniture and tenants' names; zoom out and the tower becomes a façade with lit windows at night.
 
@@ -62,11 +71,11 @@ Zoom in far enough and rooms show their furniture and tenants' names; zoom out a
 - The game **autosaves** every two minutes when something changed, keeping the last three autosaves.
 - Turn on **iCloud Drive** in the saves panel to use your saves on your other devices. When the same save changed on two devices, both versions are kept. Autosaves stay on the device.
 
-On an iPad, the **Save** button in the view controls saves to the quick-save slot. The **Main Menu** button (three lines) brings back the main menu over your game, with **Resume** at the top; on a Mac use **File ▸ Main Menu** (`⇧⌘M`).
+On an iPad or iPhone, the **Save** button in the view controls saves to the quick-save slot. The **Main Menu** button (three lines) brings back the main menu over your game, with **Resume** at the top; on a Mac use **File ▸ Main Menu** (`⇧⌘M`).
 
 ## Text size
 
-**Text Size** in the main menu (or **View ▸ Text Size** on a Mac) makes the panels, menus and the manual larger: Standard, Large, Larger or Largest. On an iPad, Standard follows the text size you chose in the iPad's settings.
+**Text Size** in the main menu (or **View ▸ Text Size** on a Mac) makes the panels, menus and the manual larger: Standard, Large, Larger or Largest. On an iPad or iPhone, Standard follows the text size you chose in the device's settings.
 
 ## Help while you play
 
