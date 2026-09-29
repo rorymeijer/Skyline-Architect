@@ -34,10 +34,12 @@ struct ManualView: View {
         #if os(macOS)
         let lineHeight = 17.5 * scale
         #else
-        let lineHeight = 22 * scale
+        let lineHeight = 20 * scale
         #endif
         let compact = height < 440 * scale
-        let lines = max(Int(((height - 100) / lineHeight).rounded(.down)), 6)
+        // Without the chapter list beside it, a compact page's lines hold about a third more text.
+        let fitted = ((height - 85) / lineHeight).rounded(.down) * (compact ? 1.3 : 1)
+        let lines = max(Int(fitted), 6)
         let pages = chapter.map { ManualPages.split($0, linesPerPage: lines) } ?? []
         let page = min(model.manualPage, max(pages.count - 1, 0))
         return VStack(alignment: .leading, spacing: 10) {
@@ -195,7 +197,7 @@ enum ManualPages {
 
     static func split(_ chapter: ManualChapter, linesPerPage: Int = linesPerPage) -> [[ManualBlock]] {
         var pages: [[ManualBlock]] = [[]]
-        var used = 3                                              // the chapter title
+        var used = 2                                              // the chapter title
         for block in chapter.blocks {
             let lines = height(block)
             if used + lines > linesPerPage, !pages[pages.count - 1].isEmpty {

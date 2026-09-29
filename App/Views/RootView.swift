@@ -42,8 +42,24 @@ struct ChromeOverlay: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
+            // Bottom first, so the panels and the tutorial are drawn over the palette.
+            VStack(spacing: 8) {
+                if let alert = model.incidentNotice {
+                    IncidentBanner(text: alert, fire: !model.incidents.fires.isEmpty, show: { model.showIncident() },
+                                   close: { model.dismissIncidentNotice() })
+                }
+                if let notice = model.promotionNotice {
+                    PromotionBanner(text: notice) { model.promotionNotice = nil }
+                }
+                if !Device.isPhone { StatusPill(model: model) }
+                BuildPalette(model: model)
+            }
+            .padding(.bottom, 58)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             VStack(alignment: .leading, spacing: 10) {
-                TitleBadge(model: model)
+                // An iPhone has no height to spare at the bottom: the cash readout takes the
+                // title's corner (F5).
+                if Device.isPhone { StatusPill(model: model, compact: true) } else { TitleBadge(model: model) }
                 if let tutorial = model.tutorial, model.showTutorialPanel, !model.showDeveloperHUD {
                     TutorialPanel(model: model, tutorial: tutorial)
                 }
@@ -56,18 +72,18 @@ struct ChromeOverlay: View {
             ViewControls(model: model)
                 .padding(12)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            if model.showPanelPicker {
-                PanelPicker(model: model)
-                    .padding(.trailing, 12)
-                    .padding(.bottom, 52)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            }
             // Above the view controls (bottom right); tabs when the panels do not all fit.
             PanelStack(model: model)
                 .padding(.top, 60)
                 .padding(.trailing, 12)
                 .padding(.bottom, 56)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            if model.showPanelPicker {
+                PanelPicker(model: model)
+                    .padding(.trailing, 12)
+                    .padding(.bottom, 52)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            }
             SimulationControls(model: model)
                 .padding(.top, 12)
                 .frame(maxWidth: .infinity, alignment: .top)
@@ -76,19 +92,6 @@ struct ChromeOverlay: View {
                     .padding(.top, 60)
                     .frame(maxWidth: .infinity, alignment: .top)
             }
-            VStack(spacing: 8) {
-                if let alert = model.incidentNotice {
-                    IncidentBanner(text: alert, fire: !model.incidents.fires.isEmpty, show: { model.showIncident() },
-                                   close: { model.dismissIncidentNotice() })
-                }
-                if let notice = model.promotionNotice {
-                    PromotionBanner(text: notice) { model.promotionNotice = nil }
-                }
-                StatusPill(model: model)
-                BuildPalette(model: model)
-            }
-            .padding(.bottom, 58)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             if model.showManual {
                 ManualView(model: model)
             } else if model.showLoadSheet {

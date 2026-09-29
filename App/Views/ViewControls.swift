@@ -39,9 +39,15 @@ struct ViewControls: View {
     }
 
     var body: some View {
-        ViewThatFits(in: .horizontal) {
-            bar(narrow: false)
-            bar(narrow: true)
+        Group {
+            if Device.isPhone {
+                bar(narrow: true)                                   // leaves room for the palette
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    bar(narrow: false)
+                    bar(narrow: true)
+                }
+            }
         }
         .environment(\.colorScheme, .dark)
     }

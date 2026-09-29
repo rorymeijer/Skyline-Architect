@@ -242,6 +242,8 @@ private struct PressableStyle: ButtonStyle {
 /// Session status: cash, save state, active-tool hint.
 struct StatusPill: View {
     let model: AppModel
+    /// In the top-left corner of an iPhone (F5): cash and standing only, clear of the time bar.
+    var compact = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -250,10 +252,10 @@ struct StatusPill: View {
                 .help("Cash. Construction is paid immediately; rent and costs settle daily at 06:00 (⌥⌘M).")
             Label("\(model.progression.className) · \(Int(model.progression.reputation.rounded()))", systemImage: "rosette")
                 .help("Building class and reputation (⌥⌘P).")
-            if let save = model.lastSaveDescription {
+            if !compact, let save = model.lastSaveDescription {
                 Text(save).foregroundStyle(.secondary)
             }
-            if model.activeTool != nil {
+            if !compact, model.activeTool != nil {
                 Text("Esc to stop building").foregroundStyle(.secondary)
             }
         }
