@@ -1,0 +1,116 @@
+/* Skyline Architect website — one stylesheet for the landing page and the manual. */
+:root {
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --text: #1d2230;
+  --muted: #5b6272;
+  --line: #dcd8cf;
+  --accent: #2f5fd0;
+  --accent-text: #ffffff;
+  --note: #fff6d8;
+  --night: #1b2447;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11141c;
+    --surface: #1a1f2b;
+    --text: #e8eaf0;
+    --muted: #a3aabb;
+    --line: #2d3445;
+    --accent: #7ea2ff;
+    --accent-text: #0d1020;
+    --note: #2e2a18;
+    --night: #0b0f22;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--accent); }
+img { max-width: 100%; height: auto; display: block; }
+kbd {
+  font: 0.85em ui-monospace, "SF Mono", Menlo, monospace;
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--surface);
+  white-space: nowrap;
+}
+
+/* ---------- Landing page ---------- */
+.site-header, .site-footer, .section { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+.site-header { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; padding-bottom: 18px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.08em; text-decoration: none; color: var(--text); }
+.brand img { width: 36px; height: 36px; border-radius: 9px; }
+.site-header nav a { margin-left: 18px; text-decoration: none; font-weight: 600; }
+
+.hero {
+  background: linear-gradient(180deg, var(--night) 0%, #33407a 100%);
+  color: #f2f4fb;
+  padding: 56px 0 64px;
+}
+.hero .section { display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: center; }
+.hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; margin: 0 0 14px; letter-spacing: 0.02em; }
+.hero p { font-size: 1.15rem; color: #cfd5ea; margin: 0 0 22px; }
+.hero img { border-radius: 12px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45); }
+.badge {
+  display: inline-block; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); margin-bottom: 14px;
+}
+.button {
+  display: inline-block; padding: 11px 20px; border-radius: 10px; font-weight: 700; text-decoration: none;
+  background: var(--accent); color: var(--accent-text); margin-right: 10px;
+}
+.hero .button.secondary { background: rgba(255, 255, 255, 0.14); color: #fff; }
+
+.section { padding-top: 56px; padding-bottom: 8px; }
+.section h2 { font-size: 1.7rem; margin: 0 0 18px; }
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.feature { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+.feature h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.feature p { margin: 0; color: var(--muted); font-size: 0.97rem; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.gallery figure { margin: 0; }
+.gallery img { border-radius: 10px; border: 1px solid var(--line); }
+.gallery figcaption { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+.status { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; }
+.status ul { margin: 8px 0 0; padding-left: 20px; }
+.site-footer { color: var(--muted); font-size: 0.9rem; padding-top: 48px; padding-bottom: 40px; }
+
+/* ---------- Manual ---------- */
+body.manual { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 100vh; }
+.toc {
+  position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
+  padding: 20px 14px; border-right: 1px solid var(--line); background: var(--surface);
+}
+.toc a { display: block; padding: 6px 10px; border-radius: 7px; text-decoration: none; color: var(--text); font-size: 0.95rem; }
+.toc a[aria-current="page"] { background: var(--accent); color: var(--accent-text); font-weight: 600; }
+.toc a.home { font-weight: 800; letter-spacing: 0.06em; margin-bottom: 10px; }
+.manual main { max-width: 760px; padding: 28px 32px 60px; }
+.manual h1 { font-size: 2rem; margin-top: 0; }
+.manual h2 { margin-top: 1.8em; }
+.manual table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.95rem; }
+.manual th, .manual td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.note { background: var(--note); border-radius: 10px; padding: 12px 16px; margin: 1em 0; }
+.pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); }
+#search { width: 100%; font-size: 1rem; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface); color: var(--text); margin: 8px 0 16px; }
+.chapters { padding-left: 1.4em; }
+.chapters li { margin: 6px 0; }
+.chapters .sections { display: block; color: var(--muted); font-size: 0.88rem; }
+
+@media (max-width: 760px) {
+  .hero .section { grid-template-columns: 1fr; }
+  body.manual { display: block; }
+  .toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 2px; }
+  .toc a { font-size: 0.85rem; padding: 4px 8px; }
+  .manual main { padding: 20px 16px 48px; }
+  .site-header nav a { margin-left: 12px; }
+}
