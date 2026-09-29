@@ -68,12 +68,15 @@ final class ScreenshotDirector {
             let load = Date().timeIntervalSince(t0) * 1000
             model.advanceSimulation(toTimeOfDay: 10)
             model.refreshSimulationSummary()
+            return "Stress tower, the base (the camera starts at the street): \(ScreenshotDirector.scale(model)); loaded (incl. "
+                + "route-cache warm-up and scene) in " + String(format: "%.0f ms", load) + ", Debug build; \(model.clockText)"
+        },
+        Step(name: "02-whole-tower", grid: false) { model, scene in
             let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
             scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 262), zoom: 0.3) }
-            return "Stress tower: \(ScreenshotDirector.scale(model)); loaded (incl. route-cache warm-up and scene) in "
-                + String(format: "%.0f ms", load) + ", Debug build; \(model.clockText)"
+            return "\(model.clockText): all 526 floors by day, zoomed out as far as the camera goes"
         },
-        Step(name: "02-mid-tower", grid: false) { model, scene in
+        Step(name: "03-mid-tower", grid: false) { model, scene in
             model.advanceSimulation(ticks: 240)
             model.refreshSimulationSummary()
             let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
@@ -81,14 +84,14 @@ final class ScreenshotDirector {
             return "\(model.clockText), floors ~255–270 of 526; last step (240 ticks) "
                 + String(format: "%.1f ms", model.lastSimulationMs) + " (Debug)"
         },
-        Step(name: "03-night-whole", grid: false) { model, scene in
+        Step(name: "04-night-whole", grid: false) { model, scene in
             model.advanceSimulation(toTimeOfDay: 22)
             model.refreshSimulationSummary()
             let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
             scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 262), zoom: 0.3) }
             return "\(model.clockText): 526 floors at night, zoomed out: one lit strip per storey of each room; \(ScreenshotDirector.scale(model))"
         },
-        Step(name: "04-night-panes", grid: false) { model, scene in
+        Step(name: "05-night-panes", grid: false) { model, scene in
             let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
             scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 480), zoom: 3) }
             return "\(model.clockText): the upper zones closer (3 pt/m): individual window panes"
