@@ -145,7 +145,7 @@ extension SimulationEngine {
         // Working on a job in this room: start, or finish.
         if case let .room(r, _) = p.place, var job = p.job, job.room == r {
             if let until = job.until {
-                if now >= until { complete(job, by: id, at: now, world: &world); p.job = nil }
+                if now >= until { complete(job, by: id, at: now, world: &world, events: &events); p.job = nil }
             } else {
                 var minutes = Double(job.kind == .clean ? rules.cleanMinutes : rules.repairMinutes)
                 // Far from any staff room the tools and supplies are far too (Phase E).
@@ -229,7 +229,7 @@ extension SimulationEngine {
         }
     }
 
-    private func complete(_ job: JobAssignment, by id: PersonID, at now: Tick, world: inout GameWorld) {
+    private func complete(_ job: JobAssignment, by id: PersonID, at now: Tick, world: inout GameWorld, events: inout Events) {
         world.upkeep.update(job.room) { u in
             if job.kind == .clean { u.cleanliness = 1 } else { u.condition = 1 }
         }
@@ -239,6 +239,7 @@ extension SimulationEngine {
                 c.outOfService = nil
                 c.nextEventTick = now
             }
+            events.push(now, .car(job.room))
         }
         world.facilities.jobs.removeAll { $0.room == job.room && $0.kind == job.kind && $0.assignee == id }
         if job.kind == .clean { world.facilities.cleaned += 1 } else { world.facilities.repaired += 1 }

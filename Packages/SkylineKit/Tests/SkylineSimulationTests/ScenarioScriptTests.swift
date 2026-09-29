@@ -98,6 +98,7 @@ import SkylineCore
     @Test func scoring() throws {
         let game = try built("opening-day")
         var s = try #require(game.world.scenario)
+        s.objectives = [ScenarioObjective(metric: .occupiedUnits, target: 12), ScenarioObjective(metric: .dailyProfit, target: 5000)]
         s.measured = [24, 20_000]                                        // targets 12 units, $5,000 profit
         let fast = sim.score(s, won: true, at: 2 * SimClock.secondsPerDay, world: game.world)
         #expect(fast.stars == 3)
@@ -114,6 +115,7 @@ import SkylineCore
     /// The Opening Day win is scored.
     @Test func wonScenarioCarriesItsScore() throws {
         var game = try built("opening-day")
+        game.world.scenario?.objectives = [ScenarioObjective(metric: .occupiedUnits, target: 12), ScenarioObjective(metric: .dailyProfit, target: 5000)]
         Leasing.fillAll(&game.world, catalog: library.buildCatalog, rules: library.simulationRules)
         sim.advance(&game.world, by: 4 * SimClock.secondsPerDay)
         let result = try #require(game.world.scenario?.result)

@@ -35,10 +35,12 @@ import SkylineCore
         #expect(throws: ContentError.self) { try NewGameFactory.make(scenarioID: "nope", library: library) }
     }
 
-    /// The easy scenario can be won by building the demo tower: twelve units let and a
-    /// profitable closing within its ten days.
+    /// A scenario is decided at the closing that meets its objectives: the demo tower (15
+    /// units) meets twelve units and $5,000 (the pre-F1 targets, set here). That the content's
+    /// targets can be won is the balance bot's test (`ScenarioBotTests`).
     @Test func openingDayIsWinnableWithTheDemoTower() throws {
         var game = try builtScenario("opening-day")
+        game.world.scenario?.objectives = [ScenarioObjective(metric: .occupiedUnits, target: 12), ScenarioObjective(metric: .dailyProfit, target: 5000)]
         var days = 0
         while game.world.scenario?.result == nil, days < 10 {
             sim.advance(&game.world, by: SimClock.secondsPerDay)
@@ -166,15 +168,16 @@ import SkylineCore
         #expect(briefs.count == library.orderedScenarios.count)
         let harbour = try #require(briefs.first { $0.id == "harbour-revival" })
         #expect(harbour.setting == "Harbour Row, Saltmere · $1,500,000 · 30 days")
-        #expect(harbour.objectives == ["Population ≥ 120", "Daily profit ≥ $4,000"] && harbour.holdDays == 3 && harbour.difficulty == "Medium")
+        #expect(harbour.objectives == ["Population ≥ 100", "Daily profit ≥ $4,000"] && harbour.holdDays == 3 && harbour.difficulty == "Medium")
         let crown = try #require(briefs.first { $0.id == "crown-prestige" })
-        #expect(crown.objectives == ["Building class ≥ Class A", "Reputation ≥ 70", "Average elevator wait ≤ 45 s"])
-        #expect(briefs.first { $0.id == "skyline" }?.objectives.first == "Population ≥ 1,500")
+        #expect(crown.objectives == ["Building class ≥ Class A", "Reputation ≥ 75", "Average elevator wait ≤ 30 s"] && crown.holdDays == 5)
+        #expect(briefs.first { $0.id == "skyline" }?.objectives.first == "Population ≥ 600")
     }
 
     @Test func liveSummaryFollowsTheWorld() throws {
         let sim = SimulationEngine(rules: library.simulationRules, catalog: library.buildCatalog)
         var game = try NewGameFactory.make(scenarioID: "opening-day", library: library)
+        game.world.scenario?.objectives = [ScenarioObjective(metric: .occupiedUnits, target: 12), ScenarioObjective(metric: .dailyProfit, target: 5000)]
         #expect(ScenarioSummary.make(world: try NewGameFactory.make(startID: NewGameFactory.standardStartID, library: library).world,
                                      engine: sim, library: library) == nil)
         var s = try #require(ScenarioSummary.make(world: game.world, engine: sim, library: library))

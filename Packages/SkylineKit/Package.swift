@@ -15,6 +15,7 @@ let package = Package(
         .library(name: "SkylineSimulation", targets: ["SkylineSimulation"]),
         .executable(name: "skyline-snapshot", targets: ["SkylineSnapshot"]),
         .executable(name: "skyline-bench", targets: ["SkylineBench"]),
+        .executable(name: "skyline-balance", targets: ["SkylineBalance"]),
     ],
     targets: [
         .target(name: "SkylineCore"),
@@ -34,6 +35,10 @@ let package = Package(
             name: "SkylineBench",
             dependencies: ["SkylineCore", "SkylineContent", "SkylinePersistence", "SkylinePresentation", "SkylineSimulation"]
         ),
+        // Balance bot (F1): plays scenarios through the construction engine; a developer tool.
+        .target(name: "SkylineBot", dependencies: ["SkylineCore", "SkylineContent", "SkylineSimulation"]),
+        .executableTarget(name: "SkylineBalance", dependencies: ["SkylineBot", "SkylineContent", "SkylineCore"]),
+        .testTarget(name: "SkylineBotTests", dependencies: ["SkylineBot", "SkylineContent"]),
         .testTarget(name: "SkylineCoreTests", dependencies: ["SkylineCore"]),
         .testTarget(name: "SkylineSimulationTests", dependencies: ["SkylineSimulation", "SkylineContent"]),
         .testTarget(name: "SkylineContentTests", dependencies: ["SkylineContent"]),
