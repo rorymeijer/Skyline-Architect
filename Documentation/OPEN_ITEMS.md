@@ -15,7 +15,7 @@ where they matter.
 | # | Item | Why it is open | Source |
 |---|------|----------------|--------|
 | V1 | Human play test | Nobody has played a full session: only scripted captures and tests have run. | STATUS |
-| V2 | iPad | Since F4 the iPad build runs in the iPad simulator in CI, with captures (`_ci-latest/ipad/`). It has not run on a real iPad, and touch, the on-screen keyboard and a hardware keyboard have not been tried by a person. | STATUS, ACCESSIBILITY |
+| V2 | iPad and iPhone | Since F4 the iPad build, and since F5 the iPhone build, run in simulators in CI, with captures (`_ci-latest/ipad/`, `_ci-latest/iphone/`). Neither has run on a real device, and touch, the on-screen keyboard and a hardware keyboard have not been tried by a person. | STATUS, ACCESSIBILITY |
 | V3 | iCloud sync | It needs a signing team and an iCloud container. Sync between two devices has never been verified. | SAVE_FORMAT, ROADMAP Phase 18 |
 | V4 | Real hardware performance | The figures come from CI runners (macOS VM) and Linux callgrind. Nothing was measured on a user's Mac or iPad. | PERFORMANCE |
 | V5 | VoiceOver | Checked by code review only, never with VoiceOver on a device. | ACCESSIBILITY, STATUS |
@@ -158,7 +158,7 @@ Update these lists when their systems are next touched.
 
 ## 9. Suggested order
 
-1. **Play test and fix (V1).** A human session on a Mac and then an iPad (V2). Fix what it shows first.
+1. **Play test and fix (V1).** A human session on a Mac and then an iPad and an iPhone (V2). Fix what it shows first.
 2. **Balancing pass (section 3).** Use the play-test notes.
 3. **Signed build with iCloud (V3).** Verify sync between two devices, and add file coordination.
 4. **Accessibility (section 5).** ~~Keyboard navigation in panels, Dynamic Type~~ (F4). Still to do: a VoiceOver pass on a device.

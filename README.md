@@ -1,11 +1,11 @@
 # Skyline Architect
 
-An original, native vertical-building management simulation for macOS (primary) and
-iPadOS. Swift · SwiftUI · SpriteKit. No third-party engines, no copied assets.
+An original, native vertical-building management simulation for macOS (primary), iPadOS
+and iPhone (landscape). Swift · SwiftUI · SpriteKit. No third-party engines, no copied assets.
 
 <img src="App/Assets.xcassets/AppIcon.appiconset/mac-256.png" width="128" alt="App icon: a cut-away tower at dusk">
 
-## What the game does (0.28.0)
+## What the game does (0.29.0)
 
 Build a tower in cross-section and keep it running.
 
@@ -33,7 +33,7 @@ Build a tower in cross-section and keep it running.
 captures. The following have not been done or verified:
 
 * no human play test;
-* the iPad build never launched;
+* the iPad and iPhone builds run in simulators only, not yet on a real device;
 * iCloud needs a signing team;
 * balancing is first-pass.
 
