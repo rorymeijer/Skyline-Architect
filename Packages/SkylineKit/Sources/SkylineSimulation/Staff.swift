@@ -41,18 +41,21 @@ public enum FacilitiesManagement {
         world.people.values.reduce(0) { $0 + ($1.role.isStaff && $1.buildingID == building ? 1 : 0) }
     }
 
-    /// The staff room nearest to a floor (fewest floors away, then id), if any.
-    static func nearestStaffRoom(to floor: Int, in building: BuildingID, world: GameWorld, catalog: BuildCatalog) -> Room? {
-        staffRooms(in: building, world: world, catalog: catalog).min {
+    /// The staff room nearest to a floor (fewest floors away, then id), if any. `among`: the
+    /// building's staff rooms when the caller already has them (`StaffRoomDirectory`).
+    static func nearestStaffRoom(to floor: Int, in building: BuildingID, world: GameWorld, catalog: BuildCatalog,
+                                 among rooms: [Room]? = nil) -> Room? {
+        (rooms ?? staffRooms(in: building, world: world, catalog: catalog)).min {
             (abs($0.floors.lowest - floor), $0.id) < (abs($1.floors.lowest - floor), $1.id)
         }
     }
 
     /// Whether a job on `floor` is within reach of a staff room (always, when the content
     /// has no staff rooms).
-    static func isNearStaffRoom(_ floor: Int, in building: BuildingID, world: GameWorld, catalog: BuildCatalog) -> Bool {
+    static func isNearStaffRoom(_ floor: Int, in building: BuildingID, world: GameWorld, catalog: BuildCatalog,
+                                among rooms: [Room]? = nil) -> Bool {
         guard catalog.specs.contains(where: { $0.staffPerModule != nil }) else { return true }
-        return staffRooms(in: building, world: world, catalog: catalog).contains { room in
+        return (rooms ?? staffRooms(in: building, world: world, catalog: catalog)).contains { room in
             let range = catalog.spec(room.definitionID)?.staffRange ?? 0
             return abs(room.floors.lowest - floor) <= range
         }
@@ -133,7 +136,7 @@ extension SimulationEngine {
     /// A staff member's event: arrival, start or end of work, or looking for work. During
     /// the shift they take the most urgent open job of their kind and travel there (service
     /// elevators allowed); off shift they go home (outside).
-    func handleStaff(_ id: PersonID, at now: Tick, world: inout GameWorld, events: inout Events) {
+    func handleStaff(_ id: PersonID, at now: Tick, world: inout GameWorld, events: inout Events, staffRooms: inout StaffRoomDirectory) {
         guard var p = world.people[id], let rules = rules.facilities, let shift = rules.shift,
               let building = world.buildings[p.buildingID] else { return }
         if case let .travelling(_, destination) = p.place {               // arrived
@@ -150,7 +153,8 @@ extension SimulationEngine {
                 var minutes = Double(job.kind == .clean ? rules.cleanMinutes : rules.repairMinutes)
                 // Far from any staff room the tools and supplies are far too (Phase E).
                 if let floor = world.rooms[r]?.floors.lowest,
-                   !FacilitiesManagement.isNearStaffRoom(floor, in: building.id, world: world, catalog: catalog) {
+                   !FacilitiesManagement.isNearStaffRoom(floor, in: building.id, world: world, catalog: catalog,
+                                                                        among: staffRooms.rooms(of: building.id, world: world, catalog: catalog)) {
                     minutes *= rules.outOfRangeFactor ?? 1
                 }
                 job.until = now + Tick((minutes * 60).rounded())
@@ -180,7 +184,8 @@ extension SimulationEngine {
         } else if onShift {
             // Nothing to do: wait in the nearest staff room (Phase E) and check again.
             let floor: Int? = { if case let .room(r, _) = p.place { world.rooms[r]?.floors.lowest } else { 0 } }()
-            let staffRoom = floor.flatMap { FacilitiesManagement.nearestStaffRoom(to: $0, in: building.id, world: world, catalog: catalog) }
+            let known = staffRooms.rooms(of: building.id, world: world, catalog: catalog)
+            let staffRoom = floor.flatMap { FacilitiesManagement.nearestStaffRoom(to: $0, in: building.id, world: world, catalog: catalog, among: known) }
             let inStaffRoom = staffRoom.map { s in if case let .room(r, _) = p.place { r == s.id } else { false } } ?? true
             if let staffRoom, !inStaffRoom, let from = here,
                startTrip(&p, from: from, to: .room(staffRoom.id, x: RoutePlanner.standingSpot(in: staffRoom, traits: p.traits, grid: world.grid).x),
@@ -243,5 +248,19 @@ extension SimulationEngine {
         }
         world.facilities.jobs.removeAll { $0.room == job.room && $0.kind == job.kind && $0.assignee == id }
         if job.kind == .clean { world.facilities.cleaned += 1 } else { world.facilities.repaired += 1 }
+    }
+}
+
+/// The staff rooms of each building, looked up once per `advance` call and building (F2:
+/// scanning every room per idle staff member was a third of a day's time at 500 floors).
+/// Rooms only change through construction, between calls. A cache, never state.
+struct StaffRoomDirectory {
+    private var byBuilding: [BuildingID: [Room]] = [:]
+
+    mutating func rooms(of building: BuildingID, world: GameWorld, catalog: BuildCatalog) -> [Room] {
+        if let known = byBuilding[building] { return known }
+        let found = FacilitiesManagement.staffRooms(in: building, world: world, catalog: catalog)
+        byBuilding[building] = found
+        return found
     }
 }
