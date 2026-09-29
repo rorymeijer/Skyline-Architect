@@ -19,7 +19,7 @@ import SkylineCore
     }
 
     @Test func everyScenarioStarts() throws {
-        #expect(library.orderedScenarios.map(\.id) == ["opening-day", "harbour-revival", "three-properties", "crown-prestige", "skyline", "lean-tower"])
+        #expect(library.orderedScenarios.map(\.id) == ["first-tower", "opening-day", "harbour-revival", "three-properties", "crown-prestige", "skyline", "lean-tower"])
         for def in library.orderedScenarios {
             let game = try NewGameFactory.make(scenarioID: def.id, library: library)
             let s = try #require(game.world.scenario)
