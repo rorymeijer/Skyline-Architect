@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-29 (0.29.0 — F5: the iPhone)_
+_Last updated: 2026-09-29 (0.29.1 — App Sandbox for the Mac App Store)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -11,9 +11,13 @@ _Last updated: 2026-09-29 (0.29.0 — F5: the iPhone)_
 | F2 | 500 floors running smoothly | COMPLETE (rorymeijer/Skyline-Architect#32) |
 | F3 | Tutorial, in-game manual, website (`Website/`) | COMPLETE (rorymeijer/Skyline-Architect#33) |
 | F4 | Accessibility and iPad | COMPLETE (rorymeijer/Skyline-Architect#34) |
-| F5 | iPhone | COMPLETE on the branch |
+| F5 | iPhone | COMPLETE (rorymeijer/Skyline-Architect#35) |
 
-F5 runs the game on an iPhone in landscape (D-060). It is not a separate interface: each
+**0.29.1:** the Mac app runs in the App Sandbox, which the Mac App Store requires (D-061).
+CI checks the entitlement in a signed Release build. Not verified here: the upload to App
+Store Connect itself (done by the owner from Xcode).
+
+F5 (merged) runs the game on an iPhone in landscape (D-060). It is not a separate interface: each
 view falls back to a compact form where the full one does not fit.
 - **Build palette:** tools grouped under five categories; a tap opens one category's tools
   in a row above.
