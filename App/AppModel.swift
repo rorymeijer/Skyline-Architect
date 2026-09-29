@@ -221,10 +221,18 @@ final class AppModel {
         }
     }
 
+    /// On a Mac in Application Support (Open Folder shows it in Finder). On an iPad or iPhone
+    /// in Documents, which the Files app shows as Skyline Architect ▸ Mods (0.29.2).
     static func defaultModsDirectory() -> URL {
+        #if os(iOS)
+        let base = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        return base.appendingPathComponent("Mods", isDirectory: true)
+        #else
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
         return base.appendingPathComponent("Skyline Architect", isDirectory: true).appendingPathComponent("Mods", isDirectory: true)
+        #endif
     }
 
     /// Loads the base pack and the enabled mods (a failing mod is skipped and reported) and
