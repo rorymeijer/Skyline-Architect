@@ -19,7 +19,7 @@ The player's phase order A → B → E → C is complete:
 
 Remaining open items are in `Documentation/OPEN_ITEMS.md`.
 
-Evidence: 353 tests, CI captures in `Development/Screenshots/Scenarios-0.24/`.
+Evidence: 353 tests, CI run 36527125766, captures in `Development/Screenshots/Scenarios-0.24/`.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |
