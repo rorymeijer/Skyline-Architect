@@ -2,15 +2,10 @@ name: App Store screenshots
 
 # Real captures at the App Store's sizes: Mac 1440 × 900, iPhone 6.9" and iPad 13" simulators.
 # They are kept as PNG artifacts and as JPEGs committed to Development/Screenshots/AppStore/
-# (Documentation/APP_STORE.md §8). Runs by hand (Actions ▸ App Store screenshots ▸ Run
-# workflow) and when the store script changes on a development branch.
+# (Documentation/APP_STORE.md §8). Runs by hand only (Actions ▸ App Store screenshots ▸
+# Run workflow), so ordinary pushes start one workflow, not two.
 on:
   workflow_dispatch:
-  push:
-    branches: ["claude/**"]
-    paths:
-      - ".github/workflows/store-screenshots.yml"
-      - "App/Diagnostics/ScreenshotDirector*Store.swift"   # "+" would be a pattern character
 
 jobs:
   store:

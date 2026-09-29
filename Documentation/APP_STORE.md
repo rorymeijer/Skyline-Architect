@@ -234,9 +234,8 @@ Up to 10 per size; the first three matter most. The sizes App Store Connect need
 The *App Store screenshots* workflow (`.github/workflows/store-screenshots.yml`, 0.29.2)
 makes them for real: the same capture script, with its store set (`--capture-set store`), on
 a Mac window of 1440 × 900, an iPhone 6.9" simulator (iPhone 16 Pro Max) and an iPad 13"
-simulator (iPad Pro 13-inch). It runs from *Actions ▸ App Store screenshots ▸ Run workflow*
-once the workflow is on `main`, and whenever the store script changes on a development
-branch. It produces:
+simulator (iPad Pro 13-inch). It runs by hand only: *Actions ▸ App Store screenshots ▸ Run
+workflow* (once the workflow is on `main`; pick the branch to capture). It produces:
 
 - the PNG originals, as the run's artifact *app-store-screenshots*;
 - JPEG copies at the same pixel size, in `Development/Screenshots/AppStore/`.

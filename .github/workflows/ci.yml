@@ -10,9 +10,12 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# A pull request from a claude/** branch runs no second CI: the push run already tests the
+# same commit (and publishes its screenshots).
 jobs:
   package-linux:
     name: SkylineKit tests (Linux)
+    if: github.event_name != 'pull_request' || !startsWith(github.head_ref, 'claude/')
     runs-on: ubuntu-24.04
     container: swift:6.1-noble
     steps:
@@ -21,6 +24,7 @@ jobs:
 
   macos:
     name: macOS build, tests, iPad build, screenshots (Mac, iPad, iPhone)
+    if: github.event_name != 'pull_request' || !startsWith(github.head_ref, 'claude/')
     runs-on: macos-15
     permissions:
       contents: write  # publish-ci-screenshots.sh commits captures to claude/** branches
