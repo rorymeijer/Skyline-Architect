@@ -37,4 +37,10 @@ git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 git add "$DEST"
 if git diff --cached --quiet; then echo "screenshots unchanged"; exit 0; fi
 git commit -q -m "chore(ci): latest in-game screenshots [skip ci]"
-git push origin "HEAD:${GITHUB_REF_NAME}" || echo "branch moved on; skipping screenshot commit"
+# The App Store screenshot workflow may have pushed meanwhile: rebase onto it. A newer push of
+# code cancels this run anyway (concurrency), so a rebase only ever meets bot commits.
+for _ in 1 2 3; do
+  git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+  sleep 5
+done
+echo "branch moved on; skipping screenshot commit"
