@@ -5,7 +5,7 @@ iPadOS. Swift · SwiftUI · SpriteKit. No third-party engines, no copied assets.
 
 <img src="App/Assets.xcassets/AppIcon.appiconset/mac-256.png" width="128" alt="App icon: a cut-away tower at dusk">
 
-## What the game does (0.23.0)
+## What the game does (0.24.0)
 
 Build a tower in cross-section and keep it running.
 
@@ -22,9 +22,9 @@ Build a tower in cross-section and keep it running.
 | **Environment** | Day and night with lighting energy, and weather with seasons, forecasts and effects. |
 | **Emergencies** | Fires, sprinklers, evacuation, and storm damage. |
 | **Estate** | Three cities with their own markets, ground and weather, land for sale, and the whole estate simulating at once. |
-| **Scenarios** | Objectives against the clock, from Opening Day to Skyline. |
+| **Scenarios** | Objectives against the clock, from Opening Day to Lean Tower. They have scripted events and restrictions, stars and points, and a completion record on the device. |
 | **Modding** | JSON content packs over the base game, validated per mod, with a mod manager and an example mod. |
-| **Saves** | Versioned format (17) with migrations and golden fixtures, a content hash per pack; optional iCloud Drive sync that keeps both versions on a conflict. |
+| **Saves** | Versioned format (18) with migrations and golden fixtures, a content hash per pack; optional iCloud Drive sync that keeps both versions on a conflict. |
 | **Scale** | Profiled on generated towers up to 400 floors and 2,000+ people. |
 | **Polish** | Procedural art throughout, clouds, the app icon, VoiceOver labels and Reduce Motion. |
 
