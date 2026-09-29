@@ -142,7 +142,7 @@ Notes for App Review:
 >
 > On iPhone the game plays in landscape. The build palette groups its tools by category, and the four-squares button in the bottom-right controls opens every panel.
 >
-> Mods are optional JSON data files the player places in the app's own folder. No code is ever loaded from them.
+> Mods are optional content packs: JSON data files the player copies into the game's Mods folder (Files app on iPhone and iPad, Open Folder on Mac). They contain data only; no code is ever loaded or downloaded (guideline 2.5.2). Install Examples in the Mods screen adds a sample pack.
 
 ## 5. App Privacy (General ▸ App Privacy)
 

@@ -33,8 +33,12 @@ Status: **FUNCTIONAL (Phase 17)**. Implemented:
 **Where mods live.**
 
 * Each mod is a folder with a `pack.json`, laid out like the base pack below.
-* The folder is `~/Library/Application Support/Skyline Architect/Mods/` (on iPadOS, the
-  app container equivalent).
+* The folder:
+  * on a Mac, `Application Support/Skyline Architect/Mods/` inside the app's sandbox
+    container (`~/Library/Containers/app.skylinearchitect.SkylineArchitect/Data/Library/`);
+    *Open Folder* in the mod manager shows it in Finder;
+  * on an iPad or iPhone, `Documents/Mods/`, which the Files app shows as
+    *On My iPad (iPhone) ▸ Skyline Architect ▸ Mods* (0.29.2).
 * The mod manager (main menu → *Mods…*) lists every installed pack. There you switch a
   pack on or off, change the load order, and install the bundled examples.
 * *Apply* reloads all content and starts a fresh game; saves are kept.
