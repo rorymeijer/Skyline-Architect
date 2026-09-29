@@ -1,25 +1,23 @@
 # Development Status
 
-_Last updated: 2026-09-29 (0.24.0 — Phase C: scenarios)_
+_Last updated: 2026-09-29 (0.25.0 — F1: balance)_
 
 ## Current phase
-**Phase C — Scenarios: COMPLETE on the branch.** Save format 18. See D-055 and
-SCENARIOS.md.
-- Stars and points.
-- A completion record on the device, merged when iCloud sync is on.
-- Scripted events: demand shocks, grants and fines with conditions, weather, fire, news.
-- Restrictions: forbidden rooms, maximum floor, loan limit, fixed rents, no staff.
-- A new Lean Tower scenario.
+**Next round (the player's plan):**
 
-The player's phase order A → B → E → C is complete:
-- 0.21 foundations;
-- 0.22 amenities;
-- 0.23 economy and facilities;
-- 0.24 scenarios.
+| Step | Content | State |
+|------|---------|-------|
+| F1 | Balance bot and tuning | COMPLETE on the branch |
+| F2 | 500 floors running smoothly | Planned |
+| F3 | Tutorial, in-game manual, website (`Website/`) | Planned |
+| F4 | Accessibility and iPad | Planned |
+| F5 | iPhone | Planned |
 
-Remaining open items are in `Documentation/OPEN_ITEMS.md`.
+F1 ran the `skyline-balance` bot on every scenario, fixed high-floor leasing (budgets pay the
+height premium), eased the class thresholds, tuned the targets and fixed an elevator-repair
+crash. See BALANCE.md and D-056.
 
-Evidence: 353 tests, CI run 36527125766, captures in `Development/Screenshots/Scenarios-0.24/`.
+Evidence: 355 tests; BALANCE.md holds the bot's report.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |

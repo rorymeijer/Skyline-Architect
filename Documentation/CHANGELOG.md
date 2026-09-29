@@ -2,6 +2,28 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.25.0] — F1: Balance
+
+### Added
+- **Balance bot** (`skyline-balance`): plays every scenario like a player and reports what
+  happened (Documentation/BALANCE.md).
+
+### Changed
+- **Tall towers can be let:** tenants now pay the height premium too. Before, offices above
+  about the 12th floor stayed empty.
+- **Building classes:** Class A needs 100 people (was 150), Prime needs 250 (was 400).
+- **Scenario targets** tuned from the bot's plays:
+  - Opening Day: 16 units, $12,000;
+  - Harbour Revival: 100 people;
+  - Three Properties: 160 people;
+  - Crown Prestige: reputation 75, waits ≤ 30 s, held 5 days, 30 days;
+  - Skyline: 600 people;
+  - Lean Tower: $40,000, held 10 days.
+
+### Fixed
+- A crash when a repaired elevator served people who had started waiting after its repair
+  was scheduled.
+
 ## [0.24.0] — Phase C: Scenarios
 
 ### Added

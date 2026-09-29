@@ -67,12 +67,14 @@ All metrics cover the whole estate.
 
 | Scenario | Difficulty | Start | Days | Objectives |
 |----------|-----------|-------|-----:|------------|
-| Opening Day | Easy | Quay Street, $2.5M | 10 | 12 units let; daily profit ≥ $5,000 |
-| Harbour Revival | Medium | Harbour Row, Saltmere, $1.5M | 30 | population 120; daily profit ≥ $4,000; held 3 closings |
-| Three Properties | Medium | Quay Street, $2.5M | 60 | 3 properties; population 250; daily profit ≥ $10,000 |
-| Crown Prestige | Hard | Crown Yard, Harrowgate, $5M | 45 | Class A; reputation 70; average wait ≤ 45 s |
-| Skyline | Hard | Quay Street, $3M | 120 | population 1,500; average wait ≤ 60 s; daily profit ≥ $1; held 7 closings |
-| Lean Tower (Phase C) | Hard | Quay Street, $3M | 30 | 20 units let; daily profit ≥ $15,000; held 3 closings. Rules: no apartments, floors up to 12, fixed rents, no staff |
+| Opening Day | Easy | Quay Street, $2.5M | 10 | 16 units let; daily profit ≥ $12,000 |
+| Harbour Revival | Medium | Harbour Row, Saltmere, $1.5M | 30 | population 100; daily profit ≥ $4,000; held 3 closings |
+| Three Properties | Medium | Quay Street, $2.5M | 60 | 3 properties; population 160; daily profit ≥ $10,000 |
+| Crown Prestige | Hard | Crown Yard, Harrowgate, $5M | 30 | Class A; reputation 75; average wait ≤ 30 s; held 5 closings |
+| Skyline | Hard | Quay Street, $3M | 120 | population 600; average wait ≤ 60 s; daily profit ≥ $1; held 7 closings |
+| Lean Tower (Phase C) | Hard | Quay Street, $3M | 30 | 20 units let; daily profit ≥ $40,000; held 10 closings. Rules: no apartments, floors up to 12, fixed rents, no staff |
+
+Targets were tuned in F1 from the balance bot's plays (BALANCE.md).
 
 **Testing and balancing:**
 

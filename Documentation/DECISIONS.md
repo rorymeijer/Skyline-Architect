@@ -424,6 +424,26 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-056 — F1: balance by a bot; budgets pay the height premium
+- **Date:** 2026-09-29
+- **Decision:**
+  - A headless balance bot (`SkylineBot`, `skyline-balance`) plays every scenario through
+    the construction engine and the market, and writes BALANCE.md.
+  - Tenant budgets rise with the same +1 %/storey premium as asking rents.
+  - Class A needs 100 people and Prime 250.
+  - The scenario targets were set from the bot's results.
+- **Alternatives:**
+  - Tuning by hand without a player.
+  - Removing the height premium (tall towers would earn nothing extra).
+- **Reason:**
+  - The bot turned up two blockers that no test had found: high offices could not be let,
+    and Class A was out of reach.
+  - It also found a crash in elevator repair.
+- **Consequences:**
+  - Tall towers can be let at every height, and they earn more per unit the higher they go.
+  - Balance is reproducible: re-run the bot after changing content.
+  - The bot is a lower bound; a human play test (V1) is still open.
+
 ## D-055 — Phase C: scenario scripts live in the save; records on the device
 - **Date:** 2026-09-29
 - **Decision:**

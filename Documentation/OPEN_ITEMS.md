@@ -38,7 +38,9 @@ new bugs go at the bottom of the table.
 
 ## 3. Balancing
 
-Everything below is first-pass and has not been play-tested (it depends on V1).
+The balance bot (F1, BALANCE.md) now checks every scenario and led to fixes for high-floor
+leasing, class thresholds and scenario targets. Everything below is still not play-tested by a
+human (V1).
 
 * Scenario targets and time limits (Opening Day … Skyline).
 * Tenant budgets and rent levels per city. Harrowgate was fixed once already.
