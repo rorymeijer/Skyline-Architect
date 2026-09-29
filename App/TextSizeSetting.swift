@@ -50,6 +50,15 @@ extension View {
 enum UIText {
     static var macScale = 1.0
 
+    /// The growth in effect: the Mac's factor, or the iPad's Dynamic Type.
+    static func current(_ dynamicType: DynamicTypeSize) -> Double {
+        #if os(macOS)
+        macScale
+        #else
+        factor(dynamicType)
+        #endif
+    }
+
     /// Growth of text for a Dynamic Type size, relative to the standard (large) size.
     static func factor(_ size: DynamicTypeSize?) -> Double {
         switch size {
@@ -92,12 +101,7 @@ private struct ScaledFrame: ViewModifier {
     let alignment: Alignment
 
     func body(content: Content) -> some View {
-        #if os(macOS)
-        let factor = UIText.macScale
-        #else
-        let factor = UIText.factor(dynamicType)
-        #endif
-        return content.frame(width: width * factor, alignment: alignment)
+        content.frame(width: width * UIText.current(dynamicType), alignment: alignment)
     }
 }
 

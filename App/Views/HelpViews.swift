@@ -7,11 +7,13 @@ import SkylineContent
 /// (`transport.md`) open them in place.
 struct ManualView: View {
     let model: AppModel
+    @Environment(\.dynamicTypeSize) private var dynamicType
 
     var body: some View {
         let document = model.manual?.document ?? ManualDocument(chapters: [])
         let chapter = model.manualChapterID.flatMap { document.chapter($0) } ?? document.chapters.first
-        let pages = chapter.map(ManualPages.split) ?? []
+        let scale = UIText.current(dynamicType)
+        let pages = chapter.map { ManualPages.split($0, linesPerPage: Int((Double(ManualPages.linesPerPage) / scale).rounded(.down))) } ?? []
         let page = min(model.manualPage, max(pages.count - 1, 0))
         ZStack {
             Color.black.opacity(0.5).ignoresSafeArea()
@@ -44,7 +46,7 @@ struct ManualView: View {
                 }
             }
             .padding(20)
-            .frame(maxWidth: 880, maxHeight: 600)
+            .frame(maxWidth: 880 * scale, maxHeight: 600 * scale)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
             .padding(24)
         }
@@ -140,7 +142,7 @@ private struct PagerButton: View {
 enum ManualPages {
     static let linesPerPage = 26
 
-    static func split(_ chapter: ManualChapter) -> [[ManualBlock]] {
+    static func split(_ chapter: ManualChapter, linesPerPage: Int = linesPerPage) -> [[ManualBlock]] {
         var pages: [[ManualBlock]] = [[]]
         var used = 3                                              // the chapter title
         for block in chapter.blocks {
