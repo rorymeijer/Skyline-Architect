@@ -1,9 +1,9 @@
 name: App Store screenshots
 
-# Run by hand (Actions ▸ App Store screenshots ▸ Run workflow; also when the store script
-# changes on a development branch): real captures at the App
-# Store's sizes — Mac 1440 × 900, iPhone 6.9" and iPad 13" simulators — as PNG artifacts and
-# as JPEGs committed to Development/Screenshots/AppStore/ (Documentation/APP_STORE.md §8).
+# Real captures at the App Store's sizes: Mac 1440 × 900, iPhone 6.9" and iPad 13" simulators.
+# They are kept as PNG artifacts and as JPEGs committed to Development/Screenshots/AppStore/
+# (Documentation/APP_STORE.md §8). Runs by hand (Actions ▸ App Store screenshots ▸ Run
+# workflow) and when the store script changes on a development branch.
 on:
   workflow_dispatch:
   push:
