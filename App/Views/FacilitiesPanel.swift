@@ -24,6 +24,10 @@ struct FacilitiesPanel: View {
                         .font(.caption).foregroundStyle(u.shortRooms == 0 ? Color.green : Color.orange)
                 }
             }
+            if s.brokenElevators > 0 {
+                Text("\(s.brokenElevators) elevator\(s.brokenElevators == 1 ? "" : "s") broken down — a technician repairs it first")
+                    .font(.caption).foregroundStyle(.red)
+            }
             if s.brokenEquipment > 0 {
                 Text("\(s.brokenEquipment) equipment room\(s.brokenEquipment == 1 ? "" : "s") out of order — needs a technician")
                     .font(.caption).foregroundStyle(.red)

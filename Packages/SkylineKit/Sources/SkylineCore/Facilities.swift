@@ -52,6 +52,8 @@ public struct FacilitiesState: Codable, Hashable, Sendable {
     public var jobs: [FacilityJob] = []
     public var cleaned = 0
     public var repaired = 0
+    /// Elevator breakdowns so far (Phase E; nil in older saves = 0).
+    public var breakdowns: Int?
 
     public init() {}
 }

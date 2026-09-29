@@ -103,7 +103,8 @@ extension SimulationEngine {
         assigned.assigned = true
         guard let bank = bank(of: ride.shaft, in: world), bank.cars.count > 1 else { return assigned }
         let candidates = bank.cars.filter { id in
-            guard let room = world.rooms[id], let spec = rules.elevator(for: room.definitionID) else { return false }
+            guard let room = world.rooms[id], let spec = rules.elevator(for: room.definitionID),
+                  world.elevators[id]?.isOutOfService != true else { return false }
             let served = spec.servedFloors(of: room.floors)
             return served.contains(ride.fromFloor) && served.contains(ride.toFloor)
         }

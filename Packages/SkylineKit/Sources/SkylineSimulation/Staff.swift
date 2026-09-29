@@ -212,7 +212,8 @@ extension SimulationEngine {
         func urgency(_ job: FacilityJob) -> (Int, Double, Tick, RoomID) {
             let u = world.upkeep[job.room]
             let value = kind == .clean ? (u?.cleanliness ?? 1) : (u?.condition ?? 1)
-            let failed = kind == .repair && value < failure && catalog.spec(world.rooms[job.room]?.definitionID ?? "")?.utilitySupply != nil
+            let failed = kind == .repair && (world.elevators[job.room]?.isOutOfService == true
+                || value < failure && catalog.spec(world.rooms[job.room]?.definitionID ?? "")?.utilitySupply != nil)
             return (failed ? 0 : 1, value, job.created, job.room)
         }
         let open = world.facilities.jobs.indices.filter { world.facilities.jobs[$0].kind == kind && world.facilities.jobs[$0].assignee == nil }
@@ -230,6 +231,13 @@ extension SimulationEngine {
     private func complete(_ job: JobAssignment, by id: PersonID, at now: Tick, world: inout GameWorld) {
         world.upkeep.update(job.room) { u in
             if job.kind == .clean { u.cleanliness = 1 } else { u.condition = 1 }
+        }
+        if job.kind == .repair, world.elevators[job.room]?.isOutOfService == true {
+            // Back in service: the next step's navigation refresh brings routes back.
+            world.elevators.update(job.room) { c in
+                c.outOfService = nil
+                c.nextEventTick = now
+            }
         }
         world.facilities.jobs.removeAll { $0.room == job.room && $0.kind == job.kind && $0.assignee == id }
         if job.kind == .clean { world.facilities.cleaned += 1 } else { world.facilities.repaired += 1 }

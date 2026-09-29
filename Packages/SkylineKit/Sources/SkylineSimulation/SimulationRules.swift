@@ -81,6 +81,11 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
     public var patienceSeconds: Double?
     /// Staff only (service elevator, Phase 10): tenants and visitors never board.
     public var serviceOnly: Bool?
+    /// Wear (Phase E; nil = none): condition the shaft loses per stop, and the chance per
+    /// stop of a breakdown once its condition is below the facilities' repair threshold
+    /// (rising to the full chance at the failure threshold).
+    public var wearPerStop: Double?
+    public var breakdownChance: Double?
 
     public init(room: String, name: String, capacity: Int, speed: Double, acceleration: Double,
                 doorSeconds: Tick, transferSeconds: Tick, expectedWaitSeconds: Double,
@@ -121,6 +126,9 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
         if expectedWaitSeconds < 0 { p.append("elevator '\(room)': expectedWaitSeconds must be ≥ 0") }
         if let s = stops, !["all", "ends"].contains(s) { p.append("elevator '\(room)': stops must be 'all' or 'ends'") }
         if let q = patienceSeconds, !(q >= 10 && q <= 3600) { p.append("elevator '\(room)': patienceSeconds must be 10…3600") }
+        if !(0...0.1).contains(wearPerStop ?? 0) || !(0...1).contains(breakdownChance ?? 0) {
+            p.append("elevator '\(room)': wearPerStop must be 0…0.1 and breakdownChance 0…1")
+        }
         return p
     }
 }
