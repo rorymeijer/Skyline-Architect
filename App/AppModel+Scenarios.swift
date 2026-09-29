@@ -59,7 +59,20 @@ extension AppModel {
         showScenarioBrowser = false
         showMainMenu = false
         showScenarioPanel = true
-        setSpeed(.normal)
+        refreshTutorial()
+        if tutorial != nil {
+            // A tutorial waits for the player: the first steps are construction.
+            showTutorialPanel = true
+            setSpeed(.paused)
+        } else {
+            setSpeed(.normal)
+        }
+    }
+
+    /// The tutorial scenario (the first one with steps), from the main menu.
+    func startTutorial() {
+        guard let id = library?.orderedScenarios.first(where: { !($0.tutorial ?? []).isEmpty })?.id else { return }
+        startScenario(id)
     }
 
     /// After the result: the game goes on as free play on the same estate.

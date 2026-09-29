@@ -41,6 +41,9 @@ struct ChromeOverlay: View {
         ZStack(alignment: .topLeading) {
             VStack(alignment: .leading, spacing: 10) {
                 TitleBadge(model: model)
+                if let tutorial = model.tutorial, model.showTutorialPanel, !model.showDeveloperHUD {
+                    TutorialPanel(model: model, tutorial: tutorial)
+                }
                 if model.showDeveloperHUD {
                     DevHUDView(diagnostics: model.diagnostics, population: model.population, simulationMs: model.lastSimulationMs,
                                navigation: model.navigationMetrics)
@@ -59,6 +62,11 @@ struct ChromeOverlay: View {
             SimulationControls(model: model)
                 .padding(.top, 12)
                 .frame(maxWidth: .infinity, alignment: .top)
+            if let hint = model.activeHint {
+                HintBubble(model: model, hint: hint)
+                    .padding(.top, 60)
+                    .frame(maxWidth: .infinity, alignment: .top)
+            }
             VStack(spacing: 8) {
                 if let alert = model.incidentNotice {
                     IncidentBanner(text: alert, fire: !model.incidents.fires.isEmpty, show: { model.showIncident() },
@@ -72,7 +80,9 @@ struct ChromeOverlay: View {
             }
             .padding(.bottom, 58)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-            if model.showLoadSheet {
+            if model.showManual {
+                ManualView(model: model)
+            } else if model.showLoadSheet {
                 SavesPanel(model: model)
             } else if model.showModManager {
                 ModManagerView(model: model)
@@ -102,7 +112,7 @@ struct TitleBadge: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(model.propertyName)
                 .font(.headline)
-            Text("\(model.cityName) · \(mode) · Phase 20")
+            Text("\(model.cityName) · \(mode)")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -141,6 +151,11 @@ struct ViewControls: View {
             ControlButton(symbol: "banknote", help: "Economy (⌥⌘M)", isOn: model.showEconomyPanel) { model.showEconomyPanel.toggle() }
             ControlButton(symbol: "wrench.and.screwdriver", help: "Facilities (⌥⌘F)", isOn: model.showFacilitiesPanel) { model.showFacilitiesPanel.toggle() }
             ControlButton(symbol: "bolt.horizontal", help: "Services overlay (⌥⌘U)", isOn: model.showServices) { model.showServices.toggle() }
+            separator
+            if model.tutorial != nil {
+                ControlButton(symbol: "graduationcap", help: "Tutorial", isOn: model.showTutorialPanel) { model.showTutorialPanel.toggle() }
+            }
+            ControlButton(symbol: "book", help: "Manual (⌘?)", isOn: model.showManual) { model.openManual() }
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 4)

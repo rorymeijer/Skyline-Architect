@@ -48,6 +48,14 @@ struct GameCommands: Commands {
                 .keyboardShortcut("z", modifiers: [.command, .shift])
                 .disabled(!model.canRedo)
         }
+        CommandGroup(replacing: .help) {
+            Button("Skyline Architect Manual") { model.openManual() }
+                .keyboardShortcut("?", modifiers: .command)
+            Button("Start the Tutorial") { model.startTutorial() }
+            Divider()
+            Button(model.hintsEnabled ? "Turn Off Tips" : "Turn On Tips") { model.setHintsEnabled(!model.hintsEnabled) }
+            Button("Show All Tips Again") { model.resetHints() }
+        }
         CommandMenu("Build") {
             Button("Floor Tool") { model.handleToolKey("floor") }
             Button("Demolish Tool") { model.handleToolKey("demolish") }
