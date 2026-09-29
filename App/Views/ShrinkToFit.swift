@@ -28,7 +28,7 @@ extension View {
     }
 
     /// Where the view is taller than the room it gets (an iPhone in landscape, 0.29.2), it is
-    /// drawn in steps smaller, down to three quarters. Where it fits, nothing changes.
+    /// drawn in steps smaller, down to three quarters (side panels: see `PanelStack`). Where it fits, nothing changes.
     func shrinkToFit() -> some View {
         ViewThatFits(in: .vertical) {
             self

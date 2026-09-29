@@ -66,15 +66,27 @@ struct PanelStack: View {
 
     var body: some View {
         let open = SidePanel.allCases.filter { $0.isOpen(model) }
-        // Where even one panel is too tall (an iPhone, 0.29.2), it is drawn smaller.
-        ViewThatFits(in: .vertical) {
-            all(open)
-            all(open).scaled(0.9)
-            all(open).scaled(0.8)
-            tabbed(open)
-            tabbed(open).scaled(0.9)
-            tabbed(open).scaled(0.8)
-            tabbed(open).scaled(0.75)
+        // Where even one panel is too tall (an iPhone, 0.29.2), it is drawn smaller; one panel
+        // alone never gets a tab row.
+        if open.count == 1 {
+            ViewThatFits(in: .vertical) {
+                all(open)
+                all(open).scaled(0.9)
+                all(open).scaled(0.8)
+                all(open).scaled(0.7)
+                all(open).scaled(0.65)
+            }
+        } else {
+            ViewThatFits(in: .vertical) {
+                all(open)
+                all(open).scaled(0.9)
+                all(open).scaled(0.8)
+                tabbed(open)
+                tabbed(open).scaled(0.9)
+                tabbed(open).scaled(0.8)
+                tabbed(open).scaled(0.7)
+                tabbed(open).scaled(0.65)
+            }
         }
     }
 
