@@ -10,7 +10,7 @@ on:
     branches: ["claude/**"]
     paths:
       - ".github/workflows/store-screenshots.yml"
-      - "App/Diagnostics/ScreenshotDirector+Store.swift"
+      - "App/Diagnostics/ScreenshotDirector*Store.swift"   # "+" would be a pattern character
 
 jobs:
   store:
