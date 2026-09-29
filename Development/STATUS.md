@@ -1,23 +1,37 @@
 # Development Status
 
-_Last updated: 2026-09-29 (0.25.0 — F1: balance)_
+_Last updated: 2026-09-29 (0.26.0 — F2: 500 floors)_
 
 ## Current phase
 **Next round (the player's plan):**
 
 | Step | Content | State |
 |------|---------|-------|
-| F1 | Balance bot and tuning | COMPLETE on the branch |
-| F2 | 500 floors running smoothly | Planned |
+| F1 | Balance bot and tuning | COMPLETE (rorymeijer/Skyline-Architect#31) |
+| F2 | 500 floors running smoothly | COMPLETE on the branch |
 | F3 | Tutorial, in-game manual, website (`Website/`) | Planned |
 | F4 | Accessibility and iPad | Planned |
 | F5 | iPhone | Planned |
 
-F1 ran the `skyline-balance` bot on every scenario, fixed high-floor leasing (budgets pay the
-height premium), eased the class thresholds, tuned the targets and fixed an elevator-repair
-crash. See BALANCE.md and D-056.
+F2 profiled a 526-floor tower (2 511 people, 74 cars) with callgrind and removed the hot
+spots:
+- staff rooms are looked up once per call;
+- cars have graph nodes only at their stops;
+- routes use A* search;
+- breakdowns keep the route cache;
+- the cache is warmed on load;
+- night windows are drawn as strips when zoomed far out.
 
-Evidence: 355 tests; BALANCE.md holds the bot's report.
+Two game days: 9.1 s → 3.6 s. Worst step: 400 → 134 ms. Daily closing: 826 → 65 ms.
+Details in PERFORMANCE.md and D-057.
+
+Evidence: 357 tests (new: a warmed cache changes nothing; breakdowns keep the graph; night
+strips). `skyline-bench` numbers are in PERFORMANCE.md. The app side (strips, warming on load)
+is verified by CI: captures in `Development/Screenshots/Tall-Towers-0.26/` (Debug, 44–45 fps).
+
+F1 (merged) ran the `skyline-balance` bot on every scenario, fixed high-floor leasing, eased
+the class thresholds, tuned the targets and fixed an elevator-repair crash (BALANCE.md,
+D-056).
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |

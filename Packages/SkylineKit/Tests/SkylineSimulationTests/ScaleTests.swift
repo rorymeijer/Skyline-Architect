@@ -79,4 +79,47 @@ import SkylineContent
         #expect(sim.banks(of: building, in: world) == ElevatorBanks.banks(in: world, rules: library.simulationRules, building: building))
         #expect(sim.bank(of: low.id, in: world)?.cars == [low.id])
     }
+
+    /// F2: warming the route cache ahead (the app does it in the background) changes nothing
+    /// but speed: the day plays out exactly as with a cold cache.
+    @Test func warmRouteCacheChangesNothing() throws {
+        var (cold, _) = try StressTower.world(zones: 2, width: StressTower.minimumWidth(zones: 2), library: library)
+        let rules = library.simulationRules, catalog = library.buildCatalog
+        PopulationSync.sync(&cold, catalog: catalog, rules: rules)
+        Leasing.fillAll(&cold, catalog: catalog, rules: rules)
+        var warm = cold
+        let a = engine, b = engine
+        a.replanAfterConstruction(&cold)
+        b.replanAfterConstruction(&warm)
+        b.warmRouteCache(warm)
+        #expect(b.navigation.metrics.queries > 0)
+        a.advance(&cold, by: 24 * 3600 + 600)
+        b.advance(&warm, by: 24 * 3600 + 600)
+        #expect(cold == warm)
+    }
+
+    /// F2: a broken-down car is left out of route queries without rebuilding the graph.
+    @Test func breakdownKeepsTheGraph() throws {
+        var (world, _) = try StressTower.world(zones: 2, width: StressTower.minimumWidth(zones: 2), library: library)
+        let rules = library.simulationRules, catalog = library.buildCatalog
+        PopulationSync.sync(&world, catalog: catalog, rules: rules)
+        Leasing.fillAll(&world, catalog: catalog, rules: rules)
+        let sim = engine
+        sim.replanAfterConstruction(&world)
+        sim.advance(&world, by: 3 * 3600)
+        let builds = sim.navigation.metrics.graphBuilds
+        let car = try #require(world.rooms.values.first { $0.definitionID == "elevator-shaft" }).id
+        world.upkeep.update(car) { $0.condition = 0 }
+        var steps = 0
+        while world.elevators[car]?.isOutOfService != true && steps < 600 {
+            sim.advance(&world, by: 30)
+            steps += 1
+        }
+        #expect(world.elevators[car]?.isOutOfService == true)
+        sim.advance(&world, by: 1800)
+        #expect(sim.navigation.metrics.graphBuilds == builds)
+        #expect(world.people.values.allSatisfy { p in
+            if case let .waiting(r, _, _) = p.place { r.shaft != car } else { true }
+        })
+    }
 }

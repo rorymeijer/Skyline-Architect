@@ -20,7 +20,8 @@ public enum RouteMode: Hashable, Sendable {
 /// * **Vertical level** — every stair shaft contributes one portal per floor it serves (at its
 ///   landing) and an edge per storey between them. Every elevator shaft contributes a landing
 ///   portal and an in-car node per served floor: boarding (landing → car) costs the expected
-///   wait plus door time, riding costs travel time per storey, alighting costs the transfer.
+///   wait plus door time, riding costs travel time per storey between stops, alighting costs
+///   the transfer.
 ///
 /// A route is then: walk to a portal on the start floor, ride/climb, possibly walk across a
 /// floor to another shaft (a *transfer*), … , walk to the target. The graph is immutable
@@ -74,6 +75,10 @@ public struct NavigationGraph: Sendable {
 
     public static let stairLanding = 1.1
 
+    /// Cheapest cost of one storey by any means (stairs or the fastest car): the A* lower
+    /// bound per floor still to go (F2).
+    private(set) var secondsPerFloorBound = Double.infinity
+
     public var edgeCount: Int { edges.reduce(0) { $0 + $1.count } }
 
     init(building: Building, world: GameWorld, catalog: BuildCatalog, rules: SimulationRules) {
@@ -105,6 +110,7 @@ public struct NavigationGraph: Sendable {
                 let index = addPortal(Portal(floor: floor, x: leftX, shaft: room.id, kind: .stairLanding), walkable: true)
                 if let p = previous {
                     let cost = Double(rules.stairsSecondsPerFloor)
+                    secondsPerFloorBound = min(secondsPerFloorBound, cost)
                     link(p, index, cost, .stairs(shaft: room.id))
                     link(index, p, cost, .stairs(shaft: room.id))
                 }
@@ -113,23 +119,26 @@ public struct NavigationGraph: Sendable {
         }
         // Elevators: landing + car node per served floor; rides chain the car nodes.
         for room in Self.transportRooms(of: building, world: world, catalog: catalog, kind: "elevator") {
-            // A broken-down car takes nobody anywhere until it is repaired (Phase E).
-            guard let spec = rules.elevator(for: room.definitionID), world.elevators[room.id]?.isOutOfService != true else { continue }
+            guard let spec = rules.elevator(for: room.definitionID) else { continue }
             let x = Self.elevatorLandingX(room, grid: grid)
             let served = Set(spec.servedFloors(of: room.floors))
             elevatorShafts[room.id] = (served, x)
             if spec.serviceOnly == true { serviceShafts.insert(room.id) }
             let perFloor = grid.floorHeight / spec.speed
+            secondsPerFloorBound = min(secondsPerFloorBound, perFloor)
             let boarding = spec.expectedWaitSeconds + Double(2 * spec.doorSeconds + spec.transferSeconds) + spec.speed / spec.acceleration
-            var previousCar: Int?
-            for floor in room.floors.lowest...room.floors.highest {
+            // Car nodes only where the car stops (F2): an express shuttle passing 400 floors
+            // is one ride edge, not 400.
+            var previousCar: (index: Int, floor: Int)?
+            for floor in served.sorted() {
                 let car = addPortal(Portal(floor: floor, x: x, shaft: room.id, kind: .elevatorCar), walkable: false)
                 if let p = previousCar {
-                    link(p, car, perFloor, .ride(shaft: room.id))
-                    link(car, p, perFloor, .ride(shaft: room.id))
+                    let cost = Double(floor - p.floor) * perFloor
+                    link(p.index, car, cost, .ride(shaft: room.id))
+                    link(car, p.index, cost, .ride(shaft: room.id))
                 }
-                previousCar = car
-                guard walkable[floor] != nil, served.contains(floor) else { continue }
+                previousCar = (car, floor)
+                guard walkable[floor] != nil else { continue }
                 let landing = addPortal(Portal(floor: floor, x: x, shaft: room.id, kind: .elevatorLanding), walkable: true)
                 link(landing, car, boarding, .board(shaft: room.id))
                 link(car, landing, Double(spec.transferSeconds), .alight(shaft: room.id))
@@ -152,7 +161,8 @@ public struct NavigationGraph: Sendable {
         (grid.x(ofColumn: room.columns.start) + grid.x(ofColumn: room.columns.end)) / 2
     }
 
-    /// Whether the elevator shaft `id` exists and serves both floors.
+    /// Whether the elevator shaft `id` exists and serves both floors (whether its car runs is
+    /// the caller's check: see `NavigationService.brokenShafts`).
     func elevatorServes(_ id: RoomID, _ a: Int, _ b: Int, mode: RouteMode = .staff) -> Bool {
         if mode == .public && serviceShafts.contains(id) { return false }
         return elevatorShafts[id].map { $0.served.contains(a) && $0.served.contains(b) } ?? false
@@ -183,7 +193,6 @@ public struct NavigationGraph: Sendable {
         for room in world.rooms(in: building.id) where catalog.spec(room.definitionID)?.transport != nil {
             mix(Int(room.id.raw)); mix(room.columns.start); mix(room.columns.count)
             mix(room.floors.lowest); mix(room.floors.highest)
-            mix(world.elevators[room.id]?.isOutOfService == true ? 1 : 0)
         }
         return h
     }
@@ -194,33 +203,44 @@ public struct NavigationGraph: Sendable {
 extension NavigationGraph {
     /// Portal sequence of the fastest route from `from` to `to` (different floors), or nil.
     /// `mode` restricts which elevators may be boarded (stairs only, public, or staff).
-    /// Deterministic Dijkstra: heap ordered by (cost, node index).
-    func shortestPath(from: Spot, to: Spot, walkSpeed: Double, mode: RouteMode = .public) -> [Int]? {
+    /// Deterministic A* (F2): heap ordered by (estimate, node index); the estimate adds to
+    /// the cost so far a lower bound of the rest — storeys still to go at the cheapest
+    /// per-storey cost plus the straight walk to the target's x. The bound never shrinks by
+    /// more than an edge costs, so the first route found is a fastest one, as with plain
+    /// Dijkstra, while far fewer portals are opened in tall towers. `excluded` elevator
+    /// shafts (broken-down cars, Phase E) are not boarded: they are left out per query, so
+    /// a breakdown keeps the graph and its route cache (F2).
+    func shortestPath(from: Spot, to: Spot, walkSpeed: Double, mode: RouteMode = .public, excluded: Set<RoomID> = []) -> [Int]? {
         guard let starts = portalsByFloor[from.floor], let ends = portalsByFloor[to.floor] else { return nil }
         let target = portals.count          // virtual target node
+        let perFloor = secondsPerFloorBound.isFinite ? secondsPerFloorBound : 0
+        func estimate(_ node: Int) -> Double {
+            let p = portals[node]
+            return Double(abs(p.floor - to.floor)) * perFloor + abs(p.x - to.x) / walkSpeed
+        }
         var dist = [Double](repeating: .infinity, count: portals.count + 1)
         var previous = [Int](repeating: -1, count: portals.count + 1)
-        var heap = MinHeap<(Double, Int)> { $0.0 == $1.0 ? $0.1 < $1.1 : $0.0 < $1.0 }
+        var heap = MinHeap<(f: Double, g: Double, node: Int)> { $0.f == $1.f ? $0.node < $1.node : $0.f < $1.f }
         for s in starts {
             dist[s] = abs(portals[s].x - from.x) / walkSpeed
-            heap.push((dist[s], s))
+            heap.push((dist[s] + estimate(s), dist[s], s))
         }
         let endCost = Dictionary(uniqueKeysWithValues: ends.map { ($0, abs(portals[$0].x - to.x) / walkSpeed) })
-        while let (d, node) = heap.popMin() {
+        while let (_, d, node) = heap.popMin() {
             guard d == dist[node] else { continue }
             if node == target { break }
             if let c = endCost[node], d + c < dist[target] || (d + c == dist[target] && node < previous[target]) {
                 dist[target] = d + c
                 previous[target] = node
-                heap.push((d + c, target))
+                heap.push((d + c, d + c, target))
             }
             for edge in edges[node] where d + edge.cost < dist[edge.to] {
                 if case let .board(shaft) = edge.kind {
-                    if mode == .stairsOnly || (mode == .public && serviceShafts.contains(shaft)) { continue }
+                    if mode == .stairsOnly || (mode == .public && serviceShafts.contains(shaft)) || excluded.contains(shaft) { continue }
                 }
                 dist[edge.to] = d + edge.cost
                 previous[edge.to] = node
-                heap.push((dist[edge.to], edge.to))
+                heap.push((dist[edge.to] + estimate(edge.to), dist[edge.to], edge.to))
             }
         }
         guard previous[target] >= 0 else { return nil }

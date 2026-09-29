@@ -57,58 +57,44 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // Scenarios (Phase C, 0.24): Opening Day played with the demo tower (built and leased
-    // with the developer tools) until the closing decides it; the browser with the record;
-    // Lean Tower's rules, where the same blueprint stops at the forbidden apartments.
+    // F2 (0.26): the 526-floor stress tower (developer tool) — by day with the HUD, a
+    // storey band at mid-height, and at night whole (lit strips) and closer (window panes).
     let steps: [Step] = [
-        Step(name: "01-news", grid: false) { model, scene in
-            model.showDeveloperHUD = false
-            model.startScenario("opening-day")
+        Step(name: "01-526-floors", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
-            model.applyBlueprint("demo-tower")
-            model.leaseAllVacant()
+            model.showDeveloperHUD = true
+            let t0 = Date()
+            model.loadStressTower(zones: 25)
+            let load = Date().timeIntervalSince(t0) * 1000
             model.advanceSimulation(toTimeOfDay: 10)
-            ScreenshotDirector.force("clear", 20, model: model)
-            model.showScenarioPanel = true
             model.refreshSimulationSummary()
-            model.promotionNotice = nil
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4), zoom: 11) }
-            return "\(model.clockText): Opening Day with the demo tower; the scenario panel shows the first news."
+            return "Stress tower, the base (the camera starts at the street): \(ScreenshotDirector.scale(model)); loaded (incl. "
+                + "route-cache warm-up and scene) in " + String(format: "%.0f ms", load) + ", Debug build; \(model.clockText)"
         },
-        Step(name: "02-result", grid: false) { model, scene in
-            model.advanceSimulation(ticks: SimClock.secondsPerDay)
-            model.advanceSimulation(toTimeOfDay: 7)
-            model.refreshSimulationSummary()
-            model.promotionNotice = nil
-            let r = model.world?.scenario?.result
-            return "\(model.clockText): the closing decided it — " + (r.map { "\($0.won ? "won" : "lost"), \($0.stars ?? 0) stars, \($0.score ?? 0) points" } ?? "not yet decided")
-                + (model.scenarioNewBest ? " (a new best in the record)." : ".")
+        Step(name: "02-whole-tower", grid: false) { model, scene in
+            let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 262), zoom: 0.3) }
+            return "\(model.clockText): all 526 floors by day, zoomed out as far as the camera goes"
         },
-        Step(name: "03-browser-record", grid: false) { model, scene in
-            model.selectedScenarioID = "opening-day"
-            model.openScenarioBrowser()
+        Step(name: "03-mid-tower", grid: false) { model, scene in
+            model.advanceSimulation(ticks: 240)
             model.refreshSimulationSummary()
-            let r = model.scenarioRecords.record(for: "opening-day")
-            return "The scenario browser: Opening Day's record — " + (r.map { "\($0.bestStars) stars, best \($0.bestScore) points, \($0.wins) of \($0.attempts) won" } ?? "none") + "."
+            let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 262), zoom: 9) }
+            return "\(model.clockText), floors ~255–270 of 526; last step (240 ticks) "
+                + String(format: "%.1f ms", model.lastSimulationMs) + " (Debug)"
         },
-        Step(name: "04-browser-rules", grid: false) { model, scene in
-            model.selectedScenarioID = "lean-tower"
+        Step(name: "04-night-whole", grid: false) { model, scene in
+            model.advanceSimulation(toTimeOfDay: 22)
             model.refreshSimulationSummary()
-            return "The new Lean Tower scenario: its rules (no apartments, twelve floors, fixed rents, no staff) and its scripted events."
+            let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 262), zoom: 0.3) }
+            return "\(model.clockText): 526 floors at night, zoomed out: one lit strip per storey of each room; \(ScreenshotDirector.scale(model))"
         },
-        Step(name: "05-lean-tower", grid: false) { model, scene in
-            model.startScenario("lean-tower")
-            model.setSpeed(.paused)
-            model.applyBlueprint("demo-tower")
-            let refused = model.alert?.message ?? "no refusal"
-            model.alert = nil
-            model.advanceSimulation(toTimeOfDay: 9)
-            model.showScenarioPanel = true
-            model.showEconomyPanel = true
-            model.refreshSimulationSummary()
-            model.promotionNotice = nil
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 3), zoom: 11) }
-            return "Lean Tower: the demo tower's blueprint stops at the first apartment (\(refused)); the palette's apartment is locked, rents are fixed."
+        Step(name: "05-night-panes", grid: false) { model, scene in
+            let middle = Double(StressTower.minimumWidth(zones: 25) + 4) / 2
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: Int(middle), floor: 480), zoom: 3) }
+            return "\(model.clockText): the upper zones closer (3 pt/m): individual window panes"
         },
     ]
 

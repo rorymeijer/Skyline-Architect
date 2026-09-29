@@ -13,7 +13,7 @@ if [ ! -x "$APP/Contents/MacOS/SkylineArchitect" ]; then
 fi
 "$APP/Contents/MacOS/SkylineArchitect" --capture-screenshots "$OUT" &
 PID=$!
-( sleep 180; kill "$PID" 2>/dev/null && echo "capture timed out" >&2 ) &
+( sleep 420; kill "$PID" 2>/dev/null && echo "capture timed out" >&2 ) &
 WATCHDOG=$!
 STATUS=0
 wait "$PID" || STATUS=$?

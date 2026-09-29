@@ -58,6 +58,7 @@ public struct SimulationEngine: Sendable {
         }
         startWeatherIfNeeded(&world)
         var amenities = AmenityDirectory(world: world, rules: rules)
+        var staffRooms = StaffRoomDirectory()
         if !rules.tenantTypes.isEmpty { events.push(world.market.nextTick, .market) }
         if let next = world.incidents.fires.map(\.nextStep).min() { events.push(next, .fires) }
         for car in world.elevators { events.push(car.nextEventTick, .car(car.id)) }
@@ -87,7 +88,7 @@ public struct SimulationEngine: Sendable {
                     continue
                 }
                 if person.role.isStaff, !person.isQueuing {
-                    handleStaff(id, at: tick, world: &world, events: &events)
+                    handleStaff(id, at: tick, world: &world, events: &events, staffRooms: &staffRooms)
                     report.eventsProcessed += 1
                     continue
                 }

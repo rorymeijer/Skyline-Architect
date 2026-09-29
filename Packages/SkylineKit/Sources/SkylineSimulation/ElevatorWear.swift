@@ -38,7 +38,7 @@ extension SimulationEngine {
             c.nextEventTick = .max
         }
         world.facilities.breakdowns = (world.facilities.breakdowns ?? 0) + 1
-        navigation.refresh(world: world, catalog: catalog)               // the graph now leaves the car out
+        // Route queries leave the car out from now on (the graph and its cache stay, F2).
         for person in world.people.values {
             let from: Spot
             let destination: Destination

@@ -5,7 +5,7 @@ iPadOS. Swift · SwiftUI · SpriteKit. No third-party engines, no copied assets.
 
 <img src="App/Assets.xcassets/AppIcon.appiconset/mac-256.png" width="128" alt="App icon: a cut-away tower at dusk">
 
-## What the game does (0.25.0)
+## What the game does (0.26.0)
 
 Build a tower in cross-section and keep it running.
 
@@ -25,7 +25,7 @@ Build a tower in cross-section and keep it running.
 | **Scenarios** | Objectives against the clock, from Opening Day to Lean Tower. They have scripted events and restrictions, stars and points, and a completion record on the device. |
 | **Modding** | JSON content packs over the base game, validated per mod, with a mod manager and an example mod. |
 | **Saves** | Versioned format (18) with migrations and golden fixtures, a content hash per pack; optional iCloud Drive sync that keeps both versions on a conflict. |
-| **Scale** | Profiled on generated towers up to 400 floors and 2,000+ people. |
+| **Scale** | Profiled on generated towers up to 526 floors and 2,500 people; elevator shafts up to 1,000 floors. |
 | **Polish** | Procedural art throughout, clouds, the app icon, VoiceOver labels and Reduce Motion. |
 
 **Honest status.** Every system above is implemented, tested and seen working in automated

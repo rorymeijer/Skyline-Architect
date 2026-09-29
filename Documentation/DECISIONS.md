@@ -424,6 +424,34 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-057 — F2: 500 floors by profiling, not by threads
+- **Date:** 2026-09-29
+- **Decision:**
+  - Tall towers are made fast by removing measured hot spots:
+    - staff rooms are looked up once per `advance` call;
+    - elevator cars have graph nodes only at their stops;
+    - routes are found with A* search;
+    - breakdowns no longer rebuild the navigation graph;
+    - the route cache is warmed when a world is loaded.
+  - Zoomed far out at night, lit windows are one strip per storey.
+  - The simulation stays on the main thread; the cache is warmed synchronously.
+  - Elevator shafts may span 1 000 floors.
+- **Alternatives:**
+  - A background simulation actor (D-044).
+  - Warming the route cache on a background queue.
+  - Tiling the night panes into textures.
+- **Reason:**
+  - The profile showed that two hot spots took 70 % of a day. With those fixed, the worst
+    step at 526 floors is 134 ms (once, on the first morning) and the daily closing is
+    65 ms.
+  - `SimulationEngine` and its caches are not thread-safe. Warming the cache in the
+    background would race with the frame loop.
+  - Strips cut the sprites four-fold with no new texture work.
+- **Consequences:**
+  - Loading a 500-floor world takes about 0.25 s longer (warming the cache).
+  - Routes and outcomes are unchanged (same event count).
+  - A* depends on a lower bound per storey, taken from the content (stairs and car speeds).
+
 ## D-056 — F1: balance by a bot; budgets pay the height premium
 - **Date:** 2026-09-29
 - **Decision:**

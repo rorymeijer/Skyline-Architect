@@ -54,7 +54,8 @@ import SkylineContent
         // A technician fixes it first thing on their shift.
         FacilitiesManagement.hire(.technician, building: f.building, world: &f.world, rules: f.engine.rules)
         f.run(until: "08:30", day: 1)
-        #expect(f.world.elevators[car]?.isOutOfService != true && f.world.upkeep[car]?.condition == 1)
+        #expect(f.world.elevators[car]?.isOutOfService != true && (f.world.upkeep[car]?.condition ?? 0) > 0.8
+                && !f.world.facilities.jobs.contains { $0.room == car })   // repaired, some stops since
         f.run(until: "12:00", day: 1)
         #expect((f.world.elevators[car]?.stats.stops ?? 0) > 0)
     }

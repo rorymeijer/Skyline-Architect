@@ -236,6 +236,10 @@ final class AppModel {
             PopulationSync.sync(&world, catalog: library.buildCatalog, rules: library.simulationRules)
         }
         simulation?.replanAfterConstruction(&world)     // also creates elevator cars
+        // Plan every unit's access route now, while loading, rather than in the first daily
+        // closing (a one-off ~0.9 s at 500 floors). The engine is not thread-safe, so this
+        // stays on the main thread.
+        simulation?.warmRouteCache(world)
         self.world = world
         self.activePropertyID = activePropertyID
         showMainMenu = false

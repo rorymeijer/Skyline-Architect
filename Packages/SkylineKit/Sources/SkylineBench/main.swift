@@ -37,7 +37,15 @@ do {
     measure("lease every unit") { Leasing.fillAll(&world, catalog: catalog, rules: rules) }
     let engine = SimulationEngine(rules: rules, catalog: catalog)
     measure("elevator sync + first plan") { engine.replanAfterConstruction(&world) }
+    if !args.contains("--cold") {
+        measure("warm route cache (app: background)") { engine.warmRouteCache(world) }
+    }
     let floors = StressTower.topFloor(zones: zones) + 2
+    // Staff as a player would hire them (F2): technicians keep the cars running.
+    if let building = world.buildings.values.first?.id {
+        for _ in 0..<(floors / 10) { FacilitiesManagement.hire(.technician, building: building, world: &world, rules: rules) }
+        for _ in 0..<(floors / 8) { FacilitiesManagement.hire(.janitor, building: building, world: &world, rules: rules) }
+    }
     print("  floors \(floors), rooms \(world.rooms.count), people \(world.people.count), cars \(world.elevators.count), tenants \(world.tenants.count)")
 
     var worst = 0.0, events = 0
@@ -55,9 +63,18 @@ do {
     }
     let top = slowest.sorted { $0.ms > $1.ms }.prefix(5).map { String(format: "%@ %.1f ms", SimClock.timeString($0.tick + step) as NSString, $0.ms) }
     print("  slowest steps (ending at): " + top.joined(separator: ", "))
+    for day in 0..<days {
+        let perDay = slowest.filter { SimClock.day($0.tick) == SimClock.day(slowest[0].tick) + Tick(day) }
+        let worstOfDay = perDay.max { $0.ms < $1.ms }
+        let closing = perDay.first { SimClock.secondOfDay($0.tick + step) == SimClock.startSecondOfDay }
+        print(String(format: "  day %d: worst %.1f ms at %@, total %.0f ms", day + 1, worstOfDay?.ms ?? 0,
+                     SimClock.timeString((worstOfDay?.tick ?? 0) + step) as NSString, perDay.reduce(0) { $0 + $1.ms })
+              + (closing.map { String(format: "; closing step %.1f ms", $0.ms) } ?? ""))
+    }
     let m = engine.navigation.metrics
     print(String(format: "  %d steps, worst step %.1f ms, %d events; routes: %d queries, %d cache hits, %d graph builds",
                  steps, worst, events, m.queries, m.cacheHits, m.graphBuilds))
+    print("  cars out of service at the end: \(world.elevators.values.filter(\.isOutOfService).count) of \(world.elevators.count), breakdowns \(world.facilities.breakdowns ?? 0)")
     // The app advances once per frame (1× = 24 ticks/s ≈ 0–1 tick per frame): the fixed cost
     // of a call matters as much as the events in it.
     var quiet = world
@@ -86,6 +103,13 @@ do {
     per("  people sprites") { _ = PeopleView.visible(world: world, propertyID: property, time: t, visible: view, zoom: 9) }
     per("  elevator cars") { _ = ElevatorView.visible(world: world, propertyID: property, time: t, visible: view, zoom: 9) }
     per("  lit rooms") { _ = DayNight.litRooms(world: world, propertyID: property, catalog: catalog, time: t, visible: view, zoom: 9) }
+    do {                                                            // F2: the whole tower at 22:00
+        let night = (t / 86_400).rounded(.down) * 86_400 + 16 * 3600
+        let tower = Rect(x: -50, y: -10, width: 250, height: world.grid.floorHeight * 540)
+        let panes = DayNight.litRooms(world: world, propertyID: property, catalog: catalog, time: night, visible: tower, zoom: 3).count
+        let strips = DayNight.litRooms(world: world, propertyID: property, catalog: catalog, time: night, visible: tower, zoom: 0.3).count
+        print("  night, whole tower: \(panes) lit panes → \(strips) strips zoomed out")
+    }
     per("  roofs + pavement") {
         _ = WeatherView.roofs(world: world, propertyID: property)
         _ = WeatherView.pavement(world: world, propertyID: property, visible: view)

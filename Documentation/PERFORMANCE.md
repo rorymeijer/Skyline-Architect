@@ -160,3 +160,45 @@ stays off the main thread; scene update stays well under 1 ms. Memory grows with
 should become memory-aware on iPad (Phase 19 or earlier if profiling shows pressure).
 
 Profile before optimizing; record results here.
+
+## F2 — 500 floors (0.26.0)
+
+**Tower:** `skyline-bench --zones 25 --width 64 --days 2` (release, Linux cloud container):
+526 floors, 1 201 rooms, 2 511 people, 74 cars, 950 tenants. The bench hires technicians
+(floors ÷ 10) and janitors (floors ÷ 8) as a player would. Profiles are callgrind runs
+collected over `SimulationEngine.advance` only.
+
+| Measure | Before F2 | After F2 |
+|---------|----------:|---------:|
+| Two game days (240-tick steps) | 9.1 s | **3.6 s** |
+| Worst step, day 1 | 400 ms (06:08) | **134 ms** (06:04) |
+| Worst step, day 2 | 280 ms (12:56, lunch) | **79 ms** |
+| Daily closing step, warm route cache | 826 ms | **65 ms** |
+| Daily closing step, cold route cache (`--cold`) | — | 288 ms |
+| Planning every unit's access route (`warmRouteCache`) | 870 ms | **241 ms** |
+| Fixed cost of one `advance` call | 0.96 ms | 0.66–0.79 ms |
+| Night, whole tower in view: light sprites | 1 411 panes | **328 strips** |
+
+What changed, in order of effect:
+
+| Fix | Profile share before |
+|-----|---------------------:|
+| Idle staff searched every room of the building, with a spec lookup per room, for the nearest staff room, every 15 minutes. Staff rooms are now looked up once per `advance` call and building (`StaffRoomDirectory`). | 33 % |
+| Route search: express shuttles had a graph node per floor they pass. Cars now have nodes only at their stops, with one ride edge between stops. The search is A*, using a lower bound of the storeys left (at the cheapest cost per storey) plus the walk to the target. | 38 % |
+| A breakdown rebuilt the navigation graph and dropped every cached route. Broken cars are now left out per query; routes around them are cached separately. | the 826 ms closing |
+| The route cache is warmed when a world is installed in the app (on the main thread, since the engine is not thread-safe), so the first daily closing does not plan every unit's access route. | 288 ms → 65 ms closing |
+
+The event count (156 141 over two days) did not change: routes and outcomes are the same.
+
+**In the app**, zoomed far out (below 2 points per metre) at night, each storey of a lit room
+is one strip at the panes' average brightness (0.75), instead of a sprite per pane.
+
+**Still open** (measured, not fixed):
+
+* The 4 Hz panel refresh costs about 9.5 ms at 526 floors (one shared utility allocation plus
+  the facilities, lighting and progression summaries).
+* The per-call fixed cost (structure signature and car sync checked on every call) is about
+  0.7 ms.
+* The first morning's move-in wave (06:00–06:12) plans about 10 000 new routes (steps of
+  90–134 ms: three real seconds at 10× speed).
+
