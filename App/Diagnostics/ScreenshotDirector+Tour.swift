@@ -83,14 +83,20 @@ extension ScreenshotDirector {
             model.showManual = false
             model.startScenario("opening-day")
             model.setSpeed(.paused)
-            model.world?.scenario?.result = ScenarioResult(won: true, tick: model.world?.clock.tick ?? 0,
-                                                           reason: "All objectives met", stars: 3, score: 1250)
+            if var world = model.world {
+                world.scenario?.result = ScenarioResult(won: true, tick: world.clock.tick, reason: "All objectives met",
+                                                        stars: 3, score: 1250)
+                model.world = world
+            }
             model.refreshScenario()
             return "The result screen (a won result set by the script on Opening Day)."
         },
         Step(name: "19-bankruptcy", grid: false) { model, _ in
             model.showScenarioResult = false
-            model.world?.ledger.bankrupt = true
+            if var world = model.world {
+                world.ledger.bankrupt = true
+                model.world = world
+            }
             model.refreshEconomy()
             return "The bankruptcy screen (set by the script)."
         },
