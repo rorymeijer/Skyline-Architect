@@ -2,6 +2,20 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.26.0] — F2: 500 floors
+
+### Changed
+- **Tall towers run smoothly.** A day of a 526-floor tower (2 500 people, 74 cars)
+  simulates 2.5× faster. The worst step fell from 400 ms to 134 ms, and the daily closing
+  from 826 ms to 65 ms (PERFORMANCE.md).
+- Elevator shafts may span up to 1 000 floors (was 400).
+- Zoomed far out at night, lit windows merge into one strip per storey.
+- Loading a world plans every unit's access route right away, instead of during the first
+  daily closing.
+
+### Fixed
+- An elevator breakdown no longer forces every route in the building to be planned again.
+
 ## [0.25.0] — F1: Balance
 
 ### Added
