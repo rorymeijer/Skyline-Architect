@@ -15,7 +15,7 @@ ECONOMY.md, FACILITIES.md and ELEVATORS.md. Save format 17.
 Earlier: Phase B (amenities, 0.22.0), Phase A (foundations, 0.21.x).
 Next, in the player's order: C (scenarios).
 
-Evidence: 343 tests, CI captures in `Development/Screenshots/Operations-0.23/`.
+Evidence: 343 tests, CI run 36524083998, captures in `Development/Screenshots/Operations-0.23/`.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |
