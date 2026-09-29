@@ -12,77 +12,91 @@ struct ScenarioBrowserView: View {
         let selected = briefs.first { $0.id == model.selectedScenarioID } ?? briefs.first
         ZStack {
             Color.black.opacity(0.5).ignoresSafeArea()
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Scenarios").font(.ui(.title2).weight(.bold))
-                HStack(alignment: .top, spacing: 16) {
-                    VStack(spacing: 6) {
-                        ForEach(briefs) { b in
-                            Button { model.selectedScenarioID = b.id } label: {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    HStack {
-                                        Text(b.name).font(.ui(.headline))
-                                        Spacer()
-                                        if let r = model.scenarioRecords.record(for: b.id) { Stars(count: r.bestStars, size: 10) }
-                                        DifficultyTag(text: b.difficulty)
-                                    }
+            // Where the full card does not fit (an iPhone, 0.29.2): the list without the
+            // summaries, then smaller.
+            ViewThatFits(in: .vertical) {
+                card(briefs, selected: selected, compact: false)
+                card(briefs, selected: selected, compact: true)
+                card(briefs, selected: selected, compact: true).scaled(0.9)
+                card(briefs, selected: selected, compact: true).scaled(0.8)
+                card(briefs, selected: selected, compact: true).scaled(0.75)
+            }
+        }
+        .environment(\.colorScheme, .dark)
+    }
+
+    private func card(_ briefs: [ScenarioBrief], selected: ScenarioBrief?, compact: Bool) -> some View {
+        VStack(alignment: .leading, spacing: compact ? 8 : 12) {
+            Text("Scenarios").font(.ui(.title2).weight(.bold))
+            HStack(alignment: .top, spacing: 16) {
+                VStack(spacing: compact ? 4 : 6) {
+                    ForEach(briefs) { b in
+                        Button { model.selectedScenarioID = b.id } label: {
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack {
+                                    Text(b.name).font(.ui(.headline))
+                                    Spacer()
+                                    if let r = model.scenarioRecords.record(for: b.id) { Stars(count: r.bestStars, size: 10) }
+                                    DifficultyTag(text: b.difficulty)
+                                }
+                                if !compact {
                                     Text(b.summary).font(.ui(.caption)).foregroundStyle(.secondary).lineLimit(2)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
-                                .padding(10)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.white.opacity(b.id == selected?.id ? 0.22 : 0.08)))
-                                .contentShape(Rectangle())
                             }
-                            .buttonStyle(.plain)
+                            .padding(compact ? 7 : 10)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.white.opacity(b.id == selected?.id ? 0.22 : 0.08)))
+                            .contentShape(Rectangle())
                         }
-                    }
-                    .scaledFrame(width: 280)
-                    if let s = selected {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(s.name).font(.ui(.title3).weight(.semibold))
-                            Text(s.setting).font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
-                            Text(s.briefing).font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
-                            Divider()
-                            Text("Objectives").font(.ui(.caption).weight(.semibold))
-                            ForEach(s.objectives, id: \.self) { o in
-                                Label(o, systemImage: "flag").font(.ui(.callout))
-                            }
-                            if s.holdDays > 1 {
-                                Text("All at once, at \(s.holdDays) daily closings in a row.").font(.ui(.caption)).foregroundStyle(.secondary)
-                            } else {
-                                Text("All at once, at a daily closing.").font(.ui(.caption)).foregroundStyle(.secondary)
-                            }
-                            if !s.restrictions.isEmpty {
-                                Text("Rules").font(.ui(.caption).weight(.semibold))
-                                ForEach(s.restrictions, id: \.self) { r in Label(r, systemImage: "nosign").font(.ui(.callout)) }
-                            }
-                            if s.events > 0 {
-                                Text("\(s.events) scripted event\(s.events == 1 ? "" : "s") along the way.").font(.ui(.caption)).foregroundStyle(.secondary)
-                            }
-                            if let r = model.scenarioRecords.record(for: s.id) {
-                                HStack(spacing: 6) {
-                                    Stars(count: r.bestStars, size: 12)
-                                    Text("Best \(r.bestScore) points · \(r.wins) of \(r.attempts) won"
-                                         + (r.fastestDays.map { " · fastest \($0) days" } ?? ""))
-                                        .font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
-                                }
-                            }
-                            HStack {
-                                MenuButton(title: "Back", subtitle: nil) { model.showScenarioBrowser = false }
-                                MenuButton(title: "Start \(s.name)", subtitle: nil) { model.startScenario(s.id) }
-                            }
-                        }
-                        .scaledFrame(width: 340, alignment: .leading)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .buttonStyle(.plain)
                     }
                 }
+                .scaledFrame(width: 280)
+                if let s = selected {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(s.name).font(.ui(.title3).weight(.semibold))
+                        Text(s.setting).font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
+                        Text(s.briefing).font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
+                        Divider()
+                        Text("Objectives").font(.ui(.caption).weight(.semibold))
+                        ForEach(s.objectives, id: \.self) { o in
+                            Label(o, systemImage: "flag").font(.ui(.callout))
+                        }
+                        if s.holdDays > 1 {
+                            Text("All at once, at \(s.holdDays) daily closings in a row.").font(.ui(.caption)).foregroundStyle(.secondary)
+                        } else {
+                            Text("All at once, at a daily closing.").font(.ui(.caption)).foregroundStyle(.secondary)
+                        }
+                        if !s.restrictions.isEmpty {
+                            Text("Rules").font(.ui(.caption).weight(.semibold))
+                            ForEach(s.restrictions, id: \.self) { r in Label(r, systemImage: "nosign").font(.ui(.callout)) }
+                        }
+                        if s.events > 0 {
+                            Text("\(s.events) scripted event\(s.events == 1 ? "" : "s") along the way.").font(.ui(.caption)).foregroundStyle(.secondary)
+                        }
+                        if let r = model.scenarioRecords.record(for: s.id) {
+                            HStack(spacing: 6) {
+                                Stars(count: r.bestStars, size: 12)
+                                Text("Best \(r.bestScore) points · \(r.wins) of \(r.attempts) won"
+                                     + (r.fastestDays.map { " · fastest \($0) days" } ?? ""))
+                                    .font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
+                            }
+                        }
+                        HStack {
+                            MenuButton(title: "Back", subtitle: nil) { model.showScenarioBrowser = false }
+                            MenuButton(title: "Start \(s.name)", subtitle: nil) { model.startScenario(s.id) }
+                        }
+                    }
+                    .scaledFrame(width: 340, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                }
             }
-            .padding(28)
-            .fixedSize(horizontal: false, vertical: true)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
         }
-        .environment(\.colorScheme, .dark)
+        .padding(compact ? 18 : 28)
+        .fixedSize(horizontal: false, vertical: true)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
     }
 }
 
@@ -185,27 +199,56 @@ struct ScenarioResultView: View {
         if let s = model.scenario, let r = s.result {
             ZStack {
                 Color.black.opacity(0.5).ignoresSafeArea()
-                VStack(spacing: 10) {
-                    Image(systemName: r.won ? "trophy.fill" : "hourglass.bottomhalf.filled").font(.system(size: 36))
-                        .foregroundStyle(r.won ? Color.yellow : Color.orange)
-                    Text(r.won ? "Scenario complete" : "Scenario failed").font(.ui(.largeTitle).weight(.bold))
-                    Text("\(s.name) · \(r.reason) · day \(SimClock.day(r.tick) + 1)").font(.ui(.callout)).foregroundStyle(.secondary)
-                    if r.won { Stars(count: r.stars ?? 1, size: 26) }
-                    if let score = r.score {
-                        Text("\(score) points" + (model.scenarioNewBest ? " · new best!" : "")).font(.ui(.title3).monospacedDigit().weight(.semibold))
-                            .foregroundStyle(model.scenarioNewBest ? Color.yellow : Color.primary)
-                    }
-                    VStack(alignment: .leading, spacing: 6) { ScenarioRows(rows: s.rows) }
-                        .scaledFrame(width: 320)
-                        .padding(.vertical, 6)
-                    MenuButton(title: "Keep Playing", subtitle: "The estate stays yours as free play") { model.keepPlaying() }.scaledFrame(width: 280)
-                    MenuButton(title: "Scenarios…", subtitle: nil) { model.openScenarioBrowser() }.scaledFrame(width: 280)
-                    MenuButton(title: "Main Menu", subtitle: nil) { model.returnToMainMenu() }.scaledFrame(width: 280)
+                // Compact (an iPhone, 0.29.2): stars beside the points, the buttons in a row.
+                ViewThatFits(in: .vertical) {
+                    card(s, r, compact: false)
+                    card(s, r, compact: true)
+                    card(s, r, compact: true).scaled(0.9)
+                    card(s, r, compact: true).scaled(0.8)
                 }
-                .padding(32)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
             }
             .environment(\.colorScheme, .dark)
         }
+    }
+
+    private func card(_ s: ScenarioSummary, _ r: ScenarioResult, compact: Bool) -> some View {
+        VStack(spacing: compact ? 8 : 10) {
+            Image(systemName: r.won ? "trophy.fill" : "hourglass.bottomhalf.filled").font(.system(size: compact ? 26 : 36))
+                .foregroundStyle(r.won ? Color.yellow : Color.orange)
+            Text(r.won ? "Scenario complete" : "Scenario failed").font(.ui(compact ? .title : .largeTitle).weight(.bold))
+            Text("\(s.name) · \(r.reason) · day \(SimClock.day(r.tick) + 1)").font(.ui(.callout)).foregroundStyle(.secondary)
+            if compact {
+                HStack(spacing: 12) {
+                    if r.won { Stars(count: r.stars ?? 1, size: 20) }
+                    score(r)
+                }
+            } else {
+                if r.won { Stars(count: r.stars ?? 1, size: 26) }
+                score(r)
+            }
+            VStack(alignment: .leading, spacing: 6) { ScenarioRows(rows: s.rows) }
+                .scaledFrame(width: 320)
+                .padding(.vertical, compact ? 2 : 6)
+            if compact {
+                HStack(spacing: 8) { buttons(width: 200) }
+            } else {
+                buttons(width: 280)
+            }
+        }
+        .padding(compact ? 20 : 32)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
+    }
+
+    @ViewBuilder private func score(_ r: ScenarioResult) -> some View {
+        if let score = r.score {
+            Text("\(score) points" + (model.scenarioNewBest ? " · new best!" : "")).font(.ui(.title3).monospacedDigit().weight(.semibold))
+                .foregroundStyle(model.scenarioNewBest ? Color.yellow : Color.primary)
+        }
+    }
+
+    @ViewBuilder private func buttons(width: CGFloat) -> some View {
+        MenuButton(title: "Keep Playing", subtitle: "The estate stays yours as free play") { model.keepPlaying() }.scaledFrame(width: width)
+        MenuButton(title: "Scenarios…", subtitle: nil) { model.openScenarioBrowser() }.scaledFrame(width: width)
+        MenuButton(title: "Main Menu", subtitle: nil) { model.returnToMainMenu() }.scaledFrame(width: width)
     }
 }

@@ -52,6 +52,7 @@ struct ModManagerView: View {
             .frame(width: 600)
             .fixedSize(horizontal: false, vertical: true)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
+            .shrinkToFit()                                       // an iPhone (0.29.2)
         }
         .environment(\.colorScheme, .dark)
     }

@@ -62,6 +62,7 @@ struct SavesPanel: View {
             .frame(width: 560)
             .fixedSize(horizontal: false, vertical: true)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
+            .shrinkToFit()                                       // an iPhone (0.29.2)
         }
         .environment(\.colorScheme, .dark)
     }
