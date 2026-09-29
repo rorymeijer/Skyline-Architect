@@ -430,7 +430,7 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - A capture *screen tour* opens every full-screen view and side panel once, on the Mac,
     the iPad and the iPhone. Its pixel sizes show at once whether a screen outgrows the
     display.
-  - Views too tall for the room they get are drawn smaller in steps (90, 80, 75 %) through a
+  - Views too tall for the room they get are drawn smaller in steps (90, 80, 75 %; side panels down to 65 %) through a
     small `Layout` (`ShrinkToFit.swift`). The smaller size is the layout size, so
     `ViewThatFits` can choose it and taps land where the controls are drawn. It is used for
     the side panels, the saves, mods and bankruptcy cards, and the scenario views.
@@ -448,8 +448,8 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Screenshots made by hand in Xcode, which are not reproducible.
 - **Reason:** Shrinking is one generic step that leaves Mac and iPad untouched wherever the
   full view fits. The store screenshots stay true to the game because they are the game.
-- **Consequences:** On an iPhone, some panels show at three quarters of their size
-  (captions around 9 pt). Readable, but smaller than Apple's guidance.
+- **Consequences:** On an iPhone, some panels show at two thirds to three quarters of
+  their size (captions 8–9 pt). Readable, but smaller than Apple's guidance.
 
 ## D-061 — The Mac app runs in the App Sandbox
 - **Date:** 2026-09-29

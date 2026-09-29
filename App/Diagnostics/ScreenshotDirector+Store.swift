@@ -42,9 +42,15 @@ extension ScreenshotDirector {
             model.advanceSimulation(toTimeOfDay: 13, minute: 10)
             force("clear", 22, model: model)
             if let r = amenityRoom(model, "restaurant") { model.selectRoom(at: cell(of: r)) }
+            #if os(iOS)
+            if Device.isPhone {                                     // the inspector is too tall there
+                model.selectRoom(at: nil)
+                model.showLeasingPanel = true
+            }
+            #endif
             quiet(model)
             scene.withController { $0.jump(center: point(model, column: 16, floor: 2.2), zoom: 19) }
-            return "\(model.clockText): the restaurant selected: its tenant, takings and services."
+            return "\(model.clockText): the restaurant selected (on the iPhone: the Leasing panel instead)."
         },
         Step(name: "05-tutorial", grid: false) { model, scene in
             closePanels(model)
