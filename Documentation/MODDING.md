@@ -10,7 +10,9 @@ Status: **FUNCTIONAL (Phase 17)**. Implemented:
 * saves record their packs with a content hash; loading a save whose packs changed since
   (another version or edited files) works, and the player is told;
 * the mod manager;
-* an example mod ("Kestrel Bay").
+* an example mod ("Kestrel Bay");
+* 24 community mods in the repository's `Mods/` folder (see `Mods/README.md`), checked by
+  `CommunityModsTests`.
 
 **PLANNED:**
 
