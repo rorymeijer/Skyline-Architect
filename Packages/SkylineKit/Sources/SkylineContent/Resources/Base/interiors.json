@@ -585,5 +585,66 @@
     }
    }
   ]
+ },
+ {
+  "room": "waste-room",
+  "items": [
+   {
+    "furniture": "waste-chute",
+    "anchor": "left",
+    "offset": 0.2
+   },
+   {
+    "furniture": "baler",
+    "anchor": "right",
+    "offset": 0.2,
+    "minRoomWidth": 5.5
+   },
+   {
+    "repeat": {
+     "spacing": 1.45,
+     "margin": 0.2,
+     "items": [
+      {
+       "furniture": "waste-container",
+       "offset": 0
+      }
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "room": "staff-room",
+  "items": [
+   {
+    "furniture": "door-office",
+    "anchor": "left",
+    "offset": 0.3
+   },
+   {
+    "furniture": "lockers",
+    "anchor": "right",
+    "offset": 0.2
+   },
+   {
+    "furniture": "tool-board",
+    "anchor": "left",
+    "offset": 1.6,
+    "elevation": 1.25,
+    "reserve": false
+   },
+   {
+    "furniture": "coffee-station",
+    "anchor": "left",
+    "offset": 1.5,
+    "minRoomWidth": 8
+   },
+   {
+    "furniture": "staff-table",
+    "anchor": "center",
+    "offset": -0.15
+   }
+  ]
  }
 ]

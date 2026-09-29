@@ -132,6 +132,8 @@ struct BuildPalette: View {
         case "cinema": "film"
         case "theater": "theatermasks"
         case "skyBar": "wineglass"
+        case "waste": "trash"
+        case "staffRoom": "person.2"
         default: "square.dashed"
         }
     }
