@@ -27,7 +27,12 @@ extension AppModel {
     func changeStaff(_ role: PersonRole, by delta: Int) {
         guard var w = world, let simulation, let property = activePropertyID, let building = w.buildings(on: property).first else { return }
         if delta > 0 {
-            FacilitiesManagement.hire(role, building: building.id, world: &w, rules: simulation.rules)
+            guard FacilitiesManagement.hire(role, building: building.id, world: &w, rules: simulation.rules,
+                                            catalog: simulation.catalog) != nil else {
+                alert = AppAlert(title: "No place in a staff room",
+                                 message: "Janitors and technicians need a place in a staff room. Build one (Staff Room), or a larger one.")
+                return
+            }
         } else {
             FacilitiesManagement.dismiss(role, world: &w)
         }

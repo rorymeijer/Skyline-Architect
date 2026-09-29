@@ -21,10 +21,51 @@ public enum FacilitiesManagement {
         world.people.values.filter { $0.role == role }
     }
 
-    /// Hires one janitor or technician for a building; they start at the next shift.
+    // MARK: Staff rooms (Phase E)
+
+    /// Staff rooms of a building (rooms whose spec houses staff), in id order.
+    static func staffRooms(in building: BuildingID, world: GameWorld, catalog: BuildCatalog) -> [Room] {
+        world.rooms(in: building).filter { catalog.spec($0.definitionID)?.staffPerModule != nil }
+    }
+
+    /// How many staff the building's staff rooms house; nil when the content has no staff
+    /// rooms at all (then hiring is unlimited, as before Phase E).
+    public static func staffCapacity(of building: BuildingID, world: GameWorld, catalog: BuildCatalog) -> Int? {
+        guard catalog.specs.contains(where: { $0.staffPerModule != nil }) else { return nil }
+        return staffRooms(in: building, world: world, catalog: catalog).reduce(0) {
+            $0 + Int((Double($1.columns.count) * (catalog.spec($1.definitionID)?.staffPerModule ?? 0)).rounded(.down))
+        }
+    }
+
+    public static func staffCount(of building: BuildingID, world: GameWorld) -> Int {
+        world.people.values.reduce(0) { $0 + ($1.role.isStaff && $1.buildingID == building ? 1 : 0) }
+    }
+
+    /// The staff room nearest to a floor (fewest floors away, then id), if any.
+    static func nearestStaffRoom(to floor: Int, in building: BuildingID, world: GameWorld, catalog: BuildCatalog) -> Room? {
+        staffRooms(in: building, world: world, catalog: catalog).min {
+            (abs($0.floors.lowest - floor), $0.id) < (abs($1.floors.lowest - floor), $1.id)
+        }
+    }
+
+    /// Whether a job on `floor` is within reach of a staff room (always, when the content
+    /// has no staff rooms).
+    static func isNearStaffRoom(_ floor: Int, in building: BuildingID, world: GameWorld, catalog: BuildCatalog) -> Bool {
+        guard catalog.specs.contains(where: { $0.staffPerModule != nil }) else { return true }
+        return staffRooms(in: building, world: world, catalog: catalog).contains { room in
+            let range = catalog.spec(room.definitionID)?.staffRange ?? 0
+            return abs(room.floors.lowest - floor) <= range
+        }
+    }
+
+    /// Hires one janitor or technician for a building; they start at the next shift. With a
+    /// `catalog`, the building's staff rooms must have a free place (Phase E).
     @discardableResult
-    public static func hire(_ role: PersonRole, building: BuildingID, world: inout GameWorld, rules: SimulationRules) -> PersonID? {
+    public static func hire(_ role: PersonRole, building: BuildingID, world: inout GameWorld, rules: SimulationRules,
+                            catalog: BuildCatalog? = nil) -> PersonID? {
         guard role.isStaff, let shift = rules.facilities?.shift, world.buildings.contains(building) else { return nil }
+        if let catalog, let capacity = staffCapacity(of: building, world: world, catalog: catalog),
+           staffCount(of: building, world: world) >= capacity { return nil }
         let id = world.makePersonID()
         var rng = SeededRandom(seed: UInt64(id.raw), stream: 0x57A)
         let traits = UInt32(truncatingIfNeeded: rng.next())
@@ -105,8 +146,13 @@ extension SimulationEngine {
             if let until = job.until {
                 if now >= until { complete(job, by: id, at: now, world: &world); p.job = nil }
             } else {
-                let minutes = job.kind == .clean ? rules.cleanMinutes : rules.repairMinutes
-                job.until = now + Tick(minutes * 60)
+                var minutes = Double(job.kind == .clean ? rules.cleanMinutes : rules.repairMinutes)
+                // Far from any staff room the tools and supplies are far too (Phase E).
+                if let floor = world.rooms[r]?.floors.lowest,
+                   !FacilitiesManagement.isNearStaffRoom(floor, in: building.id, world: world, catalog: catalog) {
+                    minutes *= rules.outOfRangeFactor ?? 1
+                }
+                job.until = now + Tick((minutes * 60).rounded())
                 p.job = job
                 p.nextEventTick = job.until!
                 return save(p, world: &world, events: &events, now: now)
@@ -131,7 +177,17 @@ extension SimulationEngine {
                 p.nextEventTick = now + 900
             }
         } else if onShift {
-            p.nextEventTick = now + 900                                     // nothing to do: check again
+            // Nothing to do: wait in the nearest staff room (Phase E) and check again.
+            let floor: Int? = { if case let .room(r, _) = p.place { world.rooms[r]?.floors.lowest } else { 0 } }()
+            let staffRoom = floor.flatMap { FacilitiesManagement.nearestStaffRoom(to: $0, in: building.id, world: world, catalog: catalog) }
+            let inStaffRoom = staffRoom.map { s in if case let .room(r, _) = p.place { r == s.id } else { false } } ?? true
+            if let staffRoom, !inStaffRoom, let from = here,
+               startTrip(&p, from: from, to: .room(staffRoom.id, x: RoutePlanner.standingSpot(in: staffRoom, traits: p.traits, grid: world.grid).x),
+                         building: building, world: world, now: now) {
+                // walking over
+            } else {
+                p.nextEventTick = now + 900
+            }
         } else if case .outside = p.place {
             p.nextEventTick = SimClock.nextTick(atSecondOfDay: shift.start + Tick(p.traits % 600), onOrAfter: now + 1)
         } else if let from = here, startTrip(&p, from: from, to: .outside, building: building, world: world, now: now) {
