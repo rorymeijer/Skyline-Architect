@@ -67,7 +67,11 @@ struct ChromeOverlay: View {
                 }
             }
             .padding(12)
+            // On an iPhone the column starts below the time bar and ends above the palette, so
+            // the tutorial panel picks a form that leaves the palette's tools free.
             .padding(.top, Device.isPhone ? 48 : 0)
+            .padding(.bottom, Device.isPhone ? 110 : 0)
+            .frame(maxHeight: .infinity, alignment: .top)
             if Device.isPhone {
                 // An iPhone has no height to spare above the palette: the cash readout sits
                 // beside the view controls (F5).

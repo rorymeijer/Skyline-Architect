@@ -7,14 +7,16 @@ struct TutorialPanel: View {
     let tutorial: TutorialSummary
 
     var body: some View {
-        // Where the step list does not fit (F5, an iPhone), the panel shows the current step only.
+        // Where the step list does not fit (F5, an iPhone), the panel shows the current step only,
+        // and if that is still too tall, in smaller type on a wider card.
         ViewThatFits(in: .vertical) {
             content(list: true)
             content(list: false)
+            content(list: false, small: true)
         }
     }
 
-    private func content(list: Bool) -> some View {
+    private func content(list: Bool, small: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Label("Tutorial", systemImage: "graduationcap").font(.ui(.headline))
@@ -28,7 +30,7 @@ struct TutorialPanel: View {
                 .accessibilityValue("\(tutorial.progress.completed) of \(tutorial.steps.count) steps")
             if let step = tutorial.current {
                 Text(step.title).font(.ui(.callout).weight(.semibold))
-                Text(ManualPageView.inline(step.text)).font(.ui(.callout)).fixedSize(horizontal: false, vertical: true)
+                Text(ManualPageView.inline(step.text)).font(.ui(small ? .footnote : .callout)).fixedSize(horizontal: false, vertical: true)
                 if let chapter = step.chapter {
                     LinkButton(title: "Read more in the manual") { model.openManual(chapter: chapter) }
                 }
@@ -51,7 +53,7 @@ struct TutorialPanel: View {
             }
         }
         .padding(12)
-        .scaledFrame(width: 290, alignment: .leading)
+        .scaledFrame(width: small ? 340 : 290, alignment: .leading)
         .panelCard()
         .environment(\.colorScheme, .dark)
     }
