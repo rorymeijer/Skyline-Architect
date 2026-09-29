@@ -36,8 +36,6 @@ for _ in $(seq 1 210); do
 done
 [ "$STATUS" = 0 ] || echo "iPad capture timed out" >&2
 cp -R "$DIR"/. "$OUT"/ 2>/dev/null || true
-# The device's own view at the end, as a cross-check of the composited captures.
-xcrun simctl io "$DEVICE" screenshot "$OUT/zz-device-final.png" >/dev/null 2>&1 || true
 xcrun simctl shutdown "$DEVICE" || true
 ls -la "$OUT"
 [ -f "$OUT/capture-report.json" ] && cat "$OUT/capture-report.json"

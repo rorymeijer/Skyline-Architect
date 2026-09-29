@@ -57,53 +57,56 @@ final class ScreenshotDirector {
     private var report: [ReportEntry] = []
     private var started = false
 
-    // F3 (0.27): the main menu with Tutorial and Manual; the tutorial scenario at its first
-    // step and after the construction steps (built through the player's command path); a
-    // first-time tip the game raised by itself; the manual at a chapter and searching.
+    // F4 (0.28): the same script on the Mac and in the iPad simulator — the main menu with
+    // the text size; the demo tower's panels at the standard, larger and largest text; the
+    // manual at the largest; the menu over a running game (Resume); Esc closing things.
     let steps: [Step] = [
         Step(name: "01-main-menu", grid: false) { model, scene in
             model.setSpeed(.paused)  // captures advance time explicitly
             model.showDeveloperHUD = false
             model.showMainMenu = true
-            return "The main menu: Tutorial first, Manual last."
+            return "The main menu (\(ScreenshotDirector.platform)), text size \(TextSizeSetting.name(model.textSize))."
         },
-        Step(name: "02-tutorial-start", grid: false) { model, scene in
-            model.startTutorial()
-            model.refreshSimulationSummary()
-            return "First Tower (Tutorial) just started, \(model.clockText), speed \(model.speed): \(ScreenshotDirector.tutorialNote(model))"
-        },
-        Step(name: "03-tutorial-built", grid: false) { model, scene in
-            let refused = ScreenshotDirector.buildTutorialSteps(model)
+        Step(name: "02-panels-standard", grid: false) { model, scene in
+            model.newGame(startID: NewGameFactory.defaultStartID)
+            model.showMainMenu = false
+            model.setSpeed(.paused)
+            model.applyBlueprint("demo-tower")
+            model.leaseAllVacant()
+            model.advanceSimulation(toTimeOfDay: 10)
             model.activeHint = nil
+            model.showEconomyPanel = true
+            model.showLeasingPanel = true
+            model.showFacilitiesPanel = true
             model.refreshSimulationSummary()
-            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 1), zoom: 11) }
-            return "After the construction steps (built with the player's commands, \(refused) refused): \(ScreenshotDirector.tutorialNote(model)); cash \(model.economy.cash)"
-        },
-        Step(name: "04-first-tip", grid: false) { model, scene in
             model.activeHint = nil
-            model.advanceSimulation(ticks: 3 * 3600)
-            model.refreshSimulationSummary()
-            return "\(model.clockText), after three game hours at play: the tip the game raised is "
-                + (model.activeHint.map { "'\($0.title)'" } ?? "none") + "; \(ScreenshotDirector.tutorialNote(model)); \(model.world?.tenants.count ?? 0) tenants"
+            scene.withController { $0.jump(center: ScreenshotDirector.point(model, column: 16, floor: 4), zoom: 11) }
+            return "\(model.clockText): the demo tower with the Economy, Facilities and Leasing panels, standard text (\(ScreenshotDirector.platform))."
         },
-        Step(name: "05-manual", grid: false) { model, scene in
-            model.activeHint = nil
+        Step(name: "03-panels-larger", grid: false) { model, scene in
+            model.textSize = .xxLarge
+            return "The same panels at text size Larger (xxLarge)."
+        },
+        Step(name: "04-panels-largest", grid: false) { model, scene in
+            model.textSize = .xxxLarge
+            return "The same panels at text size Largest (xxxLarge)."
+        },
+        Step(name: "05-manual-largest", grid: false) { model, scene in
             model.openManual(chapter: "transport")
-            return "The manual (Help ▸ Skyline Architect Manual) at 'Stairs and elevators'."
+            return "The manual at text size Largest."
         },
-        Step(name: "06-manual-search", grid: false) { model, scene in
-            model.manualQuery = "sprinklers"
-            model.manualChapterID = "emergencies"
-            let hits = model.manual?.document.search("sprinklers").map(\.chapter.title) ?? []
-            return "Searching the manual for 'sprinklers': \(hits.joined(separator: ", ")); showing 'Fire and incidents'."
+        Step(name: "06-menu-over-game", grid: false) { model, scene in
+            model.showManual = false
+            model.textSize = nil
+            model.openMainMenu()
+            return "The main menu opened over the running game (Menu button or ⇧⌘M): Resume first; speed \(model.speed)."
         },
-        Step(name: "07-manual-table", grid: false) { model, scene in
-            model.manualQuery = ""
-            model.showChapter("building")
-            let pages = model.manual?.document.chapter("building").map(ManualPages.split) ?? []
-            let page = pages.firstIndex { $0.contains { if case .table = $0 { true } else { false } } } ?? 0
-            model.manualPage = page
-            return "The manual's longest table (rooms, in 'Building'): page \(page + 1) of \(pages.count), checked for clipping."
+        Step(name: "07-escape", grid: false) { model, scene in
+            model.handleEscape()                       // closes the menu (resumes)
+            model.setSpeed(.paused)
+            model.handleEscape()                       // closes the lowest panel (Leasing)
+            let open = SidePanel.allCases.filter { $0.isOpen(model) }.map(\.title)
+            return "After Esc twice: menu closed, then the lowest panel; open now: \(open.joined(separator: ", "))."
         },
     ]
 
@@ -166,6 +169,7 @@ final class ScreenshotDirector {
         // ImageRenderer is main-actor isolated; this code always runs on the main queue.
         let chrome = MainActor.assumeIsolated { () -> UncheckedBox<CGImage?> in
             let renderer = ImageRenderer(content: ChromeOverlay(model: model)
+                .textSize(model.textSize)
                 .frame(width: size.width, height: size.height)
                 .environment(\.colorScheme, .dark))
             renderer.scale = scale
