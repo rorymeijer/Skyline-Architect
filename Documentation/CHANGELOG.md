@@ -11,7 +11,7 @@ All notable changes. Versions follow `MARKETING_VERSION` of the app.
     Amenities; tap a category to show its tools.
   - The view controls keep Menu, Save, zoom, overview, tutorial and manual; a **Panels and
     overlays** button opens a picker with all panels and overlays by name.
-  - Cash and standing sit in the top-left corner.
+  - Cash and standing sit in the bottom-left corner, beside the view controls.
   - The main menu uses two columns; the manual shows a **Contents** button in place of the
     chapter list; the tutorial panel shows the current step only.
 - **Manual:** "On an iPhone" in *Getting started*, and touch controls for iPad and iPhone.

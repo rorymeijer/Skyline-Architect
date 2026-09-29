@@ -436,8 +436,8 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
     - the main menu uses two columns;
     - the manual shows its contents in place of the page;
     - the tutorial panel drops its step list.
-  - Where the fallback depends on the device rather than the space (the cash readout in the
-    top-left corner, the narrow view controls), `Device.isPhone` decides. It reads the
+  - Where the fallback depends on the device rather than the space (the cash readout beside the
+    view controls, the narrow view controls), `Device.isPhone` decides. It reads the
     device idiom, because captures render outside the window and get no size class.
   - Panels are drawn above the build palette.
   - CI launches the iPhone build in an iPhone simulator with the same capture script

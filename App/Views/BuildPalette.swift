@@ -242,7 +242,7 @@ private struct PressableStyle: ButtonStyle {
 /// Session status: cash, save state, active-tool hint.
 struct StatusPill: View {
     let model: AppModel
-    /// In the top-left corner of an iPhone (F5): cash and standing only, clear of the time bar.
+    /// Beside an iPhone's view controls (F5): cash and standing only.
     var compact = false
 
     var body: some View {

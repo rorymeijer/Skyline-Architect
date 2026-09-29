@@ -57,9 +57,7 @@ struct ChromeOverlay: View {
             .padding(.bottom, 58)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             VStack(alignment: .leading, spacing: 10) {
-                // An iPhone has no height to spare at the bottom: the cash readout takes the
-                // title's corner (F5).
-                if Device.isPhone { StatusPill(model: model, compact: true) } else { TitleBadge(model: model) }
+                if !Device.isPhone { TitleBadge(model: model) }       // no room beside the time bar
                 if let tutorial = model.tutorial, model.showTutorialPanel, !model.showDeveloperHUD {
                     TutorialPanel(model: model, tutorial: tutorial)
                 }
@@ -69,6 +67,15 @@ struct ChromeOverlay: View {
                 }
             }
             .padding(12)
+            .padding(.top, Device.isPhone ? 48 : 0)
+            if Device.isPhone {
+                // An iPhone has no height to spare above the palette: the cash readout sits
+                // beside the view controls (F5).
+                StatusPill(model: model, compact: true)
+                    .padding(12)
+                    .padding(.bottom, 6)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+            }
             ViewControls(model: model)
                 .padding(12)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
