@@ -16,6 +16,34 @@
         "metric": "dailyProfit",
         "target": 5000
       }
+    ],
+    "events": [
+      {
+        "day": 1,
+        "hour": 8,
+        "kind": "news",
+        "message": "The harbour board is watching: twelve units let and a profitable closing within ten days."
+      },
+      {
+        "day": 4,
+        "hour": 10,
+        "kind": "grant",
+        "message": "Early occupancy subsidy from the harbour board for six units let",
+        "amount": 250000,
+        "when": {
+          "metric": "occupiedUnits",
+          "target": 6
+        }
+      },
+      {
+        "day": 6,
+        "hour": 9,
+        "kind": "demand",
+        "message": "A trade fair fills the hotels — firms are looking for offices",
+        "multiplier": 2.5,
+        "days": 2,
+        "tenantType": "call-centre"
+      }
     ]
   },
   {
@@ -37,7 +65,46 @@
         "metric": "dailyProfit",
         "target": 4000
       }
-    ]
+    ],
+    "events": [
+      {
+        "day": 3,
+        "hour": 8,
+        "kind": "news",
+        "message": "Saltmere's fish market reopens; the harbour front is busy again."
+      },
+      {
+        "day": 8,
+        "hour": 7,
+        "kind": "demand",
+        "message": "Strike at the harbour: few people move this week",
+        "multiplier": 0.5,
+        "days": 4
+      },
+      {
+        "day": 15,
+        "hour": 6,
+        "kind": "weather",
+        "message": "Storm warning for the harbour",
+        "weather": "storm"
+      },
+      {
+        "day": 20,
+        "hour": 11,
+        "kind": "fine",
+        "message": "Fire inspection: the building must reach reputation 50",
+        "amount": 150000,
+        "when": {
+          "metric": "reputation",
+          "target": 50
+        }
+      }
+    ],
+    "restrictions": {
+      "forbiddenRooms": [
+        "elevator-express"
+      ]
+    }
   },
   {
     "id": "three-properties",
@@ -60,7 +127,31 @@
         "metric": "dailyProfit",
         "target": 10000
       }
-    ]
+    ],
+    "events": [
+      {
+        "day": 10,
+        "hour": 7,
+        "kind": "demand",
+        "message": "Recession: demand falls for a week",
+        "multiplier": 0.6,
+        "days": 7
+      },
+      {
+        "day": 25,
+        "hour": 10,
+        "kind": "grant",
+        "message": "Regional development grant for owning two properties",
+        "amount": 500000,
+        "when": {
+          "metric": "properties",
+          "target": 2
+        }
+      }
+    ],
+    "restrictions": {
+      "maxLoans": 2000000
+    }
   },
   {
     "id": "crown-prestige",
@@ -83,6 +174,35 @@
       {
         "metric": "averageWait",
         "target": 45
+      }
+    ],
+    "events": [
+      {
+        "day": 5,
+        "hour": 9,
+        "kind": "demand",
+        "message": "A consultancy group relocates to Harrowgate and seeks offices",
+        "multiplier": 3,
+        "days": 5,
+        "tenantType": "consultancy"
+      },
+      {
+        "day": 18,
+        "hour": 6,
+        "kind": "weather",
+        "message": "Heatwave: cooling bills will rise",
+        "weather": "heat"
+      },
+      {
+        "day": 30,
+        "hour": 11,
+        "kind": "fine",
+        "message": "Lift inspection: average waits must stay under 60 seconds",
+        "amount": 200000,
+        "when": {
+          "metric": "averageWait",
+          "target": 60
+        }
       }
     ]
   },
@@ -108,6 +228,65 @@
       {
         "metric": "dailyProfit",
         "target": 1
+      }
+    ],
+    "events": [
+      {
+        "day": 12,
+        "hour": 14,
+        "kind": "fire",
+        "message": "Fire alarm in the tower!"
+      },
+      {
+        "day": 20,
+        "hour": 9,
+        "kind": "news",
+        "message": "The city council praises the new skyline."
+      }
+    ]
+  },
+  {
+    "id": "lean-tower",
+    "name": "Lean Tower",
+    "difficulty": "hard",
+    "summary": "An office tower of twelve floors at fixed rents, with no staff to hire.",
+    "briefing": "The owners want offices only, at the standard rent, and no cleaning or maintenance crew on the payroll. Build at most twelve floors on Quay Street, keep 20 units let and close the day with at least $15,000 profit for three days running. Elevators wear out and nobody can repair them — plan your banks with spare cars.",
+    "startID": "standard-quay",
+    "startingCash": 3000000,
+    "days": 30,
+    "holdDays": 3,
+    "objectives": [
+      {
+        "metric": "occupiedUnits",
+        "target": 20
+      },
+      {
+        "metric": "dailyProfit",
+        "target": 15000
+      }
+    ],
+    "restrictions": {
+      "forbiddenRooms": [
+        "apartment-studio"
+      ],
+      "maxFloor": 12,
+      "fixedRent": true,
+      "noStaff": true
+    },
+    "events": [
+      {
+        "day": 1,
+        "hour": 8,
+        "kind": "news",
+        "message": "Offices only, standard rents, no staff: every elevator counts."
+      },
+      {
+        "day": 14,
+        "hour": 9,
+        "kind": "demand",
+        "message": "A tech boom: firms want space",
+        "multiplier": 2,
+        "days": 3
       }
     ]
   }
