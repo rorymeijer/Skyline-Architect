@@ -424,6 +424,35 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-058 — F3: one manual for game and website; tutorial steps are guidance
+- **Date:** 2026-09-29
+- **Decision:**
+  - The manual is Markdown in `SkylineContent/Resources/Manual`, outside the base pack. The
+    game renders it natively; `skyline-website` renders the same chapters to
+    `Website/manual/`, and a test fails when the generated pages are stale.
+  - Tutorial steps are an optional list on a scenario, with conditions measured on the live
+    world. They are not saved.
+  - First-time tips are content (`hints.json`); the app decides when each fires and remembers
+    per device which were seen.
+  - The website is plain static HTML with one stylesheet, in English like the game, and is
+    not deployed automatically.
+- **Alternatives:**
+  - The manual written twice, once in the app and once as HTML.
+  - A web view in the app.
+  - Saving tutorial progress, which needs a save format change.
+  - A static site generator, a third-party dependency.
+  - Publishing through a GitHub Pages workflow now.
+- **Reason:**
+  - One source cannot drift, and the test enforces it.
+  - Native text keeps VoiceOver, Dynamic Type later (F4) and the app's look.
+  - Measuring steps on the world needs no new state and survives save/load for free.
+  - Publishing to a domain is the owner's decision, and the host is not chosen yet.
+- **Consequences:**
+  - A manual change needs `swift run skyline-website ../../Website`.
+  - A tutorial step can go back to undone when the player demolishes what it asked for; the
+    panel then shows it again, which is honest.
+  - Mods can add tutorial steps to their scenarios but cannot change the manual.
+
 ## D-057 — F2: 500 floors by profiling, not by threads
 - **Date:** 2026-09-29
 - **Decision:**

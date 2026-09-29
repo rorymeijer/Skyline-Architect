@@ -21,6 +21,7 @@ Before starting work, read `Development/STATUS.md` (current state) and
 | `Packages/SkylineKit/Sources/SkylinePersistence` | Versioned saves, migrations, save store |
 | `Packages/SkylineKit/Sources/SkylineSnapshot` | `skyline-snapshot` CLI: renders compositions to SVG (headless design inspection) |
 | `Documentation/` | Architecture, design, decisions, formats |
+| `Website/` | Static website (www.skyline-architect.com); `Website/manual/` is generated from `SkylineContent/Resources/Manual` by `skyline-website` |
 | `Development/` | STATUS.md journal, screenshots per phase |
 | `Scripts/` | Build/test/capture helpers used locally and in CI |
 

@@ -2,6 +2,25 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.27.0] — F3: Tutorial, manual and website
+
+### Added
+- **Tutorial**: the *First Tower* scenario walks you through your first building in ten
+  steps: floors, lobby, stairs, plant, offices, an elevator, flats, the first tenants, a
+  janitor and the first closing. A panel shows the step to do now, ticks off the done ones,
+  and links to the manual. It starts paused. *Tutorial* is the first item of the main menu.
+- **Manual** in 14 chapters, in the game (*Help ▸ Skyline Architect Manual*, `⌘?`, the main
+  menu, or the book button), with search and links between chapters.
+- **Tips**: 15 first-time tips, each shown once per device, for example the first floor
+  tool, the first tenant, a decline for poor services, the first closing or a fire. They can
+  be turned off, and *Help ▸ Show All Tips Again* brings them back.
+- **Website** in `Website/` for www.skyline-architect.com: a landing page, and the manual in
+  its own folder (`Website/manual/`), generated from the game's manual by `skyline-website`.
+
+### Changed
+- The title badge no longer says "Phase 20".
+- The leasing panel says rent is paid at the daily closing.
+
 ## [0.26.0] — F2: 500 floors
 
 ### Changed

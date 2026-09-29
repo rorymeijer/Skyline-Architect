@@ -160,6 +160,8 @@ needs a foundation that fits its frontage and basement limit. See ESTATE.md.
 startingCash?, days, holdDays?, objectives [{metric, target}]}]`. Metrics: `population`,
 `occupiedUnits`, `cash`, `dailyProfit`, `buildingClass`, `reputation`, `averageWait` (an
 upper limit) and `properties`. See SCENARIOS.md.
+A scenario may add `tutorial [{id, title, text, chapter?, done [{kind, count, rooms?}]}]`
+(F3): guided steps shown in a panel; see MANUAL.md. Mods cannot change the manual itself.
 
 ### Events (events.json, rooms.json)
 `fire {ignitionPerRoomPerDay, wornBelow, wornMultiplier, equipmentMultiplier,
