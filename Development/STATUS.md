@@ -1,21 +1,25 @@
 # Development Status
 
-_Last updated: 2026-09-29 (0.23.0 — Phase E: economy and facilities)_
+_Last updated: 2026-09-29 (0.24.0 — Phase C: scenarios)_
 
 ## Current phase
-**Phase E — Economy and facilities: COMPLETE on the branch.** Everything is in D-054,
-ECONOMY.md, FACILITIES.md and ELEVATORS.md. Save format 17.
-- Rent per unit.
-- Property and profit taxes, with a tax level per city.
-- Daily energy prices per city.
-- Waste production and waste rooms.
-- Staff rooms: capacity, range, idle staff wait there.
-- Elevator wear, breakdowns and repairs.
+**Phase C — Scenarios: COMPLETE on the branch.** Save format 18. See D-055 and
+SCENARIOS.md.
+- Stars and points.
+- A completion record on the device, merged when iCloud sync is on.
+- Scripted events: demand shocks, grants and fines with conditions, weather, fire, news.
+- Restrictions: forbidden rooms, maximum floor, loan limit, fixed rents, no staff.
+- A new Lean Tower scenario.
 
-Earlier: Phase B (amenities, 0.22.0), Phase A (foundations, 0.21.x).
-Next, in the player's order: C (scenarios).
+The player's phase order A → B → E → C is complete:
+- 0.21 foundations;
+- 0.22 amenities;
+- 0.23 economy and facilities;
+- 0.24 scenarios.
 
-Evidence: 343 tests, CI run 36524083998, captures in `Development/Screenshots/Operations-0.23/`.
+Remaining open items are in `Documentation/OPEN_ITEMS.md`.
+
+Evidence: 353 tests, CI run 36527125766, captures in `Development/Screenshots/Scenarios-0.24/`.
 
 ## Quality gates (0.20.1)
 | Gate | Status | Evidence |

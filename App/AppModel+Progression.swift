@@ -23,4 +23,11 @@ extension AppModel {
 
     /// The class that unlocks a room type, if it is still locked in this game.
     func lockedClass(of definition: String) -> String? { progression.lockedRooms[definition] }
+
+    /// Why a room tool is unavailable: the scenario forbids it (Phase C), or the building
+    /// class does not allow it yet. nil = available.
+    func lockReason(of definition: String) -> String? {
+        if world?.restrictions?.forbids(definition) == true { return "not allowed in this scenario" }
+        return lockedClass(of: definition).map { "unlocks at \($0) (⌥⌘P)" }
+    }
 }

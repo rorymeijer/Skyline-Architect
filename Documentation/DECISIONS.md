@@ -424,6 +424,29 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-055 — Phase C: scenario scripts live in the save; records on the device
+- **Date:** 2026-09-29
+- **Decision:**
+  - Scenario restrictions, events and scoring are copied into `ScenarioState` at the start,
+    like the objectives, so a save keeps its rules.
+  - Events fire at market hours, once each, recorded by index.
+  - Demand shocks multiply prospect chances.
+  - Grants and fines use objectives as conditions.
+  - Scores are stars plus points (the player's choice).
+  - The completion record is a separate JSON file on the device, next to the saves and
+    merged when syncing (the player's choice).
+  - Restrictions are enforced where the action is validated: the construction engine,
+    `Economy`, and hiring.
+- **Alternatives:**
+  - Events as code (rejected: content is data).
+  - The record inside saves (rejected: lost with the save, not global).
+  - Summing counts on merge (rejected: a play synced from both sides would count twice).
+- **Reason:** It is deterministic and data-only, and old saves stay valid.
+- **Consequences:**
+  - Save format 18 (all new fields optional).
+  - `dailyProfit` now also counts turnover, taxes and waste.
+  - A new hard scenario, Lean Tower.
+
 ## D-054 — Phase E: operating costs reuse the closing, upkeep and navigation
 - **Date:** 2026-09-29
 - **Decision:**

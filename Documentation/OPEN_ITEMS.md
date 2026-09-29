@@ -114,10 +114,9 @@ Everything below is first-pass and has not been play-tested (it depends on V1).
 
 ### Scenarios (SCENARIOS)
 * Objectives on specific buildings or cities.
-* Optional bonus goals and scores or ratings.
-* Events scripted by a scenario (a storm on day 5, …).
-* Restrictions on rooms, loans and rent levels.
-* A record of completed scenarios.
+* Optional bonus goals.
+* ~~Scores or ratings; scripted events; restrictions on rooms, loans and rent levels; a
+  record of completed scenarios.~~ Done in 0.24 (Phase C, D-055).
 
 ### Modding (MODDING)
 * Removing base entries.
@@ -163,5 +162,5 @@ Update these lists when their systems are next touched.
 3. **Signed build with iCloud (V3).** Verify sync between two devices, and add file coordination.
 4. **Accessibility (section 5).** Keyboard navigation in panels, Dynamic Type, and a VoiceOver pass on a device.
 5. **Performance (P1, P2).** Build the background simulation actor only if the play test shows the daily-closing hitch.
-6. **Features by player value.** ~~Visitors, amenities and retail~~ (0.22). Scenario scores and a completion record.
+6. **Features by player value.** ~~Visitors, amenities and retail~~ (0.22). ~~Scenario scores and a completion record~~ (0.24).
 7. **External art (section 7).** Before any release.

@@ -29,8 +29,10 @@ extension AppModel {
         if delta > 0 {
             guard FacilitiesManagement.hire(role, building: building.id, world: &w, rules: simulation.rules,
                                             catalog: simulation.catalog) != nil else {
-                alert = AppAlert(title: "No place in a staff room",
-                                 message: "Janitors and technicians need a place in a staff room. Build one (Staff Room), or a larger one.")
+                alert = w.restrictions?.staffForbidden == true
+                    ? AppAlert(title: "No staff in this scenario", message: "This scenario does not allow janitors or technicians.")
+                    : AppAlert(title: "No place in a staff room",
+                               message: "Janitors and technicians need a place in a staff room. Build one (Staff Room), or a larger one.")
                 return
             }
         } else {

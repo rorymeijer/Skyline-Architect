@@ -36,8 +36,12 @@ struct EconomyPanel: View {
             HStack(spacing: 6) {
                 Text("Rent level \(Int((e.rentLevel * 100).rounded())) %").font(.caption.monospacedDigit())
                 Spacer()
-                PanelButton(title: "−", enabled: e.rentLevel > 0.61) { model.adjustRentLevel(by: -0.1) }
-                PanelButton(title: "+", enabled: e.rentLevel < 1.59) { model.adjustRentLevel(by: 0.1) }
+                if e.rentFixed {
+                    Text("fixed by the scenario").font(.caption).foregroundStyle(.secondary)
+                } else {
+                    PanelButton(title: "−", enabled: e.rentLevel > 0.61) { model.adjustRentLevel(by: -0.1) }
+                    PanelButton(title: "+", enabled: e.rentLevel < 1.59) { model.adjustRentLevel(by: 0.1) }
+                }
             }
             Text(String(format: "Energy price %.2f× today · tax level %.0f %%", e.energyPrice, e.taxLevel * 100))
                 .font(.caption.monospacedDigit()).foregroundStyle(.secondary)

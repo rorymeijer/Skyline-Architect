@@ -57,7 +57,7 @@ All metrics cover the whole estate.
 | `population` | tenant members (residents and workers; staff excluded) | ≥ target |
 | `occupiedUnits` | rentable units with a tenant | ≥ target |
 | `cash` | cash after the closing | ≥ target |
-| `dailyProfit` | the last closing's operating result: rent + maintenance + utilities + wages + interest (construction, land, loans and grants excluded) | ≥ target |
+| `dailyProfit` | the last closing's operating result: rent + turnover + maintenance + utilities + wages + interest + taxes + waste (construction, land, loans and grants excluded; turnover, taxes and waste since Phase C) | ≥ target |
 | `buildingClass` | best class index (0 = Class C, 1 = B, 2 = A, 3 = Prime) | ≥ target |
 | `reputation` | best building reputation | ≥ target |
 | `averageWait` | average elevator wait over every bank with at least 10 boardings (since the cars were built) | ≤ target; no data is not met |
@@ -72,11 +72,65 @@ All metrics cover the whole estate.
 | Three Properties | Medium | Quay Street, $2.5M | 60 | 3 properties; population 250; daily profit ≥ $10,000 |
 | Crown Prestige | Hard | Crown Yard, Harrowgate, $5M | 45 | Class A; reputation 70; average wait ≤ 45 s |
 | Skyline | Hard | Quay Street, $3M | 120 | population 1,500; average wait ≤ 60 s; daily profit ≥ $1; held 7 closings |
+| Lean Tower (Phase C) | Hard | Quay Street, $3M | 30 | 20 units let; daily profit ≥ $15,000; held 3 closings. Rules: no apartments, floors up to 12, fixed rents, no staff |
 
 **Testing and balancing:**
 
 * Opening Day is tested to be winnable: the demo tower wins it on day 3.
 * The other targets are first-pass balancing. They have not been played through.
+
+## Scripted events, restrictions and scores (Phase C, 0.24)
+
+Code: `SkylineSimulation/ScenarioEvents.swift`; model in `SkylineCore/Scenario.swift`.
+
+### Events
+Events are checked at every market hour. Each one fires once, at its scenario day and
+hour (default 09:00), in content order. Nothing fires once the scenario is decided. Every
+fired event adds a news line to the objectives panel.
+
+| Kind | Effect |
+|------|--------|
+| `news` | Only the message. |
+| `demand` | Prospects × `multiplier` for `days` days, for all tenant types or only `tenantType`. |
+| `grant` | Pays `amount` if its condition `when` (an objective) is met, or always without one. |
+| `fine` | Charges `amount` if `when` is *not* met, or always without one. |
+| `weather` | Today's weather in the scenario's city becomes `weather` (heat also lifts the temperature to 34 °C). |
+| `fire` | A fire starts in a rentable room of the scenario's building (deterministic). |
+
+### Restrictions
+| Restriction | Enforced by |
+|-------------|-------------|
+| `forbiddenRooms` | The construction engine; the palette shows the tool locked. |
+| `maxFloor` | The construction engine. |
+| `maxLoans` | `Economy.borrow`. |
+| `fixedRent` | The rent level and unit rent controls. |
+| `noStaff` | Hiring. |
+
+### Scores
+A win earns stars:
+- one star for winning;
+- one more for winning within 60 % of the days;
+- one more when every objective beats its target by 25 % (an upper limit by staying 25 % under it).
+
+Points: 1,000 plus the following.
+- 50 per day left.
+- Up to 250 per objective for beating it, with the full amount at twice the target.
+- 2 × the best reputation.
+
+A lost scenario scores 100 points per fully met objective, in proportion, and no stars.
+A scenario may override these values with `scoring`.
+
+### Completion record
+The completion record is `scenario-records.json` in the saves folder. For each scenario it
+keeps:
+- the best stars and points;
+- plays and wins;
+- the fastest win and the first win.
+
+It is updated once per decided play. Reloading a save never counts that play again. When
+iCloud sync is on, both sides are merged, keeping the best. The browser shows each
+scenario's record, rules and number of events. The result screen shows the stars, the points
+and whether this play set a new best.
 
 ## Content format
 
@@ -96,4 +150,15 @@ Validation refuses a scenario when:
 * its cash is negative, or it has no objectives;
 * a class target is not a class index from 1 up;
 * a reputation target is outside 0…100;
-* a count or wait target is not positive.
+* a count or wait target is not positive;
+* an event has a day outside 1…days, no message, or incomplete kind fields;
+* a restriction names an unknown room.
+
+Phase C adds optional fields to a scenario:
+
+```json
+"restrictions": { "forbiddenRooms": ["apartment-studio"], "maxFloor": 12, "maxLoans": 2000000, "fixedRent": true, "noStaff": true },
+"events": [{ "day": 4, "hour": 10, "kind": "grant", "message": "Early occupancy subsidy", "amount": 250000,
+             "when": { "metric": "occupiedUnits", "target": 6 } }],
+"scoring": { "fastShare": 0.6, "margin": 0.25, "winPoints": 1000 }
+```

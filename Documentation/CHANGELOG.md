@@ -2,6 +2,33 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.24.0] — Phase C: Scenarios
+
+### Added
+- **Scores:** a won scenario earns 1–3 stars (won, won fast, every objective beaten by 25 %)
+  and points (win, days left, beating objectives, reputation). The result screen shows
+  them and whether this is a new best.
+- **Completion record** on the device: best stars and points, plays, wins and fastest win
+  per scenario, shown in the scenario browser. With iCloud sync on, two devices merge their
+  records and keep the best.
+- **Scripted events:**
+  - demand shocks (a trade fair, a strike, a recession, a firm relocating);
+  - subsidies for milestones and fines for failed inspections;
+  - scripted weather (storm, heatwave) and a fire;
+  - news lines in the objectives panel.
+- **Restrictions:**
+  - forbidden room types, which show locked in the palette;
+  - a maximum height and a loan limit;
+  - fixed rents;
+  - no staff.
+- **New scenario — Lean Tower:** offices only, up to twelve floors, fixed rents, no staff.
+- Every base scenario gained events; Harbour Revival forbids the express elevator, and
+  Three Properties limits loans to $2M.
+
+### Changed
+- The `dailyProfit` objective counts turnover, taxes and waste too.
+- Save format 18; older saves are migrated.
+
 ## [0.23.0] — Phase E: Economy and facilities
 
 ### Added

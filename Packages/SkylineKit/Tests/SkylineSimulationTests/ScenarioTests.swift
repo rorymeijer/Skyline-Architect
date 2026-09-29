@@ -19,7 +19,7 @@ import SkylineCore
     }
 
     @Test func everyScenarioStarts() throws {
-        #expect(library.orderedScenarios.map(\.id) == ["opening-day", "harbour-revival", "three-properties", "crown-prestige", "skyline"])
+        #expect(library.orderedScenarios.map(\.id) == ["opening-day", "harbour-revival", "three-properties", "crown-prestige", "skyline", "lean-tower"])
         for def in library.orderedScenarios {
             let game = try NewGameFactory.make(scenarioID: def.id, library: library)
             let s = try #require(game.world.scenario)
@@ -123,7 +123,7 @@ import SkylineCore
         #expect(wait > 0 && wait < 300)
         let today = try #require(game.world.ledger.days.last)
         #expect(Scenarios.measure(.dailyProfit, world: game.world, engine: sim)
-                == Double(today.amount(.rent) + today.amount(.maintenance) + today.amount(.utilities) + today.amount(.wages) + today.amount(.interest)))
+                == Double([LedgerCategory.rent, .turnover, .maintenance, .utilities, .wages, .interest, .taxes, .waste].reduce(0) { $0 + today.amount($1) }))
         #expect(ScenarioObjective(metric: .averageWait, target: 45).isMet(by: 44) && !ScenarioObjective(metric: .averageWait, target: 45).isMet(by: 46))
         #expect(!ScenarioObjective(metric: .population, target: 1).isMet(by: nil))
     }

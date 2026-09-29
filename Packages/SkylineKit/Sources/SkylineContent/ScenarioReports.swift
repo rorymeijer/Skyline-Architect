@@ -24,6 +24,10 @@ public struct ScenarioSummary: Equatable, Sendable {
     public var holdDays = 1
     public var streak = 0
     public var result: ScenarioResult?
+    /// Phase C: the latest news first ("D4 10:00 · Early occupancy subsidy …") and what the
+    /// scenario forbids, in words.
+    public var news: [String] = []
+    public var restrictions: [String] = []
 
     public init() {}
 
@@ -48,7 +52,19 @@ public struct ScenarioSummary: Equatable, Sendable {
                        met: met, fraction: fraction)
         }
         summary.daysLeft = s.result == nil ? max(Int(s.deadlineDay - SimClock.day(world.clock.tick)), 0) : 0
+        summary.news = (s.news ?? []).suffix(4).reversed().map { "D\(SimClock.day($0.tick) + 1) \(SimClock.timeString($0.tick)) · \($0.text)" }
+        summary.restrictions = s.restrictions.map { describe($0, library: library) } ?? []
         return summary
+    }
+
+    /// "No Studio Apartment", "Floors up to 12", "Loans up to $2,000,000", "Fixed rents", "No staff".
+    public static func describe(_ r: ScenarioRestrictions, library: ContentLibrary) -> [String] {
+        var lines = (r.forbiddenRooms ?? []).map { id in "No \(library.buildCatalog.spec(id)?.name ?? id)" }
+        if let f = r.maxFloor { lines.append("Floors up to \(FloorLabel.label(for: f))") }
+        if let l = r.maxLoans { lines.append("Loans up to \(Money.format(l))") }
+        if r.rentIsFixed { lines.append("Fixed rents") }
+        if r.staffForbidden { lines.append("No staff") }
+        return lines
     }
 
     /// "Units let ≥ 12", "Average elevator wait ≤ 45 s", "Building class ≥ Class A".
@@ -92,6 +108,9 @@ public struct ScenarioBrief: Equatable, Sendable, Identifiable {
     public var setting: String
     public var objectives: [String]
     public var holdDays: Int
+    /// Phase C: restrictions in words, and how many scripted events lie ahead.
+    public var restrictions: [String] = []
+    public var events = 0
 
     public static func all(library: ContentLibrary) -> [ScenarioBrief] {
         library.orderedScenarios.compactMap { s in
@@ -99,7 +118,9 @@ public struct ScenarioBrief: Equatable, Sendable, Identifiable {
             let cash = s.startingCash ?? start.startingCash ?? 0
             return ScenarioBrief(id: s.id, name: s.name, summary: s.summary, briefing: s.briefing, difficulty: s.difficulty.rawValue.capitalized,
                                  setting: "\(start.propertyName), \(city.name) · \(Money.format(cash)) · \(s.days) days",
-                                 objectives: s.objectives.map { ScenarioSummary.label($0, library: library) }, holdDays: s.holdDays ?? 1)
+                                 objectives: s.objectives.map { ScenarioSummary.label($0, library: library) }, holdDays: s.holdDays ?? 1,
+                                 restrictions: s.restrictions.map { ScenarioSummary.describe($0, library: library) } ?? [],
+                                 events: s.events?.count ?? 0)
         }
     }
 }

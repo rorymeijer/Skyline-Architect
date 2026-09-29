@@ -34,14 +34,8 @@ import SkylineSimulation
                         activePropertyID: game.activePropertyID, world: game.world)
     }
 
-    /// Golden fixture v17. Regenerate only deliberately:
-    /// `SKYLINE_WRITE_FIXTURES=1 swift test --filter goldenFixtureV17`.
+    /// Golden fixture v17. Frozen since format 18 (scenario restrictions, events, scores).
     @Test func goldenFixtureV17StillLoads() throws {
-        if ProcessInfo.processInfo.environment["SKYLINE_WRITE_FIXTURES"] == "1" {
-            let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("Fixtures/save-v17.skylinesave")
-            try SaveCodec.encode(makeOperatingSave()).write(to: source)
-            return
-        }
         let fixtureDir = try #require(Bundle.module.url(forResource: "Fixtures", withExtension: nil))
         let save = try SaveCodec.decode(Data(contentsOf: fixtureDir.appendingPathComponent("save-v17.skylinesave")), availablePacks: basePacks)
         #expect(save.world.rooms.values.contains { $0.rentFactor == 1.3 })

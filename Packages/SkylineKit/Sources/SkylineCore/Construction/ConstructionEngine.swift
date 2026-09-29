@@ -74,6 +74,7 @@ public struct ConstructionEngine: Sendable {
         } else if level == 0 {
             guard building.footprint.contains(merged) else { return .failure(.outsideFootprint) }
         } else {
+            if let max = world.restrictions?.maxFloor, level > max { return .failure(.aboveScenarioHeight(max: max)) }
             if let locked = lockedClass(floor: level, building: b, world) { return .failure(.locked(className: locked)) }
             guard let below = building.plate(at: level - 1) else { return .failure(.unsupported) }
             // The piles carry a limited height (0.21): longer piles, taller building.
@@ -111,6 +112,7 @@ public struct ConstructionEngine: Sendable {
                                    _ world: GameWorld) -> Result<ConstructionPlan, ConstructionError> {
         guard let building = world.buildings[b] else { return .failure(.unknownBuilding) }
         guard let spec = catalog.spec(def) else { return .failure(.unknownDefinition(def)) }
+        if world.restrictions?.forbids(def) == true { return .failure(.forbiddenInScenario) }
         if let needed = spec.unlockClass, needed > world.unlockedClass(of: b) {
             return .failure(.locked(className: catalog.classes.indices.contains(needed) ? catalog.classes[needed].name : "class \(needed)"))
         }

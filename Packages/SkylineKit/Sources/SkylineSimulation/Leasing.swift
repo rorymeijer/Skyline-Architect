@@ -275,7 +275,8 @@ extension SimulationEngine {
             * (weatherKind(city)?.effects.demand ?? 1) * city.economy.demand
         for (i, type) in rules.tenantTypes.enumerated() {
             var rng = SeededRandom(seed: city.seed, stream: hour &* 64 &+ UInt64(i))
-            guard rng.unit() < type.prospectsPerDay * demand / 24 else { continue }
+            let shock = scenarioDemand(for: type.id, at: now, world: world)   // scripted events (Phase C)
+            guard rng.unit() < type.prospectsPerDay * demand * shock / 24 else { continue }
             let needed = type.minClass ?? 0
             // A type no building of the city qualifies for yet does not come by at all.
             if needed > 0, !buildings.contains(where: { world.unlockedClass(of: $0) >= needed }) { continue }

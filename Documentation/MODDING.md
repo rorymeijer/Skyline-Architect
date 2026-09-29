@@ -198,6 +198,9 @@ closing before opening means after midnight), `occasions` (`lunch`, `leisure`),
 `lunch` (an amenity, else out) and `leisure` (an amenity, else stay), with an optional
 `chance` (0…1). See AMENITIES.md.
 
+### Scenario scripts (0.24)
+Scenarios may set `restrictions`, `events` and `scoring`; see SCENARIOS.md → Content format.
+
 ### Phase E fields (0.23)
 - `economy.json`: `propertyTaxRate`, `profitTaxRate`, `wastePricePerKg`,
   `energyVolatility`, `energyReversion`.

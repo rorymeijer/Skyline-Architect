@@ -21,6 +21,11 @@ public struct ScenarioDefinition: Codable, Hashable, Sendable, Identifiable {
     /// Closings in a row every objective must hold (default 1).
     public var holdDays: Int?
     public var objectives: [ScenarioObjective]
+    /// What the scenario forbids (Phase C).
+    public var restrictions: ScenarioRestrictions?
+    /// Scripted events and scoring (Phase C).
+    public var events: [ScenarioEvent]?
+    public var scoring: ScenarioScoring?
 }
 
 extension ContentLibrary {
@@ -52,6 +57,28 @@ extension ContentLibrary {
                     break
                 }
             }
+            if let r = s.restrictions {
+                let roomIDs = Set(orderedRooms.map(\.id))
+                if let bad = r.forbiddenRooms?.first(where: { !roomIDs.contains($0) }) { throw fail("forbids unknown room '\(bad)'") }
+                guard (r.maxFloor ?? 1) >= 1, (r.maxLoans ?? 0) >= 0 else { throw fail("maxFloor must be ≥ 1 and maxLoans ≥ 0") }
+            }
+            let tenantIDs = Set(simulationRules.tenantTypes.map(\.id))
+            let weatherIDs = Set(simulationRules.weather?.kinds.map(\.id) ?? [])
+            for (i, e) in (s.events ?? []).enumerated() {
+                func bad(_ m: String) -> ContentError { fail("event \(i + 1): \(m)") }
+                guard (1...s.days).contains(e.day), (0...23).contains(e.hour ?? 9) else { throw bad("day must be 1…days and hour 0…23") }
+                guard !e.message.isEmpty else { throw bad("needs a message") }
+                switch e.kind {
+                case .news, .fire: break
+                case .demand:
+                    guard let m = e.multiplier, (0...10).contains(m), (e.days ?? 0) >= 1 else { throw bad("demand needs multiplier 0…10 and days ≥ 1") }
+                    if let t = e.tenantType, !tenantIDs.contains(t) { throw bad("unknown tenant type '\(t)'") }
+                case .grant, .fine:
+                    guard (e.amount ?? 0) > 0 else { throw bad("\(e.kind.rawValue) needs a positive amount") }
+                case .weather:
+                    guard let w = e.weather, weatherIDs.contains(w) else { throw bad("unknown weather '\(e.weather ?? "")'") }
+                }
+            }
             orderedScenarios.append(s)
         }
     }
@@ -68,6 +95,10 @@ extension NewGameFactory {
         let startDay = SimClock.day(game.world.clock.tick)
         game.world.scenario = ScenarioState(id: scenario.id, name: scenario.name, objectives: scenario.objectives,
                                             deadlineDay: startDay + Tick(scenario.days), holdDays: scenario.holdDays ?? 1)
+        game.world.scenario?.restrictions = scenario.restrictions
+        game.world.scenario?.startDay = startDay
+        game.world.scenario?.events = scenario.events
+        game.world.scenario?.scoring = scenario.scoring
         game.scenarioID = scenario.id
         return game
     }
