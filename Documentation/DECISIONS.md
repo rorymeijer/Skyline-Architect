@@ -424,6 +424,33 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-062 — Every screen fits an iPhone: shrink to fit; App Store screenshots from the game
+- **Date:** 2026-09-29
+- **Decision:**
+  - A capture *screen tour* opens every full-screen view and side panel once, on the Mac,
+    the iPad and the iPhone. Its pixel sizes show at once whether a screen outgrows the
+    display.
+  - Views too tall for the room they get are drawn smaller in steps (90, 80, 75 %) through a
+    small `Layout` (`ShrinkToFit.swift`). The smaller size is the layout size, so
+    `ViewThatFits` can choose it and taps land where the controls are drawn. It is used for
+    the side panels, the saves, mods and bankruptcy cards, and the scenario views.
+  - The scenario browser and the result screen have a compact form: the list without
+    summaries, the stars beside the points, and the buttons in a row.
+  - App Store screenshots come from the same capture director (`--capture-set store`) on a
+    6.9" iPhone and a 13" iPad simulator and in a 1440 × 900 Mac window. A hand-run workflow
+    commits them as JPEGs at their exact size.
+  - Toward review: the iCloud switch is hidden while there is no iCloud container; on iOS the
+    mods folder is in Documents (Files app); the Info.plist declares no non-exempt
+    encryption.
+- **Alternatives:**
+  - Scroll views: they vanish from captures (D-047), so nothing could be verified.
+  - A separate phone layout for every panel (a second interface to keep in step).
+  - Screenshots made by hand in Xcode, which are not reproducible.
+- **Reason:** Shrinking is one generic step that leaves Mac and iPad untouched wherever the
+  full view fits. The store screenshots stay true to the game because they are the game.
+- **Consequences:** On an iPhone, some panels show at three quarters of their size
+  (captions around 9 pt). Readable, but smaller than Apple's guidance.
+
 ## D-061 — The Mac app runs in the App Sandbox
 - **Date:** 2026-09-29
 - **Decision:**

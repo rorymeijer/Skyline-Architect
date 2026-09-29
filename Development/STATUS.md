@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-29 (0.29.1 — App Sandbox for the Mac App Store)_
+_Last updated: 2026-09-29 (0.29.2 — every screen on the iPhone; App Store preparation)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -12,6 +12,17 @@ _Last updated: 2026-09-29 (0.29.1 — App Sandbox for the Mac App Store)_
 | F3 | Tutorial, in-game manual, website (`Website/`) | COMPLETE (rorymeijer/Skyline-Architect#33) |
 | F4 | Accessibility and iPad | COMPLETE (rorymeijer/Skyline-Architect#34) |
 | F5 | iPhone | COMPLETE (rorymeijer/Skyline-Architect#35) |
+
+**0.29.2:** App Store preparation (D-062):
+- Every screen fits an iPhone. A capture screen tour of 19 screens found 8 that were too
+  tall; side panels and cards now shrink in steps, and the scenario views have compact forms.
+  Evidence: all 19 tour captures at the display's size on Mac, iPad and iPhone
+  (`Development/Screenshots/iPhone-0.29.2/`).
+- `Documentation/APP_STORE.md` holds every App Store Connect field and the App Review notes.
+  The website has support and privacy pages (not published: the owner decides).
+- App Store screenshots come from the game itself (`Development/Screenshots/AppStore/`).
+- Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
+  and the encryption question.
 
 **0.29.1:** the Mac app runs in the App Sandbox, which the Mac App Store requires (D-061).
 CI checks the entitlement in a signed Release build. Not verified here: the upload to App
