@@ -53,7 +53,7 @@ ring shows where you are, and Space presses the button.
 ## What is verified, and how
 
 * **Text size:** CI captures on the Mac and in the iPad simulator show the same panels at
-  Standard, Larger and Largest (`Development/Screenshots/Accessibility-0.28/`).
+  Standard, Larger and Largest (`Development/Screenshots/Accessibility-0.28/`, Mac and iPad).
 * **Esc:** a capture step presses Esc twice and reports what closed.
 * **iPad keyboard and Tab focus:** these need a real keyboard. They are built and compiled in
   CI but have not been tried by a person (OPEN_ITEMS).
