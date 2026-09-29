@@ -134,15 +134,49 @@ tower,building,elevator,skyscraper,city,builder,tycoon,management,sim,constructi
 | Notes (4000) | See below |
 | Attachment | None needed |
 
-Notes for App Review:
+Notes for App Review (2811 of 4000 characters). Paste the whole block:
 
-> Skyline Architect is a single-player simulation game. It needs no account, no network and no purchases.
->
-> A quick way to see it: choose Tutorial in the main menu and follow the panel on the left; each step says which tool to use. New Sandbox starts with every room unlocked.
->
-> On iPhone the game plays in landscape. The build palette groups its tools by category, and the four-squares button in the bottom-right controls opens every panel.
->
-> Mods are optional content packs: JSON data files the player copies into the game's Mods folder (Files app on iPhone and iPad, Open Folder on Mac). They contain data only; no code is ever loaded or downloaded (guideline 2.5.2). Install Examples in the Mods screen adds a sample pack.
+```text
+Thank you for reviewing Skyline Architect.
+
+WHAT THE APP IS
+Skyline Architect is a single-player building-management game. You build a tower in cross-section (floors, lobbies, offices, flats, plant rooms, elevators), let the units to simulated tenants, and keep the people inside moving. It is a native app built with Swift, SwiftUI and SpriteKit, with a native Mac version and one universal iPhone/iPad version.
+
+NO ACCOUNT, NO NETWORK, NO PURCHASES
+- No sign-in or account of any kind; no demo account is needed.
+- The app never connects to the internet and contains no third-party SDKs.
+- No in-app purchases, subscriptions or ads.
+- No data is collected. Saves, settings and mods stay on the device, in the app's own container.
+- No encryption is used (ITSAppUsesNonExemptEncryption = NO).
+- iCloud is not used in this version.
+
+HOW TO TRY IT (about 5 minutes)
+1. Launch the app. The main menu appears.
+2. Choose "Tutorial". A panel on the left explains each step and which tool to use (Floor, then the categories in the build bar at the bottom). Drag across the foundation to place a floor; tap or click a tool, then the building, to place rooms.
+3. Press play (1x, 2x ... 60x at the top) to let time run. Prospects visit, tenants sign, people walk and ride the elevators.
+4. "New Sandbox" in the main menu starts with every room unlocked, for free building.
+5. The book button (bottom right) opens the 14-chapter manual inside the app.
+
+PLATFORM NOTES
+- iPhone and iPad: the game plays in landscape. On iPhone the build bar groups its tools by category, and the four-squares button in the bottom-right controls opens every panel (economy, leasing, facilities and so on).
+- Mac: every panel and command is also in the menus, with keyboard shortcuts; Esc closes what is on top. The Mac app runs in the App Sandbox.
+- Text size (main menu) makes panels, menus and the manual larger; VoiceOver labels and Reduce Motion are supported.
+
+MODS (DATA ONLY, GUIDELINE 2.5.2)
+The Mods screen lets players load optional content packs: folders of JSON data files (new rooms, cities, scenarios) that the player copies into the game's Mods folder themselves, using the Files app on iPhone/iPad or "Open Folder" on Mac. Mods contain data only. The app never downloads anything, and never loads or executes code from a mod; the JSON is validated against the game's own schema and a pack that fails validation is skipped with a message. Nothing is shared between players through the app. To see it, open Mods and press "Install Examples", which copies a sample pack bundled with the app.
+
+CONTENT
+Fires can break out in the building as an incident; sprinklers and the fire brigade put them out and people walk out. No one is shown hurt. There is no violence, gambling, alcohol use or user-to-user communication.
+
+Thank you!
+```
+
+What the notes pre-empt (common reasons for rejection):
+
+- **2.1 App completeness:** no login, so no demo account. The iCloud switch is hidden while the app has no iCloud entitlement (0.29.2), so there is no switch that cannot work.
+- **2.5.2 Software requirements:** mods are data, never code, and are never downloaded.
+- **5.1 Privacy:** no data collected, no network.
+- **4.2 Minimum functionality:** a complete game with a tutorial and a manual.
 
 ## 5. App Privacy (General ▸ App Privacy)
 
