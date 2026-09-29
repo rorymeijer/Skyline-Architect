@@ -91,6 +91,11 @@ public enum DayNight {
     /// Below this zoom (points per metre) lit rooms are drawn as window panes on the façade.
     public static let windowZoom = DetailLevel.thresholds[DetailLevel.floors.rawValue]
 
+    /// Below this zoom a pane (1.5 m) is under 3 points wide: each storey of a room becomes
+    /// one lit strip at the panes' average brightness (F2: a 500-floor tower seen whole
+    /// needs a sprite per strip, not per pane).
+    public static let stripZoom = 2.0
+
     /// Lights over the visible rooms at `time`: each room's level from the lighting model
     /// (occupancy, quiet hours, `power` = served electricity per room) × darkness (default:
     /// from daylight; the weather may pass a darker value). Zoomed out
@@ -112,7 +117,11 @@ public enum DayNight {
                                            power: power[room.id] ?? 1)
                 guard level > 0.01 else { continue }
                 let color = ArtCatalog.parseColor(lighting.color) ?? lamp
-                if zoom < windowZoom, room.floors.lowest >= 0 {
+                if zoom < stripZoom, room.floors.lowest >= 0 {
+                    for strip in strips(of: rect, grid: grid) {
+                        lit.append(LitRoom(rect: strip, intensity: level * darkness * 0.75, color: color))
+                    }
+                } else if zoom < windowZoom, room.floors.lowest >= 0 {
                     for pane in panes(of: rect, grid: grid) { lit.append(LitRoom(rect: pane, intensity: level * darkness, color: color)) }
                 } else {
                     lit.append(LitRoom(rect: rect, intensity: level * darkness, color: color))
@@ -132,6 +141,17 @@ public enum DayNight {
                 out.append(Rect(minX: x, minY: y + 0.9, maxX: x + 1.5, maxY: y + min(3.2, grid.floorHeight - 0.5)))
                 x += 2
             }
+            y += grid.floorHeight
+        }
+        return out
+    }
+
+    /// The panes of each storey merged into one strip, sill to head (same rows as `panes`).
+    static func strips(of rect: Rect, grid: GridSpec) -> [Rect] {
+        var out: [Rect] = []
+        var y = rect.minY
+        while y + 1 < rect.maxY {
+            out.append(Rect(minX: rect.minX + 0.25, minY: y + 0.9, maxX: rect.maxX - 0.4, maxY: y + min(3.2, grid.floorHeight - 0.5)))
             y += grid.floorHeight
         }
         return out

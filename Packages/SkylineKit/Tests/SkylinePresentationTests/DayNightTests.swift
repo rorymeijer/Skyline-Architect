@@ -46,6 +46,14 @@ import SkylineContent
                                     zoom: 3)
         let panes = far.filter { studioRect.contains($0.rect) }
         #expect(panes.count >= 3 && panes.allSatisfy { $0.rect.width == 1.5 && $0.rect.height < 2.5 })
+        // Further out, each storey's panes merge into one strip at their average brightness.
+        let whole = DayNight.litRooms(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog, time: evening, visible: view,
+                                      zoom: 1)
+        let strips = whole.filter { studioRect.contains($0.rect) }
+        let pane = try #require(panes.first)
+        #expect(strips.count == studio.floors.count && whole.count < far.count)
+        #expect(strips.allSatisfy { $0.rect.minY == pane.rect.minY && $0.rect.maxY == pane.rect.maxY
+                                    && abs($0.intensity - pane.intensity * 0.75) < 1e-9 })
     }
 
     /// City windows go out through the night and come back with the early risers.
