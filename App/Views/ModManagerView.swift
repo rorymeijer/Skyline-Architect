@@ -129,7 +129,7 @@ private struct SmallButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) { Image(systemName: symbol).frame(width: 22, height: 22) }
+        Button(action: action) { Image(systemName: symbol).frame(width: 22, height: 22).focusRing(cornerRadius: 5) }
             .accessibilityLabel(symbol == "chevron.up" ? "Load earlier" : "Load later")
             .buttonStyle(.plain)
             .disabled(!enabled)

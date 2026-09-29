@@ -98,6 +98,7 @@ struct PanelButton: View {
             Text(title).font(.caption.weight(.medium))
                 .padding(.horizontal, 8).padding(.vertical, 3)
                 .background(RoundedRectangle(cornerRadius: 6).fill(Color.white.opacity(enabled ? 0.15 : 0.05)))
+                .focusRing(cornerRadius: 6)
         }
         .buttonStyle(.plain)
         .disabled(!enabled)
@@ -116,7 +117,9 @@ struct MainMenuView: View {
                 Text("SKYLINE ARCHITECT").font(.system(size: 34, weight: .heavy, design: .rounded)).kerning(4)
                 Text("Build upward. Keep the building moving.").font(.callout).foregroundStyle(.secondary)
                 VStack(spacing: 8) {
-                    if let latest = model.latestSave {
+                    if model.menuOverGame {
+                        MenuButton(title: "Resume", subtitle: model.propertyName) { model.resumeFromMenu() }
+                    } else if let latest = model.latestSave {
                         MenuButton(title: "Continue", subtitle: latest.metadata.map { "\($0.title) · \($0.savedAt.formatted(date: .abbreviated, time: .shortened))" }) {
                             model.continueLatest()
                         }
@@ -134,6 +137,9 @@ struct MainMenuView: View {
                     }
                     MenuButton(title: "Load Game…", subtitle: nil) { model.openSavesPanel() }
                     MenuButton(title: "Manual", subtitle: "How everything works") { model.openManual() }
+                    MenuButton(title: "Text Size: \(TextSizeSetting.name(model.textSize))", subtitle: "Panels and menus") {
+                        model.textSize = TextSizeSetting.next(after: model.textSize)
+                    }
                 }
                 .frame(width: 300)
                 .padding(.top, 8)
@@ -180,6 +186,7 @@ struct MenuButton: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
             .background(RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.12)))
+            .focusRing(cornerRadius: 10)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

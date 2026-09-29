@@ -21,7 +21,6 @@ struct ManualView: View {
                     Label("Manual", systemImage: "book").font(.title2.weight(.bold))
                     Spacer()
                     CloseButton { model.showManual = false }
-                        .keyboardShortcut(.cancelAction)
                 }
                 HStack(alignment: .top, spacing: 16) {
                     sidebar(document, current: chapter?.id)
@@ -87,6 +86,7 @@ struct ManualView: View {
             .padding(.vertical, 4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(selected ? 0.2 : 0)))
+            .focusRing(cornerRadius: 7)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -127,6 +127,7 @@ private struct PagerButton: View {
             Text(title).font(.callout.weight(.medium))
                 .padding(.horizontal, 10).padding(.vertical, 5)
                 .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(0.12)))
+                .focusRing(cornerRadius: 7)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -245,15 +246,46 @@ struct ManualPageView: View {
     }
 }
 
-/// The manual's search box. On a Mac it is drawn in SwiftUI and takes typed keys while
-/// focused (click it), so captures show it like the window does; on an iPad it is a text
-/// field for the on-screen keyboard.
+/// The manual's search box, drawn in SwiftUI so captures show it like the window does. On a
+/// Mac it takes typed keys while focused (click it); on an iPad a nearly transparent text
+/// field on top brings up the on-screen keyboard.
 struct ManualSearchField: View {
     @Binding var text: String
     @FocusState private var focused: Bool
 
     var body: some View {
         #if os(macOS)
+        drawn
+            .focusable()
+            .focused($focused)
+            .focusEffectDisabled()
+            .onTapGesture { focused = true }
+            .onKeyPress(phases: .down) { press in
+                if press.key == .delete {
+                    if !text.isEmpty { text.removeLast() }
+                    return .handled
+                }
+                let typed = press.characters
+                guard !typed.isEmpty, press.modifiers.isDisjoint(with: [.command, .control]),
+                      typed.allSatisfy({ $0.isLetter || $0.isNumber || $0 == " " || $0 == "-" || $0 == "'" }) else { return .ignored }
+                text += typed
+                return .handled
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Search the manual")
+            .accessibilityValue(text)
+        #else
+        drawn
+            .overlay {
+                TextField("", text: $text)
+                    .focused($focused)
+                    .opacity(0.02)                                  // UIKit field: invisible, still typable
+                    .accessibilityLabel("Search the manual")
+            }
+        #endif
+    }
+
+    private var drawn: some View {
         HStack(spacing: 6) {
             Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
             Text(text.isEmpty ? (focused ? "|" : "Search") : text + (focused ? "|" : ""))
@@ -270,29 +302,6 @@ struct ManualSearchField: View {
         .padding(.vertical, 5)
         .background(RoundedRectangle(cornerRadius: 7).fill(Color.white.opacity(focused ? 0.16 : 0.1)))
         .contentShape(Rectangle())
-        .focusable()
-        .focused($focused)
-        .focusEffectDisabled()
-        .onTapGesture { focused = true }
-        .onKeyPress(phases: .down) { press in
-            if press.key == .delete {
-                if !text.isEmpty { text.removeLast() }
-                return .handled
-            }
-            let typed = press.characters
-            guard !typed.isEmpty, press.modifiers.isDisjoint(with: [.command, .control]),
-                  typed.allSatisfy({ $0.isLetter || $0.isNumber || $0 == " " || $0 == "-" || $0 == "'" }) else { return .ignored }
-            text += typed
-            return .handled
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Search the manual")
-        .accessibilityValue(text)
-        #else
-        TextField("Search", text: $text)
-            .textFieldStyle(.roundedBorder)
-            .accessibilityLabel("Search the manual")
-        #endif
     }
 }
 
@@ -386,6 +395,8 @@ private struct LinkButton: View {
     var body: some View {
         Button(action: action) {
             Text(title).font(.caption.weight(.medium)).foregroundStyle(muted ? Color.secondary : Color.accentColor)
+                .padding(.horizontal, 2)
+                .focusRing(cornerRadius: 4)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

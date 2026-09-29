@@ -10,11 +10,27 @@ extension View {
     }
 }
 
+/// A ring around a control while it has keyboard focus (F4): Tab moves between controls
+/// when Keyboard navigation (Mac) or Full Keyboard Access (iPad) is on. The custom button
+/// styles draw no focus effect of their own.
+private struct FocusRing: ViewModifier {
+    @Environment(\.isFocused) private var focused
+    let cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        content.overlay(RoundedRectangle(cornerRadius: cornerRadius).strokeBorder(Color.accentColor, lineWidth: 2).opacity(focused ? 1 : 0))
+    }
+}
+
+extension View {
+    func focusRing(cornerRadius: CGFloat = 8) -> some View { modifier(FocusRing(cornerRadius: cornerRadius)) }
+}
+
 struct CloseButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) { Image(systemName: "xmark.circle.fill") }
+        Button(action: action) { Image(systemName: "xmark.circle.fill").focusRing(cornerRadius: 9) }
             .buttonStyle(.plain)
             .foregroundStyle(.secondary)
             .help("Close")

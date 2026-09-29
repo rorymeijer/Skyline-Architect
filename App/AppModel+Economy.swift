@@ -54,6 +54,20 @@ extension AppModel {
         setSpeed(.normal)
     }
 
+    /// The main menu over the running game (paused), with Resume (F4: the only way back to
+    /// the menu on an iPad was restarting the app).
+    func openMainMenu() {
+        menuOverGame = true
+        showMainMenu = true
+        setSpeed(.paused)
+    }
+
+    func resumeFromMenu() {
+        showMainMenu = false
+        menuOverGame = false
+        setSpeed(speedBeforePause)
+    }
+
     func startFromMenu(startID: String = NewGameFactory.standardStartID) {
         newGame(startID: startID)
         showMainMenu = false

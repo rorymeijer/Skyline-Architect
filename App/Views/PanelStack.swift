@@ -84,6 +84,7 @@ struct PanelStack: View {
                         Text(panel.title).font(.caption.weight(panel == shown ? .semibold : .regular))
                             .padding(.horizontal, 8).padding(.vertical, 4)
                             .background(Capsule().fill(Color.white.opacity(panel == shown ? 0.28 : 0.1)))
+                            .focusRing(cornerRadius: 10)
                             .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)

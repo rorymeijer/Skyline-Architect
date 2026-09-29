@@ -51,6 +51,7 @@ struct SimulationControls: View {
             }
             .frame(minWidth: 30, minHeight: 22)
             .background(RoundedRectangle(cornerRadius: 6).fill(isOn ? Color.accentColor : Color.clear))
+            .focusRing(cornerRadius: 6)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
