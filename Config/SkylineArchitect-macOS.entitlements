@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Required for the Mac App Store. The app only reads its bundle and writes in its
+	     own container (Application Support: saves, mods, settings). See DECISIONS D-061. -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+</dict>
+</plist>
