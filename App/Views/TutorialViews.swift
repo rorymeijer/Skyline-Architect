@@ -8,15 +8,17 @@ struct TutorialPanel: View {
 
     var body: some View {
         // Where the step list does not fit (F5, an iPhone), the panel shows the current step only,
-        // and if that is still too tall, in smaller type on a wider card.
+        // and if that is still too tall, in smaller type on a wider card, and last as its title
+        // with the link to the manual (while the palette's category row takes the room).
         ViewThatFits(in: .vertical) {
             content(list: true)
             content(list: false)
             content(list: false, small: true)
+            content(list: false, small: true, brief: true)
         }
     }
 
-    private func content(list: Bool, small: Bool = false) -> some View {
+    private func content(list: Bool, small: Bool = false, brief: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Label("Tutorial", systemImage: "graduationcap").font(.ui(.headline))
@@ -30,7 +32,9 @@ struct TutorialPanel: View {
                 .accessibilityValue("\(tutorial.progress.completed) of \(tutorial.steps.count) steps")
             if let step = tutorial.current {
                 Text(step.title).font(.ui(.callout).weight(.semibold))
-                Text(ManualPageView.inline(step.text)).font(.ui(small ? .footnote : .callout)).fixedSize(horizontal: false, vertical: true)
+                if !brief {
+                    Text(ManualPageView.inline(step.text)).font(.ui(small ? .footnote : .callout)).fixedSize(horizontal: false, vertical: true)
+                }
                 if let chapter = step.chapter {
                     LinkButton(title: "Read more in the manual") { model.openManual(chapter: chapter) }
                 }
