@@ -38,10 +38,12 @@ extension AppModel {
             guard floors.lowest <= floors.highest else {
                 return ConstructionOption(id: key, title: title, symbol: symbol, command: nil, detail: "Too short already")
             }
-            let command = BuildCommand.resizeRoom(id, floors: floors)
+            // Extending past the existing floors builds the missing plates too (0.30.1).
+            let (command, added) = engine.addingFloors(for: .resizeRoom(id, floors: floors), in: world)
             switch engine.validate(command, in: world) {
             case .success(let plan):
-                let price = plan.cost < 0 ? "refund \(Money.format(-plan.cost))" : Money.format(plan.cost)
+                var price = plan.cost < 0 ? "refund \(Money.format(-plan.cost))" : Money.format(plan.cost)
+                if added > 0 { price += added == 1 ? " · +1 new floor" : " · +\(added) new floors" }
                 guard plan.cost <= world.ledger.cash else {
                     return ConstructionOption(id: key, title: title, symbol: symbol, command: nil, detail: "Not enough money (\(price))")
                 }

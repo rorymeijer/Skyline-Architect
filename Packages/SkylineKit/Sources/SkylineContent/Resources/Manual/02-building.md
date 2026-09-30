@@ -52,6 +52,8 @@ Costs are for Port Calder; other cities build dearer or cheaper (see [Cities and
 
 Stairwells and elevators are **shafts**: drag them upward across the floors they should serve, at least two. A shaft may stand in front of rooms: they stay whole behind it, and a room may also be built behind an existing shaft. Only another shaft blocks a shaft.
 
+A shaft may reach past the building: drag it above the top floor or below the lowest basement, and the missing floor plates under the shaft are built with it, as wide as the shaft. The preview shows how many (*+2 new floors*), and the price includes them. Floors are only added where they may be built: basements need a dug foundation, and higher floors need the class, the piles and the scenario to allow them.
+
 To make a shaft taller or shorter later, pick its tool and drag its top or bottom, or select it and use **Extend Up**, **Shorten Top**, **Extend Down** and **Shorten Bottom** in the inspector. See [Stairs and elevators](transport.md).
 
 ## The foundation

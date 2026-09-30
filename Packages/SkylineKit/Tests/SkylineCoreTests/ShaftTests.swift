@@ -116,4 +116,39 @@ import Testing
         try f.run(.buildFloor(building: f.building, level: -1, span: ColumnSpan(start: 8, count: 32)))
         #expect((try? f.check(.resizeRoom(shaft, floors: FloorSpan(lowest: -1, highest: 1))).get()) != nil)
     }
+
+    /// A shaft above the roof or below the lowest basement gets its missing floor plates (0.30.1),
+    /// in one batch that undoes as a whole.
+    @Test func missingFloorsAreBuiltForAShaft() throws {
+        var f = try fixture()                                                // floors 0…3
+        var history = ConstructionHistory()
+        let cash = f.world.ledger.cash
+        let (command, added) = f.engine.addingFloors(for: stairs(f, 30, 2, 6), in: f.world)
+        #expect(added == 3)
+        #expect(f.check(stairs(f, 30, 2, 6)) == .failure(.noFloor(level: 4)))
+        #expect(try f.check(command).get().cost == 3 * 4 * 100 + 7 * 4 * 5)  // slabs under the shaft only
+        try history.perform(command, engine: f.engine, world: &f.world)
+        let b = try #require(f.world.buildings[f.building])
+        for level in 4...6 { #expect(b.plate(at: level)?.span == ColumnSpan(start: 30, count: 4)) }
+        try checkIntegrity(f)
+        try history.undo(engine: f.engine, world: &f.world)
+        #expect(f.world.buildings[f.building]?.plate(at: 4) == nil && f.world.rooms.isEmpty && f.world.ledger.cash == cash)
+    }
+
+    @Test func missingFloorsForAResizedShaft() throws {
+        var f = try fixture()
+        let shaft = try #require(f.run(stairs(f, 30, 0, 3)).createdRoom)
+        let up = f.engine.addingFloors(for: .resizeRoom(shaft, floors: FloorSpan(lowest: 0, highest: 5)), in: f.world)
+        #expect(up.floors == 2)
+        // The fixture may dig one basement: -1 is built, -2 is not possible.
+        let down = f.engine.addingFloors(for: .resizeRoom(shaft, floors: FloorSpan(lowest: -1, highest: 3)), in: f.world)
+        #expect(down.floors == 1)
+        try f.run(down.command)
+        #expect(f.world.buildings[f.building]?.plate(at: -1)?.span == ColumnSpan(start: 30, count: 4))
+        let deeper = BuildCommand.resizeRoom(shaft, floors: FloorSpan(lowest: -2, highest: 3))
+        #expect(f.engine.addingFloors(for: deeper, in: f.world) == (deeper, 0))
+        // Floors that already carry the shaft, and rooms, are left alone.
+        #expect(f.engine.addingFloors(for: stairs(f, 10, 0, 3), in: f.world).floors == 0)
+        try checkIntegrity(f)
+    }
 }

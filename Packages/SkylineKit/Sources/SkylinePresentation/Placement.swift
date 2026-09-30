@@ -81,9 +81,10 @@ public enum PlacementPlanner {
                         ? FloorSpan(lowest: shaft.floors.lowest, highest: max(current.floor, shaft.floors.lowest))
                         : FloorSpan(lowest: min(current.floor, shaft.floors.highest), highest: shaft.floors.highest)
                     let shown = FloorSpan(lowest: min(floors.lowest, shaft.floors.lowest), highest: max(floors.highest, shaft.floors.highest))
-                    return finish(.resizeRoom(shaft.id, floors: floors), rect: grid.rect(columns: shaft.columns, floors: shown),
+                    let resize = engine.addingFloors(for: .resizeRoom(shaft.id, floors: floors), in: world)
+                    return finish(resize.command, rect: grid.rect(columns: shaft.columns, floors: shown),
                                   name: "\(spec.name) \(FloorLabel.label(for: floors.lowest))–\(FloorLabel.label(for: floors.highest))",
-                                  floors: floors.count,
+                                  floors: floors.count, note: newFloorsNote(resize.floors),
                                   demolition: floors.count < shaft.floors.count, world: world, engine: engine)
                 }
                 columns = ColumnSpan(start: anchor.column, count: spec.minWidth)
@@ -92,9 +93,10 @@ public enum PlacementPlanner {
                 if hi - lo + 1 > spec.maxFloors { lo = hi - spec.maxFloors + 1 }
                 floors = FloorSpan(lowest: lo, highest: hi)
             }
-            let command = BuildCommand.placeRoom(building: building.id, definition: id, columns: columns, floors: floors)
-            return finish(command, rect: grid.rect(columns: columns, floors: floors), name: spec.name,
-                          widthModules: columns.count, floors: spec.kind == .shaft ? floors.count : nil,
+            // A shaft past the existing floors brings its missing floor plates (0.30.1).
+            let place = engine.addingFloors(for: .placeRoom(building: building.id, definition: id, columns: columns, floors: floors), in: world)
+            return finish(place.command, rect: grid.rect(columns: columns, floors: floors), name: spec.name,
+                          widthModules: columns.count, floors: spec.kind == .shaft ? floors.count : nil, note: newFloorsNote(place.floors),
                           demolition: false, world: world, engine: engine)
 
         case .demolish:
@@ -111,6 +113,10 @@ public enum PlacementPlanner {
             }
             return nil
         }
+    }
+
+    private static func newFloorsNote(_ count: Int) -> String? {
+        count == 0 ? nil : count == 1 ? "+1 new floor" : "+\(count) new floors"
     }
 
     private static func finish(_ command: BuildCommand, rect: Rect, name: String, widthModules: Int? = nil, floors: Int? = nil,

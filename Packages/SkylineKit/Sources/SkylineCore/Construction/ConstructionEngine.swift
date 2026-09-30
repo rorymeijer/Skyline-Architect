@@ -170,9 +170,13 @@ public struct ConstructionEngine: Sendable {
         case let .extendFoundation(b, footprint, foundation), let .restoreFoundation(b, footprint, foundation):
             return AppliedConstruction(plan: plan, inverse: setFoundation(b, footprint: footprint, foundation: foundation, in: &world))
         case let .batch(commands):
-            var inverses: [BuildCommand] = []
-            for command in commands { inverses.append(try apply(command, to: &world).inverse) }
-            return AppliedConstruction(plan: plan, inverse: .batch(inverses.reversed()))
+            var inverses: [BuildCommand] = [], created: RoomID?
+            for command in commands {
+                let applied = try apply(command, to: &world)
+                inverses.append(applied.inverse)
+                created = applied.createdRoom ?? created
+            }
+            return AppliedConstruction(plan: plan, inverse: .batch(inverses.reversed()), createdRoom: created)
         case let .demolishRoom(id):
             let room = world.rooms.remove(id)!
             return AppliedConstruction(plan: plan, inverse: .restoreRoom(room))

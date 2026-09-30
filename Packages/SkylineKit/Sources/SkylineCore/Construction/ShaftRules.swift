@@ -41,6 +41,36 @@ extension ConstructionEngine {
                                          floors: FloorSpan(lowest: min(floors.lowest, room.floors.lowest), highest: max(floors.highest, room.floors.highest))))
     }
 
+    /// A shaft placed or stretched past the floors that exist (0.30.1): the missing floor plates
+    /// under it are built first, in one batch (one undo). Floors are added only where the build
+    /// rules allow them: when the batch does not validate, the command comes back unchanged.
+    /// Returns the command to use and how many floor plates it adds.
+    public func addingFloors(for command: BuildCommand, in world: GameWorld) -> (command: BuildCommand, floors: Int) {
+        let target: (building: BuildingID, columns: ColumnSpan, floors: FloorSpan)
+        switch command {
+        case let .placeRoom(b, definition, columns, floors) where catalog.spec(definition)?.kind == .shaft:
+            target = (b, columns, floors)
+        case let .resizeRoom(id, floors):
+            guard let room = world.rooms[id], catalog.spec(room.definitionID)?.kind == .shaft else { return (command, 0) }
+            target = (room.buildingID, room.columns, floors)
+        default:
+            return (command, 0)
+        }
+        guard let building = world.buildings[target.building] else { return (command, 0) }
+        // Upward from the ground so every storey stands on the one below; basements downward.
+        let lo = target.floors.lowest, hi = target.floors.highest
+        let levels = Array(stride(from: max(lo, 0), through: hi, by: 1)) + Array(stride(from: min(hi, -1), through: lo, by: -1))
+        let plates: [BuildCommand] = levels.compactMap { level in
+            let plate = building.plate(at: level)
+            if let plate, plate.span.contains(target.columns) { return nil }
+            return .buildFloor(building: target.building, level: level, span: Self.union(plate?.span, target.columns))
+        }
+        guard !plates.isEmpty else { return (command, 0) }
+        let batch = BuildCommand.batch(plates + [command])
+        guard case .success = validate(batch, in: world) else { return (command, 0) }
+        return (batch, plates.count)
+    }
+
     /// Validates a batch on a scratch copy, step by step (later steps see earlier ones).
     func validateBatch(_ commands: [BuildCommand], _ world: GameWorld) -> Result<ConstructionPlan, ConstructionError> {
         var scratch = world
