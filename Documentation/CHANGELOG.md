@@ -2,7 +2,7 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
-## [Unreleased]
+## [0.29.3] — Mods folder in the Files app; community mods
 
 ### Fixed
 - **iPad and iPhone:** the mods folder now shows in the Files app (*On My iPhone/iPad ▸
