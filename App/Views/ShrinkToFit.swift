@@ -39,12 +39,28 @@ extension View {
         }
     }
 
-    /// The last step of a `ViewThatFits` ladder (0.29.3): the view keeps its width and scrolls
+    /// The last step of a `ViewThatFits` ladder (0.29.4): the view keeps its width and scrolls
     /// vertically, so however long its content (a long briefing, many mods, a larger text
     /// size), nothing is cut off at the top or bottom of the screen.
     func scrolling() -> some View {
-        ScrollView(.vertical) { self }
-            .scrollBounceBehavior(.basedOnSize)
-            .fixedSize(horizontal: true, vertical: false)
+        ScrollingFallback(content: self)
+    }
+}
+
+/// A vertical scroll view exactly as wide as its content. A bare `ScrollView` has a tiny ideal
+/// width, so `fixedSize` would collapse it (seen in 0.29.4 CI: the card vanished); here the
+/// content's own width is measured and given to the scroll view.
+private struct ScrollingFallback<Content: View>: View {
+    let content: Content
+    @State private var width: CGFloat?
+
+    var body: some View {
+        ScrollView(.vertical) {
+            content
+                .fixedSize(horizontal: true, vertical: false)
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .frame(width: width)
     }
 }
