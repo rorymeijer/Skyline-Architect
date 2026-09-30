@@ -114,6 +114,28 @@ import SkylineContent
         #expect(nudge(GridCell(column: 10, floor: 4), .room("stairs"), -1) == a)
     }
 
+    /// A tapped room is held at its minimum width with the end on the tapped cell: Longer
+    /// must still make the ghost one module wider at once, Shorter one narrower (0.30.1).
+    @Test func nudgingChangesTheGhostEveryPress() throws {
+        let s = try setup(withTower: true)
+        let tool = ConstructionTool.room("office-small")
+        let spec = try #require(s.engine.catalog.spec("office-small"))
+        let a = GridCell(column: s.building.footprint.start, floor: 2)
+        func width(_ end: GridCell) throws -> Double {
+            try #require(PlacementPlanner.preview(tool: tool, anchor: a, current: end, world: s.world, propertyID: s.property, engine: s.engine)).rect.width
+        }
+        func nudge(_ end: GridCell, _ step: Int) -> GridCell {
+            PlacementPlanner.nudgedVisibly(end, anchor: a, tool: tool, world: s.world, propertyID: s.property, engine: s.engine, by: step)
+        }
+        let module = s.world.grid.moduleWidth
+        #expect(try width(a) == Double(spec.minWidth) * module)
+        let longer = nudge(a, 1)
+        #expect(try width(longer) == Double(spec.minWidth + 1) * module)
+        let back = nudge(longer, -1)
+        #expect(try width(back) == Double(spec.minWidth) * module)
+        #expect(nudge(back, -1) == back)                                     // at the minimum: stays
+    }
+
     @Test func demolishTargetsRoomThenFloor() throws {
         let s = try setup(withTower: true)
         let room = try #require(PlacementPlanner.preview(tool: .demolish, anchor: GridCell(column: 10, floor: 2), current: GridCell(column: 10, floor: 2),
