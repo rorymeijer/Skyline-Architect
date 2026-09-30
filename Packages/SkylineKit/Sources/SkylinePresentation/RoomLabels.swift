@@ -22,7 +22,9 @@ public enum RoomLabels {
         let grid = world.grid
         var labels: [RoomLabel] = []
         for b in world.buildings(on: propertyID) {
-            for room in world.rooms(in: b.id) {
+            let rooms = world.rooms(in: b.id)
+            let shafts = rooms.filter { catalog.spec($0.definitionID)?.kind == .shaft }
+            for room in rooms {
                 let rect = grid.rect(columns: room.columns, floors: room.floors)
                 guard rect.intersects(visible), let spec = catalog.spec(room.definitionID) else { continue }
                 if spec.kind == .shaft, let served = stops(room) {
@@ -44,11 +46,28 @@ public enum RoomLabels {
                         if visible.contains(Vec2(rect.center.x, y)) { labels.append(RoomLabel(text: name, position: Vec2(rect.center.x, y))) }
                     }
                 } else {
-                    let y = grid.y(ofFloor: room.floors.highest) + grid.floorHeight * 0.78
-                    labels.append(RoomLabel(text: name, position: Vec2(rect.center.x, y)))
+                    // A shaft may stand in front (0.30): label the widest part it leaves free.
+                    let level = room.floors.highest
+                    let free = widestFree(room.columns, at: level, shafts: shafts)
+                    let freeRect = grid.rect(columns: free, floors: FloorSpan(lowest: level, highest: level))
+                    guard freeRect.width * zoom >= Double(name.count) * 6.5 + 12 else { continue }
+                    labels.append(RoomLabel(text: name, position: Vec2(freeRect.center.x, grid.y(ofFloor: level) + grid.floorHeight * 0.78)))
                 }
             }
         }
         return labels
+    }
+
+    /// The widest run of `columns` that no shaft covers at `level` (ties: the leftmost).
+    static func widestFree(_ columns: ColumnSpan, at level: Int, shafts: [Room]) -> ColumnSpan {
+        var best = ColumnSpan(start: columns.start, count: 0), run = columns.start
+        for c in columns.start...columns.end {
+            let covered = c < columns.end && shafts.contains { $0.floors.contains(level) && $0.columns.contains(c) }
+            if covered || c == columns.end {
+                if c - run > best.count { best = ColumnSpan(start: run, count: c - run) }
+                run = c + 1
+            }
+        }
+        return best
     }
 }

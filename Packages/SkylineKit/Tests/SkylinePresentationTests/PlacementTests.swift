@@ -188,4 +188,13 @@ import SkylineContent
         let inShaft = numbered.filter { $0.position.x == x }.map(\.text)
         #expect(inShaft == stops.map { FloorLabel.label(for: $0) })
     }
+
+    /// A room label moves to the widest part a shaft in front leaves free (0.30.1).
+    @Test func roomLabelsAvoidShaftsInFront() {
+        let shaft = Room(id: RoomID(raw: 9), buildingID: BuildingID(raw: 1), definitionID: "elevator-shaft",
+                         columns: ColumnSpan(start: 12, count: 3), floors: FloorSpan(lowest: 2, highest: 6))
+        #expect(RoomLabels.widestFree(ColumnSpan(start: 10, count: 14), at: 3, shafts: [shaft]) == ColumnSpan(start: 15, count: 9))
+        #expect(RoomLabels.widestFree(ColumnSpan(start: 10, count: 14), at: 7, shafts: [shaft]) == ColumnSpan(start: 10, count: 14))
+        #expect(RoomLabels.widestFree(ColumnSpan(start: 12, count: 3), at: 3, shafts: [shaft]).count == 0)
+    }
 }
