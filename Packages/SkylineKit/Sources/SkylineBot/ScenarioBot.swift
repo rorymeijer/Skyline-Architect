@@ -49,7 +49,7 @@ public struct ScenarioBot {
 
     /// Plays a scenario to its decision (or `maxDays`) and reports.
     public mutating func play(_ scenarioID: String, maxDays: Int? = nil) throws -> BotReport {
-        var game = try NewGameFactory.make(scenarioID: scenarioID, library: library)
+        let game = try NewGameFactory.make(scenarioID: scenarioID, library: library)
         guard let def = library.scenario(scenarioID), let building = game.world.buildings(on: game.activePropertyID).first else {
             throw ContentError(pack: library.manifest.id, file: "scenarios", message: "Unknown scenario '\(scenarioID)'")
         }
