@@ -20,6 +20,13 @@ import SkylineContent
         #expect(service.line.contains("from \(from)") && service.line.contains("per floor"))
         let hotel = try summary(.room("hotel-single"))
         #expect(hotel.title == "Hotel Single Room" && hotel.line.contains("6–7 m wide"))
+        // A room two floors high pays each extra metre on both floors.
+        let base = lib.buildCatalog
+        let hall = RoomSpec(id: "tall-hall", name: "Hall", category: "office", kind: .room, appearance: "office",
+                            minWidth: 6, maxWidth: 12, minFloors: 2, maxFloors: 2, costPerModule: 1000)
+        let tall = try #require(ToolSummary.make(tool: .room("tall-hall"), world: game.world, propertyID: game.activePropertyID,
+                                                 catalog: BuildCatalog(rules: base.rules, specs: base.specs + [hall], classes: base.classes)))
+        #expect(tall.line.contains("\(Money.format(Int((2000 * factor).rounded()))) per"))
         #expect(try summary(.floor).title == "Floor")
         #expect(try summary(.demolish).line.contains("%"))
         #expect(ToolSummary.make(tool: .room("nope"), world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog) == nil)

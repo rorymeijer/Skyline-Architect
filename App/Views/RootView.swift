@@ -40,6 +40,12 @@ struct RootView: View {
 struct ChromeOverlay: View {
     let model: AppModel
 
+    /// The tool or Place bar above the palette (0.30.3): an iPhone's tutorial column keeps
+    /// clear of it too.
+    private var toolBarClearance: CGFloat {
+        model.heldPlacement != nil || model.toolSummary != nil ? 64 : 0
+    }
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             // Bottom first, so the panels and the tutorial are drawn over the palette.
@@ -76,7 +82,7 @@ struct ChromeOverlay: View {
             // open category), so
             // the tutorial panel picks a form that leaves the palette's tools free.
             .padding(.top, Device.isPhone ? 48 : 0)
-            .padding(.bottom, Device.isPhone ? (model.paletteCategory == nil ? 110 : 172) : 0)
+            .padding(.bottom, Device.isPhone ? (model.paletteCategory == nil ? 110 : 172) + toolBarClearance : 0)
             .frame(maxHeight: .infinity, alignment: .top)
             if Device.isPhone {
                 // An iPhone has no height to spare above the palette: the cash readout sits

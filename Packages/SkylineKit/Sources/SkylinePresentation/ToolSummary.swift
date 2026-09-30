@@ -40,7 +40,8 @@ public struct ToolSummary: Equatable, Sendable {
                 parts.append("\(price(spec.costPerModule * spec.minWidth)) per floor")
             } else {
                 parts.append("from \(price(spec.costPerModule * spec.minWidth * spec.minFloors))")
-                if spec.minWidth != spec.maxWidth { parts.append("\(price(spec.costPerModule)) per \(unit)") }
+                // Each metre is paid on every floor the room spans.
+                if spec.minWidth != spec.maxWidth { parts.append("\(price(spec.costPerModule * spec.minFloors)) per \(unit)") }
             }
             return ToolSummary(title: spec.name, line: parts.joined(separator: " · "), detail: detail)
         }
