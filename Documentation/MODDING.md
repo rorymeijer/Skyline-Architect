@@ -62,7 +62,8 @@ the merge rules, the base ids and a checklist.
 * `cities`, `plots`, `starts`, `rooms`, `buildRules`, `blueprints`;
 * `materials`, `furniture`, `interiors`, `schedules`, `names`, `elevators`;
 * `tenants`, `economy`, `facilities`, `progression`, `weather`, `events`, `scenarios`;
-* `amenities` (0.22, a list keyed by `room`).
+* `amenities` (0.22, a list keyed by `room`);
+* `hotels` (0.30, a list keyed by `room`).
 
 An unknown kind rejects the pack, which catches typos.
 
@@ -200,6 +201,20 @@ occupancy}, goodWaitSeconds, badWaitSeconds, moveOutPenalty, demandAtZero, deman
 and ordered `classes [{id, name, population, reputation, requiredRooms, maxFloor?}]`. Rooms
 may set `unlockClass` (class index), tenant types `minClass`; starts set `mode`
 (`sandbox` | `standard`). See PROGRESSION.md.
+
+### Hotels (hotels.json, 0.30)
+A list; entries replace by `room`. Fields:
+
+* `room`: a room id without `rentPerModule`. Nights are sold, so nothing leases it.
+* `guests`: 1…8.
+* `nightlyRate`: before the city's price level.
+* `checkIn` and `lastCheckIn`: the hours when bookings are made ("HH:MM").
+* `checkOut`: must come before `checkIn` ("HH:MM"). Guests leave around then the next
+  morning, ±45 minutes.
+* `bookingChance`: the chance (0…1) that a vacant room is booked on a night, before demand,
+  weather, reputation and how well the room is served.
+
+After checkout, a room waits for a janitor before it can be booked again. See HOTELS.md.
 
 ### Amenities (amenities.json, 0.22)
 A list; entries replace by `room`. `room` (a rentable room id), `opens`, `closes` ("HH:MM";

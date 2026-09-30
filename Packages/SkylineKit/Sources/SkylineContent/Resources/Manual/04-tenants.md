@@ -59,3 +59,19 @@ A vacant flat can be offered for sale instead (**Offer for Sale** in the inspect
 ## Satisfaction and moving out
 
 Every morning at 06:00 each tenant reviews their unit; satisfaction moves toward today's score. After **three bad reviews in a row** a tenant moves out. The inspector warns you: "Unhappy for 2 days — leaves at 3".
+
+## Hotel rooms
+
+Hotel rooms (**Hotel** in the build palette) are not let to tenants. They are sold night by night:
+
+| Room | Sleeps | A night | Width |
+|---|---|---|---|
+| **Hotel Single Room** | 1 | $1,300 | 6–7 m |
+| **Hotel Twin Room** | 2 | $2,100 | 8–10 m |
+| **Hotel Suite** | 3 | $3,800 | 12–16 m, from Class B |
+
+- From 15:00 until late evening, a vacant, clean room may be booked for the night. The chance follows the city's demand, the weather, the building's reputation, and how well the room is served (utilities, cleanliness, condition).
+- The guests arrive within the hour, go to their room and sleep there. They check out around 10:00 (the suite at 11:00), and then the night is paid. Prices follow the city's price level.
+- After checkout the room **needs housekeeping**: it cannot be booked again until a janitor has cleaned it. Without a janitor, every hotel room sells one night and then stands empty.
+- Select a hotel room to see whether it is vacant, booked (how many guests are in and when they leave) or waiting for a janitor.
+

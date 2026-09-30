@@ -58,13 +58,13 @@ pack.json:
 
 Allowed keys in "files" (any other key rejects the pack — typos are caught):
   list kinds:   cities, plots, starts, rooms, blueprints, furniture, interiors, schedules,
-                elevators, tenants, amenities, scenarios
+                elevators, tenants, amenities, hotels, scenarios
   merged map:   materials
   whole-file:   buildRules, names, economy, facilities, progression, weather, events
 
 ## How packs combine (load order: base, then enabled mods in order; later wins)
 - List kinds: an entry whose key already exists REPLACES it in place; new keys are ADDED.
-  The key is "id", except interiors, elevators and amenities, which are keyed by "room".
+  The key is "id", except interiors, elevators, amenities and hotels, which are keyed by "room".
   To change one field of a base entry, copy the WHOLE base entry and edit it.
 - materials: merged per key.
 - Whole-file kinds replace the entire base file — copy the full base file and edit it,
@@ -122,6 +122,11 @@ TenantType (tenants.json, list)
 Schedule (schedules.json, list)
   id, role: "resident"|"worker",
   events: [{ at "HH:MM", jitterMinutes, goal: home|work|outside|lunch|leisure, chance? (0…1) }]
+
+HotelSpec (hotels.json, keyed by room) — for a room WITHOUT rentPerModule (nights are sold, not leased)
+  room, guests (1…8), nightlyRate, checkIn "HH:MM", lastCheckIn "HH:MM" (not before checkIn),
+  checkOut "HH:MM" (before checkIn; guests leave the next morning), bookingChance (0…1 per night)
+  Base hotel rooms: hotel-single, hotel-twin, hotel-suite (category "hotel", appearance "hotel").
 
 AmenitySpec (amenities.json, keyed by room) — the room also needs a tenant type renting it
   room, opens "HH:MM", closes "HH:MM" (before opens = past midnight),

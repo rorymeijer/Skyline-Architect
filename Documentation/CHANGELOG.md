@@ -10,6 +10,9 @@ All notable changes. Versions follow `MARKETING_VERSION` of the app.
 - **Floor numbers** in the elevator shaft at every floor where the car stops.
 - **See-through Elevator Shafts** (`⌥⌘J`, view controls): the hoistway becomes glass, and
   the rooms behind it show through.
+- **Hotel rooms:** single, twin and suite, sold night by night. Guests book from 15:00,
+  sleep there and check out in the morning, when the night is paid. A janitor must then
+  clean the room before it can be booked again. Save format 20.
 - **Touch placement (iPad, iPhone):** a tap or drag holds a ghost instead of building at
   once. Tap elsewhere to move its end, drag from its end to stretch it, or pan with two
   fingers while it stays. **Longer**/**Shorter** change it by one module, and **Place** builds

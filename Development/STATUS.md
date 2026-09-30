@@ -33,7 +33,10 @@ app side is checked by CI captures 20 and 21 of the screen tour.
   move its end; drags from its end stretch it; two fingers pan; a drag scrolls at the screen
   edge. `PlacementPlanner.nudged` is tested; the rest is app input. Tour step 22 captures the
   bar. Not checked on a device.
-- Next in the owner's list: SimTower-style hotel rooms.
+- Hotel rooms (HOTELS.md, D-065, save format 20): single, twin and suite. Nights are booked
+  from 15:00, guests sleep there and check out in the morning, and the room then waits for a
+  janitor. FUNCTIONAL in the package tests (HotelTests, SaveV20Tests). Tour step 23 captures
+  them. Balance not played over long games.
 
 **0.29.4 (build 3):** on the iPhone, the scenario browser still ran off the screen with a
 long briefing (*Lean Tower*). The shrink steps assumed the smallest step would fit. Now

@@ -424,6 +424,27 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-065 — Hotel rooms are sold night by night, not leased
+- **Date:** 2026-09-30
+- **Decision:**
+  - A hotel room is a room type without `rentPerModule`, plus a `hotels.json` entry.
+  - Hourly with the market, a vacant, cleaned room may be booked. Guests (`PersonRole.guest`,
+    their room in `visit`) arrive, sleep there and check out in the morning.
+  - The night is paid at checkout (ledger `hotel`). The room then waits for a janitor.
+- **Context:** The owner asked for hotel rooms like the classic tower games.
+- **Alternatives:**
+  - A tenant type that leases hotel rooms: they would sit there for weeks.
+  - Visitors with a long stay: they have no night and no housekeeping.
+- **Reason:** Guests reuse the visitor path: spawn outside, go in, stay, leave, purge.
+  Housekeeping reuses the janitors' clean jobs. The new state is small: stays, rooms awaiting
+  housekeeping, and two totals.
+- **Consequences:**
+  - Save format 20: a new person role, `world.hotel`, and the ledger category `hotel`
+    (migration pads the daily totals).
+  - Hotel income counts toward the scenarios' daily profit.
+  - Guests do not lease, so they never review a room or move out. A badly served room is
+    simply booked less often.
+
 ## D-064 — Shafts stand in front of rooms
 - **Date:** 2026-09-30
 - **Decision:** A stairwell or elevator shaft may overlap rooms and is drawn in front of
