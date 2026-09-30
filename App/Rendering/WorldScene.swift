@@ -56,6 +56,8 @@ final class WorldScene: SKScene {
     var onHeldPreview: ((PlacementPreview?) -> Void)?
     private var reportedHeld: PlacementPreview?
     var previewProvider: ((ConstructionTool, GridCell, GridCell) -> PlacementPreview?)?
+    /// The build catalog, for where a tap moves a held placement (0.30.2).
+    var catalogProvider: (() -> BuildCatalog?)?
     var roomLabelProvider: ((Rect, Double) -> [RoomLabel])?
     /// Developer navigation overlay data (nil = hidden). Asked every frame while set.
     var navigationProvider: (() -> NavigationOverlay?)?
@@ -270,12 +272,19 @@ final class WorldScene: SKScene {
     }
 
     /// A tap with a tool on touch (0.30): the first holds a placement of the smallest size
-    /// there; later taps move its end to the tapped cell.
+    /// there; later taps move its end to the tapped cell, or, on another floor, move the
+    /// whole room or floor there (0.30.2).
     func holdPlacement(at point: CGPoint) {
-        guard activeTool != nil else { return }
+        guard let tool = activeTool else { return }
         let here = cell(at: point)
-        if heldEnd == nil { placementAnchor = here }
-        heldEnd = here
+        if let anchor = placementAnchor, let end = heldEnd, let catalog = catalogProvider?() {
+            let next = PlacementPlanner.tapped(here, anchor: anchor, end: end, tool: tool, catalog: catalog)
+            placementAnchor = next.anchor
+            heldEnd = next.end
+        } else {
+            placementAnchor = here
+            heldEnd = here
+        }
         hoverPoint = nil
         overlayDirty = true
     }

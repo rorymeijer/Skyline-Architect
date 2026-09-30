@@ -136,6 +136,19 @@ import SkylineContent
         #expect(nudge(back, -1) == back)                                     // at the minimum: stays
     }
 
+    /// A tap on another floor moves a held room or floor there, keeping its length; on the
+    /// same floor, or with a shaft, it moves the end (0.30.2).
+    @Test func tappingAnotherFloorMovesTheGhost() throws {
+        let catalog = try setup().engine.catalog
+        let a = GridCell(column: 10, floor: 13), e = GridCell(column: 15, floor: 13)
+        let moved = PlacementPlanner.tapped(GridCell(column: 20, floor: 9), anchor: a, end: e, tool: .room("hotel-single"), catalog: catalog)
+        #expect(moved.anchor == GridCell(column: 20, floor: 9) && moved.end == GridCell(column: 25, floor: 9))
+        let same = PlacementPlanner.tapped(GridCell(column: 18, floor: 13), anchor: a, end: e, tool: .floor, catalog: catalog)
+        #expect(same.anchor == a && same.end == GridCell(column: 18, floor: 13))
+        let shaft = PlacementPlanner.tapped(GridCell(column: 10, floor: 17), anchor: a, end: a, tool: .room("stairs"), catalog: catalog)
+        #expect(shaft.anchor == a && shaft.end == GridCell(column: 10, floor: 17))
+    }
+
     @Test func demolishTargetsRoomThenFloor() throws {
         let s = try setup(withTower: true)
         let room = try #require(PlacementPlanner.preview(tool: .demolish, anchor: GridCell(column: 10, floor: 2), current: GridCell(column: 10, floor: 2),

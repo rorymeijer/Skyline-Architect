@@ -46,6 +46,21 @@ public enum PlacementPlanner {
         return GridCell(column: clamped, floor: current.floor)
     }
 
+    /// A tap while a placement is held (touch): the new anchor and end. Rooms and floors lie
+    /// on their anchor's floor, so a tap on another floor moves the whole ghost there, keeping
+    /// its length (0.30.2); a tap on the same floor, or with a shaft, moves only the end.
+    public static func tapped(_ cell: GridCell, anchor: GridCell, end: GridCell, tool: ConstructionTool,
+                              catalog: BuildCatalog) -> (anchor: GridCell, end: GridCell) {
+        let vertical: Bool
+        switch tool {
+        case .room(let id): vertical = catalog.spec(id)?.kind == .shaft
+        case .floor: vertical = false
+        case .demolish: return (cell, cell)
+        }
+        guard !vertical, cell.floor != anchor.floor else { return (anchor, cell) }
+        return (cell, GridCell(column: cell.column + end.column - anchor.column, floor: cell.floor))
+    }
+
     /// The touch ± buttons (0.30.1): steps the end until the ghost itself gets one module
     /// longer or shorter. A tap holds a room at its minimum width with the end still on the
     /// tapped cell, so a single `nudged` step often changed nothing visible. Returns `current`
