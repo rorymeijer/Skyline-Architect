@@ -25,7 +25,9 @@ _Last updated: 2026-09-30 (0.30.2 — Longer/Shorter change the held room on eve
   and the encryption question.
 
 **0.30.2 (build 6):** the owner found that Longer/Shorter did not change a held room.
-`PlacementPlanner.nudgedVisibly` steps the end until the ghost changes (PlacementTests).
+`PlacementPlanner.nudgedVisibly` steps the end until the ghost changes, and
+`PlacementPlanner.tapped` moves a held room to a tapped floor (PlacementTests; from the
+owner's iPad recording of 0.30.1).
 Merged 0.30.1 was PR #41.
 
 **0.30.1 (build 5):** a shaft placed or extended past the existing floors builds the

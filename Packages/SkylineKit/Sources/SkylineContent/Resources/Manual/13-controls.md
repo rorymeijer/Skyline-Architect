@@ -57,7 +57,7 @@
 | Drag with one or two fingers | Pan |
 | Pinch | Zoom |
 | Tap | Select a room |
-| With a build tool: tap | Hold a ghost there at the usual size; tap again elsewhere to move its far end |
+| With a build tool: tap | Hold a ghost there at the usual size; tap again on the same floor to move its far end, or on another floor to move the whole room there |
 | With a build tool: drag with one finger | Hold a ghost of that size; near the edge of the screen the view scrolls along |
 | With a build tool: drag from the ghost's end | Stretch it further |
 | With a build tool: two fingers | Pan (the ghost stays where it is) |

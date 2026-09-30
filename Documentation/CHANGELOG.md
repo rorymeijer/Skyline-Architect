@@ -2,12 +2,14 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
-## [0.30.2] — Longer and Shorter work on every press
+## [0.30.2] — Touch placement: Longer, Shorter and moving to another floor
 
 ### Fixed
 - **Touch placement:** *Longer* and *Shorter* now change the held room by one module on
   every press. A tapped room is held at its minimum width, and before this the first presses
   only moved an invisible end inside it, so the room did not change.
+- **Touch placement:** a tap on another floor moves the whole held room (or floor) there,
+  at the same length. Before, only its end moved and the room stayed on the first floor.
 
 ## [0.30.1] — Elevators build their own floors
 
