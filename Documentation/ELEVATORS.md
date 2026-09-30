@@ -7,6 +7,26 @@ bank panel. **PLANNED:** service/freight cars (with staff, Phase 10), mid-trip
 re-targeting, queue-aware route choice, jerk-limited motion.
 Elevators are a core feature and the main optimization puzzle.
 
+## Stops per car, floor numbers and see-through shafts (0.30)
+
+* **Stops.** `ElevatorCar.skippedFloors` (save format 19) lists floors the player switched off.
+  * `ElevatorSpec.stopFloors(of:)` gives the floors a car may stop at: all, or the ends.
+  * `servedFloors(of:skipping:)` takes the switched-off ones away. At least two always remain;
+    `ElevatorStops.set` refuses a change that would leave fewer.
+  * The navigation graph, the banks, call assignment and dispatch all read the same list.
+  * The graph's structure signature includes it, so switching a floor re-plans trips and
+    rebuilds the bank cache.
+  * A car standing at a floor that was just switched off, or carrying people to it, stops at
+    the nearest served floor and lets everyone out. This is the same rule as for a shortened
+    shaft.
+  * It is a player setting like the dispatch strategy: there is no undo.
+* **Floor numbers.** `RoomLabels.build(…, stops:)` labels an elevator shaft with `FloorLabel`
+  at each floor its car stops at, and nothing where it passes.
+* **See-through shafts.** A view setting (`⌥⌘J`, remembered). `ArtPalette.seeThroughShafts`
+  draws the hoistway as faint glass with a steel frame and half-transparent doors. Shafts
+  stand in front of rooms (D-064), so the room behind shows through. Changing the setting
+  composes the site anew.
+
 ## Wear and breakdowns (Phase E, 0.23)
 
 Code: `SkylineSimulation/ElevatorWear.swift`.

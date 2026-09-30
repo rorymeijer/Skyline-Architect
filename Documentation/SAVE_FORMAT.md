@@ -8,6 +8,7 @@ Status: **FUNCTIONAL** (Phases 2–18; format 14 after Phase 20). Implemented in
 |--------|------|--------|-----------|
 | 1 | 0.2–0.3 | Initial: world with cities, properties, buildings, rooms | — |
 | 2 | 0.4–0.5 | World gains `clock` (`{ "tick": N }`) and `people` | v1→v2 adds `clock: {tick: 0}` and `people: []` |
+| 19 | 0.30 | Cars may carry `skippedFloors` (floors the player switched off); a shaft may overlap rooms (it stands in front of them). Loading checks integrity with the catalog's shafts (`decode(…, isShaft:)`) | v18→v19: nothing to add (older games have neither) |
 | 18 | 0.24 | Scenarios may carry `restrictions`, `startDay`, `events`, `fired`, `news`, `shocks` and `scoring`; results may carry `stars` and `score` | v17→v18: nothing to add (all optional) |
 | 17 | 0.23 | Rooms may carry `rentFactor`; city economies may carry `tax` and `energy`, cities an `energyPrice`; cars may be `outOfService`; facilities may count `breakdowns`; ledger categories `taxes` and `waste` (daily totals grow by two) | v16→v17 pads daily totals to 14; older games start at the base energy price with every car running |
 | 16 | 0.22 | People may be `visitor`s with `visit` (their amenity) and have the goals `lunch`, `leisure`, `visit`; tenants may carry `sales` (visits, streetVisits, takings and yesterday's `last…`); ledger category `turnover` (daily totals grow by one) | v15→v16 pads daily totals to 12; older games have no amenities |

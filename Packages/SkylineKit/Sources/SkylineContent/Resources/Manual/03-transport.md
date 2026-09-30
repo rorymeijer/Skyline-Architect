@@ -22,6 +22,12 @@ Each elevator shaft has one car. Build shafts side by side so they share the wai
 - Service elevators carry janitors and technicians only, so staff do not crowd your tenants' cars.
 - People who wait too long give up and take the stairs if a stairs route of five minutes or less exists. The bank panel counts them as "took the stairs".
 
+## Stops
+
+Select an elevator shaft to see its **Stops**: one button per floor, top floor first. Tap a floor to switch it off, and tap it again to switch it back on. The car passes a switched-off floor, and people there walk to the nearest floor it still serves. At least two floors always stay on. An express shaft stops only at its ends, so it has no floors to switch off.
+
+Every floor where the car stops shows its number in the shaft; a floor it passes shows none. Elevator shafts may stand in front of rooms. To see the rooms behind them, turn on **See-through Elevator Shafts** (`⌥⌘J`, or the stacked-squares button in the view controls).
+
 ## Banks and dispatching
 
 Elevator shafts of the same type that stand next to each other and share floors form a **bank**. Open **Elevator Banks** (`⌥⌘E`) to see each bank's floors, cars, average and longest wait, and to choose how its cars are sent:

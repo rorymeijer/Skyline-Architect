@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-30 (0.29.4 — nothing cut off on the iPhone)_
+_Last updated: 2026-09-30 (0.30.0 — elevators in front of rooms, stops per floor, see-through shafts)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -23,6 +23,13 @@ _Last updated: 2026-09-30 (0.29.4 — nothing cut off on the iPhone)_
 - App Store screenshots come from the game itself (`Development/Screenshots/AppStore/`).
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
+
+**0.30.0 (build 4):** the owner's elevator requests. FUNCTIONAL in the package tests; the
+app side is checked by CI captures 20 and 21 of the screen tour.
+- Shafts stand in front of rooms (D-064); rooms stay whole and may go behind a shaft.
+- Stops per car (`ElevatorStops`, save format 19): the inspector shows one button per floor.
+- Floor numbers in the shaft where the car stops; see-through shafts (`⌥⌘J`).
+- Next in the owner's list: easier touch placement on iOS; SimTower-style hotel rooms.
 
 **0.29.4 (build 3):** on the iPhone, the scenario browser still ran off the screen with a
 long briefing (*Lean Tower*). The shrink steps assumed the smallest step would fit. Now

@@ -2,6 +2,20 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.30.0] — Elevators in front of rooms, stops per floor, see-through shafts
+
+### Added
+- **Stops:** select an elevator to switch its stops floor by floor. The car passes a
+  switched-off floor; at least two stay on. Save format 19.
+- **Floor numbers** in the elevator shaft at every floor where the car stops.
+- **See-through Elevator Shafts** (`⌥⌘J`, view controls): the hoistway becomes glass, and
+  the rooms behind it show through.
+
+### Changed
+- **Shafts stand in front of rooms:** a stairwell or elevator may go over any room, and the
+  room stays whole behind it. Rooms may also be built behind an existing shaft. Before,
+  rooms made way (they got narrower or split).
+
 ## [0.29.4] — Nothing cut off on the iPhone
 
 ### Fixed
