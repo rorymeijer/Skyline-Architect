@@ -129,7 +129,8 @@ extension ScreenshotDirector {
             scene.holdPlacement(anchor: GridCell(column: roof.span.start, floor: top + 1), end: GridCell(column: roof.span.start + 11, floor: top + 1))
             model.nudgeHeldPlacement(by: 1)
             scene.withController { $0.jump(center: point(model, column: 12, floor: Double(top) + 0.5), zoom: 11) }
-            return "A floor held above the roof, one module longer by the + button: \(model.heldPlacement?.label ?? "nothing held")"
+            let held = scene.heldCells.map { "columns \($0.anchor.column)–\($0.end.column), floor \($0.end.floor)" } ?? "nothing held"
+            return "A floor held above the roof, one module longer by the + button: \(held)."
         },
         Step(name: "23-hotel", grid: false) { model, scene in
             // 0.30: two hotel rooms on the new top floor at night; one selected.
