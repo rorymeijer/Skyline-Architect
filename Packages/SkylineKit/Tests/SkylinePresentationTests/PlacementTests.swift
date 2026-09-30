@@ -134,6 +134,14 @@ import SkylineContent
         let back = nudge(longer, -1)
         #expect(try width(back) == Double(spec.minWidth) * module)
         #expect(nudge(back, -1) == back)                                     // at the minimum: stays
+        // Content may define very wide rooms: Longer still widens a 90-module hall at once.
+        let base = s.engine.catalog
+        let hall = RoomSpec(id: "wide-hall", name: "Hall", category: "office", kind: .room, appearance: "office",
+                            minWidth: 90, maxWidth: 120, minFloors: 1, maxFloors: 1, costPerModule: 1)
+        let wide = ConstructionEngine(catalog: BuildCatalog(rules: base.rules, specs: base.specs + [hall], classes: base.classes))
+        let held = PlacementPlanner.nudgedVisibly(a, anchor: a, tool: .room("wide-hall"), world: s.world, propertyID: s.property, engine: wide, by: 1)
+        let rect = try #require(PlacementPlanner.preview(tool: .room("wide-hall"), anchor: a, current: held, world: s.world, propertyID: s.property, engine: wide)).rect
+        #expect(rect.width == 91 * module)
     }
 
     /// A tap on another floor moves a held room or floor there, keeping its length; on the

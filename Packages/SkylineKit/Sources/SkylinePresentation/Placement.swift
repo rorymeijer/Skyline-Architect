@@ -64,10 +64,15 @@ public enum PlacementPlanner {
     /// The touch ± buttons (0.30.1): steps the end until the ghost itself gets one module
     /// longer or shorter. A tap holds a room at its minimum width with the end still on the
     /// tapped cell, so a single `nudged` step often changed nothing visible. Returns `current`
-    /// when no step within `limit` changes the ghost (already at its minimum or maximum).
+    /// when no step changes the ghost (already at its minimum or maximum). The ghost changes
+    /// within the room's minimum size plus the end's distance from the anchor, so that bounds
+    /// the search for any content (mods may define very wide rooms or tall shafts).
     public static func nudgedVisibly(_ current: GridCell, anchor: GridCell, tool: ConstructionTool, world: GameWorld,
-                                     propertyID: PropertyID, engine: ConstructionEngine, by step: Int, limit: Int = 64) -> GridCell {
+                                     propertyID: PropertyID, engine: ConstructionEngine, by step: Int) -> GridCell {
         let shown = preview(tool: tool, anchor: anchor, current: current, world: world, propertyID: propertyID, engine: engine)?.rect
+        var minimum = 1
+        if case .room(let id) = tool, let spec = engine.catalog.spec(id) { minimum = max(spec.minWidth, spec.minFloors) }
+        let limit = minimum + abs(current.column - anchor.column) + abs(current.floor - anchor.floor) + 2
         var end = current
         for _ in 0..<limit {
             let next = nudged(end, anchor: anchor, tool: tool, catalog: engine.catalog, by: step)
