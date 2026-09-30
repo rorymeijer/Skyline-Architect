@@ -141,7 +141,9 @@ maxFloors, lowestLevel?, highestLevel?, costPerModule`. `appearance` selects the
 presentation style (`office`, `apartment`, `lobby`, `corridor`, `stairs`, `elevatorShaft`,
 `mechanical`, `parking`; unknown keys fall back to a neutral shell). Validation: unique
 ids, sane ranges, shafts span ≥ 2 floors, non-negative costs. The build palette shows
-every definition automatically — a mod adding a room type needs no code.
+every definition automatically — a mod adding a room type needs no code. `icon?` (0.30.3)
+names the palette button's SF Symbol (e.g. `"hare"`), so a room type looks different from
+others of the same appearance; without it the appearance's icon is used.
 
 ### Rooms: rent and noise (rooms.json)
 `rentPerModule` (monthly asking rent per module; makes the room rentable) and `noise`

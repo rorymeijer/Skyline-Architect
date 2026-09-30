@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-30 (0.30.2 — Longer/Shorter change the held room on every press)_
+_Last updated: 2026-09-30 (0.30.3 — the picked tool's name and price above the palette)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -23,6 +23,10 @@ _Last updated: 2026-09-30 (0.30.2 — Longer/Shorter change the held room on eve
 - App Store screenshots come from the game itself (`Development/Screenshots/AppStore/`).
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
+
+**0.30.3:** `ToolSummary` (ToolSummaryTests) names the picked tool with its size and price in
+`ToolInfoBar` above the palette; rooms may set `icon` (elevators and hotel rooms now differ).
+Tour step 24 captures it. Build numbers now come from Xcode Cloud (D-067).
 
 **0.30.2 (build 6):** the owner found that Longer/Shorter did not change a held room.
 `PlacementPlanner.nudgedVisibly` steps the end until the ghost changes, and

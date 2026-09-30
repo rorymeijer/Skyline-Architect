@@ -2,6 +2,17 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.30.3] — See what you picked and what it costs
+
+### Added
+- **Picked tool bar:** when you pick a build tool, a bar above the palette shows its name,
+  size and price (from the smallest size, per metre or per floor, at the city's prices). For
+  elevators it says which kind (for example "staff only, 8 persons"). A tool that is not
+  unlocked yet says why.
+- **Own icons** for the express elevator (a hare), the service elevator (tools) and the
+  three hotel rooms (one person, two people, a crown), so look-alike tools can be told apart
+  on the iPad and iPhone, where the palette shows icons only. Rooms may set `icon` (mods too).
+
 ## [0.30.2] — Touch placement: Longer, Shorter and moving to another floor
 
 ### Fixed
