@@ -35,7 +35,7 @@ extension ScreenshotDirector {
             model.activeHint = nil
             model.refreshSimulationSummary()
             model.activeHint = nil
-            model.scene?.withController { $0.jump(center: point(model, column: 16, floor: 4), zoom: 11) }   // newGame() made a new scene
+            focus(model, point(model, column: 16, floor: 4), zoom: 11)                                     // newGame() made a new scene
             return "\(model.clockText): the demo tower (developer blueprint, leased by the developer tool), no panel open; quick-saved for the next step."
         },
         Step(name: "05-saves", grid: false) { model, _ in
@@ -112,13 +112,18 @@ extension ScreenshotDirector {
             if let shaft = shaft(model), let b = model.world?.buildings[shaft.buildingID] {
                 let column = shaft.columns.start - b.footprint.start
                 // newGame() built a new scene: the one this step was given is gone.
-                model.scene?.withController { $0.jump(center: point(model, column: column + 4, floor: 4.5), zoom: 16) }
+                focus(model, point(model, column: column + 4, floor: 4.5), zoom: 16)
             }
             return "\(selected); floors 3 and 5 switched off (no number in the shaft). Stairwell: \(stairs)"
         },
         Step(name: "21-see-through-shafts", grid: false) { model, _ in
+            // A second elevator in front of rooms, so the glass shows what is behind it.
+            model.selectRoom(at: nil)
+            let column = elevatorThroughRooms(model)
             model.seeThroughShafts = true
-            return "The same view with see-through elevator shafts (the rooms behind show through)."
+            if let column { focus(model, point(model, column: column, floor: 4.5), zoom: 18) }
+            return column.map { "See-through elevator shafts; a second elevator (floors 2–6, column \($0)) stands in front of rooms, which show through." }
+                ?? "See-through elevator shafts (no place for a second elevator in front of rooms)."
         },
         Step(name: "22-held-placement", grid: false) { model, scene in
             // 0.30: on touch a placement is held with a bar (size, price, ± , Cancel, Place).
@@ -127,6 +132,7 @@ extension ScreenshotDirector {
             guard let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
                   let top = b.floors.map(\.level).max(), let roof = b.plate(at: top) else { return "no building" }
             model.select(tool: .floor)
+            model.activeHint = nil                                         // the tool's tip would cover the bar
             scene.holdPlacement(anchor: GridCell(column: roof.span.start, floor: top + 1), end: GridCell(column: roof.span.start + 11, floor: top + 1))
             model.nudgeHeldPlacement(by: 1)
             scene.withController { $0.jump(center: point(model, column: 12, floor: Double(top) + 0.5), zoom: 11) }
@@ -145,12 +151,16 @@ extension ScreenshotDirector {
                 model.perform(.placeRoom(building: b.id, definition: def, columns: ColumnSpan(start: plate.span.start + i * 9, count: def == "hotel-twin" ? 8 : 6),
                                          floors: FloorSpan(lowest: top, highest: top)))
             }
-            model.changeStaff(.janitor, by: 1)
+            model.changeStaff(.housekeeper, by: 1)
+            model.changeStaff(.technician, by: 1)                           // keeps the elevator running
             model.advanceSimulation(toTimeOfDay: 21)
+            model.advanceSimulation(ticks: SimClock.secondsPerDay)          // the second night: made up and booked again
+            model.activeHint = nil
+            model.refreshSimulationSummary()
             model.selectRoom(at: GridCell(column: plate.span.start + 1, floor: top))
             scene.withController { $0.jump(center: point(model, column: 10, floor: Double(top) + 0.5), zoom: 14) }
             let hotel = model.world?.hotel
-            return "\(model.clockText): \(hotel?.stays.count ?? 0) rooms booked, \(model.world?.people.values.filter { $0.role == .guest }.count ?? 0) guests; hotel twin selected."
+            return "\(model.clockText): \(hotel?.nights ?? 0) nights sold, \(model.world?.facilities.housekept ?? 0) made up, \(hotel?.stays.count ?? 0) rooms booked, \(model.world?.people.values.filter { $0.role == .guest }.count ?? 0) guests; hotel twin selected."
         },
     ]
 
