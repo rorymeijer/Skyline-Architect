@@ -37,7 +37,7 @@ struct BuildPalette: View {
                 divider
                 ForEach(groups) { group in
                     let holdsTool = group.specs.contains { model.activeTool == .room($0.id) }
-                    ToolButton(symbol: Self.symbol(for: group.specs.first?.appearance ?? ""), title: Self.categoryName(group.id),
+                    ToolButton(symbol: group.specs.first.map(Self.symbol(for:)) ?? Self.symbol(for: ""), title: Self.categoryName(group.id),
                                help: "\(Self.categoryName(group.id)): \(group.specs.map(\.name).joined(separator: ", "))",
                                isOn: open?.id == group.id || holdsTool) {
                         model.paletteCategory = open?.id == group.id ? nil : group.id
@@ -120,7 +120,7 @@ struct BuildPalette: View {
         let tool = ConstructionTool.room(spec.id)
         let isOn: Bool = model.activeTool == tool
         let locked = model.lockReason(of: spec.id)
-        return ToolButton(symbol: Self.symbol(for: spec.appearance), title: Self.shortName(spec.name),
+        return ToolButton(symbol: Self.symbol(for: spec), title: Self.shortName(spec.name),
                           help: locked.map { "\(spec.name) — \($0)" } ?? helpText(spec), isOn: isOn, locked: locked != nil) {
             model.select(tool: isOn ? nil : tool)
         }
@@ -159,7 +159,10 @@ struct BuildPalette: View {
             .replacingOccurrences(of: " Shaft", with: "")
     }
 
-    /// Presentation choice: an icon per appearance key (content stays icon-agnostic).
+    /// A tool's icon: the content's own (`icon`, 0.30.3) or its appearance's.
+    static func symbol(for spec: RoomSpec) -> String { spec.icon ?? symbol(for: spec.appearance) }
+
+    /// Presentation choice: an icon per appearance key.
     static func symbol(for appearance: String) -> String {
         switch appearance {
         case "lobby": "door.left.hand.open"
