@@ -32,8 +32,8 @@ extension ScreenshotDirector {
             model.leaseAllVacant()
             model.advanceSimulation(toTimeOfDay: 10)
             _ = model.save()
-            model.activeHint = nil
             model.refreshSimulationSummary()
+            clearHints(model)                                              // a tip would cover the room
             model.activeHint = nil
             focus(model, point(model, column: 16, floor: 4), zoom: 11)                                     // newGame() made a new scene
             return "\(model.clockText): the demo tower (developer blueprint, leased by the developer tool), no panel open; quick-saved for the next step."
@@ -132,7 +132,7 @@ extension ScreenshotDirector {
             guard let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
                   let top = b.floors.map(\.level).max(), let roof = b.plate(at: top) else { return "no building" }
             model.select(tool: .floor)
-            model.activeHint = nil                                         // the tool's tip would cover the bar
+            clearHints(model)                                              // a tip would cover the bar
             scene.holdPlacement(anchor: GridCell(column: roof.span.start, floor: top + 1), end: GridCell(column: roof.span.start + 11, floor: top + 1))
             model.nudgeHeldPlacement(by: 1)
             scene.withController { $0.jump(center: point(model, column: 12, floor: Double(top) + 0.5), zoom: 11) }
@@ -155,8 +155,8 @@ extension ScreenshotDirector {
             model.changeStaff(.technician, by: 1)                           // keeps the elevator running
             model.advanceSimulation(toTimeOfDay: 21)
             model.advanceSimulation(ticks: SimClock.secondsPerDay)          // the second night: made up and booked again
-            model.activeHint = nil
             model.refreshSimulationSummary()
+            clearHints(model)                                              // a tip would cover the room
             model.selectRoom(at: GridCell(column: plate.span.start + 1, floor: top))
             scene.withController { $0.jump(center: point(model, column: 10, floor: Double(top) + 0.5), zoom: 14) }
             let hotel = model.world?.hotel

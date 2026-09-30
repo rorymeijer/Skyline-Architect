@@ -72,6 +72,17 @@ extension ScreenshotDirector {
         return nil
     }
 
+    /// Marks every tip the world would show now as seen, so none covers the capture (they are
+    /// checked 4 times a second: clearing one only lets the next through).
+    static func clearHints(_ model: AppModel) {
+        model.activeHint = nil
+        for _ in 0..<20 {
+            model.checkWorldHints()
+            guard model.activeHint != nil else { return }
+            model.activeHint = nil
+        }
+    }
+
     /// Points the camera at `center`, also when `newGame()` has just built a scene that is not
     /// presented yet (it then starts from `initialPlacement`, which would undo a jump).
     static func focus(_ model: AppModel, _ center: Vec2, zoom: Double) {
