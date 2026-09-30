@@ -424,6 +424,43 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-064 — Shafts stand in front of rooms
+- **Date:** 2026-09-30
+- **Decision:** A stairwell or elevator shaft may overlap rooms and is drawn in front of
+  them; the rooms stay whole behind it. A room may also be placed behind an existing shaft.
+  Only a space of the same kind blocks: a room another room, a shaft another shaft. This
+  replaces "rooms make way" (0.20.2), where a shaft cut rooms narrower or split them.
+- **Context:** The owner asked for elevators that can go over any room, with the room
+  (partly) behind it, as in the classic tower games.
+- **Alternatives:** Keep cutting rooms (the owner found it limiting); let shafts cut only
+  vacant rooms.
+- **Reason:** Placement gets simpler and never destroys a lease. Rooms keep their width,
+  rent and interior. Walking was never blocked by shafts, so the simulation does not change.
+- **Consequences:**
+  - The integrity check needs to know which definitions are shafts. `validateIntegrity(isShaft:)`
+    and `SaveCodec.decode(…, isShaft:)` take a predicate. Without one, every overlap is still
+    an error.
+  - A tap on a shaft's cells picks the shaft (`room(in:…, inFront:)`). The room behind is
+    picked outside the shaft's columns.
+  - `MakeWay.swift` became `ShaftRules.swift`, and the `noSpaceLeft` error is gone. Old saves
+    are unchanged: their rooms were already cut.
+
+## D-063 — Scroll only where even the smallest step is too tall
+- **Date:** 2026-09-30
+- **Decision:** `fitsScreen()` wraps each full-screen card ladder. It offers the screen height
+  to the ladder, measures the result, and puts the card in a scroll view only when even the
+  smallest step is taller than the screen (0.29.4).
+- **Context:** A long scenario briefing (*Lean Tower*) ran off the iPhone screen: D-062
+  assumed the smallest step always fits.
+- **Alternatives:**
+  - A scroll view as the ladder's last step: inside `ViewThatFits` it gets its tiny ideal
+    height, and the card vanished.
+  - A scroll view around every card: `ImageRenderer` leaves scroll views blank (D-047), so
+    every capture went empty.
+- **Reason:** Screens that fit stay exactly as before and stay capturable. The rare screen
+  that does not fit becomes usable.
+- **Consequences:** The scrolling case cannot be shown by a capture. It needs a device check.
+
 ## D-062 — Every screen fits an iPhone: shrink to fit; App Store screenshots from the game
 - **Date:** 2026-09-29
 - **Decision:**

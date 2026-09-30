@@ -50,7 +50,7 @@ Costs are for Port Calder; other cities build dearer or cheaper (see [Cities and
 
 ## Shafts
 
-Stairwells and elevators are **shafts**: drag them upward across the floors they should serve, at least two. Rooms in a shaft's way make room: they are cut narrower or split in two, and the preview tells you how many.
+Stairwells and elevators are **shafts**: drag them upward across the floors they should serve, at least two. A shaft may stand in front of rooms: they stay whole behind it, and a room may also be built behind an existing shaft. Only another shaft blocks a shaft.
 
 To make a shaft taller or shorter later, pick its tool and drag its top or bottom, or select it and use **Extend Up**, **Shorten Top**, **Extend Down** and **Shorten Bottom** in the inspector. See [Stairs and elevators](transport.md).
 
