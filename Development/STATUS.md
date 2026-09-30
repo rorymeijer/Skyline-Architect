@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-30 (0.30.0 — elevators in front of rooms, stops per floor, see-through shafts)_
+_Last updated: 2026-09-30 (0.30.1 — shafts build their missing floors)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -23,6 +23,11 @@ _Last updated: 2026-09-30 (0.30.0 — elevators in front of rooms, stops per flo
 - App Store screenshots come from the game itself (`Development/Screenshots/AppStore/`).
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
+
+**0.30.1 (build 5):** a shaft placed or extended past the existing floors builds the
+missing floor plates first, in one batch (`ConstructionEngine.addingFloors`, ShaftTests).
+Used by shaft drags and the inspector's Extend Up/Down. FUNCTIONAL in the package tests; not
+checked in a capture.
 
 **0.30.0 (build 4):** the owner's elevator requests. FUNCTIONAL in the package tests; the
 app side is checked by CI captures 20 and 21 of the screen tour.

@@ -2,6 +2,15 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.30.1] — Elevators build their own floors
+
+### Added
+- **Shafts build missing floors:** a stairwell or elevator placed or extended above the top
+  floor or below the lowest basement now builds the missing floor plates under it, in the
+  same step (one undo). The preview shows *+N new floors* and the price includes the slabs.
+  This only happens where a floor may be built: not deeper than the foundation is dug, not
+  above the class, pile or scenario limit.
+
 ## [0.30.0] — Elevators in front of rooms, stops per floor, see-through shafts
 
 ### Added

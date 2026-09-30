@@ -26,6 +26,13 @@ Elevators are a core feature and the main optimization puzzle.
   draws the hoistway as faint glass with a steel frame and half-transparent doors. Shafts
   stand in front of rooms (D-064), so the room behind shows through. Changing the setting
   composes the site anew.
+* **Missing floors (0.30.1).** `ConstructionEngine.addingFloors(for:in:)` turns a shaft
+  `placeRoom` or `resizeRoom` that reaches past the existing plates into one `.batch`: first
+  a `buildFloor` for each level whose plate is missing or does not cover the shaft's columns
+  (upward from the ground, then downward into the basement), then the shaft command. The
+  batch is used only when it validates with the normal floor rules; otherwise the command
+  stays as it was and shows its own error. The batch inverse undoes the shaft and the plates
+  in one step. Shaft drags and the inspector's Extend Up/Down use it.
 
 ## Wear and breakdowns (Phase E, 0.23)
 
