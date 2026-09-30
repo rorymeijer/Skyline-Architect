@@ -33,7 +33,7 @@ struct AmenityDirectory {
             switch p.role {
             case .worker: workers[p.buildingID, default: 0] += 1
             case .resident: residents[p.buildingID, default: 0] += 1
-            case .visitor, .guest, .janitor, .technician: break
+            case .visitor, .guest, .janitor, .technician, .housekeeper: break
             }
         }
     }

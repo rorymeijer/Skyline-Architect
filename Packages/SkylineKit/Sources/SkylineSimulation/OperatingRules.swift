@@ -83,6 +83,9 @@ public struct FacilitiesRules: Codable, Hashable, Sendable {
     public var utilities: [Utility]
     public var janitorWagePerDay: Int
     public var technicianWagePerDay: Int
+    /// Hotel housekeepers (0.30.1; nil = the janitor's wage).
+    public var housekeeperWagePerDay: Int?
+    public var housekeeperWage: Int { housekeeperWagePerDay ?? janitorWagePerDay }
     /// Cleanliness lost per person belonging to a room, per day.
     public var dirtPerPersonPerDay: Double
     /// Cleanliness lost per day by shared rooms (lobbies, corridors).
@@ -132,7 +135,7 @@ public struct FacilitiesRules: Codable, Hashable, Sendable {
     public var problems: [String] {
         var p: [String] = []
         if utilities.isEmpty || Set(utilities.map(\.id)).count != utilities.count { p.append("facilities: utilities must be unique and not empty") }
-        if janitorWagePerDay < 0 || technicianWagePerDay < 0 { p.append("facilities: wages must be ≥ 0") }
+        if janitorWagePerDay < 0 || technicianWagePerDay < 0 || (housekeeperWagePerDay ?? 0) < 0 { p.append("facilities: wages must be ≥ 0") }
         for v in [dirtPerPersonPerDay, circulationDirtPerDay, cleanBelow, repairBelow, equipmentRepairBelow, failureBelow]
         where !(0...1).contains(v) { p.append("facilities: rates and thresholds must be 0…1") }
         if cleanMinutes < 1 || repairMinutes < 1 { p.append("facilities: job durations must be ≥ 1 minute") }

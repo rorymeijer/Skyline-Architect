@@ -7,7 +7,7 @@ import SkylineContent
 /// Hotel rooms (0.30): booked in the evening, slept in, paid at checkout, then housekept.
 @Suite struct HotelTests {
     /// The demo tower with a new top floor of hotel rooms, reached by the elevator.
-    func hotelFixture(janitors: Int) throws -> (SimFixture, [RoomID]) {
+    func hotelFixture(staff: [PersonRole]) throws -> (SimFixture, [RoomID]) {
         var f = try SimFixture()
         let construction = ConstructionEngine(catalog: f.library.buildCatalog)
         let b = try #require(f.world.buildings[f.building])
@@ -24,8 +24,8 @@ import SkylineContent
                                                             floors: FloorSpan(lowest: top + 1, highest: top + 1)), to: &f.world)
             rooms.append(try #require(applied.createdRoom))
         }
-        for _ in 0..<janitors {
-            FacilitiesManagement.hire(.janitor, building: f.building, world: &f.world, rules: f.library.simulationRules)
+        for role in staff {
+            FacilitiesManagement.hire(role, building: f.building, world: &f.world, rules: f.library.simulationRules)
         }
         f.engine.replanAfterConstruction(&f.world)
         return (f, rooms)
@@ -47,9 +47,9 @@ import SkylineContent
     }
 
     /// Guests arrive in the evening, sleep in their room and leave in the morning; the night
-    /// is paid at checkout, and a janitor readies the room for the next guests.
+    /// is paid at checkout, and a housekeeper makes the room up for the next guests.
     @Test func aNightIsBookedSleptPaidAndHousekept() throws {
-        var (f, rooms) = try hotelFixture(janitors: 1)
+        var (f, rooms) = try hotelFixture(staff: [.housekeeper])
         var sawGuestsInRooms = false, sawBooking = false
         for _ in 0..<(3 * 24) {
             f.engine.advance(&f.world, by: 3600)
@@ -76,14 +76,30 @@ import SkylineContent
         try f.world.validateIntegrity(isShaft: { f.library.buildCatalog.spec($0)?.kind == .shaft })
     }
 
-    /// Without staff a room that has had guests is never housekept, so it is not booked again.
+    /// Night after night for more than a week: the housekeeper keeps up, bookings go on (a
+    /// technician keeps the only elevator running; without one it breaks down on day 4).
+    @Test func bookingsGoOnForDays() throws {
+        var (f, rooms) = try hotelFixture(staff: [.housekeeper, .janitor, .technician])
+        var lateNights = 0
+        for day in 0..<10 {
+            for _ in 0..<24 { f.engine.advance(&f.world, by: 3600) }
+            if day >= 5 { lateNights += f.world.hotel?.stays.count ?? 0 }
+        }
+        #expect(lateNights > 0)
+        #expect((f.world.facilities.housekept ?? 0) >= rooms.count)
+        #expect(!f.world.facilities.jobs.contains { $0.kind == .housekeeping && $0.created < f.world.clock.tick - 2 * SimClock.secondsPerDay })
+    }
+
+    /// Janitors clean the building, not the hotel rooms between guests: without a housekeeper
+    /// a room that has had guests is not booked again.
     @Test func noHousekeepingNoNextGuests() throws {
-        var (f, rooms) = try hotelFixture(janitors: 0)
+        var (f, rooms) = try hotelFixture(staff: [.janitor, .janitor])
         for _ in 0..<(3 * 24) { f.engine.advance(&f.world, by: 3600) }
         let hotel = try #require(f.world.hotel)
         for room in rooms where hotel.needsHousekeeping(room) {
             #expect(hotel.stay(in: room) == nil)
         }
         #expect(hotel.nights >= 1 && hotel.nights <= rooms.count)            // each room at most one night
+        #expect(f.world.facilities.housekept == nil)
     }
 }

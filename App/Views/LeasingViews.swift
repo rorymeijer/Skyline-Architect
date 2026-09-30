@@ -56,7 +56,7 @@ struct UnitInspector: View {
                     }
                 }
                 if let best = report.interest.first { Criteria(appraisal: best.appraisal) }
-            } else {
+            } else if report.hotel == nil {                               // hotel rooms sell nights instead
                 Text("Not rentable — shared space or services.").font(.ui(.caption)).foregroundStyle(.secondary)
             }
             if report.leasable, report.tenure == .rent {

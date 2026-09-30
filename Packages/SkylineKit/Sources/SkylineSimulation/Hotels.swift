@@ -4,7 +4,7 @@ import SkylineCore
 /// Hotel rooms (0.30), as in the classic tower games: from the afternoon, a vacant, cleaned
 /// room may be booked for the night. Its guests arrive within the hour, sleep there and check
 /// out in the morning, when the night is paid. The room then waits for housekeeping: it can
-/// only be booked again once a janitor has cleaned it.
+/// only be booked again once a housekeeper has made it up (0.30.1: janitors do not).
 extension SimulationEngine {
     // MARK: Hourly (part of the market event)
 
@@ -60,8 +60,8 @@ extension SimulationEngine {
                 state.awaitingHousekeeping.append(room.id)
                 state.awaitingHousekeeping.sort()
             }
-            if !world.facilities.jobs.contains(where: { $0.room == room.id && $0.kind == .clean }) {
-                world.facilities.jobs.append(FacilityJob(room: room.id, kind: .clean, created: now))
+            if !world.facilities.jobs.contains(where: { $0.room == room.id && $0.kind == .housekeeping }) {
+                world.facilities.jobs.append(FacilityJob(room: room.id, kind: .housekeeping, created: now))
             }
         }
         state.stays.removeAll { $0.checkOut <= now }

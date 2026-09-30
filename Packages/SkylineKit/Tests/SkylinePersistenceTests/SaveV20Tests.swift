@@ -5,7 +5,8 @@ import SkylineContent
 import SkylineSimulation
 @testable import SkylinePersistence
 
-/// Format 20 (0.30): hotel guests, stays, rooms awaiting housekeeping, the hotel ledger category.
+/// Format 20 (0.30): hotel guests, stays, rooms awaiting housekeeping, housekeepers (0.30.1,
+/// before 0.30 shipped) and the hotel ledger category.
 @Suite struct SaveV20Tests {
     /// The demo tower with a top floor of hotel rooms, run from the morning to 22:00 so
     /// guests have booked and arrived.
@@ -27,7 +28,7 @@ import SkylineSimulation
         }
         let engine = SimulationEngine(rules: lib.simulationRules, catalog: lib.buildCatalog)
         PopulationSync.sync(&game.world, catalog: lib.buildCatalog, rules: lib.simulationRules)
-        FacilitiesManagement.hire(.janitor, building: b.id, world: &game.world, rules: lib.simulationRules)
+        FacilitiesManagement.hire(.housekeeper, building: b.id, world: &game.world, rules: lib.simulationRules)
         engine.replanAfterConstruction(&game.world)
         Leasing.fillAll(&game.world, catalog: lib.buildCatalog, rules: lib.simulationRules)
         engine.advance(&game.world, by: SimClock.secondsPerDay + 16 * 3600)          // day 2, 22:00
@@ -51,7 +52,7 @@ import SkylineSimulation
                                         isShaft: { catalog.spec($0)?.kind == .shaft })
         let hotel = try #require(save.world.hotel)
         #expect(!hotel.stays.isEmpty && hotel.nights >= 1)
-        #expect(save.world.people.values.contains { $0.role == .guest })
+        #expect(save.world.people.values.contains { $0.role == .guest } && save.world.people.values.contains { $0.role == .housekeeper })
         #expect(save.world.ledger.days.allSatisfy { $0.amounts.count == LedgerCategory.allCases.count })
     }
 

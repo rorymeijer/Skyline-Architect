@@ -16,6 +16,8 @@ public struct Upkeep: Codable, Hashable, Sendable, Identifiable {
 
 public enum JobKind: String, Codable, CaseIterable, Hashable, Sendable {
     case clean, repair
+    /// Making up a hotel room after its guests have left (0.30.1; housekeepers only).
+    case housekeeping
 }
 
 /// Work waiting for (or being done by) a staff member.
@@ -54,6 +56,8 @@ public struct FacilitiesState: Codable, Hashable, Sendable {
     public var repaired = 0
     /// Elevator breakdowns so far (Phase E; nil in older saves = 0).
     public var breakdowns: Int?
+    /// Hotel rooms made up so far (0.30.1; nil = 0).
+    public var housekept: Int?
 
     public init() {}
 }

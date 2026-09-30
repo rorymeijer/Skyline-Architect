@@ -16,8 +16,8 @@ struct HotelDetails: View {
             Text("\(present) in the room now · check-out around \(checkOut)").font(.ui(.caption)).foregroundStyle(.secondary)
         case let .awaitingHousekeeping(onTheWay):
             Label("Needs housekeeping", systemImage: "sparkles").font(.ui(.subheadline).weight(.semibold)).foregroundStyle(.orange)
-            Text(onTheWay ? "A janitor is on the way. Then it can be booked again."
-                          : "Hire a janitor (Facilities): the room cannot be booked until it is cleaned.")
+            Text(onTheWay ? "A housekeeper is on the way. Then it can be booked again."
+                          : "Hire a housekeeper (Facilities): the room cannot be booked until it is made up.")
                 .font(.ui(.caption)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
         }
         Text("Sleeps \(info.sleeps) · the hotel has sold \(info.nightsSold) night\(info.nightsSold == 1 ? "" : "s") for \(Money.format(info.income))")

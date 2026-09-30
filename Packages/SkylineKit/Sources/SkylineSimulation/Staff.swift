@@ -61,7 +61,7 @@ public enum FacilitiesManagement {
         }
     }
 
-    /// Hires one janitor or technician for a building; they start at the next shift. With a
+    /// Hires one janitor, technician or housekeeper for a building; they start at the next shift. With a
     /// `catalog`, the building's staff rooms must have a free place (Phase E).
     @discardableResult
     public static func hire(_ role: PersonRole, building: BuildingID, world: inout GameWorld, rules: SimulationRules,
@@ -82,7 +82,7 @@ public enum FacilitiesManagement {
         return id
     }
 
-    /// Lets the most recently hired janitor or technician go (their job returns to the list).
+    /// Lets the most recently hired staff member of `role` go (their job returns to the list).
     @discardableResult
     public static func dismiss(_ role: PersonRole, world: inout GameWorld) -> Bool {
         guard let last = staff(role, in: world).last else { return false }
@@ -124,10 +124,12 @@ extension SimulationEngine {
         }
         let janitors = FacilitiesManagement.staff(.janitor, in: world).count
         let technicians = FacilitiesManagement.staff(.technician, in: world).count
-        let wages = janitors * rules.janitorWagePerDay + technicians * rules.technicianWagePerDay
+        let housekeepers = FacilitiesManagement.staff(.housekeeper, in: world).count
+        let wages = janitors * rules.janitorWagePerDay + technicians * rules.technicianWagePerDay + housekeepers * rules.housekeeperWage
         if wages > 0 {
-            world.ledger.post(Transaction(tick: now, amount: -wages, category: .wages,
-                                          detail: "Wages — \(janitors) janitor\(janitors == 1 ? "" : "s"), \(technicians) technician\(technicians == 1 ? "" : "s")"))
+            var detail = "Wages — \(janitors) janitor\(janitors == 1 ? "" : "s"), \(technicians) technician\(technicians == 1 ? "" : "s")"
+            if housekeepers > 0 { detail += ", \(housekeepers) housekeeper\(housekeepers == 1 ? "" : "s")" }
+            world.ledger.post(Transaction(tick: now, amount: -wages, category: .wages, detail: detail))
         }
     }
 
@@ -150,7 +152,7 @@ extension SimulationEngine {
             if let until = job.until {
                 if now >= until { complete(job, by: id, at: now, world: &world, events: &events); p.job = nil }
             } else {
-                var minutes = Double(job.kind == .clean ? rules.cleanMinutes : rules.repairMinutes)
+                var minutes = Double(job.kind == .repair ? rules.repairMinutes : rules.cleanMinutes)
                 // Far from any staff room the tools and supplies are far too (Phase E).
                 if let floor = world.rooms[r]?.floors.lowest,
                    !FacilitiesManagement.isNearStaffRoom(floor, in: building.id, world: world, catalog: catalog,
@@ -217,7 +219,7 @@ extension SimulationEngine {
         let failure = rules.facilities?.failureBelow ?? 0
         func urgency(_ job: FacilityJob) -> (Int, Double, Tick, RoomID) {
             let u = world.upkeep[job.room]
-            let value = kind == .clean ? (u?.cleanliness ?? 1) : (u?.condition ?? 1)
+            let value = kind == .repair ? (u?.condition ?? 1) : (u?.cleanliness ?? 1)
             let failed = kind == .repair && (world.elevators[job.room]?.isOutOfService == true
                 || value < failure && catalog.spec(world.rooms[job.room]?.definitionID ?? "")?.utilitySupply != nil)
             return (failed ? 0 : 1, value, job.created, job.room)
@@ -236,7 +238,7 @@ extension SimulationEngine {
 
     private func complete(_ job: JobAssignment, by id: PersonID, at now: Tick, world: inout GameWorld, events: inout Events) {
         world.upkeep.update(job.room) { u in
-            if job.kind == .clean { u.cleanliness = 1 } else { u.condition = 1 }
+            if job.kind == .repair { u.condition = 1 } else { u.cleanliness = 1 }
         }
         if job.kind == .repair, world.elevators[job.room]?.isOutOfService == true {
             // Back in service: the next step's navigation refresh brings routes back.
@@ -247,9 +249,14 @@ extension SimulationEngine {
             events.push(now, .car(job.room))
         }
         world.facilities.jobs.removeAll { $0.room == job.room && $0.kind == job.kind && $0.assignee == id }
-        if job.kind == .clean { world.facilities.cleaned += 1 } else { world.facilities.repaired += 1 }
-        // A hotel room is ready for its next guests once housekept (0.30).
-        if job.kind == .clean { world.hotel?.awaitingHousekeeping.removeAll { $0 == job.room } }
+        switch job.kind {
+        case .clean: world.facilities.cleaned += 1
+        case .repair: world.facilities.repaired += 1
+        case .housekeeping:
+            // A hotel room is ready for its next guests once made up (0.30.1).
+            world.facilities.housekept = (world.facilities.housekept ?? 0) + 1
+            world.hotel?.awaitingHousekeeping.removeAll { $0 == job.room }
+        }
     }
 }
 

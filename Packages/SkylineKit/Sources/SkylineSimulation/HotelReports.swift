@@ -8,8 +8,8 @@ public struct HotelInfo: Equatable, Sendable {
         case vacant
         /// Guests booked for tonight: how many are in the room now, and when they leave.
         case booked(present: Int, guests: Int, checkOut: String)
-        /// The last guests have left: a janitor must clean it before it can be booked again.
-        case awaitingHousekeeping(janitorOnTheWay: Bool)
+        /// The last guests have left: a housekeeper must make it up before it can be booked again.
+        case awaitingHousekeeping(housekeeperOnTheWay: Bool)
     }
 
     public var status: Status
@@ -33,8 +33,8 @@ public struct HotelInfo: Equatable, Sendable {
             }.count
             status = .booked(present: present, guests: stay.guests.count, checkOut: SimClock.timeString(stay.checkOut))
         } else if hotel.needsHousekeeping(room.id) {
-            let assigned = world.facilities.jobs.contains { $0.room == room.id && $0.kind == .clean && $0.assignee != nil }
-            status = .awaitingHousekeeping(janitorOnTheWay: assigned)
+            let assigned = world.facilities.jobs.contains { $0.room == room.id && $0.kind == .housekeeping && $0.assignee != nil }
+            status = .awaitingHousekeeping(housekeeperOnTheWay: assigned)
         } else {
             status = .vacant
         }
