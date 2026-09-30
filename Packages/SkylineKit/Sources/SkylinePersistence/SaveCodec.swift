@@ -31,7 +31,7 @@ public enum SaveError: Error, Equatable, CustomStringConvertible {
 /// an inconsistent save is rejected instead of silently corrupting a game.
 public enum SaveCodec {
     public static let format = "skyline-architect-save"
-    public static let currentVersion = 18
+    public static let currentVersion = 19
 
     /// Upgrades the `game` JSON object from version `key` to `key + 1`.
     public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
@@ -241,6 +241,9 @@ public enum SaveCodec {
         // (`fired`, `news`, `shocks`) and a scored result (`stars`, `score`). All optional:
         // older games have none, so nothing needs adding.
         17: { _ in },
+        // v18 → v19 (0.30): cars may carry `skippedFloors`, and a shaft may stand in front of
+        // rooms (overlapping them). Older games have neither, so nothing needs adding.
+        18: { _ in },
     ]
 
     private struct Envelope<Game: Codable>: Codable {
