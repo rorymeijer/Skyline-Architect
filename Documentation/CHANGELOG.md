@@ -2,6 +2,25 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.29.4] — Nothing cut off on the iPhone
+
+### Fixed
+- **iPhone:** screens that were still too tall after shrinking now scroll instead of
+  running off the screen: the scenario browser with a long briefing (for example *Lean
+  Tower*), the scenario result, the side panels, the main menu and every card that shrinks
+  to fit (mods, saves). This also holds with a larger text size or many mods installed.
+
+## [0.29.3] — Mods folder in the Files app; community mods
+
+### Fixed
+- **iPad and iPhone:** the mods folder now shows in the Files app (*On My iPhone/iPad ▸
+  Skyline Architect ▸ Mods*). In 0.29.2 the `UIFileSharingEnabled` key never reached the
+  built app, so the folder did not appear. The key now comes from `Config/Info-iOS.plist`,
+  and CI checks the built Info.plist (`Scripts/check-files-app.sh`).
+
+### Added
+- `Mods/`: 24 community content mods (see `Mods/README.md`).
+
 ## [0.29.2] — Every screen on the iPhone; App Store preparation
 
 ### Changed

@@ -13,7 +13,7 @@ struct ScenarioBrowserView: View {
         ZStack {
             Color.black.opacity(0.5).ignoresSafeArea()
             // Where the full card does not fit (an iPhone, 0.29.2): the list without the
-            // summaries, then smaller.
+            // summaries, then smaller, and last scrolling (a long briefing, 0.29.3).
             ViewThatFits(in: .vertical) {
                 card(briefs, selected: selected, compact: false)
                 card(briefs, selected: selected, compact: true)
@@ -21,6 +21,7 @@ struct ScenarioBrowserView: View {
                 card(briefs, selected: selected, compact: true).scaled(0.8)
                 card(briefs, selected: selected, compact: true).scaled(0.75)
             }
+            .fitsScreen()
         }
         .environment(\.colorScheme, .dark)
     }
@@ -206,6 +207,7 @@ struct ScenarioResultView: View {
                     card(s, r, compact: true).scaled(0.9)
                     card(s, r, compact: true).scaled(0.8)
                 }
+                .fitsScreen()
             }
             .environment(\.colorScheme, .dark)
         }

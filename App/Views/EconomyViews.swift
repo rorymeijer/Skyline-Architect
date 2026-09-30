@@ -150,6 +150,7 @@ struct MainMenuView: View {
                 menu(columns: 1, titleSize: 34, padding: 36)
                 menu(columns: 2, titleSize: 22, padding: 16)
             }
+            .fitsScreen()
         }
         .environment(\.colorScheme, .dark)
     }

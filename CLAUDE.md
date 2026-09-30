@@ -72,6 +72,10 @@ on `claude/**` branches — commits JPEG copies to `Development/Screenshots/_ci-
     every command needs an exact inverse (undo) and tests.
 17. Save format changes require a version bump, a migration and a kept golden fixture
     (Documentation/SAVE_FORMAT.md).
+18. Versioning: every change that ships in the app bumps `MARKETING_VERSION` (patch for
+    fixes and small additions) and always raises `CURRENT_PROJECT_VERSION` by 1, in both
+    build configurations of `SkylineArchitect.xcodeproj`, with a matching CHANGELOG heading.
+    The owner uploads builds to TestFlight and should never have to bump these by hand.
 
 ## Environment notes
 

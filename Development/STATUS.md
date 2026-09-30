@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-29 (0.29.2 — every screen on the iPhone; App Store preparation)_
+_Last updated: 2026-09-30 (0.29.4 — nothing cut off on the iPhone)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -23,6 +23,24 @@ _Last updated: 2026-09-29 (0.29.2 — every screen on the iPhone; App Store prep
 - App Store screenshots come from the game itself (`Development/Screenshots/AppStore/`).
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
+
+**0.29.4 (build 3):** on the iPhone, the scenario browser still ran off the screen with a
+long briefing (*Lean Tower*). The shrink steps assumed the smallest step would fit. Now
+`fitsScreen()` wraps every full-screen ladder (`shrinkToFit`, the scenario browser and
+result, the main menu). It proposes the screen's height, so the ladder still picks the step
+that fits, and it puts the card in a scroll view only when even the smallest step is taller
+than the screen. `ScaledLayout` no longer hides a real overflow; it still absorbs one of up
+to 12 pt.
+Learned from the CI captures: (1) a scroll view *inside* `ViewThatFits` gets its tiny ideal
+height and vanishes; (2) the capture tool draws the chrome with `ImageRenderer`, which
+leaves any scroll view blank. The scrolling case can therefore not be shown by a capture.
+It is SCAFFOLDED until checked on a device, with *Lean Tower* in the scenario browser.
+
+**0.29.3 (build 2):** on iPad and iPhone the mods folder did not show in the Files app.
+`INFOPLIST_KEY_UIFileSharingEnabled` is not a build setting Xcode knows, so the key was
+dropped without an error. It now comes from `Config/Info-iOS.plist`, and CI checks the built
+Info.plist (`Scripts/check-files-app.sh`, green). Not verified on a device yet: this needs a
+new TestFlight build.
 
 **Mods:** `Mods/` holds 24 community content mods: cities, rooms and tenants, amenities,
 elevators, rule changes, scenarios, furniture and blueprints (see `Mods/README.md`).
