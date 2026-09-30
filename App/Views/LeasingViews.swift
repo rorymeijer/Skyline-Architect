@@ -76,6 +76,7 @@ struct UnitInspector: View {
                 .help("This unit's rent on top of the building's rent level; for new tenants and how units are rated. Signed rents stay.")
             }
             if let a = report.amenity { AmenityDetails(info: a) }
+            if let h = report.hotel { HotelDetails(info: h) }
             if !report.utilities.isEmpty {
                 Divider()
                 HStack(spacing: 8) {

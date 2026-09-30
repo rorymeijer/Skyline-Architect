@@ -66,6 +66,7 @@ public struct ArtPalette: Sendable {
         switch appearance {
         case "office": (RGBA(hex: 0xD8DCDF), RGBA(hex: 0x5E6873), RGBA(hex: 0xEEF0F1))
         case "apartment": (RGBA(hex: 0xE3D7C2), RGBA(hex: 0x98734C), RGBA(hex: 0xF4F1EA))
+        case "hotel": (RGBA(hex: 0xC9D6D2), RGBA(hex: 0x7A4E3A), RGBA(hex: 0xF3F1EC))
         case "lobby": (RGBA(hex: 0xCFC7B9), RGBA(hex: 0xB9B3A8), RGBA(hex: 0xF1EEE7))
         case "corridor": (RGBA(hex: 0xC9CAC5), RGBA(hex: 0x8C8F8C), RGBA(hex: 0xE7E8E5))
         case "mechanical": (RGBA(hex: 0xA9ACAD), RGBA(hex: 0x7D8182), RGBA(hex: 0xB7BABB))

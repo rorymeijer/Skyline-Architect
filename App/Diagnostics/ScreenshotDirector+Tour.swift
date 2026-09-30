@@ -131,6 +131,25 @@ extension ScreenshotDirector {
             scene.withController { $0.jump(center: point(model, column: 12, floor: Double(top) + 0.5), zoom: 11) }
             return "A floor held above the roof, one module longer by the + button: \(model.heldPlacement?.label ?? "nothing held")"
         },
+        Step(name: "23-hotel", grid: false) { model, scene in
+            // 0.30: two hotel rooms on the new top floor at night; one selected.
+            model.confirmHeldPlacement()
+            model.select(tool: nil)
+            guard let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
+                  let top = b.floors.map(\.level).max(), let plate = b.plate(at: top - 1), let shaft = shaft(model) else { return "no building" }
+            model.perform(.buildFloor(building: b.id, level: top, span: plate.span))          // the held floor, as wide as the roof
+            model.perform(.resizeRoom(shaft.id, floors: FloorSpan(lowest: shaft.floors.lowest, highest: top)))
+            for (i, def) in ["hotel-twin", "hotel-single"].enumerated() {
+                model.perform(.placeRoom(building: b.id, definition: def, columns: ColumnSpan(start: plate.span.start + i * 9, count: def == "hotel-twin" ? 8 : 6),
+                                         floors: FloorSpan(lowest: top, highest: top)))
+            }
+            model.changeStaff(.janitor, by: 1)
+            model.advanceSimulation(toTimeOfDay: 21)
+            model.selectRoom(at: GridCell(column: plate.span.start + 1, floor: top))
+            scene.withController { $0.jump(center: point(model, column: 10, floor: Double(top) + 0.5), zoom: 14) }
+            let hotel = model.world?.hotel
+            return "\(model.clockText): \(hotel?.stays.count ?? 0) rooms booked, \(model.world?.people.values.filter { $0.role == .guest }.count ?? 0) guests; hotel twin selected."
+        },
     ]
 
     /// A step that closes the other side panels and opens one.

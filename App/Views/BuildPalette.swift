@@ -61,6 +61,7 @@ struct BuildPalette: View {
         case "residential": "Homes"
         case "infrastructure": "Plant"
         case "amenity": "Amenities"
+        case "hotel": "Hotel"
         default: id.prefix(1).uppercased() + id.dropFirst()
         }
     }
@@ -168,6 +169,7 @@ struct BuildPalette: View {
         case "expressElevatorShaft": "arrow.up.arrow.down.circle"
         case "office": "briefcase"
         case "apartment": "bed.double"
+        case "hotel": "bed.double.fill"
         case "mechanical": "gearshape.2"
         case "electrical": "bolt"
         case "telecom": "antenna.radiowaves.left.and.right"

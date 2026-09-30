@@ -131,6 +131,8 @@ struct PopulationSummary: Equatable {
     var riding = 0
     /// Street visitors in the building (0.22; included in the counts above).
     var visitors = 0
+    /// Hotel guests in the building (0.30; included in the counts above).
+    var guests = 0
     var cars = 0
     /// Longest current wait at any landing, seconds.
     var longestWait: Tick = 0
@@ -140,10 +142,10 @@ struct PopulationSummary: Equatable {
     init(_ world: GameWorld) {
         cars = world.elevators.count
         for p in world.people {
-            // Visitors on their way in or gone home are not on the property.
-            if p.role == .visitor {
+            // Visitors and hotel guests on their way in or gone home are not on the property.
+            if p.role == .visitor || p.role == .guest {
                 if p.place == .outside { continue }
-                visitors += 1
+                if p.role == .visitor { visitors += 1 } else { guests += 1 }
             }
             total += 1
             if p.unreachable { unreachable += 1 }
