@@ -121,7 +121,7 @@ public struct NavigationGraph: Sendable {
         for room in Self.transportRooms(of: building, world: world, catalog: catalog, kind: "elevator") {
             guard let spec = rules.elevator(for: room.definitionID) else { continue }
             let x = Self.elevatorLandingX(room, grid: grid)
-            let served = Set(spec.servedFloors(of: room.floors))
+            let served = Set(spec.servedFloors(of: room.floors, skipping: world.elevators[room.id]?.skippedFloors))
             elevatorShafts[room.id] = (served, x)
             if spec.serviceOnly == true { serviceShafts.insert(room.id) }
             let perFloor = grid.floorHeight / spec.speed
@@ -193,6 +193,8 @@ public struct NavigationGraph: Sendable {
         for room in world.rooms(in: building.id) where catalog.spec(room.definitionID)?.transport != nil {
             mix(Int(room.id.raw)); mix(room.columns.start); mix(room.columns.count)
             mix(room.floors.lowest); mix(room.floors.highest)
+            for floor in world.elevators[room.id]?.skippedFloors ?? [] { mix(floor) }
+            mix(-2)
         }
         return h
     }

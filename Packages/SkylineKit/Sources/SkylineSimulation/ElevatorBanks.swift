@@ -45,7 +45,7 @@ public enum ElevatorBanks {
         return groups.keys.sorted().map { key in
             let members = groups[key]!.sorted { shafts[$0].room.columns.start < shafts[$1].room.columns.start }
             let first = shafts[groups[key]!.min()!]
-            let served = Set(members.flatMap { shafts[$0].spec.servedFloors(of: shafts[$0].room.floors) }).sorted()
+            let served = Set(members.flatMap { shafts[$0].spec.servedFloors(of: shafts[$0].room.floors, skipping: shafts[$0].car.skippedFloors) }).sorted()
             return ElevatorBank(id: first.room.id, buildingID: first.room.buildingID, cars: members.map { shafts[$0].room.id },
                                 definitionID: first.room.definitionID, served: served, strategy: first.car.strategy)
         }
@@ -105,7 +105,7 @@ extension SimulationEngine {
         let candidates = bank.cars.filter { id in
             guard let room = world.rooms[id], let spec = rules.elevator(for: room.definitionID),
                   world.elevators[id]?.isOutOfService != true else { return false }
-            let served = spec.servedFloors(of: room.floors)
+            let served = spec.servedFloors(of: room.floors, skipping: world.elevators[id]?.skippedFloors)
             return served.contains(ride.fromFloor) && served.contains(ride.toFloor)
         }
         guard candidates.count > 1 else { return assigned }
