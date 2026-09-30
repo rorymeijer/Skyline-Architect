@@ -1,0 +1,29 @@
+[
+  {
+    "room": "hotel-single",
+    "guests": 1,
+    "nightlyRate": 1300,
+    "checkIn": "15:00",
+    "lastCheckIn": "23:00",
+    "checkOut": "10:00",
+    "bookingChance": 0.8
+  },
+  {
+    "room": "hotel-twin",
+    "guests": 2,
+    "nightlyRate": 2100,
+    "checkIn": "15:00",
+    "lastCheckIn": "23:00",
+    "checkOut": "10:00",
+    "bookingChance": 0.7
+  },
+  {
+    "room": "hotel-suite",
+    "guests": 3,
+    "nightlyRate": 3800,
+    "checkIn": "15:00",
+    "lastCheckIn": "22:00",
+    "checkOut": "11:00",
+    "bookingChance": 0.55
+  }
+]

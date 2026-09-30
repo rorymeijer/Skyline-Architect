@@ -646,5 +646,135 @@
     "offset": -0.15
    }
   ]
+ },
+ {
+  "room": "hotel-single",
+  "items": [
+   {
+    "furniture": "door-apartment",
+    "anchor": "left",
+    "offset": 0.25
+   },
+   {
+    "furniture": "wardrobe",
+    "anchor": "left",
+    "offset": 1.4
+   },
+   {
+    "furniture": "bed-double",
+    "anchor": "right",
+    "offset": 0.15
+   },
+   {
+    "furniture": "nightstand-lamp",
+    "anchor": "right",
+    "offset": 2.35
+   },
+   {
+    "furniture": "wall-art",
+    "anchor": "right",
+    "offset": 0.8,
+    "elevation": 1.45,
+    "reserve": false
+   }
+  ]
+ },
+ {
+  "room": "hotel-twin",
+  "items": [
+   {
+    "furniture": "door-apartment",
+    "anchor": "left",
+    "offset": 0.25
+   },
+   {
+    "furniture": "nightstand-lamp",
+    "anchor": "left",
+    "offset": 1.4
+   },
+   {
+    "furniture": "bed-double",
+    "anchor": "left",
+    "offset": 2.0,
+    "minRoomWidth": 9
+   },
+   {
+    "furniture": "bathroom-pod",
+    "anchor": "right",
+    "offset": 0
+   },
+   {
+    "furniture": "bed-double",
+    "anchor": "right",
+    "offset": 2.15
+   },
+   {
+    "furniture": "wall-art",
+    "anchor": "right",
+    "offset": 2.7,
+    "elevation": 1.45,
+    "reserve": false
+   }
+  ]
+ },
+ {
+  "room": "hotel-suite",
+  "items": [
+   {
+    "furniture": "door-apartment",
+    "anchor": "left",
+    "offset": 0.25
+   },
+   {
+    "furniture": "sofa",
+    "anchor": "left",
+    "offset": 1.4
+   },
+   {
+    "furniture": "tv-unit",
+    "anchor": "left",
+    "offset": 3.7
+   },
+   {
+    "furniture": "floor-lamp",
+    "anchor": "left",
+    "offset": 5.5,
+    "minRoomWidth": 13
+   },
+   {
+    "furniture": "bathroom-pod",
+    "anchor": "right",
+    "offset": 0
+   },
+   {
+    "furniture": "bed-double",
+    "anchor": "right",
+    "offset": 2.15
+   },
+   {
+    "furniture": "nightstand-lamp",
+    "anchor": "right",
+    "offset": 4.4
+   },
+   {
+    "furniture": "wardrobe",
+    "anchor": "right",
+    "offset": 5.1,
+    "minRoomWidth": 14
+   },
+   {
+    "furniture": "wall-art",
+    "anchor": "right",
+    "offset": 2.7,
+    "elevation": 1.45,
+    "reserve": false
+   },
+   {
+    "furniture": "plant-tall",
+    "anchor": "left",
+    "offset": 6.2,
+    "minRoomWidth": 15
+   }
+  ]
  }
 ]
