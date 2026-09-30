@@ -31,7 +31,7 @@ public enum SaveError: Error, Equatable, CustomStringConvertible {
 /// an inconsistent save is rejected instead of silently corrupting a game.
 public enum SaveCodec {
     public static let format = "skyline-architect-save"
-    public static let currentVersion = 19
+    public static let currentVersion = 20
 
     /// Upgrades the `game` JSON object from version `key` to `key + 1`.
     public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
@@ -244,6 +244,22 @@ public enum SaveCodec {
         // v18 → v19 (0.30): cars may carry `skippedFloors`, and a shaft may stand in front of
         // rooms (overlapping them). Older games have neither, so nothing needs adding.
         18: { _ in },
+        // v19 → v20 (0.30): hotel rooms. People may be `guest`s (their room in `visit`); the
+        // world may carry `hotel` (stays and rooms awaiting housekeeping); the ledger gains
+        // a `hotel` category (daily totals grow by one). Older games have no hotel.
+        19: { game in
+            guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v19 save without world") }
+            if var ledger = world["ledger"] as? [String: Any] {
+                ledger["days"] = (ledger["days"] as? [[String: Any]] ?? []).map { day -> [String: Any] in
+                    var d = day
+                    let amounts = d["amounts"] as? [Int] ?? []
+                    if amounts.count < 15 { d["amounts"] = amounts + [Int](repeating: 0, count: 15 - amounts.count) }
+                    return d
+                }
+                world["ledger"] = ledger
+            }
+            game["world"] = world
+        },
     ]
 
     private struct Envelope<Game: Codable>: Codable {
