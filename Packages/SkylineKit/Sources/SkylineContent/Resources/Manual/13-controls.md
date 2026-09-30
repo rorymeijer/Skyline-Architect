@@ -57,9 +57,12 @@
 | Drag with one or two fingers | Pan |
 | Pinch | Zoom |
 | Tap | Select a room |
-| With a build tool: drag with one finger | Place |
-| With a build tool: tap | Place at the usual size |
-| With a build tool: two fingers | Pan |
+| With a build tool: tap | Hold a ghost there at the usual size; tap again elsewhere to move its far end |
+| With a build tool: drag with one finger | Hold a ghost of that size; near the edge of the screen the view scrolls along |
+| With a build tool: drag from the ghost's end | Stretch it further |
+| With a build tool: two fingers | Pan (the ghost stays where it is) |
+
+Nothing is built until you press **Place** in the bar above the build palette. The bar shows the size and price. **Longer** and **Shorter** (**Taller** and **Lower** for shafts) change the size by one module or floor, and **Cancel** drops the ghost. For a long room, tap its start, pan with two fingers to its end, and tap there.
 
 The buttons at the bottom right open every panel and overlay, save the game and bring back the main menu.
 

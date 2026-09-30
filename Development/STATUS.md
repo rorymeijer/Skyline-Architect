@@ -29,7 +29,11 @@ app side is checked by CI captures 20 and 21 of the screen tour.
 - Shafts stand in front of rooms (D-064); rooms stay whole and may go behind a shaft.
 - Stops per car (`ElevatorStops`, save format 19): the inspector shows one button per floor.
 - Floor numbers in the shaft where the car stops; see-through shafts (`⌥⌘J`).
-- Next in the owner's list: easier touch placement on iOS; SimTower-style hotel rooms.
+- Touch placement (iOS): a held ghost with a bar (size, price, ±, Cancel, Place); taps
+  move its end; drags from its end stretch it; two fingers pan; a drag scrolls at the screen
+  edge. `PlacementPlanner.nudged` is tested; the rest is app input. Tour step 22 captures the
+  bar. Not checked on a device.
+- Next in the owner's list: SimTower-style hotel rooms.
 
 **0.29.4 (build 3):** on the iPhone, the scenario browser still ran off the screen with a
 long briefing (*Lean Tower*). The shrink steps assumed the smallest step would fit. Now
