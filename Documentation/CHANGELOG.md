@@ -16,6 +16,7 @@ All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
 ### Fixed
 - A hotel room's inspector no longer says "Not rentable — shared space or services".
+- A room's name moves beside a shaft standing in front of it instead of under its floor numbers.
 
 ## [0.30.0] — Elevators in front of rooms, stops per floor, see-through shafts
 
