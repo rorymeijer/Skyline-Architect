@@ -46,6 +46,43 @@ public enum PlacementPlanner {
         return GridCell(column: clamped, floor: current.floor)
     }
 
+    /// A tap while a placement is held (touch): the new anchor and end. Rooms and floors lie
+    /// on their anchor's floor, so a tap on another floor moves the whole ghost there, keeping
+    /// its length (0.30.2); a tap on the same floor, or with a shaft, moves only the end.
+    public static func tapped(_ cell: GridCell, anchor: GridCell, end: GridCell, tool: ConstructionTool,
+                              catalog: BuildCatalog) -> (anchor: GridCell, end: GridCell) {
+        let vertical: Bool
+        switch tool {
+        case .room(let id): vertical = catalog.spec(id)?.kind == .shaft
+        case .floor: vertical = false
+        case .demolish: return (cell, cell)
+        }
+        guard !vertical, cell.floor != anchor.floor else { return (anchor, cell) }
+        return (cell, GridCell(column: cell.column + end.column - anchor.column, floor: cell.floor))
+    }
+
+    /// The touch ± buttons (0.30.1): steps the end until the ghost itself gets one module
+    /// longer or shorter. A tap holds a room at its minimum width with the end still on the
+    /// tapped cell, so a single `nudged` step often changed nothing visible. Returns `current`
+    /// when no step changes the ghost (already at its minimum or maximum). The ghost changes
+    /// within the room's minimum size plus the end's distance from the anchor, so that bounds
+    /// the search for any content (mods may define very wide rooms or tall shafts).
+    public static func nudgedVisibly(_ current: GridCell, anchor: GridCell, tool: ConstructionTool, world: GameWorld,
+                                     propertyID: PropertyID, engine: ConstructionEngine, by step: Int) -> GridCell {
+        let shown = preview(tool: tool, anchor: anchor, current: current, world: world, propertyID: propertyID, engine: engine)?.rect
+        var minimum = 1
+        if case .room(let id) = tool, let spec = engine.catalog.spec(id) { minimum = max(spec.minWidth, spec.minFloors) }
+        let limit = minimum + abs(current.column - anchor.column) + abs(current.floor - anchor.floor) + 2
+        var end = current
+        for _ in 0..<limit {
+            let next = nudged(end, anchor: anchor, tool: tool, catalog: engine.catalog, by: step)
+            guard next != end else { return current }                     // clamped at the anchor
+            end = next
+            if preview(tool: tool, anchor: anchor, current: end, world: world, propertyID: propertyID, engine: engine)?.rect != shown { return end }
+        }
+        return current
+    }
+
     public static func preview(tool: ConstructionTool, anchor: GridCell, current: GridCell,
                                world: GameWorld, propertyID: PropertyID, engine: ConstructionEngine) -> PlacementPreview? {
         let grid = world.grid

@@ -114,6 +114,49 @@ import SkylineContent
         #expect(nudge(GridCell(column: 10, floor: 4), .room("stairs"), -1) == a)
     }
 
+    /// A tapped room is held at its minimum width with the end on the tapped cell: Longer
+    /// must still make the ghost one module wider at once, Shorter one narrower (0.30.1).
+    @Test func nudgingChangesTheGhostEveryPress() throws {
+        let s = try setup(withTower: true)
+        let tool = ConstructionTool.room("office-small")
+        let spec = try #require(s.engine.catalog.spec("office-small"))
+        let a = GridCell(column: s.building.footprint.start, floor: 2)
+        func width(_ end: GridCell) throws -> Double {
+            try #require(PlacementPlanner.preview(tool: tool, anchor: a, current: end, world: s.world, propertyID: s.property, engine: s.engine)).rect.width
+        }
+        func nudge(_ end: GridCell, _ step: Int) -> GridCell {
+            PlacementPlanner.nudgedVisibly(end, anchor: a, tool: tool, world: s.world, propertyID: s.property, engine: s.engine, by: step)
+        }
+        let module = s.world.grid.moduleWidth
+        #expect(try width(a) == Double(spec.minWidth) * module)
+        let longer = nudge(a, 1)
+        #expect(try width(longer) == Double(spec.minWidth + 1) * module)
+        let back = nudge(longer, -1)
+        #expect(try width(back) == Double(spec.minWidth) * module)
+        #expect(nudge(back, -1) == back)                                     // at the minimum: stays
+        // Content may define very wide rooms: Longer still widens a 90-module hall at once.
+        let base = s.engine.catalog
+        let hall = RoomSpec(id: "wide-hall", name: "Hall", category: "office", kind: .room, appearance: "office",
+                            minWidth: 90, maxWidth: 120, minFloors: 1, maxFloors: 1, costPerModule: 1)
+        let wide = ConstructionEngine(catalog: BuildCatalog(rules: base.rules, specs: base.specs + [hall], classes: base.classes))
+        let held = PlacementPlanner.nudgedVisibly(a, anchor: a, tool: .room("wide-hall"), world: s.world, propertyID: s.property, engine: wide, by: 1)
+        let rect = try #require(PlacementPlanner.preview(tool: .room("wide-hall"), anchor: a, current: held, world: s.world, propertyID: s.property, engine: wide)).rect
+        #expect(rect.width == 91 * module)
+    }
+
+    /// A tap on another floor moves a held room or floor there, keeping its length; on the
+    /// same floor, or with a shaft, it moves the end (0.30.2).
+    @Test func tappingAnotherFloorMovesTheGhost() throws {
+        let catalog = try setup().engine.catalog
+        let a = GridCell(column: 10, floor: 13), e = GridCell(column: 15, floor: 13)
+        let moved = PlacementPlanner.tapped(GridCell(column: 20, floor: 9), anchor: a, end: e, tool: .room("hotel-single"), catalog: catalog)
+        #expect(moved.anchor == GridCell(column: 20, floor: 9) && moved.end == GridCell(column: 25, floor: 9))
+        let same = PlacementPlanner.tapped(GridCell(column: 18, floor: 13), anchor: a, end: e, tool: .floor, catalog: catalog)
+        #expect(same.anchor == a && same.end == GridCell(column: 18, floor: 13))
+        let shaft = PlacementPlanner.tapped(GridCell(column: 10, floor: 17), anchor: a, end: a, tool: .room("stairs"), catalog: catalog)
+        #expect(shaft.anchor == a && shaft.end == GridCell(column: 10, floor: 17))
+    }
+
     @Test func demolishTargetsRoomThenFloor() throws {
         let s = try setup(withTower: true)
         let room = try #require(PlacementPlanner.preview(tool: .demolish, anchor: GridCell(column: 10, floor: 2), current: GridCell(column: 10, floor: 2),

@@ -350,6 +350,7 @@ final class AppModel {
             guard let self, let world = self.world, let property = self.activePropertyID, let engine = self.engine else { return nil }
             return PlacementPlanner.preview(tool: tool, anchor: anchor, current: current, world: world, propertyID: property, engine: engine)
         }
+        scene.catalogProvider = { [weak self] in self?.catalog }
         scene.roomLabelProvider = { [weak self] visible, zoom in
             guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return [] }
             let rules = self.simulation?.rules

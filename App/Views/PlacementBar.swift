@@ -2,7 +2,7 @@ import SwiftUI
 import SkylinePresentation
 
 /// Touch placement (0.30): the held ghost's size and price, ± one module, Cancel and Place.
-/// Tap elsewhere to move the far end, drag from the end to stretch it, or pan with two
+/// Tap on the same floor to move the far end, on another floor to move the whole ghost, drag from the end to stretch it, or pan with two
 /// fingers to reach further first.
 struct PlacementBar: View {
     let model: AppModel
