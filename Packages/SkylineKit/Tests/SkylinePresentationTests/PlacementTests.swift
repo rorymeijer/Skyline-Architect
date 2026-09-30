@@ -97,6 +97,23 @@ import SkylineContent
         #expect(s.world.rooms.values.first { $0.definitionID == "lobby" }?.columns == f)
     }
 
+    /// The touch ± buttons (0.30): rooms and floors grow sideways away from the anchor,
+    /// shafts vertically; shorter never passes the anchor.
+    @Test func nudgingGrowsAwayFromTheAnchor() throws {
+        let catalog = try setup().engine.catalog
+        let a = GridCell(column: 10, floor: 3)
+        func nudge(_ c: GridCell, _ tool: ConstructionTool, _ step: Int) -> GridCell {
+            PlacementPlanner.nudged(c, anchor: a, tool: tool, catalog: catalog, by: step)
+        }
+        #expect(nudge(GridCell(column: 14, floor: 3), .room("office-small"), 1) == GridCell(column: 15, floor: 3))
+        #expect(nudge(GridCell(column: 6, floor: 3), .room("office-small"), 1) == GridCell(column: 5, floor: 3))
+        #expect(nudge(a, .floor, 1) == GridCell(column: 11, floor: 3))
+        #expect(nudge(a, .floor, -1) == a)                                   // never past the anchor
+        #expect(nudge(GridCell(column: 10, floor: 6), .room("stairs"), 1) == GridCell(column: 10, floor: 7))
+        #expect(nudge(GridCell(column: 10, floor: 1), .room("stairs"), 1) == GridCell(column: 10, floor: 0))
+        #expect(nudge(GridCell(column: 10, floor: 4), .room("stairs"), -1) == a)
+    }
+
     @Test func demolishTargetsRoomThenFloor() throws {
         let s = try setup(withTower: true)
         let room = try #require(PlacementPlanner.preview(tool: .demolish, anchor: GridCell(column: 10, floor: 2), current: GridCell(column: 10, floor: 2),

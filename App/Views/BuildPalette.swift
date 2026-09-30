@@ -256,7 +256,11 @@ struct StatusPill: View {
                 Text(save).foregroundStyle(.secondary)
             }
             if !compact, model.activeTool != nil {
+                #if os(iOS)
+                Text("Tap or drag to place · two fingers pan").foregroundStyle(.secondary)
+                #else
                 Text("Esc to stop building").foregroundStyle(.secondary)
+                #endif
             }
         }
         .font(.system(size: 11, weight: .medium))

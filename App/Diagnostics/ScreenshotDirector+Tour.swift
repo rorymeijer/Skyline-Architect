@@ -119,6 +119,18 @@ extension ScreenshotDirector {
             model.seeThroughShafts = true
             return "The same view with see-through elevator shafts (the rooms behind show through)."
         },
+        Step(name: "22-held-placement", grid: false) { model, scene in
+            // 0.30: on touch a placement is held with a bar (size, price, ± , Cancel, Place).
+            model.seeThroughShafts = false
+            model.selectRoom(at: nil)
+            guard let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
+                  let top = b.floors.map(\.level).max(), let roof = b.plate(at: top) else { return "no building" }
+            model.select(tool: .floor)
+            scene.holdPlacement(anchor: GridCell(column: roof.span.start, floor: top + 1), end: GridCell(column: roof.span.start + 11, floor: top + 1))
+            model.nudgeHeldPlacement(by: 1)
+            scene.withController { $0.jump(center: point(model, column: 12, floor: Double(top) + 0.5), zoom: 11) }
+            return "A floor held above the roof, one module longer by the + button: \(model.heldPlacement?.label ?? "nothing held")"
+        },
     ]
 
     /// A step that closes the other side panels and opens one.

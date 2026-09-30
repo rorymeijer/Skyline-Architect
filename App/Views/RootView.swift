@@ -51,6 +51,7 @@ struct ChromeOverlay: View {
                 if let notice = model.promotionNotice {
                     PromotionBanner(text: notice) { model.promotionNotice = nil }
                 }
+                if let held = model.heldPlacement { PlacementBar(model: model, preview: held) }
                 if !Device.isPhone { StatusPill(model: model) }
                 BuildPalette(model: model)
             }

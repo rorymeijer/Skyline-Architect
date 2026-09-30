@@ -43,6 +43,8 @@ final class AppModel {
     var unitReport: UnitReport?
     /// Height controls when the selection is a shaft (empty otherwise).
     var shaftOptions: [ConstructionOption] = []
+    /// The placement held on touch until Place (0.30; nil = none).
+    var heldPlacement: PlacementPreview?
     /// Stop switches when the selection is an elevator shaft (0.30; empty otherwise).
     var elevatorStops: [ElevatorStopToggle] = []
     /// Foundation panel (0.21): the building's groundwork and what can be extended.
@@ -366,6 +368,10 @@ final class AppModel {
             return self.traffic()
         }
         scene.onCommit = { [weak self] command in self?.perform(command) }
+        #if os(iOS)
+        scene.holdsPlacement = true                           // touch: Place builds (0.30)
+        #endif
+        scene.onHeldPreview = { [weak self] preview in self?.heldPlacement = preview }
         scene.onSelect = { [weak self] cell in self?.selectRoom(at: cell) }
         scene.servicesProvider = { [weak self] in self?.serviceMarks() }
         installEnvironment(on: scene)

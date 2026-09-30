@@ -24,6 +24,28 @@ public struct PlacementPreview: Equatable, Sendable {
 /// Turns pointer input (anchor cell where the drag began, current cell) into a
 /// `BuildCommand` and validates it. Pure: shared by macOS, iPadOS and tests.
 public enum PlacementPlanner {
+    /// The end cell one step longer (`by: 1`) or shorter (`by: -1`) (0.30, the touch ±
+    /// buttons). Floors and rooms grow sideways, away from the anchor (to the right when
+    /// they start on it); shafts grow vertically (upward when they start on it). Shorter never
+    /// passes the anchor.
+    public static func nudged(_ current: GridCell, anchor: GridCell, tool: ConstructionTool, catalog: BuildCatalog, by step: Int) -> GridCell {
+        let vertical: Bool
+        switch tool {
+        case .room(let id): vertical = catalog.spec(id)?.kind == .shaft
+        case .floor, .demolish: vertical = false
+        }
+        if vertical {
+            let direction = current.floor < anchor.floor ? -1 : 1
+            let floor = current.floor + direction * step
+            let clamped = direction > 0 ? max(floor, anchor.floor) : min(floor, anchor.floor)
+            return GridCell(column: current.column, floor: clamped)
+        }
+        let direction = current.column < anchor.column ? -1 : 1
+        let column = current.column + direction * step
+        let clamped = direction > 0 ? max(column, anchor.column) : min(column, anchor.column)
+        return GridCell(column: clamped, floor: current.floor)
+    }
+
     public static func preview(tool: ConstructionTool, anchor: GridCell, current: GridCell,
                                world: GameWorld, propertyID: PropertyID, engine: ConstructionEngine) -> PlacementPreview? {
         let grid = world.grid
