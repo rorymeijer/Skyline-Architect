@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-30 (0.30.1 — shafts build their missing floors)_
+_Last updated: 2026-09-30 (0.30.2 — Longer/Shorter change the held room on every press)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -23,6 +23,10 @@ _Last updated: 2026-09-30 (0.30.1 — shafts build their missing floors)_
 - App Store screenshots come from the game itself (`Development/Screenshots/AppStore/`).
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
+
+**0.30.2 (build 6):** the owner found that Longer/Shorter did not change a held room.
+`PlacementPlanner.nudgedVisibly` steps the end until the ghost changes (PlacementTests).
+Merged 0.30.1 was PR #41.
 
 **0.30.1 (build 5):** a shaft placed or extended past the existing floors builds the
 missing floor plates first, in one batch (`ConstructionEngine.addingFloors`, ShaftTests).
