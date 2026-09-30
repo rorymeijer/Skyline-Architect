@@ -32,7 +32,7 @@ struct ConstructionFixture {
         engine = ConstructionEngine(catalog: Self.catalog)
     }
 
-    mutating func run(_ c: BuildCommand) throws -> AppliedConstruction { try engine.apply(c, to: &world) }
+    @discardableResult mutating func run(_ c: BuildCommand) throws -> AppliedConstruction { try engine.apply(c, to: &world) }
 
     func check(_ c: BuildCommand) -> Result<ConstructionPlan, ConstructionError> { engine.validate(c, in: world) }
 
@@ -115,15 +115,17 @@ struct ConstructionFixture {
         #expect(f.world.room(in: b, column: 10, floor: 1)?.id == id)
     }
 
-    @Test func shaftsSpanFloorRangesAndBlockRooms() throws {
+    @Test func shaftsSpanFloorRangesAndStandInFrontOfRooms() throws {
         var f = try ConstructionFixture()
         try f.buildFloors(0...3)
         let b = f.building
         #expect(f.check(.placeRoom(building: b, definition: "stairs", columns: ColumnSpan(start: 20, count: 4), floors: FloorSpan(lowest: 0, highest: 0)))
                 == .failure(.heightOutOfRange(min: 2, max: 200)))
         try f.run(.placeRoom(building: b, definition: "stairs", columns: ColumnSpan(start: 20, count: 4), floors: FloorSpan(lowest: 0, highest: 3)))
+        // A room may go behind the shaft (0.30); another shaft may not overlap it.
+        try f.run(.placeRoom(building: b, definition: "office", columns: ColumnSpan(start: 16, count: 8), floors: FloorSpan(lowest: 2, highest: 2)))
         #expect(throws: ConstructionError.self) {
-            try f.run(.placeRoom(building: b, definition: "office", columns: ColumnSpan(start: 16, count: 8), floors: FloorSpan(lowest: 2, highest: 2)))
+            try f.run(.placeRoom(building: b, definition: "stairs", columns: ColumnSpan(start: 22, count: 4), floors: FloorSpan(lowest: 1, highest: 2)))
         }
         #expect(f.check(.placeRoom(building: b, definition: "stairs", columns: ColumnSpan(start: 30, count: 4), floors: FloorSpan(lowest: 3, highest: 4)))
                 == .failure(.noFloor(level: 4)))

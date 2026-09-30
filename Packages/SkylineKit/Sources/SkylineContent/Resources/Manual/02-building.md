@@ -44,13 +44,15 @@ Every room type has its own button, grouped by category: circulation, offices, h
 | Theatre | 12–32 m | $1,900 | $180 | Class A amenity |
 | Sky Bar | 8–24 m | $2,100 | $360 | Class A amenity, floor 15 or higher |
 | Waste Room | 2–8 m | $700 | — | Collects the building's waste |
-| Staff Room | 4–10 m | $1,000 | — | Houses janitors and technicians |
+| Staff Room | 4–10 m | $1,000 | — | Houses your staff |
 
 Costs are for Port Calder; other cities build dearer or cheaper (see [Cities and land](estate.md)). Rooms furnish themselves to fit their width.
 
 ## Shafts
 
-Stairwells and elevators are **shafts**: drag them upward across the floors they should serve, at least two. Rooms in a shaft's way make room: they are cut narrower or split in two, and the preview tells you how many.
+Stairwells and elevators are **shafts**: drag them upward across the floors they should serve, at least two. A shaft may stand in front of rooms: they stay whole behind it, and a room may also be built behind an existing shaft. Only another shaft blocks a shaft.
+
+A shaft may reach past the building: drag it above the top floor or below the lowest basement, and the missing floor plates under the shaft are built with it, as wide as the shaft. The preview shows how many (*+2 new floors*), and the price includes them. Floors are only added where they may be built: basements need a dug foundation, and higher floors need the class, the piles and the scenario to allow them.
 
 To make a shaft taller or shorter later, pick its tool and drag its top or bottom, or select it and use **Extend Up**, **Shorten Top**, **Extend Down** and **Shorten Bottom** in the inspector. See [Stairs and elevators](transport.md).
 

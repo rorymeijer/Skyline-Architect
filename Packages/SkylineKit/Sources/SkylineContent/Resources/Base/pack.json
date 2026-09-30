@@ -23,6 +23,7 @@
     "weather": "weather.json",
     "events": "events.json",
     "scenarios": "scenarios.json",
-    "amenities": "amenities.json"
+    "amenities": "amenities.json",
+    "hotels": "hotels.json"
   }
 }

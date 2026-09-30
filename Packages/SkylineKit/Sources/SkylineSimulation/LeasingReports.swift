@@ -53,13 +53,15 @@ public struct UnitReport: Equatable, Sendable {
     public var condition = 1.0
     /// Amenities (0.22): hours, seats, customers and takings.
     public var amenity: AmenityInfo?
+    /// Hotel rooms (0.30): booked, vacant or awaiting housekeeping.
+    public var hotel: HotelInfo?
 
     public static func == (a: UnitReport, b: UnitReport) -> Bool {
         a.roomID == b.roomID && a.title == b.title && a.occupant == b.occupant && a.interest == b.interest && a.history == b.history
             && a.utilities.map(\.name) == b.utilities.map(\.name) && a.utilities.map(\.served) == b.utilities.map(\.served)
             && a.cleanliness == b.cleanliness && a.condition == b.condition && a.askingRent == b.askingRent
             && a.tenure == b.tenure && a.canBeSold == b.canBeSold && a.salePrice == b.salePrice && a.serviceCharge == b.serviceCharge
-            && a.amenity == b.amenity && a.rentFactor == b.rentFactor && a.rentFixed == b.rentFixed
+            && a.amenity == b.amenity && a.rentFactor == b.rentFactor && a.rentFixed == b.rentFixed && a.hotel == b.hotel
     }
 
     public static func make(room: Room, world: GameWorld, engine: SimulationEngine) -> UnitReport? {
@@ -108,6 +110,7 @@ public struct UnitReport: Equatable, Sendable {
         report.cleanliness = world.upkeep[room.id]?.cleanliness ?? 1
         report.condition = world.upkeep[room.id]?.condition ?? 1
         report.amenity = AmenityInfo.make(room: room, world: world, engine: engine)
+        report.hotel = HotelInfo.make(room: room, world: world, engine: engine)
         return report
     }
 }

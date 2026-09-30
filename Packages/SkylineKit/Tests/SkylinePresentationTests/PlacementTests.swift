@@ -60,8 +60,7 @@ import SkylineContent
         let p = try #require(PlacementPlanner.preview(tool: .room("stairs"), anchor: GridCell(column: 9, floor: 5),
                                                       current: GridCell(column: 9, floor: 1), world: s.world, propertyID: s.property, engine: s.engine))
         #expect(p.rect.minY == 4 && p.rect.maxY == 24)
-        #expect(!p.isValid)  // offices in the way would be left too narrow to make way
-        #expect(p.label.contains("Too little space would be left"))
+        #expect(p.isValid)  // it stands in front of the offices (0.30)
     }
 
     /// Dragging the top of an existing shaft with its own tool resizes it; the middle of a
@@ -85,15 +84,34 @@ import SkylineContent
         #expect(!(middle.command.map { if case .resizeRoom = $0 { true } else { false } } ?? false))
     }
 
-    /// A shaft over a room that can make way is valid, and the preview says so.
-    @Test func shaftOverRoomsSaysTheyMakeWay() throws {
+    /// A shaft in front of a room is valid and leaves the room whole (0.30).
+    @Test func shaftInFrontOfARoomIsValid() throws {
         var s = try setup()
         let b = s.building.id, f = s.building.footprint
         for level in 0...2 { try s.engine.apply(.buildFloor(building: b, level: level, span: f), to: &s.world) }
         try s.engine.apply(.placeRoom(building: b, definition: "lobby", columns: f, floors: FloorSpan(lowest: 0, highest: 0)), to: &s.world)
         let p = try #require(PlacementPlanner.preview(tool: .room("stairs"), anchor: GridCell(column: f.start + 10, floor: 0),
                                                       current: GridCell(column: f.start + 10, floor: 2), world: s.world, propertyID: s.property, engine: s.engine))
-        #expect(p.isValid && p.label.contains("1 room makes way"))
+        #expect(p.isValid && !p.label.contains("make"))
+        try s.engine.apply(#require(p.command), to: &s.world)
+        #expect(s.world.rooms.values.first { $0.definitionID == "lobby" }?.columns == f)
+    }
+
+    /// The touch ± buttons (0.30): rooms and floors grow sideways away from the anchor,
+    /// shafts vertically; shorter never passes the anchor.
+    @Test func nudgingGrowsAwayFromTheAnchor() throws {
+        let catalog = try setup().engine.catalog
+        let a = GridCell(column: 10, floor: 3)
+        func nudge(_ c: GridCell, _ tool: ConstructionTool, _ step: Int) -> GridCell {
+            PlacementPlanner.nudged(c, anchor: a, tool: tool, catalog: catalog, by: step)
+        }
+        #expect(nudge(GridCell(column: 14, floor: 3), .room("office-small"), 1) == GridCell(column: 15, floor: 3))
+        #expect(nudge(GridCell(column: 6, floor: 3), .room("office-small"), 1) == GridCell(column: 5, floor: 3))
+        #expect(nudge(a, .floor, 1) == GridCell(column: 11, floor: 3))
+        #expect(nudge(a, .floor, -1) == a)                                   // never past the anchor
+        #expect(nudge(GridCell(column: 10, floor: 6), .room("stairs"), 1) == GridCell(column: 10, floor: 7))
+        #expect(nudge(GridCell(column: 10, floor: 1), .room("stairs"), 1) == GridCell(column: 10, floor: 0))
+        #expect(nudge(GridCell(column: 10, floor: 4), .room("stairs"), -1) == a)
     }
 
     @Test func demolishTargetsRoomThenFloor() throws {
@@ -161,5 +179,22 @@ import SkylineContent
         let labels = RoomLabels.build(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog, visible: view, zoom: 30)
         #expect(labels.contains { $0.text == "Small Office" })
         #expect(labels.contains { $0.text == "Stairwell" })
+        // An elevator shows the floor number where its car stops, and nothing where it passes (0.30).
+        let shaft = try #require(game.world.rooms.values.first { $0.definitionID == "elevator-shaft" })
+        let stops = [shaft.floors.lowest, shaft.floors.lowest + 2]
+        let numbered = RoomLabels.build(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog, visible: view, zoom: 30,
+                                        stops: { $0.id == shaft.id ? stops : nil })
+        let x = game.world.grid.rect(columns: shaft.columns, floors: shaft.floors).center.x
+        let inShaft = numbered.filter { $0.position.x == x }.map(\.text)
+        #expect(inShaft == stops.map { FloorLabel.label(for: $0) })
+    }
+
+    /// A room label moves to the widest part a shaft in front leaves free (0.30.1).
+    @Test func roomLabelsAvoidShaftsInFront() {
+        let shaft = Room(id: RoomID(raw: 9), buildingID: BuildingID(raw: 1), definitionID: "elevator-shaft",
+                         columns: ColumnSpan(start: 12, count: 3), floors: FloorSpan(lowest: 2, highest: 6))
+        #expect(RoomLabels.widestFree(ColumnSpan(start: 10, count: 14), at: 3, shafts: [shaft]) == ColumnSpan(start: 15, count: 9))
+        #expect(RoomLabels.widestFree(ColumnSpan(start: 10, count: 14), at: 7, shafts: [shaft]) == ColumnSpan(start: 10, count: 14))
+        #expect(RoomLabels.widestFree(ColumnSpan(start: 12, count: 3), at: 3, shafts: [shaft]).count == 0)
     }
 }

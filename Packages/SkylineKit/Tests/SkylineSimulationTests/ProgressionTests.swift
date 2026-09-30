@@ -197,7 +197,7 @@ struct StandardFixture {
         let s = ProgressionSummary.make(world: f.world, engine: f.engine, building: f.building)
         #expect(s.byClass && s.className == "Class C" && s.nextClassName == "Class B" && s.maxFloor == 12)
         #expect(s.requirements.map(\.met) == [true, false, true])
-        #expect(s.nextUnlocks == ["Service Elevator", "Fitness Club", "Cinema", "Design studio tenants", "Single professional tenants",
+        #expect(s.nextUnlocks == ["Service Elevator", "Fitness Club", "Cinema", "Hotel Suite", "Design studio tenants", "Single professional tenants",
                                   "Floors up to 25"])
         #expect(s.lockedRooms["service-elevator"] == "Class B" && s.lockedRooms["sky-lobby"] == "Class A")
         #expect(s.assessment != nil)

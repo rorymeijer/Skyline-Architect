@@ -121,6 +121,8 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var incidents = IncidentState()
     /// The scenario being played (Phase 16; nil = free play).
     public var scenario: ScenarioState?
+    /// Hotel stays and housekeeping (0.30, save format 20; nil = no hotel rooms yet).
+    public var hotel: HotelState?
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()
@@ -198,9 +200,12 @@ public struct GameWorld: Codable, Sendable, Equatable {
         rooms.filter { $0.buildingID == buildingID }
     }
 
-    /// The room occupying a cell of a building, if any.
-    public func room(in buildingID: BuildingID, column: Int, floor: Int) -> Room? {
-        rooms.first { $0.buildingID == buildingID && $0.occupies(column: column, floor: floor) }
+    /// The room occupying a cell of a building, if any. Where a shaft stands in front of a
+    /// room (0.30) both occupy the cell; the one `inFront` accepts wins (callers that know the
+    /// catalog pass "is a shaft", so taps pick what is drawn on top).
+    public func room(in buildingID: BuildingID, column: Int, floor: Int, inFront: (Room) -> Bool = { _ in false }) -> Room? {
+        let here = rooms.filter { $0.buildingID == buildingID && $0.occupies(column: column, floor: floor) }
+        return here.first(where: inFront) ?? here.first
     }
 
     public func properties(in cityID: CityID) -> [Property] {

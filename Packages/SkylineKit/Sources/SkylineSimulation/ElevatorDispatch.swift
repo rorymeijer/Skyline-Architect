@@ -39,7 +39,8 @@ enum ElevatorSync {
         // everyone out to queue there; re-planning takes it from there. Its stats stay.
         for shaft in shafts {
             guard let car = world.elevators[shaft.id] else { continue }
-            let served = rules.elevator(for: shaft.definitionID)?.servedFloors(of: shaft.floors) ?? Array(shaft.floors.lowest...shaft.floors.highest)
+            // Also a floor switched off while the car stood there or carried people to it (0.30).
+            let served = ElevatorStops.served(shaft, world: world, rules: rules)
             var outside = !served.contains(car.floor)
             if case let .moving(from, to, _, _, _, _) = car.motion { outside = outside || !served.contains(from) || !served.contains(to) }
             let strandedRiders = car.passengers.contains { id in
@@ -66,7 +67,7 @@ enum ElevatorSync {
             }
         }
         for shaft in shafts where !world.elevators.contains(shaft.id) {
-            let served = rules.elevator(for: shaft.definitionID)?.servedFloors(of: shaft.floors) ?? [shaft.floors.lowest]
+            let served = rules.elevator(for: shaft.definitionID)?.stopFloors(of: shaft.floors) ?? [shaft.floors.lowest]
             let floor = served.min { (abs($0), $0) < (abs($1), $1) }!
             world.elevators.insert(ElevatorCar(id: shaft.id, buildingID: shaft.buildingID, floor: floor))
             // A shaft added next to an existing bank adopts the bank's strategy.

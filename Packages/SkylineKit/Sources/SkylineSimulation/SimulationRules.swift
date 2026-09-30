@@ -103,9 +103,18 @@ public struct ElevatorSpec: Codable, Hashable, Sendable {
         self.serviceOnly = serviceOnly
     }
 
-    /// Floors of a shaft spanning `floors` where cars stop.
-    public func servedFloors(of floors: FloorSpan) -> [Int] {
+    /// Floors of a shaft spanning `floors` where cars may stop (the spec's `stops`).
+    public func stopFloors(of floors: FloorSpan) -> [Int] {
         stops == "ends" ? [floors.lowest, floors.highest] : Array(floors.lowest...floors.highest)
+    }
+
+    /// Floors where a car stops: its stop floors less the ones the player switched off
+    /// (0.30). At least two always remain; a list that would leave fewer is ignored.
+    public func servedFloors(of floors: FloorSpan, skipping skipped: [Int]? = nil) -> [Int] {
+        let all = stopFloors(of: floors)
+        guard let skipped, !skipped.isEmpty else { return all }
+        let served = all.filter { !skipped.contains($0) }
+        return served.count >= 2 ? served : all
     }
 
     /// A person's patience in whole seconds (deterministic per traits).
@@ -150,6 +159,8 @@ public struct SimulationRules: Sendable {
     /// Amenity rooms (0.22), in content order.
     public let amenities: [AmenitySpec]
     private let amenityIndex: [String: Int]
+    /// Hotel rooms (0.30), in content order.
+    public let hotels: [HotelSpec]
     /// Walking speed in meters per game second.
     public var walkSpeed = 1.3
     /// Game seconds to climb or descend one storey by stairs.
@@ -162,7 +173,7 @@ public struct SimulationRules: Sendable {
 
     public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenantTypes: [TenantType] = [],
                 economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil, progression: ReputationRules? = nil,
-                weather: WeatherRules? = nil, events: EventRules? = nil, amenities: [AmenitySpec] = []) {
+                weather: WeatherRules? = nil, events: EventRules? = nil, amenities: [AmenitySpec] = [], hotels: [HotelSpec] = []) {
         self.schedules = schedules
         self.names = names
         self.elevators = elevators
@@ -176,7 +187,11 @@ public struct SimulationRules: Sendable {
         var index: [String: Int] = [:]
         for (i, a) in amenities.enumerated() where index[a.room] == nil { index[a.room] = i }
         amenityIndex = index
+        self.hotels = hotels
     }
+
+    /// What a hotel room offers (nil = not a hotel room).
+    public func hotel(for roomDefinition: String) -> HotelSpec? { hotels.first { $0.room == roomDefinition } }
 
     /// What an amenity room offers (nil = not an amenity).
     public func amenity(for roomDefinition: String) -> AmenitySpec? { amenityIndex[roomDefinition].map { amenities[$0] } }

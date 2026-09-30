@@ -9,10 +9,14 @@ extension AppModel {
     /// Selects the room under a grid cell of the active property (nil cell or no room clears).
     func selectRoom(at cell: GridCell?) {
         guard let cell, let world, let property = activePropertyID,
-              let room = world.buildings(on: property).lazy.compactMap({ world.room(in: $0.id, column: cell.column, floor: cell.floor) }).first else {
+              let room = world.buildings(on: property).lazy.compactMap({
+                  // A shaft in front of a room is drawn on top, so a tap there picks the shaft.
+                  world.room(in: $0.id, column: cell.column, floor: cell.floor, inFront: { self.catalog?.spec($0.definitionID)?.kind == .shaft })
+              }).first else {
             selectedRoom = nil
             unitReport = nil
             shaftOptions = []
+            elevatorStops = []
             scene?.selectionRect = nil
             return
         }

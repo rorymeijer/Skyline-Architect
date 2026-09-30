@@ -35,6 +35,7 @@ struct FacilitiesPanel: View {
             Divider()
             StaffRow(title: "Janitors", count: s.janitors, open: s.openCleaning, done: s.cleaned) { model.changeStaff(.janitor, by: $0) }
             StaffRow(title: "Technicians", count: s.technicians, open: s.openRepairs, done: s.repaired) { model.changeStaff(.technician, by: $0) }
+            StaffRow(title: "Housekeepers", count: s.housekeepers, open: s.openHousekeeping, done: s.housekept) { model.changeStaff(.housekeeper, by: $0) }
             if let capacity = s.staffCapacity {
                 Text(capacity == 0 ? "No staff room yet — build one to hire staff" : "Staff rooms: \(s.staffCount) of \(capacity) places taken")
                     .font(.ui(.caption)).foregroundStyle(s.staffCount >= capacity ? Color.orange : Color.secondary)
@@ -65,7 +66,7 @@ private struct StaffRow: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Text("\(title) \(count)").font(.ui(.caption).weight(.semibold)).scaledFrame(width: 96, alignment: .leading)
+            Text("\(title) \(count)").font(.ui(.caption).weight(.semibold)).scaledFrame(width: 112, alignment: .leading)
             Text("\(open) open · \(done) done").font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
             Spacer()
             PanelButton(title: "−", enabled: count > 0) { change(-1) }

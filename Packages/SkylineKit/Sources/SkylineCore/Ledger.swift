@@ -9,6 +9,8 @@ public enum LedgerCategory: String, Codable, CaseIterable, Hashable, Sendable {
     case taxes
     /// Waste collection (Phase E).
     case waste
+    /// Nights sold in hotel rooms (0.30).
+    case hotel
 }
 
 /// One traceable money movement: when, how much, why and for whom.

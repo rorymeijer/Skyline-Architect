@@ -57,7 +57,7 @@ import SkylineContent
         try f.world.validateIntegrity()
     }
 
-    /// A sold flat cannot be demolished or cut by a shaft.
+    /// A sold flat cannot be demolished; a shaft may stand in front of it and leaves it whole.
     @Test func soldFlatsBelongToTheirOwners() throws {
         var (f, studios) = try studiosForSale()
         let couple = try #require(f.engine.rules.tenantType("couple"))
@@ -70,7 +70,8 @@ import SkylineContent
         #expect(construction.validate(.demolishRoom(sold.id), in: f.world) == .failure(.privatelyOwned))
         let stairs = BuildCommand.placeRoom(building: sold.buildingID, definition: "stairs", columns: ColumnSpan(start: sold.columns.start + 1, count: 4),
                                             floors: FloorSpan(lowest: sold.floors.lowest, highest: sold.floors.lowest + 1))
-        #expect(construction.validate(stairs, in: f.world) == .failure(.privatelyOwned))
+        try construction.apply(stairs, to: &f.world)
+        #expect(f.world.rooms[sold.id] == sold)
     }
 
     /// Owners hold on three times as long as renters; their flat is then resold between

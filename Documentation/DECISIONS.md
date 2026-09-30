@@ -424,6 +424,77 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-066 — Housekeepers make up hotel rooms; janitors do not
+- **Date:** 2026-09-30
+- **Decision:** A separate staff role, `housekeeper`, with its own job kind `housekeeping`
+  (opened at checkout) and wage (`housekeeperWagePerDay`). Janitors no longer make up hotel
+  rooms.
+- **Context:** The owner: the tower's janitor should be someone other than housekeeping.
+  Also, a janitor took the dirtiest room first, so in a busy tower hotel rooms waited.
+- **Alternatives:** Hotel clean jobs first in the janitors' queue: one role for two trades.
+- **Reason:** Hotels and the building's upkeep compete for nobody's time; the player sees
+  what the hotel costs to run.
+- **Consequences:** Kept in save format 20, which had not shipped yet (0.30.0 never left the
+  branch); the v20 golden fixture was regenerated with a housekeeper.
+
+## D-065 — Hotel rooms are sold night by night, not leased
+- **Date:** 2026-09-30
+- **Decision:**
+  - A hotel room is a room type without `rentPerModule`, plus a `hotels.json` entry.
+  - Hourly with the market, a vacant, cleaned room may be booked. Guests (`PersonRole.guest`,
+    their room in `visit`) arrive, sleep there and check out in the morning.
+  - The night is paid at checkout (ledger `hotel`). The room then waits for a janitor.
+- **Context:** The owner asked for hotel rooms like the classic tower games.
+- **Alternatives:**
+  - A tenant type that leases hotel rooms: they would sit there for weeks.
+  - Visitors with a long stay: they have no night and no housekeeping.
+- **Reason:** Guests reuse the visitor path: spawn outside, go in, stay, leave, purge.
+  Housekeeping reuses the janitors' clean jobs. The new state is small: stays, rooms awaiting
+  housekeeping, and two totals.
+- **Consequences:**
+  - Save format 20: a new person role, `world.hotel`, and the ledger category `hotel`
+    (migration pads the daily totals).
+  - Hotel income counts toward the scenarios' daily profit.
+  - Guests do not lease, so they never review a room or move out. A badly served room is
+    simply booked less often.
+
+## D-064 — Shafts stand in front of rooms
+- **Date:** 2026-09-30
+- **Decision:** A stairwell or elevator shaft may overlap rooms and is drawn in front of
+  them; the rooms stay whole behind it. A room may also be placed behind an existing shaft.
+  Only a space of the same kind blocks: a room another room, a shaft another shaft. This
+  replaces "rooms make way" (0.20.2), where a shaft cut rooms narrower or split them.
+- **Context:** The owner asked for elevators that can go over any room, with the room
+  (partly) behind it, as in the classic tower games.
+- **Alternatives:** Keep cutting rooms (the owner found it limiting); let shafts cut only
+  vacant rooms.
+- **Reason:** Placement gets simpler and never destroys a lease. Rooms keep their width,
+  rent and interior. Walking was never blocked by shafts, so the simulation does not change.
+- **Consequences:**
+  - The integrity check needs to know which definitions are shafts. `validateIntegrity(isShaft:)`
+    and `SaveCodec.decode(…, isShaft:)` take a predicate. Without one, every overlap is still
+    an error.
+  - A tap on a shaft's cells picks the shaft (`room(in:…, inFront:)`). The room behind is
+    picked outside the shaft's columns.
+  - `MakeWay.swift` became `ShaftRules.swift`, and the `noSpaceLeft` error is gone. Old saves
+    are unchanged: their rooms were already cut.
+
+## D-063 — Scroll only where even the smallest step is too tall
+- **Date:** 2026-09-30
+- **Decision:** `fitsScreen()` wraps each full-screen card ladder. It offers the screen height
+  to the ladder, measures the result, and puts the card in a scroll view only when even the
+  smallest step is taller than the screen (0.29.4).
+- **Context:** A long scenario briefing (*Lean Tower*) ran off the iPhone screen: D-062
+  assumed the smallest step always fits.
+- **Alternatives:**
+  - A scroll view as the ladder's last step: inside `ViewThatFits` it gets its tiny ideal
+    height, and the card vanished.
+  - A scroll view around every card: `ImageRenderer` leaves scroll views blank (D-047), so
+    every capture went empty.
+- **Reason:** Screens that fit stay exactly as before and stay capturable. The rare screen
+  that does not fit becomes usable.
+- **Consequences:** The scrolling case cannot be shown by a capture. It needs a device check.
+
 ## D-062 — Every screen fits an iPhone: shrink to fit; App Store screenshots from the game
 - **Date:** 2026-09-29
 - **Decision:**

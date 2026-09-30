@@ -32,13 +32,13 @@ final class GameSKView: SKView, UIGestureRecognizerDelegate {
         addGestureRecognizer(tap)
     }
 
-    /// With a tool active, a tap places at the default size; otherwise it selects.
+    /// With a tool active, a tap holds a placement there, and the next taps move its end
+    /// (0.30; Place builds it). Without a tool it selects.
     @objc private func handleTap(_ g: UITapGestureRecognizer) {
         guard let worldScene else { return }
         let p = scenePoint(g)
         guard worldScene.activeTool != nil else { worldScene.select(at: p); return }
-        worldScene.beginPlacement(at: p)
-        worldScene.endPlacement(at: p)
+        worldScene.holdPlacement(at: p)
     }
 
     @available(*, unavailable)
@@ -69,9 +69,9 @@ final class GameSKView: SKView, UIGestureRecognizerDelegate {
             let p = scenePoint(g)
             switch g.state {
             case .began: worldScene.beginPlacement(at: p)
-            case .changed: worldScene.updatePlacement(at: p)
-            case .ended: worldScene.endPlacement(at: p); isPlacing = false
-            default: worldScene.cancelPlacement(); isPlacing = false
+            case .changed: worldScene.updatePlacement(at: p); scrollAtEdge(p)
+            case .ended: worldScene.endPlacement(at: p); isPlacing = false; scrollAtEdge(nil)
+            default: worldScene.cancelPlacement(); isPlacing = false; scrollAtEdge(nil)
             }
             return
         }
@@ -88,6 +88,21 @@ final class GameSKView: SKView, UIGestureRecognizerDelegate {
         default:
             break
         }
+    }
+
+    /// While a placement is dragged near the edge of the view, the view scrolls that way
+    /// (0.30), faster the closer the finger is, so a long room or tall shaft fits in one drag.
+    private func scrollAtEdge(_ point: CGPoint?) {
+        guard let worldScene else { return }
+        var v = Vec2.zero
+        if let point, let size = scene?.size {
+            let margin = 72.0
+            func push(_ distance: Double) -> Double { distance < margin ? min(1, (margin - distance) / margin) * 0.8 : 0 }
+            let x = Double(point.x), y = Double(point.y), w = Double(size.width), h = Double(size.height)
+            v = Vec2(push(w - x) - push(x), push(h - y) - push(y))       // scene y points up
+        }
+        guard heldKeys.isEmpty else { return }                           // the keyboard pans
+        worldScene.withController { $0.keyboardPan = v }
     }
 
     @objc private func handlePinch(_ g: UIPinchGestureRecognizer) {

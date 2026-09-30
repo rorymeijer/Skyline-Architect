@@ -61,6 +61,7 @@ struct BuildPalette: View {
         case "residential": "Homes"
         case "infrastructure": "Plant"
         case "amenity": "Amenities"
+        case "hotel": "Hotel"
         default: id.prefix(1).uppercased() + id.dropFirst()
         }
     }
@@ -168,6 +169,7 @@ struct BuildPalette: View {
         case "expressElevatorShaft": "arrow.up.arrow.down.circle"
         case "office": "briefcase"
         case "apartment": "bed.double"
+        case "hotel": "bed.double.fill"
         case "mechanical": "gearshape.2"
         case "electrical": "bolt"
         case "telecom": "antenna.radiowaves.left.and.right"
@@ -256,7 +258,11 @@ struct StatusPill: View {
                 Text(save).foregroundStyle(.secondary)
             }
             if !compact, model.activeTool != nil {
+                #if os(iOS)
+                Text("Tap or drag to place · two fingers pan").foregroundStyle(.secondary)
+                #else
                 Text("Esc to stop building").foregroundStyle(.secondary)
+                #endif
             }
         }
         .font(.system(size: 11, weight: .medium))

@@ -102,6 +102,9 @@ public struct ElevatorCar: Codable, Hashable, Sendable, Identifiable {
     /// Broken down (Phase E, save format 17; nil = running): the car stands until a
     /// technician repairs its shaft.
     public var outOfService: Bool?
+    /// Floors the player switched off (0.30, save format 19; nil = none): the car passes
+    /// them without stopping. Floors outside the shaft are ignored.
+    public var skippedFloors: [Int]?
 
     public var isOutOfService: Bool { outOfService == true }
 

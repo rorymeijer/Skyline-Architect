@@ -32,10 +32,10 @@ extension ScreenshotDirector {
             model.leaseAllVacant()
             model.advanceSimulation(toTimeOfDay: 10)
             _ = model.save()
-            model.activeHint = nil
             model.refreshSimulationSummary()
+            clearHints(model)                                              // a tip would cover the room
             model.activeHint = nil
-            scene.withController { $0.jump(center: point(model, column: 16, floor: 4), zoom: 11) }
+            focus(model, point(model, column: 16, floor: 4), zoom: 11)                                     // newGame() made a new scene
             return "\(model.clockText): the demo tower (developer blueprint, leased by the developer tool), no panel open; quick-saved for the next step."
         },
         Step(name: "05-saves", grid: false) { model, _ in
@@ -99,6 +99,68 @@ extension ScreenshotDirector {
             }
             model.refreshEconomy()
             return "The bankruptcy screen (set by the script)."
+        },
+        Step(name: "20-elevator-stops", grid: false) { model, scene in
+            // 0.30: a stairwell in front of rooms, and an elevator passing two floors.
+            model.newGame()
+            model.showMainMenu = false
+            model.setSpeed(.paused)
+            model.applyBlueprint("demo-tower")
+            let stairs = stairsThroughRooms(model)
+            let selected = select(model, "elevator-shaft")
+            for floor in [3, 5] { model.setStop(floor, served: false) }
+            if let shaft = shaft(model), let b = model.world?.buildings[shaft.buildingID] {
+                let column = shaft.columns.start - b.footprint.start
+                // newGame() built a new scene: the one this step was given is gone.
+                focus(model, point(model, column: column + 4, floor: 4.5), zoom: 16)
+            }
+            return "\(selected); floors 3 and 5 switched off (no number in the shaft). Stairwell: \(stairs)"
+        },
+        Step(name: "21-see-through-shafts", grid: false) { model, _ in
+            // A second elevator in front of rooms, so the glass shows what is behind it.
+            model.selectRoom(at: nil)
+            let column = elevatorThroughRooms(model)
+            model.seeThroughShafts = true
+            if let column { focus(model, point(model, column: column, floor: 4.5), zoom: 18) }
+            return column.map { "See-through elevator shafts; a second elevator (floors 2–6, column \($0)) stands in front of rooms, which show through." }
+                ?? "See-through elevator shafts (no place for a second elevator in front of rooms)."
+        },
+        Step(name: "22-held-placement", grid: false) { model, scene in
+            // 0.30: on touch a placement is held with a bar (size, price, ± , Cancel, Place).
+            model.seeThroughShafts = false
+            model.selectRoom(at: nil)
+            guard let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
+                  let top = b.floors.map(\.level).max(), let roof = b.plate(at: top) else { return "no building" }
+            model.select(tool: .floor)
+            clearHints(model)                                              // a tip would cover the bar
+            scene.holdPlacement(anchor: GridCell(column: roof.span.start, floor: top + 1), end: GridCell(column: roof.span.start + 11, floor: top + 1))
+            model.nudgeHeldPlacement(by: 1)
+            scene.withController { $0.jump(center: point(model, column: 12, floor: Double(top) + 0.5), zoom: 11) }
+            let held = scene.heldCells.map { "columns \($0.anchor.column)–\($0.end.column), floor \($0.end.floor)" } ?? "nothing held"
+            return "A floor held above the roof, one module longer by the + button: \(held)."
+        },
+        Step(name: "23-hotel", grid: false) { model, scene in
+            // 0.30: two hotel rooms on the new top floor at night; one selected.
+            model.confirmHeldPlacement()
+            model.select(tool: nil)
+            guard let world = model.world, let property = model.activePropertyID, let b = world.buildings(on: property).first,
+                  let top = b.floors.map(\.level).max(), let plate = b.plate(at: top - 1), let shaft = shaft(model) else { return "no building" }
+            model.perform(.buildFloor(building: b.id, level: top, span: plate.span))          // the held floor, as wide as the roof
+            model.perform(.resizeRoom(shaft.id, floors: FloorSpan(lowest: shaft.floors.lowest, highest: top)))
+            for (i, def) in ["hotel-twin", "hotel-single"].enumerated() {
+                model.perform(.placeRoom(building: b.id, definition: def, columns: ColumnSpan(start: plate.span.start + i * 9, count: def == "hotel-twin" ? 8 : 6),
+                                         floors: FloorSpan(lowest: top, highest: top)))
+            }
+            model.changeStaff(.housekeeper, by: 1)
+            model.changeStaff(.technician, by: 1)                           // keeps the elevator running
+            model.advanceSimulation(toTimeOfDay: 21)
+            model.advanceSimulation(ticks: SimClock.secondsPerDay)          // the second night: made up and booked again
+            model.refreshSimulationSummary()
+            clearHints(model)                                              // a tip would cover the room
+            model.selectRoom(at: GridCell(column: plate.span.start + 1, floor: top))
+            scene.withController { $0.jump(center: point(model, column: 10, floor: Double(top) + 0.5), zoom: 14) }
+            let hotel = model.world?.hotel
+            return "\(model.clockText): \(hotel?.nights ?? 0) nights sold, \(model.world?.facilities.housekept ?? 0) made up, \(hotel?.stays.count ?? 0) rooms booked, \(model.world?.people.values.filter { $0.role == .guest }.count ?? 0) guests; hotel twin selected."
         },
     ]
 

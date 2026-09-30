@@ -55,8 +55,10 @@ enum BuildingArt {
             }
         }
 
-        // Rooms after all shells so they paint over them.
-        for room in rooms {
+        // Rooms after all shells so they paint over them; shafts last, in front of the rooms
+        // they stand before (0.30).
+        let isShaft = { (r: Room) in catalog?.spec(r.definitionID)?.kind == .shaft }
+        for room in rooms.filter({ !isShaft($0) }) + rooms.filter(isShaft) {
             let spec = catalog?.spec(room.definitionID)
             d.detailBand(min: room.floors.lowest >= 0 ? cutawayDetail : 0) { d in
                 RoomArt.draw(into: &d, room: room, appearance: spec?.appearance ?? "default", layout: art.layouts[room.definitionID],

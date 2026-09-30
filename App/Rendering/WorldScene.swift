@@ -45,7 +45,16 @@ final class WorldScene: SKScene {
     // Construction interaction. The scene only tracks pointer state; rules and previews
     // come from the model through these closures (no game logic in the renderer).
     /// The active construction tool (nil = camera only).
-    var activeTool: ConstructionTool? { didSet { placementAnchor = nil; overlayDirty = true } }
+    var activeTool: ConstructionTool? { didSet { placementAnchor = nil; heldEnd = nil; overlayDirty = true } }
+    /// Touch (0.30): a placement is held once the finger lifts, instead of being built. Its end
+    /// moves with a tap, a new drag or the ± buttons; Place builds it (`confirmHeldPlacement`).
+    /// Two fingers still pan, so the far end of a long room can be reached first.
+    var holdsPlacement = false
+    /// The held placement's end cell (nil = nothing held).
+    private(set) var heldEnd: GridCell?
+    /// Told whenever the held placement's preview changes (nil when nothing is held).
+    var onHeldPreview: ((PlacementPreview?) -> Void)?
+    private var reportedHeld: PlacementPreview?
     var previewProvider: ((ConstructionTool, GridCell, GridCell) -> PlacementPreview?)?
     var roomLabelProvider: ((Rect, Double) -> [RoomLabel])?
     /// Developer navigation overlay data (nil = hidden). Asked every frame while set.
@@ -199,6 +208,9 @@ final class WorldScene: SKScene {
         overlayDirty = true
     }
 
+    /// Redraws labels and overlays on the next frame (a setting they show changed).
+    func invalidateOverlays() { overlayDirty = true }
+
     /// Replaces the composition after construction; only tiles in `dirty` re-render.
     func updateComposition(_ c: SiteComposition, dirty: Rect?) {
         composition = c
@@ -215,7 +227,15 @@ final class WorldScene: SKScene {
 
     func beginPlacement(at point: CGPoint) {
         guard activeTool != nil else { return }
-        placementAnchor = cell(at: point)
+        let here = cell(at: point)
+        // Touch: a drag that starts at the held placement's end moves that end; any other
+        // drag starts a new placement.
+        if let end = heldEnd, abs(end.column - here.column) <= 1, abs(end.floor - here.floor) <= 1 {
+            heldEnd = nil
+        } else {
+            heldEnd = nil
+            placementAnchor = here
+        }
         hoverPoint = point
     }
 
@@ -223,9 +243,14 @@ final class WorldScene: SKScene {
         hoverPoint = point
     }
 
-    /// Commits the preview under the pointer if it is valid.
+    /// Commits the preview under the pointer if it is valid (touch: holds it instead).
     func endPlacement(at point: CGPoint) {
         guard let tool = activeTool, let anchor = placementAnchor else { return }
+        if holdsPlacement {
+            heldEnd = cell(at: point)
+            hoverPoint = nil
+            return
+        }
         hoverPoint = point
         let preview = previewProvider?(tool, anchor, cell(at: point))
         placementAnchor = nil
@@ -240,7 +265,47 @@ final class WorldScene: SKScene {
 
     func cancelPlacement() {
         placementAnchor = nil
+        heldEnd = nil
         overlayDirty = true
+    }
+
+    /// A tap with a tool on touch (0.30): the first holds a placement of the smallest size
+    /// there; later taps move its end to the tapped cell.
+    func holdPlacement(at point: CGPoint) {
+        guard activeTool != nil else { return }
+        let here = cell(at: point)
+        if heldEnd == nil { placementAnchor = here }
+        heldEnd = here
+        hoverPoint = nil
+        overlayDirty = true
+    }
+
+    /// The held placement's anchor and end (nil = nothing held).
+    var heldCells: (anchor: GridCell, end: GridCell)? {
+        guard let placementAnchor, let heldEnd else { return nil }
+        return (placementAnchor, heldEnd)
+    }
+
+    /// Moves the held placement's end (the ± buttons), or holds one at exact cells (captures).
+    func holdPlacement(anchor: GridCell? = nil, end: GridCell) {
+        guard activeTool != nil else { return }
+        if let anchor { placementAnchor = anchor }
+        guard placementAnchor != nil else { return }
+        heldEnd = end
+        hoverPoint = nil
+        overlayDirty = true
+    }
+
+    /// Builds the held placement if it is valid; it stays held (to adjust) when not.
+    @discardableResult
+    func confirmHeldPlacement() -> Bool {
+        guard let tool = activeTool, let held = heldCells,
+              let preview = previewProvider?(tool, held.anchor, held.end), let command = preview.command, preview.isValid else { return false }
+        placementAnchor = nil
+        heldEnd = nil
+        overlayDirty = true
+        onCommit?(command)
+        return true
     }
 
     /// Places the pointer and drag anchor on exact cells (automated captures).
@@ -379,7 +444,21 @@ final class WorldScene: SKScene {
     }
 
     private func updatePreview(camera: Camera2D) {
-        guard let tool = activeTool, let hoverPoint else {
+        defer { reportHeld() }
+        guard let tool = activeTool else {
+            currentPreview = nil
+            placementOverlay.update(preview: nil, camera: camera, cursor: nil)
+            return
+        }
+        // A held placement (touch) stays on its cells while the camera moves.
+        if let held = heldCells {
+            currentPreview = previewProvider?(tool, held.anchor, held.end)
+            let end = held.end
+            let center = composition.grid.rect(columns: ColumnSpan(start: end.column, count: 1), floors: FloorSpan(lowest: end.floor, highest: end.floor)).center
+            placementOverlay.update(preview: currentPreview, camera: camera, cursor: camera.worldToScreen(center).cgPoint)
+            return
+        }
+        guard let hoverPoint else {
             currentPreview = nil
             placementOverlay.update(preview: nil, camera: camera, cursor: nil)
             return
@@ -387,6 +466,13 @@ final class WorldScene: SKScene {
         let current = cell(at: hoverPoint)
         currentPreview = previewProvider?(tool, placementAnchor ?? current, current)
         placementOverlay.update(preview: currentPreview, camera: camera, cursor: hoverPoint)
+    }
+
+    private func reportHeld() {
+        let held = heldEnd == nil ? nil : currentPreview
+        guard held != reportedHeld else { return }
+        reportedHeld = held
+        onHeldPreview?(held)
     }
 
     /// Grid cell under the cursor if it lies in the buildable frontage.

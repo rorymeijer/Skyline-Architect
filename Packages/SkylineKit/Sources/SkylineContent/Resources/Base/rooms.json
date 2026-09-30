@@ -561,5 +561,108 @@
   "wearPerDay": 0.01,
   "staffPerModule": 0.75,
   "staffRange": 10
+ },
+ {
+  "id": "hotel-single",
+  "lighting": {
+   "color": "#FFCB8A",
+   "occupied": 1.0,
+   "empty": 0.0,
+   "wattsPerModule": 7,
+   "quietHours": {
+    "from": "23:00",
+    "to": "06:30",
+    "level": 0.05,
+    "spreadMinutes": 90
+   }
+  },
+  "name": "Hotel Single Room",
+  "category": "hotel",
+  "kind": "room",
+  "appearance": "hotel",
+  "minWidth": 6,
+  "maxWidth": 7,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 1450,
+  "lowestLevel": 1,
+  "noise": 0.05,
+  "maintenancePerModulePerDay": 6,
+  "utilityDemand": {
+   "electricity": 2,
+   "hvac": 1.5,
+   "water": 2.5,
+   "data": 1
+  },
+  "wearPerDay": 0.012
+ },
+ {
+  "id": "hotel-twin",
+  "lighting": {
+   "color": "#FFCB8A",
+   "occupied": 1.0,
+   "empty": 0.0,
+   "wattsPerModule": 7,
+   "quietHours": {
+    "from": "23:00",
+    "to": "06:30",
+    "level": 0.05,
+    "spreadMinutes": 90
+   }
+  },
+  "name": "Hotel Twin Room",
+  "category": "hotel",
+  "kind": "room",
+  "appearance": "hotel",
+  "minWidth": 8,
+  "maxWidth": 10,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 1500,
+  "lowestLevel": 1,
+  "noise": 0.05,
+  "maintenancePerModulePerDay": 6,
+  "utilityDemand": {
+   "electricity": 2,
+   "hvac": 1.5,
+   "water": 2.5,
+   "data": 1
+  },
+  "wearPerDay": 0.012
+ },
+ {
+  "id": "hotel-suite",
+  "lighting": {
+   "color": "#FFCB8A",
+   "occupied": 1.0,
+   "empty": 0.0,
+   "wattsPerModule": 7,
+   "quietHours": {
+    "from": "23:00",
+    "to": "06:30",
+    "level": 0.05,
+    "spreadMinutes": 90
+   }
+  },
+  "name": "Hotel Suite",
+  "category": "hotel",
+  "kind": "room",
+  "appearance": "hotel",
+  "minWidth": 12,
+  "maxWidth": 16,
+  "minFloors": 1,
+  "maxFloors": 1,
+  "costPerModule": 1750,
+  "lowestLevel": 1,
+  "noise": 0.05,
+  "maintenancePerModulePerDay": 6,
+  "utilityDemand": {
+   "electricity": 2,
+   "hvac": 1.5,
+   "water": 2.5,
+   "data": 1
+  },
+  "wearPerDay": 0.012,
+  "unlockClass": 1
  }
 ]

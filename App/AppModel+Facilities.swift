@@ -23,16 +23,16 @@ extension AppModel {
         lightingKWhToday = building.flatMap { world.buildings[$0]?.lightingKWh } ?? 0
     }
 
-    /// Hires (+1) or dismisses (−1) a janitor or technician for the active building.
+    /// Hires (+1) or dismisses (−1) a janitor, technician or housekeeper for the active building.
     func changeStaff(_ role: PersonRole, by delta: Int) {
         guard var w = world, let simulation, let property = activePropertyID, let building = w.buildings(on: property).first else { return }
         if delta > 0 {
             guard FacilitiesManagement.hire(role, building: building.id, world: &w, rules: simulation.rules,
                                             catalog: simulation.catalog) != nil else {
                 alert = w.restrictions?.staffForbidden == true
-                    ? AppAlert(title: "No staff in this scenario", message: "This scenario does not allow janitors or technicians.")
+                    ? AppAlert(title: "No staff in this scenario", message: "This scenario does not allow any staff.")
                     : AppAlert(title: "No place in a staff room",
-                               message: "Janitors and technicians need a place in a staff room. Build one (Staff Room), or a larger one.")
+                               message: "Staff need a place in a staff room. Build one (Staff Room), or a larger one.")
                 return
             }
         } else {

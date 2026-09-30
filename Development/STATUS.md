@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-30 (0.29.4 — nothing cut off on the iPhone)_
+_Last updated: 2026-09-30 (0.30.1 — shafts build their missing floors)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -23,6 +23,28 @@ _Last updated: 2026-09-30 (0.29.4 — nothing cut off on the iPhone)_
 - App Store screenshots come from the game itself (`Development/Screenshots/AppStore/`).
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
+
+**0.30.1 (build 5):** a shaft placed or extended past the existing floors builds the
+missing floor plates first, in one batch (`ConstructionEngine.addingFloors`, ShaftTests).
+Used by shaft drags and the inspector's Extend Up/Down. FUNCTIONAL in the package tests; not
+checked in a capture. Housekeepers (D-066): a separate staff role makes up hotel rooms;
+HotelTests run ten days (with a technician: without one the only elevator breaks down on
+day 4 and staff cannot reach the hotel floor, which is correct). Capture 21 now puts a second
+elevator in front of rooms; captures 22–23 hide the tool tip; 23 shows the second night.
+
+**0.30.0 (build 4):** the owner's elevator requests. FUNCTIONAL in the package tests; the
+app side is checked by CI captures 20 and 21 of the screen tour.
+- Shafts stand in front of rooms (D-064); rooms stay whole and may go behind a shaft.
+- Stops per car (`ElevatorStops`, save format 19): the inspector shows one button per floor.
+- Floor numbers in the shaft where the car stops; see-through shafts (`⌥⌘J`).
+- Touch placement (iOS): a held ghost with a bar (size, price, ±, Cancel, Place); taps
+  move its end; drags from its end stretch it; two fingers pan; a drag scrolls at the screen
+  edge. `PlacementPlanner.nudged` is tested; the rest is app input. Tour step 22 captures the
+  bar. Not checked on a device.
+- Hotel rooms (HOTELS.md, D-065, save format 20): single, twin and suite. Nights are booked
+  from 15:00, guests sleep there and check out in the morning, and the room then waits for a
+  janitor. FUNCTIONAL in the package tests (HotelTests, SaveV20Tests). Tour step 23 captures
+  them. Balance not played over long games.
 
 **0.29.4 (build 3):** on the iPhone, the scenario browser still ran off the screen with a
 long briefing (*Lean Tower*). The shrink steps assumed the smallest step would fit. Now

@@ -3,7 +3,7 @@
 //
 // Usage: skyline-snapshot [--preset overview|foundation|detail|skyline|building] [--width 1440]
 //                         [--height 900] [--scale 1] [--no-grid] [--blueprint demo-tower]
-//                         [--center x,y --zoom z] --out file.svg
+//                         [--center x,y --zoom z] [--see-through] --out file.svg
 import Foundation
 import SkylineCore
 import SkylineContent
@@ -57,8 +57,10 @@ do {
         let ticks = target >= SimClock.startSecondOfDay ? target - SimClock.startSecondOfDay : target + 86_400 - SimClock.startSecondOfDay
         SimulationEngine(rules: library.simulationRules, catalog: catalog).advance(&game.world, by: ticks)
     }
+    var palette = ArtPalette.standard
+    palette.seeThroughShafts = args.contains("--see-through")
     guard let composition = SiteComposer.compose(world: game.world, propertyID: game.activePropertyID, catalog: catalog,
-                                                 art: library.artCatalog) else {
+                                                 art: library.artCatalog, palette: palette) else {
         fail("property missing")
     }
     var placement = preset.placement(for: composition, viewport: viewport)

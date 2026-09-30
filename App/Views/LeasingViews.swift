@@ -9,6 +9,9 @@ struct UnitInspector: View {
     let report: UnitReport
     var shaftOptions: [ConstructionOption] = []
     var onResize: (BuildCommand) -> Void = { _ in }
+    /// Stop switches of a selected elevator (0.30).
+    var stops: [ElevatorStopToggle] = []
+    var onStop: (Int, Bool) -> Void = { _, _ in }
     /// Offer the (vacant) unit for sale (true) or for rent (false).
     var onTenure: (Bool) -> Void = { _ in }
     /// Change the unit's own rent setting by a step (Phase E).
@@ -53,7 +56,7 @@ struct UnitInspector: View {
                     }
                 }
                 if let best = report.interest.first { Criteria(appraisal: best.appraisal) }
-            } else {
+            } else if report.hotel == nil {                               // hotel rooms sell nights instead
                 Text("Not rentable — shared space or services.").font(.ui(.caption)).foregroundStyle(.secondary)
             }
             if report.leasable, report.tenure == .rent {
@@ -73,6 +76,7 @@ struct UnitInspector: View {
                 .help("This unit's rent on top of the building's rent level; for new tenants and how units are rated. Signed rents stay.")
             }
             if let a = report.amenity { AmenityDetails(info: a) }
+            if let h = report.hotel { HotelDetails(info: h) }
             if !report.utilities.isEmpty {
                 Divider()
                 HStack(spacing: 8) {
@@ -85,6 +89,7 @@ struct UnitInspector: View {
                 Meter(label: "Condition", value: report.condition)
             }
             if !shaftOptions.isEmpty { ShaftHeightControls(options: shaftOptions, onResize: onResize) }
+            if !stops.isEmpty { ElevatorStopControls(stops: stops, onToggle: onStop) }
             if !report.history.isEmpty {
                 Divider()
                 ForEach(Array(report.history.prefix(4).enumerated()), id: \.offset) { _, e in

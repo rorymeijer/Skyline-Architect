@@ -2,6 +2,43 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.30.1] — Elevators build their own floors
+
+### Added
+- **Shafts build missing floors:** a stairwell or elevator placed or extended above the top
+  floor or below the lowest basement now builds the missing floor plates under it, in the
+  same step (one undo). The preview shows *+N new floors* and the price includes the slabs.
+  This only happens where a floor may be built: not deeper than the foundation is dug, not
+  above the class, pile or scenario limit.
+- **Housekeepers:** a new staff member (Facilities panel, $160 a day, plum uniform) makes up
+  hotel rooms after checkout. Janitors clean the rest of the building and no longer do the
+  hotel rooms.
+
+### Fixed
+- A hotel room's inspector no longer says "Not rentable — shared space or services".
+- A room's name moves beside a shaft standing in front of it instead of under its floor numbers.
+
+## [0.30.0] — Elevators in front of rooms, stops per floor, see-through shafts
+
+### Added
+- **Stops:** select an elevator to switch its stops floor by floor. The car passes a
+  switched-off floor; at least two stay on. Save format 19.
+- **Floor numbers** in the elevator shaft at every floor where the car stops.
+- **See-through Elevator Shafts** (`⌥⌘J`, view controls): the hoistway becomes glass, and
+  the rooms behind it show through.
+- **Hotel rooms:** single, twin and suite, sold night by night. Guests book from 15:00,
+  sleep there and check out in the morning, when the night is paid. A janitor must then
+  clean the room before it can be booked again. Save format 20.
+- **Touch placement (iPad, iPhone):** a tap or drag holds a ghost instead of building at
+  once. Tap elsewhere to move its end, drag from its end to stretch it, or pan with two
+  fingers while it stays. **Longer**/**Shorter** change it by one module, and **Place** builds
+  it. A drag near the edge of the screen scrolls the view along.
+
+### Changed
+- **Shafts stand in front of rooms:** a stairwell or elevator may go over any room, and the
+  room stays whole behind it. Rooms may also be built behind an existing shaft. Before,
+  rooms made way (they got narrower or split).
+
 ## [0.29.4] — Nothing cut off on the iPhone
 
 ### Fixed

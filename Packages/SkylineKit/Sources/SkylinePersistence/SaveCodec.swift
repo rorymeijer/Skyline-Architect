@@ -31,7 +31,7 @@ public enum SaveError: Error, Equatable, CustomStringConvertible {
 /// an inconsistent save is rejected instead of silently corrupting a game.
 public enum SaveCodec {
     public static let format = "skyline-architect-save"
-    public static let currentVersion = 18
+    public static let currentVersion = 20
 
     /// Upgrades the `game` JSON object from version `key` to `key + 1`.
     public typealias Migration = @Sendable (inout [String: Any]) throws -> Void
@@ -241,6 +241,25 @@ public enum SaveCodec {
         // (`fired`, `news`, `shocks`) and a scored result (`stars`, `score`). All optional:
         // older games have none, so nothing needs adding.
         17: { _ in },
+        // v18 → v19 (0.30): cars may carry `skippedFloors`, and a shaft may stand in front of
+        // rooms (overlapping them). Older games have neither, so nothing needs adding.
+        18: { _ in },
+        // v19 → v20 (0.30): hotel rooms. People may be `guest`s (their room in `visit`); the
+        // world may carry `hotel` (stays and rooms awaiting housekeeping); the ledger gains
+        // a `hotel` category (daily totals grow by one). Older games have no hotel.
+        19: { game in
+            guard var world = game["world"] as? [String: Any] else { throw SaveError.corrupt("v19 save without world") }
+            if var ledger = world["ledger"] as? [String: Any] {
+                ledger["days"] = (ledger["days"] as? [[String: Any]] ?? []).map { day -> [String: Any] in
+                    var d = day
+                    let amounts = d["amounts"] as? [Int] ?? []
+                    if amounts.count < 15 { d["amounts"] = amounts + [Int](repeating: 0, count: 15 - amounts.count) }
+                    return d
+                }
+                world["ledger"] = ledger
+            }
+            game["world"] = world
+        },
     ]
 
     private struct Envelope<Game: Codable>: Codable {
@@ -271,7 +290,9 @@ public enum SaveCodec {
         try makeEncoder().encode(Envelope(format: format, formatVersion: currentVersion, game: save))
     }
 
-    public static func decode(_ data: Data, availablePacks: [ContentPackReference],
+    /// `isShaft` tells shafts from rooms (by definition id) for the integrity check: a shaft
+    /// may stand in front of a room (0.30).
+    public static func decode(_ data: Data, availablePacks: [ContentPackReference], isShaft: (String) -> Bool = { _ in false },
                               migrations: [Int: Migration] = SaveCodec.migrations,
                               currentVersion: Int = SaveCodec.currentVersion) throws -> SaveGame {
         guard let header = try? makeDecoder().decode(Header.self, from: data),
@@ -291,7 +312,7 @@ public enum SaveCodec {
         if let missing = save.contentPacks.first(where: { !installed.contains($0.id) }) {
             throw SaveError.missingContentPack(missing.id)
         }
-        do { try save.world.validateIntegrity() } catch { throw SaveError.invalidWorld(String(describing: error)) }
+        do { try save.world.validateIntegrity(isShaft: isShaft) } catch { throw SaveError.invalidWorld(String(describing: error)) }
         guard save.world.properties.contains(save.activePropertyID) else { throw SaveError.invalidWorld("active property missing") }
         return save
     }

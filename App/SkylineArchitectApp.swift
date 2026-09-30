@@ -98,6 +98,8 @@ struct GameCommands: Commands {
                 .keyboardShortcut("f", modifiers: [.command, .option])
             Button(model.showServices ? "Hide Services Overlay" : "Show Services Overlay") { model.showServices.toggle() }
                 .keyboardShortcut("u", modifiers: [.command, .option])
+            Button(model.seeThroughShafts ? "Solid Elevator Shafts" : "See-through Elevator Shafts") { model.seeThroughShafts.toggle() }
+                .keyboardShortcut("j", modifiers: [.command, .option])
             #if DEBUG
             Button(model.showNavigationOverlay ? "Hide Navigation Overlay" : "Show Navigation Overlay") { model.toggleNavigationOverlay() }
                 .keyboardShortcut("n", modifiers: [.command, .option])

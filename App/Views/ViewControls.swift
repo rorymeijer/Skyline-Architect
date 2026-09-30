@@ -34,6 +34,7 @@ struct ViewControls: View {
             Toggle(symbol: "banknote", help: "Economy (⌥⌘M)", isOn: model.showEconomyPanel) { model.showEconomyPanel.toggle() },
             Toggle(symbol: "wrench.and.screwdriver", help: "Facilities (⌥⌘F)", isOn: model.showFacilitiesPanel) { model.showFacilitiesPanel.toggle() },
             Toggle(symbol: "bolt.horizontal", help: "Services overlay (⌥⌘U)", isOn: model.showServices) { model.showServices.toggle() },
+            Toggle(symbol: "square.stack.3d.up", help: "See-through Elevator Shafts (⌥⌘J)", isOn: model.seeThroughShafts) { model.seeThroughShafts.toggle() },
         ]
         return t
     }

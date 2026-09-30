@@ -7,12 +7,12 @@ public enum BuildCommand: Codable, Hashable, Sendable {
     case buildFloor(building: BuildingID, level: Int, span: ColumnSpan)
     /// Removes the whole plate at `level` (must be empty and carry nothing).
     case demolishFloor(building: BuildingID, level: Int)
-    /// Places a room or shaft. A shaft may go over rooms: they make way (narrower, or split
-    /// in two) as long as a piece of at least their minimum width is left.
+    /// Places a room or shaft. A shaft may stand in front of rooms, which stay whole behind
+    /// it (0.30); a room never overlaps a room, nor a shaft a shaft.
     case placeRoom(building: BuildingID, definition: String, columns: ColumnSpan, floors: FloorSpan)
     case demolishRoom(RoomID)
-    /// Moves a shaft's top and/or bottom to `floors` (same columns). Rooms on new floors
-    /// make way as for `placeRoom`; the elevator car and its statistics stay.
+    /// Moves a shaft's top and/or bottom to `floors` (same columns), in front of any rooms
+    /// there; the elevator car and its statistics stay.
     case resizeRoom(RoomID, floors: FloorSpan)
     /// Several commands as one step, applied in order (inverses of steps that changed
     /// more than one room).
@@ -63,7 +63,6 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
     case levelNotAllowed
     case overlaps(RoomID)
     /// A room in the way would be left narrower than its minimum width.
-    case noSpaceLeft(room: String)
     /// Only shafts can be made taller or shorter.
     case notResizable
     /// The unit was sold: it belongs to its owner (0.20.3).
@@ -105,7 +104,6 @@ public enum ConstructionError: Error, Equatable, Sendable, CustomStringConvertib
         case .heightOutOfRange(let a, let b): a == b ? "Must span \(a) floor(s)" : "Must span \(a)–\(b) floors"
         case .levelNotAllowed: "Not allowed on this floor"
         case .overlaps: "Overlaps an existing room"
-        case .noSpaceLeft(let name): "Too little space would be left for the \(name)"
         case .notResizable: "Only shafts can be made taller or shorter"
         case .privatelyOwned: "Sold to a private owner"
         case .foundationCanOnlyGrow: "A foundation can only be made larger"

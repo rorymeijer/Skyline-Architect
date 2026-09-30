@@ -41,6 +41,7 @@ enum SidePanel: String, CaseIterable, Identifiable {
         case .unit:
             if let report = model.unitReport {
                 UnitInspector(report: report, shaftOptions: model.shaftOptions, onResize: { _ = model.perform($0) },
+                              stops: model.elevatorStops, onStop: { model.setStop($0, served: $1) },
                               onTenure: { model.offerSelectedUnit(forSale: $0) },
                               onUnitRent: { model.adjustUnitRent(by: $0) }) { model.selectRoom(at: nil) }
             }

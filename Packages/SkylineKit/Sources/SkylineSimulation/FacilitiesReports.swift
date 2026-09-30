@@ -15,6 +15,10 @@ public struct FacilitiesSummary: Equatable, Sendable {
     public var brokenEquipment = 0
     public var janitors = 0
     public var technicians = 0
+    /// Hotel housekeepers (0.30.1), their open and finished jobs.
+    public var housekeepers = 0
+    public var openHousekeeping = 0
+    public var housekept = 0
     public var wagesPerDay = 0
     public var openCleaning = 0
     public var openRepairs = 0
@@ -47,7 +51,10 @@ public struct FacilitiesSummary: Equatable, Sendable {
         s.brokenEquipment = service.broken.count
         s.janitors = FacilitiesManagement.staff(.janitor, in: world).count
         s.technicians = FacilitiesManagement.staff(.technician, in: world).count
-        s.wagesPerDay = s.janitors * rules.janitorWagePerDay + s.technicians * rules.technicianWagePerDay
+        s.housekeepers = FacilitiesManagement.staff(.housekeeper, in: world).count
+        s.wagesPerDay = s.janitors * rules.janitorWagePerDay + s.technicians * rules.technicianWagePerDay + s.housekeepers * rules.housekeeperWage
+        s.openHousekeeping = world.facilities.jobs.filter { $0.kind == .housekeeping }.count
+        s.housekept = world.facilities.housekept ?? 0
         s.openCleaning = world.facilities.jobs.filter { $0.kind == .clean }.count
         s.openRepairs = world.facilities.jobs.filter { $0.kind == .repair }.count
         let rooms = world.rooms(in: building).compactMap { world.upkeep[$0.id] }

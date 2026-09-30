@@ -95,8 +95,8 @@ never widens as it rises; basements only within the excavation), rooms (lobby, c
 apartment, mechanical, parking — each with width limits and allowed floors) and shafts
 (stairwell, elevator shaft — drag vertically across floors; a **Foundation** panel
 widens the foundation, digs basement levels and lengthens the piles (in the base game piles do not limit the
-height); rooms in the way give way by
-getting narrower or splitting; drag a shaft's top or bottom, or use the inspector, to make
+height); a shaft stands in front of
+rooms, which stay whole behind it (0.30); drag a shaft's top or bottom, or use the inspector, to make
 it taller or shorter), and **Demolish** (rooms, or an
 empty top floor, with a 40 % refund). A live ghost shows green with size and cost, or red
 with the reason. Undo/redo, quicksave, load and autosave work. Construction cost is shown

@@ -45,10 +45,23 @@ public enum PersonRole: String, Codable, Hashable, Sendable {
     case janitor, technician
     /// Someone from the street who comes for one amenity and leaves again (0.22).
     case visitor
+    /// A hotel guest (0.30): arrives in the afternoon or evening, sleeps in the room they
+    /// booked (`visit`) and checks out in the morning.
+    case guest
+    /// Hotel staff (0.30.1): makes up hotel rooms after checkout. Janitors clean the rest of
+    /// the building, not the hotel rooms between guests.
+    case housekeeper
 
-    public var isStaff: Bool { self == .janitor || self == .technician }
+    public var isStaff: Bool { self == .janitor || self == .technician || self == .housekeeper }
     /// The job kind a staff role does.
-    public var jobKind: JobKind? { self == .janitor ? .clean : self == .technician ? .repair : nil }
+    public var jobKind: JobKind? {
+        switch self {
+        case .janitor: .clean
+        case .technician: .repair
+        case .housekeeper: .housekeeping
+        default: nil
+        }
+    }
 }
 
 /// One segment of a trip with absolute start/end ticks. Positions along a leg are an exact
@@ -164,8 +177,8 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
         switch role {
         case .worker: workRoom
         case .resident: homeRoom
-        case .visitor: visit
-        case .janitor, .technician: nil
+        case .visitor, .guest: visit
+        case .janitor, .technician, .housekeeper: nil
         }
     }
 }
