@@ -32,7 +32,7 @@ struct ConstructionFixture {
         engine = ConstructionEngine(catalog: Self.catalog)
     }
 
-    mutating func run(_ c: BuildCommand) throws -> AppliedConstruction { try engine.apply(c, to: &world) }
+    @discardableResult mutating func run(_ c: BuildCommand) throws -> AppliedConstruction { try engine.apply(c, to: &world) }
 
     func check(_ c: BuildCommand) -> Result<ConstructionPlan, ConstructionError> { engine.validate(c, in: world) }
 

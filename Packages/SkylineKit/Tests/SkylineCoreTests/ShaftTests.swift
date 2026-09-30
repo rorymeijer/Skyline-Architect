@@ -10,7 +10,7 @@ import Testing
         return f
     }
 
-    func office(_ f: inout ConstructionFixture, _ start: Int, _ count: Int, floor: Int = 1) throws -> RoomID {
+    @discardableResult func office(_ f: inout ConstructionFixture, _ start: Int, _ count: Int, floor: Int = 1) throws -> RoomID {
         try #require(f.run(.placeRoom(building: f.building, definition: "office", columns: ColumnSpan(start: start, count: count),
                                       floors: FloorSpan(lowest: floor, highest: floor))).createdRoom)
     }
