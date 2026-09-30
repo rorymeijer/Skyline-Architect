@@ -16,7 +16,8 @@ extension ScreenshotDirector {
         },
         Step(name: "02-scenarios", grid: false) { model, _ in
             model.openScenarioBrowser()
-            return "The scenario browser."
+            model.selectedScenarioID = "lean-tower"   // the tallest briefing (0.29.3)
+            return "The scenario browser, with the tallest briefing selected."
         },
         Step(name: "03-mods", grid: false) { model, _ in
             model.showScenarioBrowser = false

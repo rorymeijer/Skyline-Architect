@@ -28,13 +28,23 @@ extension View {
     }
 
     /// Where the view is taller than the room it gets (an iPhone in landscape, 0.29.2), it is
-    /// drawn in steps smaller, down to three quarters (side panels: see `PanelStack`). Where it fits, nothing changes.
+    /// drawn in steps smaller, down to three quarters, and scrolls where even that is too tall
+    /// (side panels: see `PanelStack`). Where it fits, nothing changes.
     func shrinkToFit() -> some View {
         ViewThatFits(in: .vertical) {
             self
             scaled(0.9)
             scaled(0.8)
-            scaled(0.75)
+            scaled(0.75).scrolling()
         }
+    }
+
+    /// The last step of a `ViewThatFits` ladder (0.29.3): the view keeps its width and scrolls
+    /// vertically, so however long its content (a long briefing, many mods, a larger text
+    /// size), nothing is cut off at the top or bottom of the screen.
+    func scrolling() -> some View {
+        ScrollView(.vertical) { self }
+            .scrollBounceBehavior(.basedOnSize)
+            .fixedSize(horizontal: true, vertical: false)
     }
 }

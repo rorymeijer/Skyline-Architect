@@ -149,6 +149,7 @@ struct MainMenuView: View {
             ViewThatFits(in: .vertical) {
                 menu(columns: 1, titleSize: 34, padding: 36)
                 menu(columns: 2, titleSize: 22, padding: 16)
+                menu(columns: 2, titleSize: 22, padding: 16).scrolling()
             }
         }
         .environment(\.colorScheme, .dark)

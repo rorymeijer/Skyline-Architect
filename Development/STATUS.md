@@ -1,6 +1,6 @@
 # Development Status
 
-_Last updated: 2026-09-30 (0.29.3 — mods folder in the Files app; 24 community mods)_
+_Last updated: 2026-09-30 (0.29.4 — nothing cut off on the iPhone)_
 
 ## Current phase
 **Next round (the player's plan):**
@@ -23,6 +23,12 @@ _Last updated: 2026-09-30 (0.29.3 — mods folder in the Files app; 24 community
 - App Store screenshots come from the game itself (`Development/Screenshots/AppStore/`).
 - Review risks removed: the iCloud switch without iCloud, the unreachable mods folder on iOS,
   and the encryption question.
+
+**0.29.4 (build 3):** on the iPhone, the scenario browser still ran off the screen with a
+long briefing (*Lean Tower*). The shrink steps assumed the smallest step would fit. Now every
+step ladder (`shrinkToFit`, the scenario browser and result, `PanelStack`, the main menu)
+ends in `scrolling()`: the view keeps its width and scrolls. The screen tour now opens the
+scenario browser on *Lean Tower*. The CI captures are the evidence; not checked on a device.
 
 **0.29.3 (build 2):** on iPad and iPhone the mods folder did not show in the Files app.
 `INFOPLIST_KEY_UIFileSharingEnabled` is not a build setting Xcode knows, so the key was

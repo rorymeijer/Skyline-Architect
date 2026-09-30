@@ -2,6 +2,14 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.29.4] — Nothing cut off on the iPhone
+
+### Fixed
+- **iPhone:** screens that were still too tall after shrinking now scroll instead of
+  running off the screen: the scenario browser with a long briefing (for example *Lean
+  Tower*), the scenario result, the side panels, the main menu and every card that shrinks
+  to fit (mods, saves). This also holds with a larger text size or many mods installed.
+
 ## [0.29.3] — Mods folder in the Files app; community mods
 
 ### Fixed
