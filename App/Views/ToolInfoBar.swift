@@ -16,9 +16,8 @@ struct ToolInfoBar: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(summary.title).font(.ui(.subheadline).weight(.semibold))
                 Text(summary.line).font(.ui(.caption).monospacedDigit()).foregroundStyle(.secondary)
-                if let detail = locked ?? summary.detail {
-                    Text(detail).font(.ui(.caption2)).foregroundStyle(locked == nil ? Color.secondary : Color.yellow)
-                }
+                if let detail = summary.detail { Text(detail).font(.ui(.caption2)).foregroundStyle(.secondary) }
+                if let locked { Text(locked).font(.ui(.caption2)).foregroundStyle(Color.yellow) }
             }
             .lineLimit(2)
             .fixedSize(horizontal: false, vertical: true)
