@@ -27,12 +27,14 @@ _Last updated: 2026-09-30 (0.29.4 — nothing cut off on the iPhone)_
 **0.29.4 (build 3):** on the iPhone, the scenario browser still ran off the screen with a
 long briefing (*Lean Tower*). The shrink steps assumed the smallest step would fit. Now
 `fitsScreen()` wraps every full-screen ladder (`shrinkToFit`, the scenario browser and
-result, the main menu) in a scroll view with the screen's height proposed inside, so the
-ladder still picks the step that fits and scrolls only when none does. Two failed tries,
-both seen in the CI captures: a scroll view *inside* `ViewThatFits` gets its tiny ideal
-height and the card vanishes. `ScaledLayout` no longer hides a real overflow; it still
-absorbs one of up to 12 pt. The screen tour opens the browser on *Lean Tower*. Not checked
-on a device.
+result, the main menu). It proposes the screen's height, so the ladder still picks the step
+that fits, and it puts the card in a scroll view only when even the smallest step is taller
+than the screen. `ScaledLayout` no longer hides a real overflow; it still absorbs one of up
+to 12 pt.
+Learned from the CI captures: (1) a scroll view *inside* `ViewThatFits` gets its tiny ideal
+height and vanishes; (2) the capture tool draws the chrome with `ImageRenderer`, which
+leaves any scroll view blank. The scrolling case can therefore not be shown by a capture.
+It is SCAFFOLDED until checked on a device, with *Lean Tower* in the scenario browser.
 
 **0.29.3 (build 2):** on iPad and iPhone the mods folder did not show in the Files app.
 `INFOPLIST_KEY_UIFileSharingEnabled` is not a build setting Xcode knows, so the key was

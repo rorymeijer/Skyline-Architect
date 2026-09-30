@@ -47,15 +47,30 @@ extension View {
 
     /// For a full-screen card or a `ViewThatFits` ladder of them (0.29.4): centred on the
     /// screen, and scrolling where even its smallest form is taller than the screen, so nothing
-    /// is cut off (a long briefing, many mods, a larger text size). The scroll view sits outside
-    /// the ladder: inside a `ViewThatFits` a scroll view gets its tiny ideal height and vanishes.
+    /// is cut off (a long briefing, many mods, a larger text size). See `ScreenFit`.
     func fitsScreen() -> some View {
+        ScreenFit(content: self)
+    }
+}
+
+/// Centres its content on the screen and puts it in a scroll view only when it is taller than
+/// the screen. The scroll view sits outside any `ViewThatFits` ladder (inside one it gets its
+/// tiny ideal height and vanishes), and only when needed: the capture tool draws the chrome
+/// with `ImageRenderer`, which leaves scroll views blank, so screens that fit stay capturable.
+private struct ScreenFit<Content: View>: View {
+    let content: Content
+    @State private var tooTall = false
+
+    var body: some View {
         GeometryReader { geo in
-            ScrollView(.vertical) {
-                ProposedHeight(height: geo.size.height) { self }
-                    .frame(maxWidth: .infinity, minHeight: geo.size.height)
+            let inner = ProposedHeight(height: geo.size.height) { content }
+                .onGeometryChange(for: Bool.self) { $0.size.height > geo.size.height + 1 } action: { tooTall = $0 }
+            if tooTall {
+                ScrollView(.vertical) { inner.frame(maxWidth: .infinity) }
+                    .scrollBounceBehavior(.basedOnSize)
+            } else {
+                inner.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .scrollBounceBehavior(.basedOnSize)
         }
     }
 }
