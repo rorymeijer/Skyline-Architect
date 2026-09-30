@@ -507,7 +507,9 @@ final class AppModel {
     @discardableResult
     func load(slot: String) -> Bool {
         do {
-            let save = try saveStore.load(slot: slot, availablePacks: packReferences)
+            let catalog = library?.buildCatalog
+            let save = try saveStore.load(slot: slot, availablePacks: packReferences,
+                                          isShaft: { catalog?.spec($0)?.kind == .shaft })
             install(world: save.world, activePropertyID: save.activePropertyID)
             lastSaveDescription = "Loaded “\(slot)”"
             let changed = SaveCodec.changedPacks(in: save, availablePacks: packReferences)

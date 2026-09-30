@@ -129,14 +129,8 @@ public struct ConstructionEngine: Sendable {
             guard plate.span.contains(columns) else { return .failure(.noFloor(level: level)) }
         }
         let cost = Self.scaled(spec.costPerModule * columns.count * floors.count, costFactor(b, world))
-        if spec.kind == .shaft {
-            // Rooms in the way make way; other shafts still block.
-            switch makeWay(building: b, columns: columns, floors: floors, except: nil, world) {
-            case .success(let trims): return .success(shaftPlan(cost: cost, building: b, columns: columns, floors: floors, trims: trims))
-            case .failure(let e): return .failure(e)
-            }
-        }
-        if let clash = world.rooms.first(where: { $0.buildingID == b && $0.overlaps(columns: columns, floors: floors) }) {
+        // Shafts stand in front of rooms (0.30): only a room of the same kind blocks.
+        if let clash = clash(kind: spec.kind, building: b, columns: columns, floors: floors, except: nil, world) {
             return .failure(.overlaps(clash.id))
         }
         return .success(ConstructionPlan(cost: cost, buildingID: b, columns: columns, floors: floors))
@@ -166,19 +160,13 @@ public struct ConstructionEngine: Sendable {
             world.buildings.update(b) { $0.setPlate(nil, at: level) }
             return AppliedConstruction(plan: plan, inverse: .restorePlate(building: b, level: level, plate: previous))
         case let .placeRoom(b, def, columns, floors):
-            let trims = catalog.spec(def)?.kind == .shaft ? (try? makeWay(building: b, columns: columns, floors: floors, except: nil, world).get()) ?? [] : []
-            let undoTrims = applyTrims(trims, to: &world)
             let id: RoomID = world.ids.make()
             world.rooms.insert(Room(id: id, buildingID: b, definitionID: def, columns: columns, floors: floors))
-            let inverse: BuildCommand = undoTrims.isEmpty ? .demolishRoom(id) : .batch([.demolishRoom(id)] + undoTrims)
-            return AppliedConstruction(plan: plan, inverse: inverse, createdRoom: id)
+            return AppliedConstruction(plan: plan, inverse: .demolishRoom(id), createdRoom: id)
         case let .resizeRoom(id, floors):
             let previous = world.rooms[id]!
-            let trims = (try? makeWay(building: previous.buildingID, columns: previous.columns, floors: floors, except: id, world).get()) ?? []
-            let undoTrims = applyTrims(trims, to: &world)
             world.rooms.update(id) { $0.floors = floors }
-            let inverse: BuildCommand = undoTrims.isEmpty ? .restoreRoom(previous) : .batch([.restoreRoom(previous)] + undoTrims)
-            return AppliedConstruction(plan: plan, inverse: inverse)
+            return AppliedConstruction(plan: plan, inverse: .restoreRoom(previous))
         case let .extendFoundation(b, footprint, foundation), let .restoreFoundation(b, footprint, foundation):
             return AppliedConstruction(plan: plan, inverse: setFoundation(b, footprint: footprint, foundation: foundation, in: &world))
         case let .batch(commands):

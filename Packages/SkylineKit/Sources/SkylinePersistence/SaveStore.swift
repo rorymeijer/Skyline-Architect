@@ -48,10 +48,10 @@ public struct SaveStore: Sendable {
         return url
     }
 
-    public func load(slot: String, availablePacks: [ContentPackReference]) throws -> SaveGame {
+    public func load(slot: String, availablePacks: [ContentPackReference], isShaft: (String) -> Bool = { _ in false }) throws -> SaveGame {
         let url = try url(for: slot)
         guard FileManager.default.fileExists(atPath: url.path) else { throw SaveStoreError.notFound(slot) }
-        return try SaveCodec.decode(Data(contentsOf: url), availablePacks: availablePacks)
+        return try SaveCodec.decode(Data(contentsOf: url), availablePacks: availablePacks, isShaft: isShaft)
     }
 
     /// Writes `autosave-1`, shifting older autosaves up and keeping at most `keep`.

@@ -35,31 +35,23 @@ extension ScreenshotDirector {
         if let up = model.shaftOptions.first(where: { $0.id == "up" })?.command { model.perform(up) }
     }
 
-    /// Places a stairwell over the first rooms right of the elevator that can make way,
-    /// and says what happened to them.
+    /// Places a stairwell in front of the first rooms right of the elevator (0.30: they stay
+    /// whole behind it), and says which.
     static func stairsThroughRooms(_ model: AppModel) -> String {
         guard let world = model.world, let engine = model.engine, let property = model.activePropertyID,
               let b = world.buildings(on: property).first else { return "no building" }
         for rel in 19...28 {
             for (lo, hi) in [(0, 1), (-1, 0), (0, 2)] {
                 let columns = ColumnSpan(start: b.footprint.start + rel, count: 4), floors = FloorSpan(lowest: lo, highest: hi)
-                let inWay = world.rooms(in: b.id).filter { engine.catalog.spec($0.definitionID)?.kind == .room && $0.overlaps(columns: columns, floors: floors) }
-                guard !inWay.isEmpty, (try? engine.validate(.placeRoom(building: b.id, definition: "stairs", columns: columns, floors: floors), in: world).get()) != nil
+                let behind = world.rooms(in: b.id).filter { engine.catalog.spec($0.definitionID)?.kind == .room && $0.overlaps(columns: columns, floors: floors) }
+                guard !behind.isEmpty, (try? engine.validate(.placeRoom(building: b.id, definition: "stairs", columns: columns, floors: floors), in: world).get()) != nil
                 else { continue }
                 model.perform(.placeRoom(building: b.id, definition: "stairs", columns: columns, floors: floors))
-                guard let after = model.world else { return "not placed" }
-                let changes = inWay.map { room -> String in
-                    let name = engine.catalog.spec(room.definitionID)?.name ?? room.definitionID
-                    let now = after.rooms[room.id]?.columns.count ?? 0
-                    let pieces = after.rooms(in: b.id).filter { $0.definitionID == room.definitionID && $0.id.raw > room.id.raw
-                        && $0.floors == room.floors && room.columns.contains($0.columns) }
-                    return "\(name) \(FloorLabel.label(for: room.floors.lowest)) \(room.columns.count) → \(now) modules"
-                        + (pieces.isEmpty ? "" : " + a split-off \(pieces[0].columns.count)-module \(name)")
-                }
-                return "floors \(FloorLabel.label(for: lo))–\(FloorLabel.label(for: hi)); " + changes.joined(separator: "; ") + "."
+                let names = behind.map { "\(engine.catalog.spec($0.definitionID)?.name ?? $0.definitionID) \(FloorLabel.label(for: $0.floors.lowest))" }
+                return "floors \(FloorLabel.label(for: lo))–\(FloorLabel.label(for: hi)), in front of " + names.joined(separator: ", ") + " (whole behind it)."
             }
         }
-        return "no place where rooms could make way"
+        return "no place in front of rooms"
     }
 }
 #endif

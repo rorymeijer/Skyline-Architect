@@ -2,7 +2,7 @@ import Foundation
 import Testing
 @testable import SkylineCore
 
-/// Shafts over rooms (rooms make way) and resizing shafts, with exact undo.
+/// Shafts in front of rooms (0.30) and resizing shafts, with exact undo.
 @Suite struct ShaftTests {
     func fixture() throws -> ConstructionFixture {
         var f = try ConstructionFixture()
@@ -19,50 +19,52 @@ import Testing
         .placeRoom(building: f.building, definition: "stairs", columns: ColumnSpan(start: start, count: 4), floors: FloorSpan(lowest: lo, highest: hi))
     }
 
-    @Test func aRoomInTheWayGetsNarrower() throws {
+    /// Integrity with the fixture's shafts known (a shaft may stand in front of a room).
+    func checkIntegrity(_ f: ConstructionFixture) throws {
+        try f.world.validateIntegrity(isShaft: { f.engine.catalog.spec($0)?.kind == .shaft })
+    }
+
+    @Test func aShaftStandsInFrontOfARoom() throws {
         var f = try fixture()
         let id = try office(&f, 10, 14)                                     // 10..<24
         let plan = try f.check(stairs(f, 16, 1, 2)).get()
         #expect(plan.cost == 7 * 4 * 2)                                       // only the shaft is paid
-        #expect(plan.columns == ColumnSpan(start: 10, count: 14))              // the whole office repaints
+        #expect(plan.columns == ColumnSpan(start: 16, count: 4))
         try f.run(stairs(f, 16, 1, 2))
-        #expect(f.world.rooms[id]?.columns == ColumnSpan(start: 10, count: 6)) // the right 4 m are too narrow: gone
+        #expect(f.world.rooms[id]?.columns == ColumnSpan(start: 10, count: 14)) // the office stays whole behind it
         #expect(f.world.rooms.count == 2)
-        try f.world.validateIntegrity()
+        try checkIntegrity(f)
+        // Without knowing which is the shaft, the overlap is an error.
+        #expect(throws: WorldIntegrityError.self) { try f.world.validateIntegrity() }
     }
 
-    @Test func aRoomSplitsWhenBothSidesAreWideEnough() throws {
+    @Test func aRoomCanBePlacedBehindAShaft() throws {
         var f = try fixture()
-        let id = try office(&f, 10, 16)                                     // 10..<26
-        try f.run(stairs(f, 16, 1, 2))
-        #expect(f.world.rooms[id]?.columns == ColumnSpan(start: 10, count: 6))
-        let piece = try #require(f.world.rooms.values.first { $0.definitionID == "office" && $0.id != id })
-        #expect(piece.columns == ColumnSpan(start: 20, count: 6) && piece.floors == FloorSpan(lowest: 1, highest: 1))
-        try f.world.validateIntegrity()
-    }
-
-    @Test func roomsThatWouldBeTooNarrowAndOtherShaftsBlock() throws {
-        var f = try fixture()
-        try office(&f, 10, 10)                                              // 10..<20: 2 m and 4 m would be left
-        #expect(f.check(stairs(f, 12, 1, 2)) == .failure(.noSpaceLeft(room: "Office")))
         try f.run(stairs(f, 30, 0, 3))
-        #expect(throws: ConstructionError.self) { try f.run(stairs(f, 32, 1, 2)) }
-        // Rooms still cannot be placed over shafts.
-        #expect(throws: ConstructionError.self) { try office(&f, 26, 8, floor: 2) }
+        let id = try office(&f, 26, 8, floor: 2)                            // 26..<34, behind the shaft
+        #expect(f.world.rooms[id]?.columns == ColumnSpan(start: 26, count: 8))
+        try checkIntegrity(f)
     }
 
-    @Test func peopleInTheRoomStepAside() throws {
+    @Test func likeBlocksLike() throws {
         var f = try fixture()
-        let id = try office(&f, 10, 16)
-        let x = f.world.grid.x(ofColumn: 17)                                // where the shaft goes
-        f.world.people.insert(Person(id: f.world.makePersonID(), name: "W", age: 30, role: .worker, scheduleID: "s", buildingID: f.building,
-                                     homeRoom: nil, workRoom: id, place: .room(id, x: x), nextEventTick: .max, nextGoal: nil, traits: 1))
-        try f.run(stairs(f, 16, 1, 2))
-        guard case let .room(r, nx)? = f.world.people.values.first?.place else { Issue.record("not in a room"); return }
-        #expect(r == id && nx <= f.world.grid.x(ofColumn: 16) && nx >= f.world.grid.x(ofColumn: 10))
+        try office(&f, 10, 10)
+        #expect(throws: ConstructionError.self) { try office(&f, 14, 8) }    // room over room
+        try f.run(stairs(f, 30, 0, 3))
+        #expect(throws: ConstructionError.self) { try f.run(stairs(f, 32, 1, 2)) }   // shaft over shaft
     }
 
-    /// Undo and redo restore the exact rooms, including the split-off piece and its id.
+    /// The cell picks the shaft when asked to prefer what is drawn in front.
+    @Test func theShaftIsInFrontAtItsCells() throws {
+        var f = try fixture()
+        let room = try office(&f, 10, 14)
+        let shaft = try #require(f.run(stairs(f, 16, 1, 2)).createdRoom)
+        let isShaft = { (r: Room) in f.engine.catalog.spec(r.definitionID)?.kind == .shaft }
+        #expect(f.world.room(in: f.building, column: 17, floor: 1, inFront: isShaft)?.id == shaft)
+        #expect(f.world.room(in: f.building, column: 11, floor: 1, inFront: isShaft)?.id == room)
+    }
+
+    /// Undo and redo are exact; the room behind is never touched.
     @Test func undoAndRedoAreExact() throws {
         var f = try fixture()
         var history = ConstructionHistory()
@@ -70,25 +72,25 @@ import Testing
         let before = f.world.rooms.values, cash = f.world.ledger.cash
         try history.perform(stairs(f, 16, 0, 3), engine: f.engine, world: &f.world)
         let after = f.world.rooms.values
-        #expect(after.count == 3 && f.world.ledger.cash == cash - 7 * 4 * 4)
+        #expect(after.count == 2 && f.world.ledger.cash == cash - 7 * 4 * 4)
         try history.undo(engine: f.engine, world: &f.world)
         #expect(f.world.rooms.values == before && f.world.ledger.cash == cash)
         try history.redo(engine: f.engine, world: &f.world)
         #expect(f.world.rooms.values == after)
-        try f.world.validateIntegrity()
+        try checkIntegrity(f)
     }
 
     @Test func shaftsGrowAndShrink() throws {
         var f = try fixture()
         var history = ConstructionHistory()
         let shaft = try #require(f.run(stairs(f, 30, 0, 1)).createdRoom)
-        let office = try office(&f, 26, 14, floor: 2)                      // 26..<40, in the way on floor 2
+        let office = try office(&f, 26, 14, floor: 2)                      // 26..<40, behind the shaft on floor 2
         let cash = f.world.ledger.cash
         let grow = BuildCommand.resizeRoom(shaft, floors: FloorSpan(lowest: 0, highest: 3))
         #expect(try f.check(grow).get().cost == 7 * 4 * 2)
         try history.perform(grow, engine: f.engine, world: &f.world)
         #expect(f.world.rooms[shaft]?.floors == FloorSpan(lowest: 0, highest: 3))
-        #expect(f.world.rooms[office]?.columns == ColumnSpan(start: 34, count: 6))   // 4 m left of the shaft is too narrow
+        #expect(f.world.rooms[office]?.columns == ColumnSpan(start: 26, count: 14))  // the office stays whole
         #expect(f.world.ledger.cash == cash - 56)
         // Shrinking refunds the demolition share (50 % here) of the floors removed.
         let shrink = BuildCommand.resizeRoom(shaft, floors: FloorSpan(lowest: 0, highest: 2))
@@ -98,7 +100,7 @@ import Testing
         try history.undo(engine: f.engine, world: &f.world)
         #expect(f.world.rooms[shaft]?.floors == FloorSpan(lowest: 0, highest: 1))
         #expect(f.world.rooms[office]?.columns == ColumnSpan(start: 26, count: 14) && f.world.ledger.cash == cash)
-        try f.world.validateIntegrity()
+        try checkIntegrity(f)
     }
 
     @Test func resizeRules() throws {

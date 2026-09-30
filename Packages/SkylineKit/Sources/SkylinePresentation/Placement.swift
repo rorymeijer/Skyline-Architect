@@ -52,7 +52,8 @@ public enum PlacementPlanner {
             case .shaft:
                 // Grabbing the top or bottom floor of a shaft of this type drags that end:
                 // the shaft grows or shrinks (resizeRoom).
-                if let shaft = world.room(in: building.id, column: anchor.column, floor: anchor.floor), shaft.definitionID == id,
+                if let shaft = world.room(in: building.id, column: anchor.column, floor: anchor.floor, inFront: { $0.definitionID == id }),
+                   shaft.definitionID == id,
                    anchor.floor == shaft.floors.highest || anchor.floor == shaft.floors.lowest {
                     let floors = anchor.floor == shaft.floors.highest
                         ? FloorSpan(lowest: shaft.floors.lowest, highest: max(current.floor, shaft.floors.lowest))
@@ -60,7 +61,7 @@ public enum PlacementPlanner {
                     let shown = FloorSpan(lowest: min(floors.lowest, shaft.floors.lowest), highest: max(floors.highest, shaft.floors.highest))
                     return finish(.resizeRoom(shaft.id, floors: floors), rect: grid.rect(columns: shaft.columns, floors: shown),
                                   name: "\(spec.name) \(FloorLabel.label(for: floors.lowest))–\(FloorLabel.label(for: floors.highest))",
-                                  floors: floors.count, note: makesWay(shaft.columns, floors, except: shaft.id, building: building.id, world, catalog),
+                                  floors: floors.count,
                                   demolition: floors.count < shaft.floors.count, world: world, engine: engine)
                 }
                 columns = ColumnSpan(start: anchor.column, count: spec.minWidth)
@@ -72,11 +73,11 @@ public enum PlacementPlanner {
             let command = BuildCommand.placeRoom(building: building.id, definition: id, columns: columns, floors: floors)
             return finish(command, rect: grid.rect(columns: columns, floors: floors), name: spec.name,
                           widthModules: columns.count, floors: spec.kind == .shaft ? floors.count : nil,
-                          note: spec.kind == .shaft ? makesWay(columns, floors, except: nil, building: building.id, world, catalog) : nil,
                           demolition: false, world: world, engine: engine)
 
         case .demolish:
-            if let room = world.room(in: building.id, column: current.column, floor: current.floor) {
+            if let room = world.room(in: building.id, column: current.column, floor: current.floor,
+                                     inFront: { catalog.spec($0.definitionID)?.kind == .shaft }) {
                 let name = catalog.spec(room.definitionID)?.name ?? room.definitionID
                 return finish(.demolishRoom(room.id), rect: grid.rect(columns: room.columns, floors: room.floors),
                               name: "Demolish \(name)", demolition: true, world: world, engine: engine)
@@ -88,15 +89,6 @@ public enum PlacementPlanner {
             }
             return nil
         }
-    }
-
-    /// "2 rooms make way" when a shaft would go over rooms (they get narrower or split).
-    static func makesWay(_ columns: ColumnSpan, _ floors: FloorSpan, except: RoomID?, building: BuildingID,
-                         _ world: GameWorld, _ catalog: BuildCatalog) -> String? {
-        let n = world.rooms(in: building).filter {
-            $0.id != except && catalog.spec($0.definitionID)?.kind == .room && $0.overlaps(columns: columns, floors: floors)
-        }.count
-        return n == 0 ? nil : n == 1 ? "1 room makes way" : "\(n) rooms make way"
     }
 
     private static func finish(_ command: BuildCommand, rect: Rect, name: String, widthModules: Int? = nil, floors: Int? = nil,

@@ -60,8 +60,7 @@ import SkylineContent
         let p = try #require(PlacementPlanner.preview(tool: .room("stairs"), anchor: GridCell(column: 9, floor: 5),
                                                       current: GridCell(column: 9, floor: 1), world: s.world, propertyID: s.property, engine: s.engine))
         #expect(p.rect.minY == 4 && p.rect.maxY == 24)
-        #expect(!p.isValid)  // offices in the way would be left too narrow to make way
-        #expect(p.label.contains("Too little space would be left"))
+        #expect(p.isValid)  // it stands in front of the offices (0.30)
     }
 
     /// Dragging the top of an existing shaft with its own tool resizes it; the middle of a
@@ -85,15 +84,17 @@ import SkylineContent
         #expect(!(middle.command.map { if case .resizeRoom = $0 { true } else { false } } ?? false))
     }
 
-    /// A shaft over a room that can make way is valid, and the preview says so.
-    @Test func shaftOverRoomsSaysTheyMakeWay() throws {
+    /// A shaft in front of a room is valid and leaves the room whole (0.30).
+    @Test func shaftInFrontOfARoomIsValid() throws {
         var s = try setup()
         let b = s.building.id, f = s.building.footprint
         for level in 0...2 { try s.engine.apply(.buildFloor(building: b, level: level, span: f), to: &s.world) }
         try s.engine.apply(.placeRoom(building: b, definition: "lobby", columns: f, floors: FloorSpan(lowest: 0, highest: 0)), to: &s.world)
         let p = try #require(PlacementPlanner.preview(tool: .room("stairs"), anchor: GridCell(column: f.start + 10, floor: 0),
                                                       current: GridCell(column: f.start + 10, floor: 2), world: s.world, propertyID: s.property, engine: s.engine))
-        #expect(p.isValid && p.label.contains("1 room makes way"))
+        #expect(p.isValid && !p.label.contains("make"))
+        try s.engine.apply(#require(p.command), to: &s.world)
+        #expect(s.world.rooms.values.first { $0.definitionID == "lobby" }?.columns == f)
     }
 
     @Test func demolishTargetsRoomThenFloor() throws {

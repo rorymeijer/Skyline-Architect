@@ -271,7 +271,9 @@ public enum SaveCodec {
         try makeEncoder().encode(Envelope(format: format, formatVersion: currentVersion, game: save))
     }
 
-    public static func decode(_ data: Data, availablePacks: [ContentPackReference],
+    /// `isShaft` tells shafts from rooms (by definition id) for the integrity check: a shaft
+    /// may stand in front of a room (0.30).
+    public static func decode(_ data: Data, availablePacks: [ContentPackReference], isShaft: (String) -> Bool = { _ in false },
                               migrations: [Int: Migration] = SaveCodec.migrations,
                               currentVersion: Int = SaveCodec.currentVersion) throws -> SaveGame {
         guard let header = try? makeDecoder().decode(Header.self, from: data),
@@ -291,7 +293,7 @@ public enum SaveCodec {
         if let missing = save.contentPacks.first(where: { !installed.contains($0.id) }) {
             throw SaveError.missingContentPack(missing.id)
         }
-        do { try save.world.validateIntegrity() } catch { throw SaveError.invalidWorld(String(describing: error)) }
+        do { try save.world.validateIntegrity(isShaft: isShaft) } catch { throw SaveError.invalidWorld(String(describing: error)) }
         guard save.world.properties.contains(save.activePropertyID) else { throw SaveError.invalidWorld("active property missing") }
         return save
     }

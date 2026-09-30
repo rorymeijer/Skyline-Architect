@@ -25,7 +25,9 @@ public enum WorldIntegrityError: Error, Equatable, CustomStringConvertible {
 }
 
 extension GameWorld {
-    public func validateIntegrity() throws {
+    /// `isShaft` tells shafts from rooms (by definition id): a shaft may stand in front of a
+    /// room (0.30); two rooms or two shafts never overlap. Without it every overlap is an error.
+    public func validateIntegrity(isShaft: (String) -> Bool = { _ in false }) throws {
         for fire in incidents.fires {
             guard buildings.contains(fire.building), fire.burning.allSatisfy({ rooms[$0.room]?.buildingID == fire.building }) else {
                 throw WorldIntegrityError.invalidFire(fire.incident)
@@ -54,7 +56,9 @@ extension GameWorld {
             for level in r.floors.lowest...r.floors.highest {
                 guard let plate = b.plate(at: level), plate.span.contains(r.columns) else { throw WorldIntegrityError.roomWithoutFloor(r.id) }
             }
-            if let clash = roomsByBuilding[r.buildingID]?.first(where: { $0.overlaps(columns: r.columns, floors: r.floors) }) {
+            if let clash = roomsByBuilding[r.buildingID]?.first(where: {
+                $0.overlaps(columns: r.columns, floors: r.floors) && isShaft($0.definitionID) == isShaft(r.definitionID)
+            }) {
                 throw WorldIntegrityError.overlappingRooms(clash.id, r.id)
             }
             roomsByBuilding[r.buildingID, default: []].append(r)
