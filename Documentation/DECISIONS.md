@@ -424,6 +424,19 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-066 — Housekeepers make up hotel rooms; janitors do not
+- **Date:** 2026-09-30
+- **Decision:** A separate staff role, `housekeeper`, with its own job kind `housekeeping`
+  (opened at checkout) and wage (`housekeeperWagePerDay`). Janitors no longer make up hotel
+  rooms.
+- **Context:** The owner: the tower's janitor should be someone other than housekeeping.
+  Also, a janitor took the dirtiest room first, so in a busy tower hotel rooms waited.
+- **Alternatives:** Hotel clean jobs first in the janitors' queue: one role for two trades.
+- **Reason:** Hotels and the building's upkeep compete for nobody's time; the player sees
+  what the hotel costs to run.
+- **Consequences:** Kept in save format 20, which had not shipped yet (0.30.0 never left the
+  branch); the v20 golden fixture was regenerated with a housekeeper.
+
 ## D-065 — Hotel rooms are sold night by night, not leased
 - **Date:** 2026-09-30
 - **Decision:**

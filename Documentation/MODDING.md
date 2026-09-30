@@ -154,6 +154,7 @@ utilitiesPerPersonPerDay, elevatorCarPerDay, rentDaysPerMonth`. Rooms may set
 
 ### Facilities (facilities.json, rooms.json, elevators.json)
 `facilities.json`: `utilities [{id, name}], janitorWagePerDay, technicianWagePerDay,
+housekeeperWagePerDay` (optional, default the janitor's wage), `
 dirtPerPersonPerDay, circulationDirtPerDay, cleanBelow, repairBelow, equipmentRepairBelow,
 failureBelow, cleanMinutes, repairMinutes, shiftStart, shiftEnd`. Rooms may set
 `utilityDemand {utility: perModule}`, `utilitySupply {utility: perModule}`, `utilityRange`,

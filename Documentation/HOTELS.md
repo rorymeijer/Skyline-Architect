@@ -37,9 +37,12 @@ The base game has three rooms, in category `hotel` with appearance `hotel`:
    * they stay in the room until `checkOut` (±45 minutes);
    * they then leave and are purged with the street visitors.
    * A fire sends them home early; the night is still paid at checkout.
-4. **Housekeeping.** When a janitor completes the clean job, the room leaves
-   `awaitingHousekeeping` and can be booked again. Without janitors, every room sells one
-   night and then stands empty.
+4. **Housekeeping.** Checkout opens a `housekeeping` job, which only **housekeepers**
+   (`PersonRole.housekeeper`, 0.30.1) take; janitors keep cleaning the rest of the building.
+   When a housekeeper completes it, the room leaves `awaitingHousekeeping` and can be booked
+   again (`facilities.housekept` counts them). Without a housekeeper, every room sells one
+   night and then stands empty. Staff travel like everyone else: if the only elevator to the
+   hotel floor breaks down and no technician repairs it, housekeeping stops too.
 
 Everything is deterministic: seeded per city, room and hour. Hotel income counts toward the
 scenarios' daily profit.
@@ -56,7 +59,7 @@ migration pads them.
 
 ## App
 * The unit inspector shows the room's state: vacant, booked (guests in the room and
-  check-out time), or needs housekeeping (whether a janitor is on the way).
+  check-out time), or needs housekeeping (whether a housekeeper is on the way).
 * The people count's tooltip counts guests.
 
 Screen tour step 23 captures two rooms booked at night.

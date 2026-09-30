@@ -9,7 +9,7 @@ Construction is paid the moment you build. Everything else, rent coming in and c
 | Rent from every tenant (a game day is a rent month) | Maintenance of every room |
 | Service charges from flat owners | Utilities: $4 per person and $60 per elevator car, more in hot or cold weather |
 | Your share of amenity takings | Lighting, per kWh used |
-| | Wages of janitors and technicians |
+| | Wages of janitors, technicians and housekeepers |
 | | Waste collection |
 | | Loan interest (8 % a year) |
 | | Property tax: 0.4 % of what the building cost |

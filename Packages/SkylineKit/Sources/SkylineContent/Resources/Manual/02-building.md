@@ -44,7 +44,7 @@ Every room type has its own button, grouped by category: circulation, offices, h
 | Theatre | 12–32 m | $1,900 | $180 | Class A amenity |
 | Sky Bar | 8–24 m | $2,100 | $360 | Class A amenity, floor 15 or higher |
 | Waste Room | 2–8 m | $700 | — | Collects the building's waste |
-| Staff Room | 4–10 m | $1,000 | — | Houses janitors and technicians |
+| Staff Room | 4–10 m | $1,000 | — | Houses your staff |
 
 Costs are for Port Calder; other cities build dearer or cheaper (see [Cities and land](estate.md)). Rooms furnish themselves to fit their width.
 

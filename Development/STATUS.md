@@ -27,7 +27,10 @@ _Last updated: 2026-09-30 (0.30.1 — shafts build their missing floors)_
 **0.30.1 (build 5):** a shaft placed or extended past the existing floors builds the
 missing floor plates first, in one batch (`ConstructionEngine.addingFloors`, ShaftTests).
 Used by shaft drags and the inspector's Extend Up/Down. FUNCTIONAL in the package tests; not
-checked in a capture.
+checked in a capture. Housekeepers (D-066): a separate staff role makes up hotel rooms;
+HotelTests run ten days (with a technician: without one the only elevator breaks down on
+day 4 and staff cannot reach the hotel floor, which is correct). Capture 21 now puts a second
+elevator in front of rooms; captures 22–23 hide the tool tip; 23 shows the second night.
 
 **0.30.0 (build 4):** the owner's elevator requests. FUNCTIONAL in the package tests; the
 app side is checked by CI captures 20 and 21 of the screen tour.

@@ -22,6 +22,7 @@ The **Facilities** panel (`⌥⌘F`) shows supply against demand for each utilit
 |---|---|---|
 | **Janitor** | $180 a day | cleans a room in 20 minutes |
 | **Technician** | $260 a day | repairs a room in 45 minutes |
+| **Housekeeper** | $160 a day | makes up a hotel room after checkout in 20 minutes |
 
 Hire them with **Hire** in the Facilities panel. They work from 07:00 to 19:00, walk in from the street and use the stairs, the public elevators and the service elevators. Technicians do the most urgent jobs first: failed plant and broken elevators, then the most worn room.
 

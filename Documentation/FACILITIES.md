@@ -78,4 +78,4 @@ decline with *poor services*; tenants review daily and leave after three bad day
 * Services overlay (⌥⌘U): rooms tinted by their worst problem — red out of order, orange
   missing utilities, amber worn, blue dirty, faint green fine.
 * Inspector: utilities ✓/⚠ per unit, cleanliness and condition, services bar.
-* Staff wear coveralls: janitors teal, technicians orange.
+* Staff wear coveralls: janitors teal, technicians orange, housekeepers plum (0.30.1, hotel rooms only: HOTELS.md).

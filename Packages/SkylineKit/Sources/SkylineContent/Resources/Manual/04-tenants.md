@@ -72,6 +72,6 @@ Hotel rooms (**Hotel** in the build palette) are not let to tenants. They are so
 
 - From 15:00 until late evening, a vacant, clean room may be booked for the night. The chance follows the city's demand, the weather, the building's reputation, and how well the room is served (utilities, cleanliness, condition).
 - The guests arrive within the hour, go to their room and sleep there. They check out around 10:00 (the suite at 11:00), and then the night is paid. Prices follow the city's price level.
-- After checkout the room **needs housekeeping**: it cannot be booked again until a janitor has cleaned it. Without a janitor, every hotel room sells one night and then stands empty.
-- Select a hotel room to see whether it is vacant, booked (how many guests are in and when they leave) or waiting for a janitor.
+- After checkout the room **needs housekeeping**: it cannot be booked again until a **housekeeper** has made it up. Hire housekeepers in the Facilities panel; janitors clean the rest of the building, not the hotel rooms. Without a housekeeper, every hotel room sells one night and then stands empty.
+- Select a hotel room to see whether it is vacant, booked (how many guests are in and when they leave) or waiting for a housekeeper.
 

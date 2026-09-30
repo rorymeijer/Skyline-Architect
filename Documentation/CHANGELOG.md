@@ -10,6 +10,12 @@ All notable changes. Versions follow `MARKETING_VERSION` of the app.
   same step (one undo). The preview shows *+N new floors* and the price includes the slabs.
   This only happens where a floor may be built: not deeper than the foundation is dug, not
   above the class, pile or scenario limit.
+- **Housekeepers:** a new staff member (Facilities panel, $160 a day, plum uniform) makes up
+  hotel rooms after checkout. Janitors clean the rest of the building and no longer do the
+  hotel rooms.
+
+### Fixed
+- A hotel room's inspector no longer says "Not rentable — shared space or services".
 
 ## [0.30.0] — Elevators in front of rooms, stops per floor, see-through shafts
 
