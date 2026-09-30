@@ -162,5 +162,13 @@ import SkylineContent
         let labels = RoomLabels.build(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog, visible: view, zoom: 30)
         #expect(labels.contains { $0.text == "Small Office" })
         #expect(labels.contains { $0.text == "Stairwell" })
+        // An elevator shows the floor number where its car stops, and nothing where it passes (0.30).
+        let shaft = try #require(game.world.rooms.values.first { $0.definitionID == "elevator-shaft" })
+        let stops = [shaft.floors.lowest, shaft.floors.lowest + 2]
+        let numbered = RoomLabels.build(world: game.world, propertyID: game.activePropertyID, catalog: lib.buildCatalog, visible: view, zoom: 30,
+                                        stops: { $0.id == shaft.id ? stops : nil })
+        let x = game.world.grid.rect(columns: shaft.columns, floors: shaft.floors).center.x
+        let inShaft = numbered.filter { $0.position.x == x }.map(\.text)
+        #expect(inShaft == stops.map { FloorLabel.label(for: $0) })
     }
 }

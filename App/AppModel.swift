@@ -43,6 +43,8 @@ final class AppModel {
     var unitReport: UnitReport?
     /// Height controls when the selection is a shaft (empty otherwise).
     var shaftOptions: [ConstructionOption] = []
+    /// Stop switches when the selection is an elevator shaft (0.30; empty otherwise).
+    var elevatorStops: [ElevatorStopToggle] = []
     /// Foundation panel (0.21): the building's groundwork and what can be extended.
     var showFoundationPanel = false
     var foundation: FoundationSummary?
@@ -56,6 +58,15 @@ final class AppModel {
     var facilities = FacilitiesSummary()
     var showFacilitiesPanel = false
     var showServices = false
+    /// Elevator shafts drawn as glass (0.30, remembered): rooms behind them show through.
+    var seeThroughShafts = false {
+        didSet {
+            guard seeThroughShafts != oldValue else { return }
+            if persistsModSettings { UserDefaults.standard.set(seeThroughShafts, forKey: Self.seeThroughShaftsKey) }
+            recomposeSite()
+        }
+    }
+    static let seeThroughShaftsKey = "seeThroughShafts"
     /// Class and reputation (Phase 11, 4 Hz), progress panel and the latest promotion.
     var progression = ProgressionSummary()
     var showProgressPanel = false
@@ -198,6 +209,7 @@ final class AppModel {
         persistsModSettings = persists
         hintMemory = HintMemory(persists: persists)
         if persists { textSize = TextSizeSetting.load() }
+        if persists { seeThroughShafts = UserDefaults.standard.bool(forKey: Self.seeThroughShaftsKey) }
         loadManual()
         do {
             try reloadContent()
@@ -258,6 +270,12 @@ final class AppModel {
 
     var catalog: BuildCatalog? { engine?.catalog }
     var art: ArtCatalog { library?.artCatalog ?? .empty }
+    /// The palette with the view settings that change the building art (0.30).
+    var palette: ArtPalette {
+        var p = ArtPalette.standard
+        p.seeThroughShafts = seeThroughShafts
+        return p
+    }
 
     // MARK: Game lifecycle
 
@@ -304,7 +322,7 @@ final class AppModel {
         refreshUndoState()
         hasUnsavedChanges = false
         activeTool = nil
-        guard let composition = SiteComposer.compose(world: world, propertyID: activePropertyID, catalog: catalog, art: art) else {
+        guard let composition = SiteComposer.compose(world: world, propertyID: activePropertyID, catalog: catalog, art: art, palette: palette) else {
             loadError = "The starting property could not be composed."
             return
         }
@@ -332,8 +350,13 @@ final class AppModel {
         }
         scene.roomLabelProvider = { [weak self] visible, zoom in
             guard let self, let world = self.world, let property = self.activePropertyID, let catalog = self.catalog else { return [] }
+            let rules = self.simulation?.rules
             return RoomLabels.build(world: world, propertyID: property, catalog: catalog, visible: visible, zoom: zoom,
-                                    text: self.roomLabelText)
+                                    text: self.roomLabelText,
+                                    stops: { room in
+                                        guard let rules, world.elevators.contains(room.id) else { return nil }
+                                        return ElevatorStops.served(room, world: world, rules: rules)
+                                    })
         }
         #if DEBUG
         scene.navigationProvider = { [weak self] in self?.navigationOverlay() }
@@ -463,12 +486,20 @@ final class AppModel {
         guard let scene else { return }
         // A changed foundation can change the ground section itself: compose the site anew.
         if before != Self.groundwork(newWorld, property: scene.composition.propertyID),
-           let fresh = SiteComposer.compose(world: newWorld, propertyID: scene.composition.propertyID, catalog: catalog, art: art) {
+           let fresh = SiteComposer.compose(world: newWorld, propertyID: scene.composition.propertyID, catalog: catalog, art: art, palette: palette) {
             scene.replaceComposition(fresh)
             return
         }
-        let composition = SiteComposer.recompose(scene.composition, world: newWorld, catalog: catalog, art: art)
+        let composition = SiteComposer.recompose(scene.composition, world: newWorld, catalog: catalog, art: art, palette: palette)
         scene.updateComposition(composition, dirty: plan.map { SiteComposer.dirtyRect(for: $0, grid: newWorld.grid) })
+    }
+
+    /// Composes the whole site anew (a view setting that changes the building art).
+    func recomposeSite() {
+        guard let world, let scene,
+              let fresh = SiteComposer.compose(world: world, propertyID: scene.composition.propertyID, catalog: catalog, art: art, palette: palette)
+        else { return }
+        scene.replaceComposition(fresh)
     }
 
     private func refreshUndoState() {

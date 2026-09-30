@@ -205,7 +205,14 @@ enum RoomArt {
         let top = grid.y(ofFloor: room.floors.highest + 1) - grid.slabThickness
         // Pit below the lowest landing.
         let shaft = Rect(minX: x0, minY: bottom - 1.2, maxX: x1, maxY: top)
-        d.horizontalGradient(shaft, stops: [GradientStop(0, f.wall.shaded(0.8)), GradientStop(0.5, f.wall.shaded(1.1)), GradientStop(1, f.wall.shaded(0.8))])
+        // See-through (0.30): a faint glass tint and a frame, so the room behind shows.
+        let glass = p.seeThroughShafts ? 0.2 : 1.0
+        d.horizontalGradient(shaft, stops: [GradientStop(0, f.wall.shaded(0.8).withAlpha(glass)), GradientStop(0.5, f.wall.shaded(1.1).withAlpha(glass)),
+                                            GradientStop(1, f.wall.shaded(0.8).withAlpha(glass))])
+        if p.seeThroughShafts {
+            for ex in [x0, x1 - 0.06] { d.fill(Rect(minX: ex, minY: shaft.minY, maxX: ex + 0.06, maxY: shaft.maxY), p.steel.shaded(0.8)) }
+        }
+        let doors = p.seeThroughShafts ? 0.5 : 1.0
         for rx in [x0 + 0.35, x1 - 0.35] {
             d.fill(Rect(minX: rx - 0.04, minY: shaft.minY, maxX: rx + 0.04, maxY: shaft.maxY), p.steel.shaded(0.9), minDetail: 4)
         }
@@ -214,7 +221,8 @@ enum RoomArt {
             let y = grid.y(ofFloor: level)
             let doorRect = Rect(minX: cx - 0.55, minY: y, maxX: cx + 0.55, maxY: y + 2.2)
             d.fill(doorRect.insetBy(dx: -0.08, dy: 0).union(Rect(minX: doorRect.minX - 0.08, minY: y, maxX: doorRect.maxX + 0.08, maxY: doorRect.maxY + 0.1)), p.doorFrame, minDetail: 4)
-            d.horizontalGradient(doorRect, stops: [GradientStop(0, p.steel.shaded(0.85)), GradientStop(0.5, p.steel.shaded(1.1)), GradientStop(1, p.steel.shaded(0.85))], minDetail: 4)
+            d.horizontalGradient(doorRect, stops: [GradientStop(0, p.steel.shaded(0.85).withAlpha(doors)), GradientStop(0.5, p.steel.shaded(1.1).withAlpha(doors)),
+                                                   GradientStop(1, p.steel.shaded(0.85).withAlpha(doors))], minDetail: 4)
             d.fill(Rect(minX: cx - 0.01, minY: y, maxX: cx + 0.01, maxY: y + 2.2), p.mullion, minDetail: 12)
             // Landing sill and hall-call indicator.
             d.fill(Rect(minX: doorRect.minX - 0.1, minY: y - 0.03, maxX: doorRect.maxX + 0.1, maxY: y), p.steel, minDetail: 8)

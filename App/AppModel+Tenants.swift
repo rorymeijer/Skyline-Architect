@@ -16,6 +16,7 @@ extension AppModel {
             selectedRoom = nil
             unitReport = nil
             shaftOptions = []
+            elevatorStops = []
             scene?.selectionRect = nil
             return
         }

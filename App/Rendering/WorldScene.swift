@@ -199,6 +199,9 @@ final class WorldScene: SKScene {
         overlayDirty = true
     }
 
+    /// Redraws labels and overlays on the next frame (a setting they show changed).
+    func invalidateOverlays() { overlayDirty = true }
+
     /// Replaces the composition after construction; only tiles in `dirty` re-render.
     func updateComposition(_ c: SiteComposition, dirty: Rect?) {
         composition = c

@@ -4,6 +4,9 @@ import SkylineCore
 /// Colour decisions for the realistic/architectural art direction (GRAPHICS.md).
 /// Centralised so a future day/night or weather grade can transform one palette.
 public struct ArtPalette: Sendable {
+    /// Elevator hoistways drawn as glass (0.30, a view setting): the room behind shows through.
+    public var seeThroughShafts = false
+
     // Sky (world-anchored: horizon at grade → zenith high above).
     public var skyHorizon = RGBA(hex: 0xDCE4EA)
     public var skyLow = RGBA(hex: 0xAFC6DA)

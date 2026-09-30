@@ -100,6 +100,25 @@ extension ScreenshotDirector {
             model.refreshEconomy()
             return "The bankruptcy screen (set by the script)."
         },
+        Step(name: "20-elevator-stops", grid: false) { model, scene in
+            // 0.30: a stairwell in front of rooms, and an elevator passing two floors.
+            model.newGame()
+            model.showMainMenu = false
+            model.setSpeed(.paused)
+            model.applyBlueprint("demo-tower")
+            let stairs = stairsThroughRooms(model)
+            let selected = select(model, "elevator-shaft")
+            for floor in [3, 5] { model.setStop(floor, served: false) }
+            if let shaft = shaft(model), let b = model.world?.buildings[shaft.buildingID] {
+                let column = shaft.columns.start - b.footprint.start
+                scene.withController { $0.jump(center: point(model, column: column + 4, floor: 4.5), zoom: 16) }
+            }
+            return "\(selected); floors 3 and 5 switched off (no number in the shaft). Stairwell: \(stairs)"
+        },
+        Step(name: "21-see-through-shafts", grid: false) { model, _ in
+            model.seeThroughShafts = true
+            return "The same view with see-through elevator shafts (the rooms behind show through)."
+        },
     ]
 
     /// A step that closes the other side panels and opens one.

@@ -9,6 +9,9 @@ struct UnitInspector: View {
     let report: UnitReport
     var shaftOptions: [ConstructionOption] = []
     var onResize: (BuildCommand) -> Void = { _ in }
+    /// Stop switches of a selected elevator (0.30).
+    var stops: [ElevatorStopToggle] = []
+    var onStop: (Int, Bool) -> Void = { _, _ in }
     /// Offer the (vacant) unit for sale (true) or for rent (false).
     var onTenure: (Bool) -> Void = { _ in }
     /// Change the unit's own rent setting by a step (Phase E).
@@ -85,6 +88,7 @@ struct UnitInspector: View {
                 Meter(label: "Condition", value: report.condition)
             }
             if !shaftOptions.isEmpty { ShaftHeightControls(options: shaftOptions, onResize: onResize) }
+            if !stops.isEmpty { ElevatorStopControls(stops: stops, onToggle: onStop) }
             if !report.history.isEmpty {
                 Divider()
                 ForEach(Array(report.history.prefix(4).enumerated()), id: \.offset) { _, e in
