@@ -35,7 +35,7 @@ extension ScreenshotDirector {
             model.activeHint = nil
             model.refreshSimulationSummary()
             model.activeHint = nil
-            scene.withController { $0.jump(center: point(model, column: 16, floor: 4), zoom: 11) }
+            model.scene?.withController { $0.jump(center: point(model, column: 16, floor: 4), zoom: 11) }   // newGame() made a new scene
             return "\(model.clockText): the demo tower (developer blueprint, leased by the developer tool), no panel open; quick-saved for the next step."
         },
         Step(name: "05-saves", grid: false) { model, _ in
@@ -111,7 +111,8 @@ extension ScreenshotDirector {
             for floor in [3, 5] { model.setStop(floor, served: false) }
             if let shaft = shaft(model), let b = model.world?.buildings[shaft.buildingID] {
                 let column = shaft.columns.start - b.footprint.start
-                scene.withController { $0.jump(center: point(model, column: column + 4, floor: 4.5), zoom: 16) }
+                // newGame() built a new scene: the one this step was given is gone.
+                model.scene?.withController { $0.jump(center: point(model, column: column + 4, floor: 4.5), zoom: 16) }
             }
             return "\(selected); floors 3 and 5 switched off (no number in the shaft). Stairwell: \(stairs)"
         },
