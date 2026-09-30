@@ -93,13 +93,13 @@
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5A0000000000000000000040"
-               BuildableName = "SkylineArchitect.app"
-               BlueprintName = "SkylineArchitect"
-               ReferencedContainer = "container:SkylineArchitect.xcodeproj">
-            </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "5A0000000000000000000040"
+            BuildableName = "SkylineArchitect.app"
+            BlueprintName = "SkylineArchitect"
+            ReferencedContainer = "container:SkylineArchitect.xcodeproj">
+         </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
@@ -110,13 +110,13 @@
       debugDocumentVersioning = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5A0000000000000000000040"
-               BuildableName = "SkylineArchitect.app"
-               BlueprintName = "SkylineArchitect"
-               ReferencedContainer = "container:SkylineArchitect.xcodeproj">
-            </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "5A0000000000000000000040"
+            BuildableName = "SkylineArchitect.app"
+            BlueprintName = "SkylineArchitect"
+            ReferencedContainer = "container:SkylineArchitect.xcodeproj">
+         </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
