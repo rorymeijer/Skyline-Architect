@@ -6,9 +6,9 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 60.25808348844252,
-      "frameTimeMs" : 16.59528385418696,
-      "memoryMB" : 175.21875,
+      "fps" : 60.29849640043831,
+      "frameTimeMs" : 16.584161458339963,
+      "memoryMB" : 176.21875,
       "nodeCount" : 121,
       "sceneSections" : {
         "cars" : 0,
@@ -20,9 +20,9 @@
         "tiles" : 0.2,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.5984218750541004,
+      "sceneUpdateMs" : 0.6481458332814327,
       "tileLevel" : 2,
-      "tileRasterMs" : 24.682129166671984,
+      "tileRasterMs" : 13.844474999996237,
       "tilesCached" : 10,
       "tilesPending" : 0,
       "tilesRasterized" : 10,
@@ -37,7 +37,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0102070569992065
+    "waitSeconds" : 1.0911169052124023
   },
   {
     "diagnostics" : {
@@ -46,9 +46,9 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 55.653390682816735,
-      "frameTimeMs" : 17.968357142860572,
-      "memoryMB" : 189.421875,
+      "fps" : 59.934571426174315,
+      "frameTimeMs" : 16.684861111116334,
+      "memoryMB" : 193.328125,
       "nodeCount" : 121,
       "sceneSections" : {
         "cars" : 0,
@@ -57,12 +57,12 @@
         "overlays" : 0,
         "people" : 0,
         "sim" : 0,
-        "tiles" : 0.1,
+        "tiles" : 0.2,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.5069047618917466,
+      "sceneUpdateMs" : 0.5848416666291693,
       "tileLevel" : 2,
-      "tileRasterMs" : 24.682129166671984,
+      "tileRasterMs" : 13.844474999996237,
       "tilesCached" : 10,
       "tilesPending" : 0,
       "tilesRasterized" : 10,
@@ -73,11 +73,11 @@
     },
     "file" : "02-scenarios.png",
     "grid" : false,
-    "note" : "The scenario browser, with the tallest briefing selected.",
+    "note" : "The scenario browser.",
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.1113590002059937
+    "waitSeconds" : 1.0934439897537231
   },
   {
     "diagnostics" : {
@@ -86,23 +86,23 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 56.48160990156284,
-      "frameTimeMs" : 17.70487777779029,
-      "memoryMB" : 194.6875,
+      "fps" : 56.1883859230942,
+      "frameTimeMs" : 17.797272222211785,
+      "memoryMB" : 196.421875,
       "nodeCount" : 121,
       "sceneSections" : {
-        "cars" : 0,
+        "cars" : 0.1,
         "fire" : 0,
-        "light" : 0.1,
+        "light" : 0.2,
         "overlays" : 0,
         "people" : 0,
         "sim" : 0,
-        "tiles" : 0.1,
-        "weather" : 0.1
+        "tiles" : 0.2,
+        "weather" : 0.2
       },
-      "sceneUpdateMs" : 0.38659166662000644,
+      "sceneUpdateMs" : 0.729688888865591,
       "tileLevel" : 2,
-      "tileRasterMs" : 24.682129166671984,
+      "tileRasterMs" : 13.844474999996237,
       "tilesCached" : 10,
       "tilesPending" : 0,
       "tilesRasterized" : 10,
@@ -117,7 +117,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0381510257720947
+    "waitSeconds" : 1.0064330101013184
   },
   {
     "diagnostics" : {
@@ -126,23 +126,23 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 59.76446823070633,
-      "frameTimeMs" : 16.732349999999013,
-      "memoryMB" : 165.09375,
+      "fps" : 56.26575441119856,
+      "frameTimeMs" : 17.772800000011557,
+      "memoryMB" : 168.078125,
       "nodeCount" : 76,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
-        "light" : 0,
+        "light" : 0.1,
         "overlays" : 0,
-        "people" : 0.1,
+        "people" : 0.3,
         "sim" : 0,
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.35826944443518494,
+      "sceneUpdateMs" : 0.81799444446915,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -157,7 +157,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0520249605178833
+    "waitSeconds" : 1.0989130735397339
   },
   {
     "diagnostics" : {
@@ -166,23 +166,23 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 59.878197766089585,
-      "frameTimeMs" : 16.7005694444318,
-      "memoryMB" : 168.484375,
+      "fps" : 54.86364587869705,
+      "frameTimeMs" : 18.227005952374903,
+      "memoryMB" : 169.921875,
       "nodeCount" : 76,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
-        "light" : 0,
+        "light" : 0.1,
         "overlays" : 0,
-        "people" : 0.2,
+        "people" : 0.3,
         "sim" : 0,
-        "tiles" : 0.1,
+        "tiles" : 0.2,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.6415861110629825,
+      "sceneUpdateMs" : 0.8522916666444351,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -197,7 +197,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0120331048965454
+    "waitSeconds" : 1.0849601030349731
   },
   {
     "diagnostics" : {
@@ -206,23 +206,23 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 60.487377040462675,
-      "frameTimeMs" : 16.532375000011257,
-      "memoryMB" : 170.40625,
+      "fps" : 59.51525814160827,
+      "frameTimeMs" : 16.802413888899537,
+      "memoryMB" : 168.546875,
       "nodeCount" : 76,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
         "light" : 0,
         "overlays" : 0,
-        "people" : 0.3,
+        "people" : 0.2,
         "sim" : 0,
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.7856223957674047,
+      "sceneUpdateMs" : 0.7048055555363438,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -237,7 +237,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0555990934371948
+    "waitSeconds" : 1.0779459476470947
   },
   {
     "diagnostics" : {
@@ -246,23 +246,23 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 60.09914480795328,
-      "frameTimeMs" : 16.639171874999192,
-      "memoryMB" : 171.84375,
+      "fps" : 60.43047269535881,
+      "frameTimeMs" : 16.547942708328378,
+      "memoryMB" : 168.625,
       "nodeCount" : 76,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
         "light" : 0,
         "overlays" : 0,
-        "people" : 0.1,
+        "people" : 0.3,
         "sim" : 0,
-        "tiles" : 0.1,
+        "tiles" : 0.2,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.31328645830797086,
+      "sceneUpdateMs" : 0.8522005208533301,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -277,7 +277,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0558680295944214
+    "waitSeconds" : 1.1142369508743286
   },
   {
     "diagnostics" : {
@@ -286,23 +286,23 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 56.84886728634987,
-      "frameTimeMs" : 17.59049999999055,
-      "memoryMB" : 172.390625,
+      "fps" : 56.291647023266414,
+      "frameTimeMs" : 17.764624999987667,
+      "memoryMB" : 169.3125,
       "nodeCount" : 76,
       "sceneSections" : {
         "cars" : 0.1,
         "fire" : 0,
-        "light" : 0,
+        "light" : 0.1,
         "overlays" : 0,
-        "people" : 0.2,
+        "people" : 0.3,
         "sim" : 0,
         "tiles" : 0.2,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.7663444444460765,
+      "sceneUpdateMs" : 0.8643222222569117,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -317,7 +317,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0822639465332031
+    "waitSeconds" : 1.0638749599456787
   },
   {
     "diagnostics" : {
@@ -326,23 +326,23 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 56.386013637260966,
-      "frameTimeMs" : 17.73489444444749,
-      "memoryMB" : 173.25,
+      "fps" : 56.21253961224898,
+      "frameTimeMs" : 17.78962500000792,
+      "memoryMB" : 169.78125,
       "nodeCount" : 76,
       "sceneSections" : {
-        "cars" : 0.1,
+        "cars" : 0.2,
         "fire" : 0,
         "light" : 0.1,
         "overlays" : 0,
         "people" : 0.3,
         "sim" : 0,
         "tiles" : 0.2,
-        "weather" : 0.1
+        "weather" : 0.2
       },
-      "sceneUpdateMs" : 0.8189555555115172,
+      "sceneUpdateMs" : 0.9799888889119757,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -357,7 +357,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.0711560249328613
+    "waitSeconds" : 1.0380250215530396
   },
   {
     "diagnostics" : {
@@ -366,9 +366,9 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 55.626191989811005,
-      "frameTimeMs" : 17.977142857148465,
-      "memoryMB" : 173.6875,
+      "fps" : 55.69105387861282,
+      "frameTimeMs" : 17.95620535714144,
+      "memoryMB" : 170.5625,
       "nodeCount" : 76,
       "sceneSections" : {
         "cars" : 0.1,
@@ -380,9 +380,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.46508035711667617,
+      "sceneUpdateMs" : 0.6338363095080369,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -397,7 +397,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.083983063697815
+    "waitSeconds" : 1.0953149795532227
   },
   {
     "diagnostics" : {
@@ -406,9 +406,9 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 59.991981071876815,
-      "frameTimeMs" : 16.668894444440713,
-      "memoryMB" : 175.28125,
+      "fps" : 59.97702879799427,
+      "frameTimeMs" : 16.673049999993356,
+      "memoryMB" : 170.4375,
       "nodeCount" : 76,
       "sceneSections" : {
         "cars" : 0.1,
@@ -420,9 +420,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.3282222222424025,
+      "sceneUpdateMs" : 0.3895722222144589,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -437,7 +437,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.089543104171753
+    "waitSeconds" : 1.0895370244979858
   },
   {
     "diagnostics" : {
@@ -446,9 +446,9 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 60.16875455371744,
-      "frameTimeMs" : 16.619921875019372,
-      "memoryMB" : 175.265625,
+      "fps" : 60.017836550803096,
+      "frameTimeMs" : 16.66171354166579,
+      "memoryMB" : 173.015625,
       "nodeCount" : 76,
       "sceneSections" : {
         "cars" : 0.1,
@@ -460,9 +460,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.48586197917188656,
+      "sceneUpdateMs" : 0.3223984375040345,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -477,7 +477,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.3932909965515137
+    "waitSeconds" : 1.433421015739441
   },
   {
     "diagnostics" : {
@@ -486,9 +486,9 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 59.99420680939103,
-      "frameTimeMs" : 16.668276041670538,
-      "memoryMB" : 175.546875,
+      "fps" : 59.931059304769846,
+      "frameTimeMs" : 16.68583888889164,
+      "memoryMB" : 173.328125,
       "nodeCount" : 76,
       "sceneSections" : {
         "cars" : 0,
@@ -498,11 +498,11 @@
         "people" : 0.1,
         "sim" : 0,
         "tiles" : 0.1,
-        "weather" : 0.1
+        "weather" : 0
       },
-      "sceneUpdateMs" : 0.29053645835119823,
+      "sceneUpdateMs" : 0.27807222224206873,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -517,7 +517,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.373020887374878
+    "waitSeconds" : 1.4986729621887207
   },
   {
     "diagnostics" : {
@@ -526,12 +526,12 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 60.68142394658692,
-      "frameTimeMs" : 16.479507812476868,
-      "memoryMB" : 177.078125,
+      "fps" : 59.983494541783365,
+      "frameTimeMs" : 16.67125277776904,
+      "memoryMB" : 174.953125,
       "nodeCount" : 78,
       "sceneSections" : {
-        "cars" : 0,
+        "cars" : 0.1,
         "fire" : 0,
         "light" : 0,
         "overlays" : 0,
@@ -540,9 +540,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.32993489581656377,
+      "sceneUpdateMs" : 0.37042500004342094,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -557,7 +557,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.3473280668258667
+    "waitSeconds" : 1.3361070156097412
   },
   {
     "diagnostics" : {
@@ -566,13 +566,13 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 59.31161945928062,
-      "frameTimeMs" : 16.8601027777792,
-      "memoryMB" : 177.546875,
+      "fps" : 59.545843848966506,
+      "frameTimeMs" : 16.793783333332613,
+      "memoryMB" : 175.40625,
       "nodeCount" : 78,
       "sceneSections" : {
         "cars" : 0,
-        "fire" : 0,
+        "fire" : 0.1,
         "light" : 0,
         "overlays" : 0,
         "people" : 0.1,
@@ -580,9 +580,9 @@
         "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.30308333333171805,
+      "sceneUpdateMs" : 0.36653888887485664,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -597,7 +597,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.4214340448379517
+    "waitSeconds" : 1.4415810108184814
   },
   {
     "diagnostics" : {
@@ -606,23 +606,23 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 59.81592583444422,
-      "frameTimeMs" : 16.717955729177447,
-      "memoryMB" : 179.375,
+      "fps" : 56.18103777616336,
+      "frameTimeMs" : 17.79959999998937,
+      "memoryMB" : 176.078125,
       "nodeCount" : 78,
       "sceneSections" : {
         "cars" : 0.1,
-        "fire" : 0,
-        "light" : 0,
+        "fire" : 0.1,
+        "light" : 0.1,
         "overlays" : 0,
-        "people" : 0.1,
+        "people" : 0.3,
         "sim" : 0,
-        "tiles" : 0.1,
+        "tiles" : 0.2,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.487552083313858,
+      "sceneUpdateMs" : 0.8645750000141561,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -637,7 +637,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.3512870073318481
+    "waitSeconds" : 1.2631109952926636
   },
   {
     "diagnostics" : {
@@ -646,23 +646,23 @@
       "centerX" : 24,
       "centerY" : 3.625,
       "detailLevel" : "Floors",
-      "fps" : 59.40967575680983,
-      "frameTimeMs" : 16.832275000009155,
-      "memoryMB" : 189.5,
+      "fps" : 56.803308603408006,
+      "frameTimeMs" : 17.60460833332521,
+      "memoryMB" : 184.65625,
       "nodeCount" : 78,
       "sceneSections" : {
         "cars" : 0.1,
-        "fire" : 0,
-        "light" : 0,
+        "fire" : 0.1,
+        "light" : 0.1,
         "overlays" : 0,
-        "people" : 0.2,
+        "people" : 0.4,
         "sim" : 0,
-        "tiles" : 0.1,
-        "weather" : 0.1
+        "tiles" : 0.2,
+        "weather" : 0.2
       },
-      "sceneUpdateMs" : 0.7053472222196433,
+      "sceneUpdateMs" : 1.048294444444764,
       "tileLevel" : 2,
-      "tileRasterMs" : 13.527402777678313,
+      "tileRasterMs" : 10.873479166662037,
       "tilesCached" : 6,
       "tilesPending" : 0,
       "tilesRasterized" : 6,
@@ -677,7 +677,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 2.2389649152755737
+    "waitSeconds" : 1.2507380247116089
   },
   {
     "diagnostics" : {
@@ -686,23 +686,23 @@
       "centerX" : 24,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 60.038762526076624,
-      "frameTimeMs" : 16.655906249994246,
-      "memoryMB" : 234,
+      "fps" : 59.99677017387023,
+      "frameTimeMs" : 16.667563888889465,
+      "memoryMB" : 228.765625,
       "nodeCount" : 79,
       "sceneSections" : {
         "cars" : 0,
         "fire" : 0,
-        "light" : 0.3,
+        "light" : 0.2,
         "overlays" : 0,
         "people" : 0,
         "sim" : 0,
-        "tiles" : 0.2,
+        "tiles" : 0.1,
         "weather" : 0.1
       },
-      "sceneUpdateMs" : 0.6837135416617457,
+      "sceneUpdateMs" : 0.5098277777506155,
       "tileLevel" : 2,
-      "tileRasterMs" : 6.681977777770952,
+      "tileRasterMs" : 7.119188888888554,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -717,7 +717,7 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.4039030075073242
+    "waitSeconds" : 1.404960036277771
   },
   {
     "diagnostics" : {
@@ -726,23 +726,23 @@
       "centerX" : 24,
       "centerY" : -0.24152542372881491,
       "detailLevel" : "Floors",
-      "fps" : 60.45269623749478,
-      "frameTimeMs" : 16.541859374996193,
-      "memoryMB" : 248.125,
+      "fps" : 60.439185116104255,
+      "frameTimeMs" : 16.54555729166418,
+      "memoryMB" : 242.890625,
       "nodeCount" : 79,
       "sceneSections" : {
         "cars" : 0,
         "fire" : 0,
-        "light" : 0.2,
+        "light" : 0.3,
         "overlays" : 0,
         "people" : 0,
         "sim" : 0,
         "tiles" : 0.2,
-        "weather" : 0.1
+        "weather" : 0.2
       },
-      "sceneUpdateMs" : 0.49503645837489785,
+      "sceneUpdateMs" : 0.8736067708099426,
       "tileLevel" : 2,
-      "tileRasterMs" : 6.681977777770952,
+      "tileRasterMs" : 7.119188888888554,
       "tilesCached" : 15,
       "tilesPending" : 0,
       "tilesRasterized" : 15,
@@ -757,6 +757,6 @@
     "pixelHeight" : 681,
     "pixelWidth" : 1024,
     "settled" : true,
-    "waitSeconds" : 1.3990509510040283
+    "waitSeconds" : 1.2920279502868652
   }
 ]
