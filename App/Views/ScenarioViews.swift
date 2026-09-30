@@ -19,8 +19,9 @@ struct ScenarioBrowserView: View {
                 card(briefs, selected: selected, compact: true)
                 card(briefs, selected: selected, compact: true).scaled(0.9)
                 card(briefs, selected: selected, compact: true).scaled(0.8)
-                card(briefs, selected: selected, compact: true).scaled(0.75).scrolling()
+                card(briefs, selected: selected, compact: true).scaled(0.75)
             }
+            .fitsScreen()
         }
         .environment(\.colorScheme, .dark)
     }
@@ -204,8 +205,9 @@ struct ScenarioResultView: View {
                     card(s, r, compact: false)
                     card(s, r, compact: true)
                     card(s, r, compact: true).scaled(0.9)
-                    card(s, r, compact: true).scaled(0.8).scrolling()
+                    card(s, r, compact: true).scaled(0.8)
                 }
+                .fitsScreen()
             }
             .environment(\.colorScheme, .dark)
         }
