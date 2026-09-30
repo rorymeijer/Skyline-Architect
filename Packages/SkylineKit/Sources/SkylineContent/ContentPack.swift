@@ -18,6 +18,7 @@ public struct ContentPack: Sendable {
     var elevators: [ElevatorSpec] = []
     var tenants: [TenantType] = []
     var amenities: [AmenitySpec] = []
+    var hotels: [HotelSpec] = []
     var scenarios: [ScenarioDefinition] = []
     var materials: [String: String] = [:]
     var buildRules: BuildRules?
@@ -31,7 +32,7 @@ public struct ContentPack: Sendable {
     /// Every definition kind a manifest may list.
     public static let kinds: Set<String> = ["cities", "plots", "starts", "rooms", "buildRules", "blueprints", "materials", "furniture",
                                             "interiors", "schedules", "names", "elevators", "tenants", "economy", "facilities",
-                                            "progression", "weather", "events", "scenarios", "amenities"]
+                                            "progression", "weather", "events", "scenarios", "amenities", "hotels"]
 
     /// Reads and decodes a pack folder. Throws on an unreadable manifest, an unsupported
     /// format, an unknown kind or invalid JSON — never on content rules (see `build`).
@@ -61,6 +62,7 @@ public struct ContentPack: Sendable {
         p.elevators = try load("elevators") ?? []
         p.tenants = try load("tenants") ?? []
         p.amenities = try load("amenities") ?? []
+        p.hotels = try load("hotels") ?? []
         p.scenarios = try load("scenarios") ?? []
         p.materials = try load("materials") ?? [:]
         p.buildRules = try load("buildRules")
@@ -139,6 +141,7 @@ public struct ContentPack: Sendable {
         merge(&elevators, mod.elevators, kind: "elevator", id: \.room)
         merge(&tenants, mod.tenants, kind: "tenant", id: \.id)
         merge(&amenities, mod.amenities, kind: "amenity", id: \.room)
+        merge(&hotels, mod.hotels, kind: "hotel", id: \.room)
         merge(&scenarios, mod.scenarios, kind: "scenario", id: \.id)
         for key in mod.materials.keys.sorted() {
             c.append(materials[key] == nil ? \.added : \.replaced, "material '\(key)'")

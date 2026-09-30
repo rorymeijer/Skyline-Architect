@@ -50,7 +50,7 @@ public enum PopulationSync {
     static func adoptUntenanted(_ world: inout GameWorld, catalog: BuildCatalog, rules: SimulationRules) {
         var byRoom: [RoomID: [PersonID]] = [:]
         var order: [RoomID] = []
-        for p in world.people where p.tenantID == nil {
+        for p in world.people where p.tenantID == nil && p.role != .guest {     // guests belong to no tenant
             guard let r = p.anchorRoom else { continue }
             if byRoom[r] == nil { order.append(r) }
             byRoom[r, default: []].append(p.id)

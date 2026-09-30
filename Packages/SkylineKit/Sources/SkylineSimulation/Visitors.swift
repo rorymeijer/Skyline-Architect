@@ -33,7 +33,7 @@ struct AmenityDirectory {
             switch p.role {
             case .worker: workers[p.buildingID, default: 0] += 1
             case .resident: residents[p.buildingID, default: 0] += 1
-            case .visitor, .janitor, .technician: break
+            case .visitor, .guest, .janitor, .technician: break
             }
         }
     }
@@ -119,9 +119,9 @@ extension SimulationEngine {
         return id
     }
 
-    /// Visitors who have left the building are dropped (hourly, in one pass).
+    /// Visitors and hotel guests who have left the building are dropped (hourly, in one pass).
     func purgeDepartedVisitors(_ world: inout GameWorld) {
-        world.people.removeAll { $0.role == .visitor && $0.place == .outside && $0.nextGoal == nil }
+        world.people.removeAll { ($0.role == .visitor || $0.role == .guest) && $0.place == .outside && $0.nextGoal == nil }
     }
 
     /// A visitor's event: go in, stay a while, leave. Someone who cannot get in or out (the

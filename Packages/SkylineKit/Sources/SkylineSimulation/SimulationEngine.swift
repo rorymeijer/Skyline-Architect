@@ -97,6 +97,11 @@ public struct SimulationEngine: Sendable {
                     report.eventsProcessed += 1
                     continue
                 }
+                if person.role == .guest, !person.isQueuing {
+                    handleGuest(id, at: tick, world: &world, events: &events)
+                    report.eventsProcessed += 1
+                    continue
+                }
                 let outcome = handle(&person, at: tick, world: world, amenities: amenities, report: &report)
                 world.people.update(id) { $0 = person }
                 if person.nextEventTick > tick { events.push(person.nextEventTick, .person(id)) }

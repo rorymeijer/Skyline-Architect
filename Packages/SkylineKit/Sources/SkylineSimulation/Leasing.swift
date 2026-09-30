@@ -257,6 +257,7 @@ extension SimulationEngine {
             added += runCityMarket(city, hour: hour, at: now, world: &world, services: services, appeal: appeal)
         }
         added += spawnVisitors(at: now, world: &world)
+        added += runHotels(at: now, world: &world, services: services)
         if SimClock.secondOfDay(now) == SimClock.startSecondOfDay {
             let before = world.ledger.totals(onDay: SimClock.day(now))
             facilitiesDaily(at: now, world: &world)

@@ -248,6 +248,8 @@ extension SimulationEngine {
         }
         world.facilities.jobs.removeAll { $0.room == job.room && $0.kind == job.kind && $0.assignee == id }
         if job.kind == .clean { world.facilities.cleaned += 1 } else { world.facilities.repaired += 1 }
+        // A hotel room is ready for its next guests once housekept (0.30).
+        if job.kind == .clean { world.hotel?.awaitingHousekeeping.removeAll { $0 == job.room } }
     }
 }
 

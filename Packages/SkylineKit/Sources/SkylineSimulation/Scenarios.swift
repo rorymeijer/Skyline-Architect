@@ -5,7 +5,7 @@ import SkylineCore
 /// See SCENARIOS.md.
 public enum Scenarios {
     /// Ledger categories that make up the daily operating result.
-    static let operating: [LedgerCategory] = [.rent, .turnover, .maintenance, .utilities, .wages, .interest, .taxes, .waste]
+    static let operating: [LedgerCategory] = [.rent, .turnover, .hotel, .maintenance, .utilities, .wages, .interest, .taxes, .waste]
 
     /// The current value of a metric (nil when there is nothing to measure yet).
     public static func measure(_ metric: ScenarioMetric, world: GameWorld, engine: SimulationEngine) -> Double? {

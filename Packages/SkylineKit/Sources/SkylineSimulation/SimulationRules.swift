@@ -159,6 +159,8 @@ public struct SimulationRules: Sendable {
     /// Amenity rooms (0.22), in content order.
     public let amenities: [AmenitySpec]
     private let amenityIndex: [String: Int]
+    /// Hotel rooms (0.30), in content order.
+    public let hotels: [HotelSpec]
     /// Walking speed in meters per game second.
     public var walkSpeed = 1.3
     /// Game seconds to climb or descend one storey by stairs.
@@ -171,7 +173,7 @@ public struct SimulationRules: Sendable {
 
     public init(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenantTypes: [TenantType] = [],
                 economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil, progression: ReputationRules? = nil,
-                weather: WeatherRules? = nil, events: EventRules? = nil, amenities: [AmenitySpec] = []) {
+                weather: WeatherRules? = nil, events: EventRules? = nil, amenities: [AmenitySpec] = [], hotels: [HotelSpec] = []) {
         self.schedules = schedules
         self.names = names
         self.elevators = elevators
@@ -185,7 +187,11 @@ public struct SimulationRules: Sendable {
         var index: [String: Int] = [:]
         for (i, a) in amenities.enumerated() where index[a.room] == nil { index[a.room] = i }
         amenityIndex = index
+        self.hotels = hotels
     }
+
+    /// What a hotel room offers (nil = not a hotel room).
+    public func hotel(for roomDefinition: String) -> HotelSpec? { hotels.first { $0.room == roomDefinition } }
 
     /// What an amenity room offers (nil = not an amenity).
     public func amenity(for roomDefinition: String) -> AmenitySpec? { amenityIndex[roomDefinition].map { amenities[$0] } }

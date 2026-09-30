@@ -127,7 +127,7 @@ extension SimulationEngine {
             case let .room(r, x): p.place = world.rooms.contains(r) ? .room(r, x: x) : .outside
             }
         }
-        if p.role == .visitor, p.place == .outside {                   // visitors go home
+        if p.role == .visitor || p.role == .guest, p.place == .outside {   // visitors and guests go home
             p.nextGoal = nil
             p.nextEventTick = .max
             world.people.update(id) { $0 = p }

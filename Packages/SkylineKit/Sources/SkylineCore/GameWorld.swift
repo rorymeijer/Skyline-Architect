@@ -121,6 +121,8 @@ public struct GameWorld: Codable, Sendable, Equatable {
     public var incidents = IncidentState()
     /// The scenario being played (Phase 16; nil = free play).
     public var scenario: ScenarioState?
+    /// Hotel stays and housekeeping (0.30, save format 20; nil = no hotel rooms yet).
+    public var hotel: HotelState?
     /// Simulation clock. Advanced only by the simulation.
     public var clock = SimClock()
     var ids = IDAllocator()

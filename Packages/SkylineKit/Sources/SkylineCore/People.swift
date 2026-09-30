@@ -45,6 +45,9 @@ public enum PersonRole: String, Codable, Hashable, Sendable {
     case janitor, technician
     /// Someone from the street who comes for one amenity and leaves again (0.22).
     case visitor
+    /// A hotel guest (0.30): arrives in the afternoon or evening, sleeps in the room they
+    /// booked (`visit`) and checks out in the morning.
+    case guest
 
     public var isStaff: Bool { self == .janitor || self == .technician }
     /// The job kind a staff role does.
@@ -164,7 +167,7 @@ public struct Person: Codable, Hashable, Sendable, Identifiable {
         switch role {
         case .worker: workRoom
         case .resident: homeRoom
-        case .visitor: visit
+        case .visitor, .guest: visit
         case .janitor, .technician: nil
         }
     }

@@ -72,7 +72,7 @@ public struct ContentLibrary: Sendable {
         try library.register(materials: pack.materials, furniture: pack.furniture, interiors: pack.interiors)
         try library.register(schedules: pack.schedules, names: pack.names ?? NamePool(first: [], last: []), elevators: pack.elevators,
                              tenants: pack.tenants, economy: pack.economy, facilities: pack.facilities, progression: pack.progression,
-                             weather: pack.weather, events: pack.events, amenities: pack.amenities)
+                             weather: pack.weather, events: pack.events, amenities: pack.amenities, hotels: pack.hotels)
         try library.register(scenarios: pack.scenarios)
         return library
     }
@@ -189,7 +189,7 @@ public struct ContentLibrary: Sendable {
     mutating func register(schedules: [Schedule], names: NamePool, elevators: [ElevatorSpec] = [], tenants: [TenantType] = [],
                            economy: EconomyRules? = nil, facilities: FacilitiesRules? = nil,
                            progression: ProgressionDefinition? = nil, weather: WeatherRules? = nil, events: EventRules? = nil,
-                           amenities: [AmenitySpec] = []) throws {
+                           amenities: [AmenitySpec] = [], hotels: [HotelSpec] = []) throws {
         var problems = SimulationRules.validate(schedules: schedules, names: names)
         var elevatorRooms = Set<String>()
         for e in elevators {
@@ -250,12 +250,17 @@ public struct ContentLibrary: Sendable {
             problems += a.problems(rooms: orderedRooms)
             if !amenityRooms.insert(a.room).inserted { problems.append("amenity '\(a.room)' defined twice") }
         }
+        var hotelRooms = Set<String>()
+        for h in hotels {
+            problems += h.problems(rooms: orderedRooms)
+            if !hotelRooms.insert(h.room).inserted { problems.append("hotel '\(h.room)' defined twice") }
+        }
         if let first = problems.first {
             throw ContentError(pack: manifest.id, file: "rules", message: problems.count == 1 ? first : "\(first) (+\(problems.count - 1) more)")
         }
         simulationRules = SimulationRules(schedules: schedules, names: names, elevators: elevators, tenantTypes: tenants, economy: economy,
                                           facilities: facilities, progression: progression?.reputation, weather: weather,
-                                          events: events, amenities: amenities)
+                                          events: events, amenities: amenities, hotels: hotels)
         buildingClasses = progression?.classes ?? []
     }
 }
