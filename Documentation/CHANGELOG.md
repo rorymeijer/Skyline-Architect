@@ -13,6 +13,9 @@ All notable changes. Versions follow `MARKETING_VERSION` of the app.
   three hotel rooms (one person, two people, a crown), so look-alike tools can be told apart
   on the iPad and iPhone, where the palette shows icons only. Rooms may set `icon` (mods too).
 
+### Fixed
+- On the iPad and iPhone, "unlocks at Class B" no longer ends with a keyboard shortcut.
+
 ## [0.30.2] — Touch placement: Longer, Shorter and moving to another floor
 
 ### Fixed
