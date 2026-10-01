@@ -26,7 +26,7 @@ _Last updated: 2026-10-01 (0.30.4 — shape a held room from both ends, move it 
 
 **0.30.4:** from the owner's iPhone recording: a held room only grew to the right and was
 hard to put in the right place. `PlacementPlanner.edited` (`HeldEdit`: left/right edge, move;
-PlacementEditTests) drives the bar's Left, Move and Right buttons. Not checked on a device.
+PlacementEditTests) drives the bar's Left, Move and Right buttons (Bottom, Move and Top for new shafts). Not checked on a device.
 
 **0.30.3:** `ToolSummary` (ToolSummaryTests) names the picked tool with its size and price in
 `ToolInfoBar` above the palette; rooms may set `icon` (elevators and hotel rooms now differ).
