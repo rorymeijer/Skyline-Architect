@@ -33,9 +33,12 @@ final class PlacementOverlayNode: SKNode {
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) is not supported") }
 
-    func update(preview: PlacementPreview?, camera: Camera2D, cursor: CGPoint?) {
+    /// `showsLabel: false` when the placement bar already shows the label (a held placement, 0.30.4).
+    func update(preview: PlacementPreview?, camera: Camera2D, cursor: CGPoint?, showsLabel: Bool = true) {
         guard let preview else { isHidden = true; return }
         isHidden = false
+        label.isHidden = !showsLabel
+        labelBackground.isHidden = !showsLabel
         let a = camera.worldToScreen(Vec2(preview.rect.minX, preview.rect.minY))
         let b = camera.worldToScreen(Vec2(preview.rect.maxX, preview.rect.maxY))
         ghost.path = CGPath(rect: CGRect(x: a.x, y: a.y, width: b.x - a.x, height: b.y - a.y), transform: nil)

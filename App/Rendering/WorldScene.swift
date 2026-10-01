@@ -464,7 +464,8 @@ final class WorldScene: SKScene {
             currentPreview = previewProvider?(tool, held.anchor, held.end)
             let end = held.end
             let center = composition.grid.rect(columns: ColumnSpan(start: end.column, count: 1), floors: FloorSpan(lowest: end.floor, highest: end.floor)).center
-            placementOverlay.update(preview: currentPreview, camera: camera, cursor: camera.worldToScreen(center).cgPoint)
+            placementOverlay.update(preview: currentPreview, camera: camera, cursor: camera.worldToScreen(center).cgPoint,
+                                    showsLabel: false)                             // the placement bar shows it
             return
         }
         guard let hoverPoint else {
