@@ -24,11 +24,16 @@ extension AppModel {
                                                                 propertyID: property, engine: engine, by: step))
     }
 
-    /// Rooms and floors: the bar edits either edge or moves the ghost (0.30.4); shafts keep
-    /// Taller / Lower.
-    var heldEditsSideways: Bool {
-        guard let tool = activeTool, let catalog else { return false }
-        return PlacementPlanner.editsSideways(tool, catalog: catalog)
+    /// How the bar shapes the held placement (0.30.4): rooms and floors sideways, new shafts
+    /// vertically. Nil for demolish, and when an existing shaft's end is being dragged (its
+    /// resize keeps Taller / Lower).
+    var heldEditAxis: PlacementPlanner.EditAxis? {
+        guard let tool = activeTool, let catalog else { return nil }
+        if case .resizeRoom? = heldPlacement?.command { return nil }
+        if case .batch(let steps)? = heldPlacement?.command, steps.contains(where: { if case .resizeRoom = $0 { true } else { false } }) {
+            return nil
+        }
+        return PlacementPlanner.editAxis(tool, catalog: catalog)
     }
 
     /// The held placement after `edit`, if that edit is possible (within the room's widths).

@@ -4,7 +4,8 @@ import SkylinePresentation
 /// Touch placement (0.30): the held ghost's size and price, the buttons to shape it, Cancel
 /// and Place. Rooms and floors (0.30.4): either edge grows or shrinks one module, and the
 /// arrows move the whole ghost a module or a floor, so it lands exactly where it should.
-/// Shafts keep Taller / Lower. Taps and drags still move the far end, and two fingers pan.
+/// Shafts the same way at their bottom and top; dragging an existing shaft's end keeps
+/// Taller / Lower. Taps and drags still move the far end, and two fingers pan.
 struct PlacementBar: View {
     let model: AppModel
     let preview: PlacementPreview
@@ -18,8 +19,8 @@ struct PlacementBar: View {
             }
             HStack(spacing: 10) {
                 if !preview.isDemolition {
-                    if model.heldEditsSideways {
-                        sidewaysEdits
+                    if let axis = model.heldEditAxis {
+                        edgeEdits(axis)
                     } else {
                         let vertical = model.heldGrowsVertically
                         PanelButton(title: vertical ? "Lower" : "Shorter") { model.nudgeHeldPlacement(by: -1) }
@@ -38,12 +39,13 @@ struct PlacementBar: View {
         .environment(\.colorScheme, .dark)
     }
 
-    /// Left edge (out, in), the whole ghost (left, up, down, right), right edge (in, out):
-    /// laid out the way they act on the ghost.
-    @ViewBuilder private var sidewaysEdits: some View {
-        EditGroup(title: "Left") {
-            edit(.left(1), "plus", "Longer on the left")
-            edit(.left(-1), "minus", "Shorter on the left")
+    /// One end (out, in), the whole ghost (left, up, down, right), the other end (in, out):
+    /// left and right for rooms and floors, bottom and top for shafts.
+    @ViewBuilder private func edgeEdits(_ axis: PlacementPlanner.EditAxis) -> some View {
+        let sideways = axis == .sideways
+        EditGroup(title: sideways ? "Left" : "Bottom") {
+            edit(sideways ? .left(1) : .bottom(1), "plus", sideways ? "Longer on the left" : "One floor more at the bottom")
+            edit(sideways ? .left(-1) : .bottom(-1), "minus", sideways ? "Shorter on the left" : "One floor less at the bottom")
         }
         EditGroup(title: "Move") {
             edit(.move(columns: -1, floors: 0), "arrowtriangle.left.fill", "Move left")
@@ -51,9 +53,9 @@ struct PlacementBar: View {
             edit(.move(columns: 0, floors: -1), "arrowtriangle.down.fill", "Move down a floor")
             edit(.move(columns: 1, floors: 0), "arrowtriangle.right.fill", "Move right")
         }
-        EditGroup(title: "Right") {
-            edit(.right(-1), "minus", "Shorter on the right")
-            edit(.right(1), "plus", "Longer on the right")
+        EditGroup(title: sideways ? "Right" : "Top") {
+            edit(sideways ? .right(-1) : .top(-1), "minus", sideways ? "Shorter on the right" : "One floor less at the top")
+            edit(sideways ? .right(1) : .top(1), "plus", sideways ? "Longer on the right" : "One floor more at the top")
         }
     }
 
