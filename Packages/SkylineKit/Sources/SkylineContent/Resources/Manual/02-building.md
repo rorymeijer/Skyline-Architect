@@ -1,6 +1,6 @@
 # Building
 
-Everything stands on floors, and floors stand on the foundation. You build with the tools in the **build palette** at the bottom of the screen. Construction is paid at once from your cash.
+Everything stands on floors, and floors stand on the foundation. You build with the tools in the **build palette** at the bottom of the screen. When you pick a tool, a bar above the palette shows what it is, its size and what it costs: the smallest size, and the price per metre or per floor. Construction is paid at once from your cash.
 
 ## Floors
 

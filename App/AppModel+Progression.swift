@@ -28,6 +28,13 @@ extension AppModel {
     /// class does not allow it yet. nil = available.
     func lockReason(of definition: String) -> String? {
         if world?.restrictions?.forbids(definition) == true { return "not allowed in this scenario" }
-        return lockedClass(of: definition).map { "unlocks at \($0) (⌥⌘P)" }
+        return lockedClass(of: definition).map { "unlocks at \($0)" + Self.standingShortcut }
     }
+
+    /// The Standing panel's shortcut after a lock reason; touch devices have no keyboard (0.30.3).
+    #if os(macOS)
+    static let standingShortcut = " (⌥⌘P)"
+    #else
+    static let standingShortcut = ""
+    #endif
 }

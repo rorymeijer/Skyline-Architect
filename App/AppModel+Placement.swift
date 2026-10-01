@@ -1,6 +1,7 @@
 import Foundation
 import SkylineCore
 import SkylinePresentation
+import SkylineSimulation
 
 extension AppModel {
     // MARK: Held placement on touch (0.30)
@@ -27,5 +28,30 @@ extension AppModel {
     var heldGrowsVertically: Bool {
         if case .room(let id)? = activeTool { return catalog?.spec(id)?.kind == .shaft }
         return false
+    }
+
+    // MARK: The picked tool (0.30.3)
+
+    /// Name, size and price of the active tool, for the bar above the palette.
+    var toolSummary: ToolSummary? {
+        guard let tool = activeTool, let world, let property = activePropertyID, let catalog else { return nil }
+        var detail: String?
+        if case .room(let id) = tool { detail = simulation?.rules.elevator(for: id)?.name }
+        return ToolSummary.make(tool: tool, world: world, propertyID: property, catalog: catalog, detail: detail)
+    }
+
+    /// The palette's icon for the active tool.
+    var toolSymbol: String {
+        switch activeTool {
+        case .room(let id)?: catalog?.spec(id).map(BuildPalette.symbol(for:)) ?? "square.dashed"
+        case .demolish?: "hammer"
+        default: "square.stack.3d.up"
+        }
+    }
+
+    /// Why the active room type cannot be placed yet, if so.
+    var activeToolLock: String? {
+        if case .room(let id)? = activeTool { return lockReason(of: id) }
+        return nil
     }
 }

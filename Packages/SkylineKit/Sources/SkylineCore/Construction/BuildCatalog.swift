@@ -16,6 +16,9 @@ public struct RoomSpec: Codable, Hashable, Sendable {
     public var kind: RoomKind
     /// Visual style key interpreted by the presentation layer.
     public var appearance: String
+    /// The build palette's icon, an SF Symbol name (0.30.3; nil = the appearance's icon).
+    /// Presentation only: tells look-alike tools apart.
+    public var icon: String?
     public var minWidth: Int
     public var maxWidth: Int
     /// Rooms: exact height in floors when `minFloors == maxFloors`. Shafts: allowed range.

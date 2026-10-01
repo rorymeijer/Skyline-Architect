@@ -424,6 +424,16 @@ Format: DATE · DECISION · CONTEXT · ALTERNATIVES · REASON · CONSEQUENCES.
   - Changing the icon means editing `IconArt` and running `Scripts/make-icon.sh`.
   - Tall panel stacks can exceed small windows (a known issue; fixed by tabs, D-047).
 
+## D-067 — Xcode Cloud owns the build numbers
+- **Date:** 2026-09-30
+- **Decision:** Xcode Cloud builds the app and uploads it to TestFlight, and sets the build
+  number. Development sessions keep bumping `MARKETING_VERSION` (with a CHANGELOG heading)
+  but leave `CURRENT_PROJECT_VERSION` alone (CLAUDE.md rule 18).
+- **Context:** The owner turned on Xcode Cloud after 0.30.2 (build 6 in the project).
+- **Reason:** Two sources of build numbers would clash; the version stays readable in git.
+- **Consequences:** The project's `CURRENT_PROJECT_VERSION` (6) is no longer the TestFlight
+  build number. The GitHub Actions CI keeps building and capturing for development.
+
 ## D-066 — Housekeepers make up hotel rooms; janitors do not
 - **Date:** 2026-09-30
 - **Decision:** A separate staff role, `housekeeper`, with its own job kind `housekeeping`

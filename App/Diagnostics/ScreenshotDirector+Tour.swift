@@ -162,6 +162,14 @@ extension ScreenshotDirector {
             let hotel = model.world?.hotel
             return "\(model.clockText): \(hotel?.nights ?? 0) nights sold, \(model.world?.facilities.housekept ?? 0) made up, \(hotel?.stays.count ?? 0) rooms booked, \(model.world?.people.values.filter { $0.role == .guest }.count ?? 0) guests; hotel twin selected."
         },
+        Step(name: "24-tool-info", grid: false) { model, _ in
+            // 0.30.3: the picked tool's name, size and price above the palette.
+            model.selectRoom(at: nil)
+            model.select(tool: .room("service-elevator"))
+            clearHints(model)
+            let s = model.toolSummary
+            return "Service Elevator picked, nothing placed yet: \(s?.title ?? "no summary") — \(s?.line ?? "") — \(s?.detail ?? "")."
+        },
     ]
 
     /// A step that closes the other side panels and opens one.
