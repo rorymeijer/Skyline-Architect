@@ -22,11 +22,9 @@ struct PlacementBar: View {
                     if let axis = model.heldEditAxis {
                         edgeEdits(axis)
                     } else {
-                        let vertical = model.heldGrowsVertically
-                        PanelButton(title: vertical ? "Lower" : "Shorter") { model.nudgeHeldPlacement(by: -1) }
-                            .accessibilityLabel(vertical ? "One floor fewer" : "One module shorter")
-                        PanelButton(title: vertical ? "Taller" : "Longer") { model.nudgeHeldPlacement(by: 1) }
-                            .accessibilityLabel(vertical ? "One floor more" : "One module longer")
+                        // Only left for dragging an existing shaft's end: it moves that one end.
+                        PanelButton(title: "Lower") { model.nudgeHeldPlacement(by: -1) }.accessibilityLabel("One floor fewer")
+                        PanelButton(title: "Taller") { model.nudgeHeldPlacement(by: 1) }.accessibilityLabel("One floor more")
                     }
                 }
                 PanelButton(title: "Cancel") { model.cancelHeldPlacement() }

@@ -15,8 +15,8 @@ extension AppModel {
         scene?.cancelPlacement()
     }
 
-    /// One module longer (+1) or shorter (−1): wider for rooms and floors, taller for shafts.
-    /// Every press changes the ghost, also when a room was held at its minimum width (0.30.1).
+    /// One floor more (+1) or fewer (−1) at the dragged end of an existing shaft (Taller /
+    /// Lower). Every press changes the ghost (0.30.1).
     func nudgeHeldPlacement(by step: Int) {
         guard let scene, let tool = activeTool, let world, let property = activePropertyID, let engine,
               let held = scene.heldCells else { return }
@@ -50,11 +50,6 @@ extension AppModel {
         scene?.holdPlacement(anchor: next.anchor, end: next.end)
     }
 
-    /// "Wider" or "Taller" for the ± buttons of the active tool.
-    var heldGrowsVertically: Bool {
-        if case .room(let id)? = activeTool { return catalog?.spec(id)?.kind == .shaft }
-        return false
-    }
 
     // MARK: The picked tool (0.30.3)
 
