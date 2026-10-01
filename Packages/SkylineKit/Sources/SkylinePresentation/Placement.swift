@@ -103,10 +103,7 @@ public enum PlacementPlanner {
             let floors: FloorSpan
             switch spec.kind {
             case .room:
-                let dragged = abs(current.column - anchor.column) + 1
-                let width = min(max(dragged, spec.minWidth), spec.maxWidth)
-                let start = current.column >= anchor.column ? anchor.column : anchor.column - width + 1
-                columns = ColumnSpan(start: start, count: width)
+                columns = roomColumns(spec, anchor: anchor, current: current)
                 floors = FloorSpan(lowest: anchor.floor, highest: anchor.floor + spec.minFloors - 1)
             case .shaft:
                 // Grabbing the top or bottom floor of a shaft of this type drags that end:
@@ -125,10 +122,7 @@ public enum PlacementPlanner {
                                   demolition: floors.count < shaft.floors.count, world: world, engine: engine)
                 }
                 columns = ColumnSpan(start: anchor.column, count: spec.minWidth)
-                var lo = min(anchor.floor, current.floor), hi = max(anchor.floor, current.floor)
-                if hi - lo + 1 < spec.minFloors { hi = lo + spec.minFloors - 1 }
-                if hi - lo + 1 > spec.maxFloors { lo = hi - spec.maxFloors + 1 }
-                floors = FloorSpan(lowest: lo, highest: hi)
+                floors = shaftFloors(spec, anchor: anchor, current: current)
             }
             // A shaft past the existing floors brings its missing floor plates (0.30.1).
             let place = engine.addingFloors(for: .placeRoom(building: building.id, definition: id, columns: columns, floors: floors), in: world)

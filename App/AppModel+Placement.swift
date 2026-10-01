@@ -15,8 +15,8 @@ extension AppModel {
         scene?.cancelPlacement()
     }
 
-    /// One module longer (+1) or shorter (−1): wider for rooms and floors, taller for shafts.
-    /// Every press changes the ghost, also when a room was held at its minimum width (0.30.1).
+    /// One floor more (+1) or fewer (−1) at the dragged end of an existing shaft (Taller /
+    /// Lower). Every press changes the ghost (0.30.1).
     func nudgeHeldPlacement(by step: Int) {
         guard let scene, let tool = activeTool, let world, let property = activePropertyID, let engine,
               let held = scene.heldCells else { return }
@@ -24,11 +24,32 @@ extension AppModel {
                                                                 propertyID: property, engine: engine, by: step))
     }
 
-    /// "Wider" or "Taller" for the ± buttons of the active tool.
-    var heldGrowsVertically: Bool {
-        if case .room(let id)? = activeTool { return catalog?.spec(id)?.kind == .shaft }
-        return false
+    /// How the bar shapes the held placement (0.30.4): rooms and floors sideways, new shafts
+    /// vertically. Nil for demolish, and when an existing shaft's end is being dragged (its
+    /// resize keeps Taller / Lower).
+    var heldEditAxis: PlacementPlanner.EditAxis? {
+        guard let tool = activeTool, let catalog else { return nil }
+        if case .resizeRoom? = heldPlacement?.command { return nil }
+        if case .batch(let steps)? = heldPlacement?.command, steps.contains(where: { if case .resizeRoom = $0 { true } else { false } }) {
+            return nil
+        }
+        return PlacementPlanner.editAxis(tool, catalog: catalog)
     }
+
+    /// The held placement after `edit`, if that edit is possible (within the room's widths).
+    private func heldAfter(_ edit: HeldEdit) -> (anchor: GridCell, end: GridCell)? {
+        guard let scene, let tool = activeTool, let catalog, let held = scene.heldCells else { return nil }
+        return PlacementPlanner.edited(edit, anchor: held.anchor, end: held.end, tool: tool, catalog: catalog)
+    }
+
+    func canEditHeldPlacement(_ edit: HeldEdit) -> Bool { heldAfter(edit) != nil }
+
+    /// One step of an edge or of the whole ghost (the touch bar's arrows, 0.30.4).
+    func editHeldPlacement(_ edit: HeldEdit) {
+        guard let next = heldAfter(edit) else { return }
+        scene?.holdPlacement(anchor: next.anchor, end: next.end)
+    }
+
 
     // MARK: The picked tool (0.30.3)
 
