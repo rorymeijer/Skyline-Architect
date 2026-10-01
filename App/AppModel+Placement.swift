@@ -24,6 +24,27 @@ extension AppModel {
                                                                 propertyID: property, engine: engine, by: step))
     }
 
+    /// Rooms and floors: the bar edits either edge or moves the ghost (0.30.4); shafts keep
+    /// Taller / Lower.
+    var heldEditsSideways: Bool {
+        guard let tool = activeTool, let catalog else { return false }
+        return PlacementPlanner.editsSideways(tool, catalog: catalog)
+    }
+
+    /// The held placement after `edit`, if that edit is possible (within the room's widths).
+    private func heldAfter(_ edit: HeldEdit) -> (anchor: GridCell, end: GridCell)? {
+        guard let scene, let tool = activeTool, let catalog, let held = scene.heldCells else { return nil }
+        return PlacementPlanner.edited(edit, anchor: held.anchor, end: held.end, tool: tool, catalog: catalog)
+    }
+
+    func canEditHeldPlacement(_ edit: HeldEdit) -> Bool { heldAfter(edit) != nil }
+
+    /// One step of an edge or of the whole ghost (the touch bar's arrows, 0.30.4).
+    func editHeldPlacement(_ edit: HeldEdit) {
+        guard let next = heldAfter(edit) else { return }
+        scene?.holdPlacement(anchor: next.anchor, end: next.end)
+    }
+
     /// "Wider" or "Taller" for the ± buttons of the active tool.
     var heldGrowsVertically: Bool {
         if case .room(let id)? = activeTool { return catalog?.spec(id)?.kind == .shaft }

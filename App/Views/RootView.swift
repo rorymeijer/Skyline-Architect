@@ -43,7 +43,7 @@ struct ChromeOverlay: View {
     /// The tool or Place bar above the palette (0.30.3): an iPhone's tutorial column keeps
     /// clear of it too.
     private var toolBarClearance: CGFloat {
-        model.heldPlacement != nil || model.toolSummary != nil ? 64 : 0
+        model.heldPlacement != nil ? 100 : model.toolSummary != nil ? 64 : 0
     }
 
     var body: some View {

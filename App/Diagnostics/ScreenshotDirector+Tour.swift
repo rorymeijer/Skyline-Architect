@@ -2,6 +2,7 @@
 import Foundation
 import SkylineCore
 import SkylineContent
+import SkylinePresentation
 
 /// The screen tour (0.29.2): every full-screen view and side panel once, on the Mac, the iPad
 /// and the iPhone, to check that each fits the screen. Panels open one at a time, except in
@@ -134,10 +135,10 @@ extension ScreenshotDirector {
             model.select(tool: .floor)
             clearHints(model)                                              // a tip would cover the bar
             scene.holdPlacement(anchor: GridCell(column: roof.span.start, floor: top + 1), end: GridCell(column: roof.span.start + 11, floor: top + 1))
-            model.nudgeHeldPlacement(by: 1)
+            model.editHeldPlacement(.right(1))
             scene.withController { $0.jump(center: point(model, column: 12, floor: Double(top) + 0.5), zoom: 11) }
             let held = scene.heldCells.map { "columns \($0.anchor.column)–\($0.end.column), floor \($0.end.floor)" } ?? "nothing held"
-            return "A floor held above the roof, one module longer by the + button: \(held)."
+            return "A floor held above the roof, one module longer by the right edge's + button: \(held)."
         },
         Step(name: "23-hotel", grid: false) { model, scene in
             // 0.30: two hotel rooms on the new top floor at night; one selected.
