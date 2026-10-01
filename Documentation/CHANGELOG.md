@@ -2,6 +2,14 @@
 
 All notable changes. Versions follow `MARKETING_VERSION` of the app.
 
+## [0.30.4] — Shape a held room from both ends
+
+### Changed
+- **Touch placement:** the bar under a held room or floor now has **Left + / −** and
+  **Right − / +** (each end one metre longer or shorter) and **Move** arrows (one metre
+  sideways, one floor up or down, same size). A room no longer only grows to the right, and
+  it can be put exactly where it should go. Shafts keep **Taller / Lower**.
+
 ## [0.30.3] — See what you picked and what it costs
 
 ### Added

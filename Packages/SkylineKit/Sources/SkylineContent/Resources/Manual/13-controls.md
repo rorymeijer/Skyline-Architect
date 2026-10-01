@@ -62,7 +62,7 @@
 | With a build tool: drag from the ghost's end | Stretch it further |
 | With a build tool: two fingers | Pan (the ghost stays where it is) |
 
-Nothing is built until you press **Place** in the bar above the build palette. The bar shows the size and price. **Longer** and **Shorter** (**Taller** and **Lower** for shafts) change the size by one module or floor, and **Cancel** drops the ghost. For a long room, tap its start, pan with two fingers to its end, and tap there.
+Nothing is built until you press **Place** in the bar above the build palette. The bar shows the size and price. For rooms and floors, **Left** **+** / **−** and **Right** **−** / **+** make that end one metre longer or shorter, and the **Move** arrows shift the whole ghost one metre sideways or one floor up or down without changing its size, so it lands exactly where you want it. For shafts, **Taller** and **Lower** change the height by one floor. **Cancel** drops the ghost. For a long room, tap its start, pan with two fingers to its end, and tap there.
 
 The buttons at the bottom right open every panel and overlay, save the game and bring back the main menu.
 
